@@ -25,6 +25,8 @@ const SECTIONS = [
   "EC Production Compound",
 ];
 
+const STATUSES = ["Final Approved", "In Progress", "Rejected"];
+
 const Home = () => {
   return (
     <Primitive>
@@ -39,6 +41,20 @@ const Home = () => {
             return (
               <option key={index} value={section}>
                 {section}
+              </option>
+            );
+          })}
+        </select>
+        <select
+          name="filter-status"
+          id="filter-status"
+          className="py-2 px-4 h-10 rounded-xl border"
+        >
+          <option value="All Status">All Status</option>
+          {STATUSES.map((status, index) => {
+            return (
+              <option key={index} value={status}>
+                {status}
               </option>
             );
           })}
