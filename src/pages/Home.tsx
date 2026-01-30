@@ -51,7 +51,7 @@ const Home = () => {
           <select
             name="filter-status"
             id="filter-status"
-            className="py-2 px-4 h-10 rounded-xl border"
+            className="py-2 px-4 h-10 rounded-xl border max-w-48"
           >
             <option value="All Status">All Status</option>
             {STATUSES.map((status, index) => {
@@ -65,7 +65,7 @@ const Home = () => {
           <select
             name="filter-in-charge"
             id="filter-in-charge"
-            className="py-2 px-4 h-10 rounded-xl border"
+            className="py-2 px-4 h-10 rounded-xl border max-w-48"
           >
             <option value="Administrator">Administrator</option>
             {EMPLOYEES.map((employee, index) => {
