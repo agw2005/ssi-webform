@@ -27,6 +27,8 @@ const SECTIONS = [
 
 const STATUSES = ["Final Approved", "In Progress", "Rejected"];
 
+const EMPLOYEES = ["Person 1", "Person 2", "Person 3"];
+
 const Home = () => {
   return (
     <Primitive>
@@ -55,6 +57,20 @@ const Home = () => {
             return (
               <option key={index} value={status}>
                 {status}
+              </option>
+            );
+          })}
+        </select>
+        <select
+          name="filter-in-charge"
+          id="filter-in-charge"
+          className="py-2 px-4 h-10 rounded-xl border"
+        >
+          <option value="Administrator">Administrator</option>
+          {EMPLOYEES.map((employee, index) => {
+            return (
+              <option key={index} value={employee}>
+                {employee}
               </option>
             );
           })}
