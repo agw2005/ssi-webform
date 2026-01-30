@@ -13,7 +13,7 @@ const NAVIGATIONS = [
 
 const Primitive = ({ children }: PrimitiveProps) => {
   return (
-    <div className="bg-yellow-600/25 min-h-screen">
+    <div className="bg-yellow-600/25 min-h-screen pb-16">
       <nav className="flex justify-between bg-black text-white py-4 px-8 sticky inset-0">
         <div className="flex gap-10">
           {NAVIGATIONS.map((navigation, index) => {
@@ -29,7 +29,7 @@ const Primitive = ({ children }: PrimitiveProps) => {
           <button type="button">User</button>
         </div>
       </nav>
-      <main className="m-16 bg-white p-4">{children}</main>
+      <main className="mx-16 mt-16 bg-white p-4">{children}</main>
     </div>
   );
 };
