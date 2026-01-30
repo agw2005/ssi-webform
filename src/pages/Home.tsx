@@ -1,5 +1,11 @@
+import Primitive from "../components/primitive";
+
 const Home = () => {
-  return <div>Hello World</div>;
+  return (
+    <Primitive>
+      <div>Hello World</div>
+    </Primitive>
+  );
 };
 
 export default Home;
