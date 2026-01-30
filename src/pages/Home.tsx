@@ -76,6 +76,26 @@ const Home = () => {
           })}
         </select>
         <div className="flex">
+          <div className="border rounded-l-xl h-10 py-2 px-4 bg-black text-white border-black">
+            Date from
+          </div>
+          <input
+            type="date"
+            id="datefrom"
+            name="datefrom"
+            className="py-2 px-4 h-10 border outline-none"
+          />
+          <div className="border h-10 py-2 px-4 bg-black text-white border-black">
+            to
+          </div>
+          <input
+            type="date"
+            id="datefrom"
+            name="datefrom"
+            className="rounded-r-xl py-2 px-4 h-10 border outline-none"
+          />
+        </div>
+        <div className="flex">
           <input
             type="search"
             id="search"
