@@ -1,4 +1,4 @@
-const EMPLOYEES = ["Person 1", "Person 2", "Person 3"];
+const EMPLOYEES = ["Administrator", "Person 1", "Person 2", "Person 3"];
 
 const FilterEmployee = () => {
   return (
@@ -7,7 +7,7 @@ const FilterEmployee = () => {
       id="filter-in-charge"
       className="py-2 px-4 h-10 rounded-xl border max-w-48"
     >
-      <option value="Administrator">Administrator</option>
+      <option value="All Supervisor">All Supervisor</option>
       {EMPLOYEES.map((employee, index) => {
         return (
           <option key={index} value={employee}>
