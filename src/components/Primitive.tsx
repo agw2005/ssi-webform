@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import ToolTip from "./ToolTip";
 
 interface PrimitiveProps {
   children: React.ReactNode;
@@ -59,7 +60,40 @@ const Primitive = ({ children }: PrimitiveProps) => {
           })}
         </div>
         <div className="flex gap-10">
-          <button type="button">Show Forex</button>
+          <ToolTip text="Show Forex">
+            <div className="bg-yellow-200 text-black p-2 rounded-2xl border-2">
+              <table>
+                <tbody>
+                  <tr>
+                    <td className="text-center px-2 font-bold">
+                      {forexInformation?.base}
+                    </td>
+                    <td className="text-center px-2">
+                      {forexInformation?.amount}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="text-center px-2 font-bold">IDR</td>
+                    <td className="text-center px-2">
+                      {forexInformation?.rates.IDR}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="text-center px-2 font-bold">JPY</td>
+                    <td className="text-center px-2">
+                      {forexInformation?.rates.JPY}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="text-center px-2 font-bold">SGD</td>
+                    <td className="text-center px-2">
+                      {forexInformation?.rates.SGD}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </ToolTip>
           <button type="button">User</button>
         </div>
       </nav>
