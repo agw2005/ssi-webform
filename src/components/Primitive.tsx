@@ -29,6 +29,11 @@ const NAVIGATIONS = [
   { name: "Account", link: "#" },
 ];
 
+const FOREX_RATES_STRING_FORMAT = {
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+};
+
 const Primitive = ({ children }: PrimitiveProps) => {
   const [forexInformation, setForexInformation] =
     useState<ForexAPIRespnse | null>(null);
@@ -82,25 +87,37 @@ const Primitive = ({ children }: PrimitiveProps) => {
                       {forexInformation?.base}
                     </td>
                     <td className="text-center px-2">
-                      {forexInformation?.amount}
+                      {forexInformation?.amount.toLocaleString(
+                        "en-US",
+                        FOREX_RATES_STRING_FORMAT,
+                      )}
                     </td>
                   </tr>
                   <tr>
                     <td className="text-center px-2 font-bold">IDR</td>
                     <td className="text-center px-2">
-                      {forexInformation?.rates.IDR}
+                      {forexInformation?.rates.IDR.toLocaleString(
+                        "en-US",
+                        FOREX_RATES_STRING_FORMAT,
+                      )}
                     </td>
                   </tr>
                   <tr>
                     <td className="text-center px-2 font-bold">JPY</td>
                     <td className="text-center px-2">
-                      {forexInformation?.rates.JPY}
+                      {forexInformation?.rates.JPY.toLocaleString(
+                        "en-US",
+                        FOREX_RATES_STRING_FORMAT,
+                      )}
                     </td>
                   </tr>
                   <tr>
                     <td className="text-center px-2 font-bold">SGD</td>
                     <td className="text-center px-2">
-                      {forexInformation?.rates.SGD}
+                      {forexInformation?.rates.SGD.toLocaleString(
+                        "en-US",
+                        FOREX_RATES_STRING_FORMAT,
+                      )}
                     </td>
                   </tr>
                 </tbody>
