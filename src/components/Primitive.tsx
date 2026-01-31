@@ -1,6 +1,23 @@
+import { useEffect, useState } from "react";
+
 interface PrimitiveProps {
   children: React.ReactNode;
 }
+
+interface ForexRates {
+  IDR: number;
+  JPY: number;
+  SGD: number;
+}
+
+interface ForexAPIRespnse {
+  amount: number;
+  base: string;
+  date: string;
+  rates: ForexRates;
+}
+const FOREX_API_URL =
+  "https://api.frankfurter.dev/v1/latest?symbols=IDR,JPY,SGD&base=USD";
 
 const NAVIGATIONS = [
   { name: "Webform", link: "#" },
@@ -12,6 +29,23 @@ const NAVIGATIONS = [
 ];
 
 const Primitive = ({ children }: PrimitiveProps) => {
+  const [forexInformation, setForexInformation] =
+    useState<ForexAPIRespnse | null>(null);
+
+  async function fetchForexInformation() {
+    const response = await fetch(FOREX_API_URL);
+    const data: ForexAPIRespnse = await response.json();
+    setForexInformation(data);
+  }
+
+  useEffect(() => {
+    fetchForexInformation();
+  }, []);
+
+  useEffect(() => {
+    console.log(forexInformation);
+  }, [forexInformation]);
+
   return (
     <div className="bg-yellow-600/25 min-h-screen pb-16">
       <nav className="flex justify-between bg-black text-white py-4 px-8 sticky inset-0">
