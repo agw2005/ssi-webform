@@ -19,8 +19,6 @@ const COLUMNS = [
   "Remarks",
 ];
 
-const NUM_CONTENT = Placeholders.length;
-
 const Home = () => {
   return (
     <Primitive>

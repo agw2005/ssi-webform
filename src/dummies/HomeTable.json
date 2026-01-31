@@ -108,5 +108,115 @@
     "Supervisor": "Person 4",
     "Submit Date": "1/29/2026",
     "Remarks": "[RL]"
+  },
+  {
+    "ID Trace": "11121",
+    "Red Light Status": "False",
+    "Subject": "Cooling fan",
+    "Amount": "54.75",
+    "Requestor": "Person 13",
+    "Status": "In Progress",
+    "Supervisor": "Person 2",
+    "Submit Date": "1/31/2026",
+    "Remarks": null
+  },
+  {
+    "ID Trace": "11122",
+    "Red Light Status": "True",
+    "Subject": "Pressure valve",
+    "Amount": "310.40",
+    "Requestor": "Person 14",
+    "Status": "Pending Approval",
+    "Supervisor": "Person 3",
+    "Submit Date": "2/1/2026",
+    "Remarks": "[RL]"
+  },
+  {
+    "ID Trace": "11123",
+    "Red Light Status": "False",
+    "Subject": "Maintenance oil",
+    "Amount": "22.90",
+    "Requestor": "Person 15",
+    "Status": "Completed",
+    "Supervisor": "Person 6",
+    "Submit Date": "1/30/2026",
+    "Remarks": null
+  },
+  {
+    "ID Trace": "11124",
+    "Red Light Status": "False",
+    "Subject": "Bearing set",
+    "Amount": "145.60",
+    "Requestor": "Person 16",
+    "Status": "In Progress",
+    "Supervisor": "Person 5",
+    "Submit Date": "1/31/2026",
+    "Remarks": null
+  },
+  {
+    "ID Trace": "11125",
+    "Red Light Status": "True",
+    "Subject": "Industrial motor",
+    "Amount": "1250.00",
+    "Requestor": "Person 17",
+    "Status": "Pending Approval",
+    "Supervisor": "Person 1",
+    "Submit Date": "2/2/2026",
+    "Remarks": "[RL]"
+  },
+  {
+    "ID Trace": "11126",
+    "Red Light Status": "False",
+    "Subject": "Lubrication pump",
+    "Amount": "275.30",
+    "Requestor": "Person 18",
+    "Status": "In Progress",
+    "Supervisor": "Person 4",
+    "Submit Date": "2/1/2026",
+    "Remarks": null
+  },
+  {
+    "ID Trace": "11127",
+    "Red Light Status": "False",
+    "Subject": "Air filter",
+    "Amount": "48.95",
+    "Requestor": "Person 19",
+    "Status": "Completed",
+    "Supervisor": "Person 7",
+    "Submit Date": "1/29/2026",
+    "Remarks": null
+  },
+  {
+    "ID Trace": "11128",
+    "Red Light Status": "True",
+    "Subject": "Control module",
+    "Amount": "845.70",
+    "Requestor": "Person 20",
+    "Status": "Pending Approval",
+    "Supervisor": "Person 6",
+    "Submit Date": "2/2/2026",
+    "Remarks": "[RL]"
+  },
+  {
+    "ID Trace": "11129",
+    "Red Light Status": "False",
+    "Subject": "Power cable",
+    "Amount": "65.00",
+    "Requestor": "Person 21",
+    "Status": "In Progress",
+    "Supervisor": "Person 8",
+    "Submit Date": "2/1/2026",
+    "Remarks": null
+  },
+  {
+    "ID Trace": "11130",
+    "Red Light Status": "False",
+    "Subject": "Diagnostic tool",
+    "Amount": "399.99",
+    "Requestor": "Person 22",
+    "Status": "Completed",
+    "Supervisor": "Person 9",
+    "Submit Date": "1/31/2026",
+    "Remarks": null
   }
 ]
