@@ -1,4 +1,4 @@
-import Primitive from "../components/primitive.tsx";
+import Primitive from "../components/Primitive.tsx";
 import FilterSection from "../components/FilterSection.tsx";
 import FilterStatus from "../components/FilterStatus.tsx";
 import FilterEmployee from "../components/FilterEmployee.tsx";
