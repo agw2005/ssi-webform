@@ -57,19 +57,6 @@ const Primitive = ({ children }: PrimitiveProps) => {
       <nav className="flex justify-between bg-black text-white py-4 px-8 sticky inset-0">
         <div className="flex gap-10">
           {NAVIGATIONS.map((navigation, index) => {
-            if (navigation.name === "Webform") {
-              return (
-                <a href={navigation.link} key={index}>
-                  <ToolTip text={navigation.name} underline={false}>
-                    <div className="p-2 bg-white text-black border-2 min-w-max text-xs opacity-10 ">
-                      Website made by:
-                      <p>Danial Al-Ghazali Walangadi (UNNES 2304130143)</p>
-                      <p>Antonio Vianzar (UNNES 2304130173)</p>
-                    </div>
-                  </ToolTip>
-                </a>
-              );
-            }
             return (
               <a href={navigation.link} key={index}>
                 {navigation.name}
