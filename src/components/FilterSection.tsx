@@ -28,7 +28,7 @@ const FilterSection = () => {
     <select
       name="filter-section"
       id="filter-section"
-      className="py-2 px-4 h-10 rounded-xl border max-w-48"
+      className="text-xs lg:text-sm xl:text-base | max-w-32 lg:max-w-40 xl:max-w-48 | py-2 px-4 h-10 rounded-xl border"
     >
       <option value="All Section">All Section</option>
       {SECTIONS.map((section, index) => {
