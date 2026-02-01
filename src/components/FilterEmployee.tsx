@@ -5,7 +5,7 @@ const FilterEmployee = () => {
     <select
       name="filter-in-charge"
       id="filter-in-charge"
-      className="py-2 px-4 h-10 rounded-xl border max-w-48"
+      className="text-xs lg:text-sm xl:text-base | max-w-36 lg:max-w-42 xl:max-w-48 | py-2 px-4 h-10 rounded-xl border"
     >
       <option value="All Supervisor">All Supervisor</option>
       {EMPLOYEES.map((employee, index) => {
