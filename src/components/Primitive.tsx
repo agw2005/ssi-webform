@@ -1,13 +1,14 @@
 import ForexInformation from "./ForexInformation";
+import { Link } from "react-router-dom";
 
 interface PrimitiveProps {
   children: React.ReactNode;
 }
 
 const NAVIGATIONS = [
-  { name: "Webform", link: "#" },
-  { name: "Home", link: "#" },
-  { name: "Submit Form", link: "#" },
+  { name: "Webform", link: "/" },
+  { name: "Home", link: "/" },
+  { name: "Submit Form", link: "/submit" },
   { name: "Approval Menu", link: "#" },
   { name: "Budget", link: "#" },
   { name: "Account", link: "#" },
@@ -20,13 +21,13 @@ const Primitive = ({ children }: PrimitiveProps) => {
         <div className="gap-4 lg:gap-6 xl:gap-8 2xl:gap-10 | my-1 lg:my-2 xl:my-3 2xl:my-4 | flex flex-wrap items-center text-center ">
           {NAVIGATIONS.map((navigation, index) => {
             return (
-              <a
-                href={navigation.link}
+              <Link
+                to={navigation.link}
                 key={index}
-                className="text-xs lg:text-sm xl:text-base"
+                className="hover:text-yellow-300 transition"
               >
                 {navigation.name}
-              </a>
+              </Link>
             );
           })}
         </div>
