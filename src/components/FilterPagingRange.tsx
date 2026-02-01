@@ -5,8 +5,8 @@ const FilterPagingRange = () => {
 
   return (
     <div className="flex">
-      <div className="border rounded-l-xl h-10 py-2 px-4 bg-black text-white border-black text-center select-none">
-        Show items
+      <div className="text-xs lg:text-sm xl:text-base | h-8 lg:h-9 xl:h-10 | border rounded-l-xl flex items-center px-4 bg-black text-white border-black text-center select-none">
+        <p>Show items</p>
       </div>
       <input
         type="number"
@@ -17,7 +17,7 @@ const FilterPagingRange = () => {
         onChange={(newLimit) =>
           setPagingLimit(Number(newLimit.currentTarget.value))
         }
-        className="rounded-r-xl py-2 px-4 h-10 border outline-none max-w-24 text-center"
+        className="text-xs lg:text-sm xl:text-base | h-8 lg:h-9 xl:h-10 | rounded-r-xl px-4 border outline-none max-w-24 text-center"
       />
     </div>
   );
