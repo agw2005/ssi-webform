@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import ToolTip from "./ToolTip";
 
 interface PrimitiveProps {
@@ -21,9 +22,9 @@ const FOREX_API_URL =
   "https://api.frankfurter.dev/v1/latest?symbols=IDR,JPY,SGD&base=USD";
 
 const NAVIGATIONS = [
-  { name: "Webform", link: "#" },
-  { name: "Home", link: "#" },
-  { name: "Submit Form", link: "#" },
+  { name: "Webform", link: "/" },
+  { name: "Home", link: "/" },
+  { name: "Submit Form", link: "/submit" },
   { name: "Approval Menu", link: "#" },
   { name: "Budget", link: "#" },
   { name: "Account", link: "#" },
@@ -58,9 +59,13 @@ const Primitive = ({ children }: PrimitiveProps) => {
         <div className="flex gap-10">
           {NAVIGATIONS.map((navigation, index) => {
             return (
-              <a href={navigation.link} key={index}>
+              <Link
+                to={navigation.link}
+                key={index}
+                className="hover:text-yellow-300 transition"
+              >
                 {navigation.name}
-              </a>
+              </Link>
             );
           })}
         </div>
