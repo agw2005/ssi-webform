@@ -46,7 +46,7 @@ const ForexInformation = () => {
           alt="singaporean flag"
           className="absolute inset-0 w-full h-full opacity-30 select-none"
         />
-        <p className="z-1">
+        <p className="text-xs lg:text-base | z-1">
           {forexInformation?.rates.SGD.toLocaleString(
             "en-US",
             FOREX_RATES_STRING_FORMAT,
@@ -60,7 +60,7 @@ const ForexInformation = () => {
           alt="japanese flag"
           className="absolute inset-0 w-full h-full opacity-30 select-none"
         />
-        <p className="z-1">
+        <p className="text-xs lg:text-base | z-1">
           {forexInformation?.rates.JPY.toLocaleString(
             "en-US",
             FOREX_RATES_STRING_FORMAT,
@@ -74,7 +74,7 @@ const ForexInformation = () => {
           alt="indonesian flag"
           className="absolute inset-0 w-full h-full opacity-30 select-none"
         />
-        <p className="z-1">
+        <p className="text-xs lg:text-base | z-1">
           {forexInformation?.rates.IDR.toLocaleString(
             "en-US",
             FOREX_RATES_STRING_FORMAT,
@@ -88,7 +88,7 @@ const ForexInformation = () => {
           alt="american flag"
           className="absolute inset-0 w-full h-full opacity-30 select-none"
         />
-        <p className="z-1">
+        <p className="text-xs lg:text-base | z-1">
           {forexInformation?.amount.toLocaleString(
             "en-US",
             FOREX_RATES_STRING_FORMAT,
