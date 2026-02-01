@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import ToolTip from "./ToolTip";
 
 interface PrimitiveProps {
   children: React.ReactNode;
@@ -54,8 +53,8 @@ const Primitive = ({ children }: PrimitiveProps) => {
 
   return (
     <div className="bg-yellow-600/25 min-h-screen pb-16">
-      <nav className="flex justify-between bg-black text-white py-4 px-8 sticky inset-0">
-        <div className="flex gap-10">
+      <nav className="flex justify-between bg-black text-white pl-8 sticky inset-0">
+        <div className="flex gap-10 my-4">
           {NAVIGATIONS.map((navigation, index) => {
             return (
               <a href={navigation.link} key={index}>
@@ -64,54 +63,66 @@ const Primitive = ({ children }: PrimitiveProps) => {
             );
           })}
         </div>
-        <div className="flex gap-10">
-          <ToolTip text="Show Forex">
-            <div className="bg-yellow-200 text-black p-2 rounded-2xl border-2">
-              <table>
-                <tbody>
-                  <tr>
-                    <td className="text-center px-2 font-bold">
-                      {forexInformation?.base}
-                    </td>
-                    <td className="text-center px-2">
-                      {forexInformation?.amount.toLocaleString(
-                        "en-US",
-                        FOREX_RATES_STRING_FORMAT,
-                      )}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="text-center px-2 font-bold">IDR</td>
-                    <td className="text-center px-2">
-                      {forexInformation?.rates.IDR.toLocaleString(
-                        "en-US",
-                        FOREX_RATES_STRING_FORMAT,
-                      )}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="text-center px-2 font-bold">JPY</td>
-                    <td className="text-center px-2">
-                      {forexInformation?.rates.JPY.toLocaleString(
-                        "en-US",
-                        FOREX_RATES_STRING_FORMAT,
-                      )}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="text-center px-2 font-bold">SGD</td>
-                    <td className="text-center px-2">
-                      {forexInformation?.rates.SGD.toLocaleString(
-                        "en-US",
-                        FOREX_RATES_STRING_FORMAT,
-                      )}
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </ToolTip>
-          <button type="button">User</button>
+        <div className="flex">
+          <div className="relative px-4 flex items-center">
+            <img
+              src="/flag-of-singapore.png"
+              alt="singaporean flag"
+              className="absolute inset-0 w-full h-full opacity-30 select-none"
+            />
+            <p className="z-1">
+              {forexInformation?.rates.SGD.toLocaleString(
+                "en-US",
+                FOREX_RATES_STRING_FORMAT,
+              ) + " "}
+              <strong>SGD</strong>
+            </p>
+          </div>
+          <div className="relative px-4 flex items-center">
+            <img
+              src="/flag-of-japan.png"
+              alt="japanese flag"
+              className="absolute inset-0 w-full h-full opacity-30 select-none"
+            />
+            <p className="z-1">
+              {forexInformation?.rates.JPY.toLocaleString(
+                "en-US",
+                FOREX_RATES_STRING_FORMAT,
+              ) + " "}
+              <strong>JPY</strong>
+            </p>
+          </div>
+          <div className="relative px-4 flex items-center">
+            <img
+              src="/flag-of-indonesia.png"
+              alt="indonesian flag"
+              className="absolute inset-0 w-full h-full opacity-30 select-none"
+            />
+            <p className="z-1">
+              {forexInformation?.rates.IDR.toLocaleString(
+                "en-US",
+                FOREX_RATES_STRING_FORMAT,
+              ) + " "}
+              <strong>IDR</strong>
+            </p>
+          </div>
+          <div className="relative px-4 flex items-center">
+            <img
+              src="/flag-of-america.png"
+              alt="american flag"
+              className="absolute inset-0 w-full h-full opacity-30 select-none"
+            />
+            <p className="z-1">
+              {forexInformation?.amount.toLocaleString(
+                "en-US",
+                FOREX_RATES_STRING_FORMAT,
+              ) + " "}
+              <strong>{forexInformation?.base}</strong>
+            </p>
+          </div>
+          <div className="px-8 hover:bg-white hover:text-black active:bg-gray-800 active:text-white flex items-center">
+            <p className="select-none">User</p>
+          </div>
         </div>
       </nav>
       <main className="mx-16 mt-16 bg-white p-4">{children}</main>
