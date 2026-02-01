@@ -22,8 +22,8 @@ const COLUMNS = [
 const Home = () => {
   return (
     <Primitive>
-      <div className="flex justify-between">
-        <div className="flex gap-2">
+      <div className="flex justify-between gap-2 flex-wrap">
+        <div className="flex flex-wrap gap-2">
           <FilterSection />
           <FilterStatus />
           <FilterEmployee />
@@ -39,7 +39,7 @@ const Home = () => {
               return (
                 <th
                   key={index}
-                  className="border p-2 bg-blue-800 text-white border-black"
+                  className="text-xs lg:text-sm xl:text-base | border p-2 bg-blue-800 text-white border-black"
                 >
                   {column}
                 </th>
@@ -51,31 +51,31 @@ const Home = () => {
           {Placeholders.map((placeholder, index) => {
             return (
               <tr key={index}>
-                <td className="break-all border p-2">
+                <td className="text-xs lg:text-sm xl:text-base | min-w-14 | border break-all p-2">
                   {placeholder["ID Trace"]}
                 </td>
-                <td className="border p-2 min-w-28 text-center">
+                <td className="text-xs lg:text-sm xl:text-base | min-w-12 lg:min-w-16 xl:min-w-20 2xl:min-w-28 | border text-center p-2">
                   {placeholder["Red Light Status"]}
                 </td>
-                <td className="break-all border p-2">
+                <td className="text-xs lg:text-sm xl:text-base | border break-all p-2">
                   {placeholder["Subject"]}
                 </td>
-                <td className="break-all border p-2">
+                <td className="text-xs lg:text-sm xl:text-base | border break-all p-2">
                   {placeholder["Amount"]}
                 </td>
-                <td className="break-all border p-2">
+                <td className="text-xs lg:text-sm xl:text-base | border break-all p-2">
                   {placeholder["Requestor"]}
                 </td>
-                <td className="border min-w-full text-center p-2">
+                <td className="text-xs lg:text-sm xl:text-base | border min-w-full text-center p-2">
                   {placeholder["Status"]}
                 </td>
-                <td className="break-all border p-2">
+                <td className="text-xs lg:text-sm xl:text-base | border break-all p-2">
                   {placeholder["Supervisor"]}
                 </td>
-                <td className="border text-center min-w-32 p-2">
+                <td className="text-xs lg:text-sm xl:text-base | border text-center p-2">
                   {placeholder["Submit Date"]}
                 </td>
-                <td className="border text-center min-w-16 p-2">
+                <td className="text-xs lg:text-sm xl:text-base | border min-w-16 text-center p-2">
                   {placeholder["Remarks"]}
                 </td>
               </tr>
