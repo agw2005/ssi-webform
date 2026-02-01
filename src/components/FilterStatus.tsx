@@ -5,7 +5,7 @@ const FilterStatus = () => {
     <select
       name="filter-status"
       id="filter-status"
-      className="py-2 px-4 h-10 rounded-xl border max-w-48"
+      className="text-xs lg:text-sm xl:text-base | max-w-32 lg:max-w-40 xl:max-w-48 | py-2 px-4 h-10 rounded-xl border"
     >
       <option value="All Status">All Status</option>
       {STATUSES.map((status, index) => {
