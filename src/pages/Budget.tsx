@@ -91,7 +91,7 @@ const Budget = () => {
         </div>
       </div>
 
-      <div className="overflow-x-auto h-192">
+      <div className="overflow-x-auto h-192 mt-4">
         <table className="table-auto border-collapse min-w-full max-w-full mt-4">
           <thead className="sticky top-0 z-10 border">
             <tr>
