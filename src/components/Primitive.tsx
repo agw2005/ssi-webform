@@ -20,15 +20,27 @@ const Primitive = ({ children }: PrimitiveProps) => {
       <nav className="pl-2 lg:pl-4 xl:pl-6 2xl:pl-8 | flex justify-between gap-2 bg-black text-white sticky inset-0">
         <div className="gap-4 lg:gap-6 xl:gap-8 2xl:gap-10 | my-1 lg:my-2 xl:my-3 2xl:my-4 | flex flex-wrap items-center text-center ">
           {NAVIGATIONS.map((navigation, index) => {
-            return (
-              <Link
-                to={navigation.link}
-                key={index}
-                className="hover:text-yellow-300 transition"
-              >
-                {navigation.name}
-              </Link>
-            );
+            if (navigation.name === "Webform") {
+              return (
+                <Link
+                  to={navigation.link}
+                  key={index}
+                  className="hover:bg-linear-to-r hover:from-[#25ab81ff] hover:via-[#3c8ecbff] hover:to-[#0d2f78ff] hover:text-transparent hover:bg-clip-text transition | font-bold text-2xl bg-linear-to-r from-[#0d2f78ff] via-[#3c8ecbff] to-[#25ab81ff] text-transparent bg-clip-text"
+                  title="Created by :&#10;Danial Al-Ghazali Walangadi (UNNES 2304130143)&#10;and Antonio Vianzar (UNNES 2304130173)"
+                >
+                  WEBFORM
+                </Link>
+              );
+            } else
+              return (
+                <Link
+                  to={navigation.link}
+                  key={index}
+                  className="hover:text-yellow-300 transition"
+                >
+                  {navigation.name}
+                </Link>
+              );
           })}
         </div>
         <div className="flex flex-wrap">
