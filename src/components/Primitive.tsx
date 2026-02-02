@@ -10,7 +10,7 @@ const NAVIGATIONS = [
   { name: "Home", link: "/" },
   { name: "Submit Form", link: "/submit" },
   { name: "Approval Menu", link: "#" },
-  { name: "Budget", link: "#" },
+  { name: "Budget", link: "/budget" },
   { name: "Account", link: "#" },
 ];
 
