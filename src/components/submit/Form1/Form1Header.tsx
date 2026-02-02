@@ -1,4 +1,4 @@
-const SubmitHeader = () => {
+const Form1Header = () => {
   return (
     <h1 className="text-xl font-bold mb-2">
       Fill Your Data <span className="text-sm font-normal">Step 1</span>
@@ -6,4 +6,4 @@ const SubmitHeader = () => {
   );
 };
 
-export default SubmitHeader;
+export default Form1Header;
