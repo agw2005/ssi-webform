@@ -51,13 +51,15 @@ const PERIODS = [
 const Budget = () => {
   return (
     <Primitive>
-      <div className="flex flex-col gap-2 w-max items-end">
-        <div className="h-8 lg:h-9 xl:h-10 | flex gap-3 items-center w-max">
-          <label>File Resource</label>
+      <div className="flex gap-2 w-max items-end">
+        <div className="h-8 lg:h-9 xl:h-10 | flex items-center w-max">
+          <div className="rounded-l-xl h-full justify-self-center border flex items-center px-2 border-r-0 border-black bg-black text-white select-none">
+            File Resource
+          </div>
           <select
             name="file-resource"
             id="file-resource"
-            className="text-xs lg:text-sm xl:text-base | h-full px-4 rounded-xl border"
+            className="text-xs lg:text-sm xl:text-base | h-full px-4 rounded-r-xl border outline-none"
           >
             <option value="Show All">Show All</option>
             {OPTIONS.map((option, index) => {
@@ -69,12 +71,14 @@ const Budget = () => {
             })}
           </select>
         </div>
-        <div className="h-8 lg:h-9 xl:h-10 | flex gap-3 items-center w-max">
-          <label>Period</label>
+        <div className="h-8 lg:h-9 xl:h-10 | flex items-center w-max">
+          <div className="rounded-l-xl h-full justify-self-center border flex items-center px-2 border-r-0 border-black bg-black text-white select-none">
+            Period
+          </div>
           <select
             name="file-resource"
             id="file-resource"
-            className="text-xs lg:text-sm xl:text-base | h-full px-4 rounded-xl border"
+            className="text-xs lg:text-sm xl:text-base | h-full px-4 rounded-r-xl border outline-none"
           >
             <option value="Show All">Show All</option>
             {PERIODS.map((option, index) => {
@@ -91,7 +95,7 @@ const Budget = () => {
         </div>
       </div>
 
-      <div className="overflow-x-auto h-192 mt-4">
+      <div className="overflow-x-auto h-163 mt-4">
         <table className="table-auto border-collapse min-w-full max-w-full mt-4">
           <thead className="sticky top-0 z-10 border">
             <tr>
