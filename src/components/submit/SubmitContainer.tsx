@@ -1,7 +1,15 @@
-const SubmitContainer = ({ children }: { children: React.ReactNode }) => {
+import React from "react";
+
+interface Props {
+  children: React.ReactNode;
+}
+
+const SubmitContainer: React.FC<Props> = ({ children }) => {
   return (
-    <div className="max-w-4xl bg-gray-100 p-6 rounded-md">
-      {children}
+    <div className="w-full max-w-screen-2xl mx-auto px-12 py-10">
+      <div className="flex gap-10 items-start">
+        {children}
+      </div>
     </div>
   );
 };
