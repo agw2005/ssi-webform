@@ -54,6 +54,9 @@ const Budget = () => {
             })}
           </select>
         </div>
+        <div className="h-8 lg:h-9 xl:h-10 | text-black hover:text-white active:text-black | bg-white hover:bg-black active:bg-white | border-black hover:border-blue-900 active:border-red-900 | flex items-center border px-4 rounded-xl">
+          <p className="select-none">Search</p>
+        </div>
       </div>
     </Primitive>
   );
