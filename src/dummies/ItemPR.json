@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1,
+    "costCenter": "104",
+    "nature": "803052000",
+    "desc": "Mouse Logitech",
+    "qty": 2,
+    "measure": "PCS",
+    "unitPrice": 150000,
+    "currency": "IDR",
+    "rate": 1,
+    "delivery": "15-02-2026"
+  },
+  {
+    "id": 2,
+    "costCenter": "105",
+    "nature": "803052100",
+    "desc": "Keyboard Mechanical",
+    "qty": 1,
+    "measure": "PCS",
+    "unitPrice": 750000,
+    "currency": "IDR",
+    "rate": 1,
+    "delivery": "16-02-2026"
+  }
+]

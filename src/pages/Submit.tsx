@@ -11,6 +11,10 @@ import Step2Header from "../components/submit/step2/Step2Header";
 import Step2Attention from "../components/submit/step2/Step2Attention";
 import Step2Form from "../components/submit/step2/Step2Form";
 
+import Step3Header from "../components/submit/step3/Step3Header";
+import Step3Attention from "../components/submit/step3/Step3Attention";
+import Step3Form from "../components/submit/step3/Step3Form";
+
 import { generateFormNumber } from "../components/Date";
 
 const Submit = () => {
@@ -47,6 +51,13 @@ const Submit = () => {
             <Step2Form formNumber={formNumber} />
           </div>
         </Step2Container>
+      </div>
+
+      {/* STEP 3 */}
+      <div className="bg-white rounded-xl p-8 shadow-sm">
+        <Step3Header />
+        <Step3Attention />
+        <Step3Form />
       </div>
 
     </Primitive>
