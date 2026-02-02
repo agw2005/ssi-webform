@@ -1,91 +1,54 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import Primitive from "../components/Primitive";
-import SubmitContainer from "../components/submit/Form1/Form1Container";
-import SubmitHeader from "../components/submit/Form1/Form1Header";
-import SubmitAttention from "../components/submit/Form1/Form1Attention";
-import SubmitForm from "../components/submit/Form1/Form1Submit";
+
+import Step1Container from "../components/submit/step1/Step1Container";
+import Step1Header from "../components/submit/step1/Step1Header";
+import Step1Attention from "../components/submit/step1/Step1Attention";
+import Step1Form from "../components/submit/step1/Step1Form";
+
+import Step2Container from "../components/submit/step2/Step2Container";
+import Step2Header from "../components/submit/step2/Step2Header";
+import Step2Attention from "../components/submit/step2/Step2Attention";
+import Step2Form from "../components/submit/step2/Step2Form";
+
 import { generateFormNumber } from "../components/Date";
 
 const Submit = () => {
-
   const [formNumber] = useState<string>(() => generateFormNumber());
+
+  // ref untuk scroll
+  const step2Ref = useRef<HTMLDivElement | null>(null);
+
+  const scrollToStep2 = () => {
+    step2Ref.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  };
 
   return (
     <Primitive>
-      <SubmitContainer>
-
-        {/* FORM 1 */}
+      
+      {/* STEP 1 */}
+      <Step1Container>
         <div className="bg-white rounded-xl p-8 shadow-sm">
-          <SubmitHeader />
-          <SubmitAttention />
-          <SubmitForm />
+          <Step1Header />
+          <Step1Attention />
+          <Step1Form onNext={scrollToStep2} />
         </div>
+      </Step1Container>
 
-        {/* FORM 2 / PREVIEW */}
-        <div className="bg-gray-50 rounded-xl border p-8 shadow-sm max-w-3xl">
-
-          <h2 className="text-lg font-semibold mb-4">
-            Header of Your PR Form
-            <span className="text-gray-400 ml-2 font-normal">
-              Step 2
-            </span>
-          </h2>
-
-          <div className="bg-blue-50 text-blue-700 text-sm p-3 rounded-md mb-6">
-            <b>INFO!</b> Your PR Number is in No. PR field, and No. Form is for tracking your form
+      {/* STEP 2 */}
+      <div ref={step2Ref}>
+        <Step2Container>
+          <div className="bg-white rounded-xl p-8 shadow-sm">
+            <Step2Header />
+            <Step2Attention />
+            <Step2Form formNumber={formNumber} />
           </div>
+        </Step2Container>
+      </div>
 
-          <div className="space-y-4">
-
-            <div>
-              <label className="text-sm text-gray-600">
-                No. Form
-              </label>
-
-              <input
-                className="w-full border rounded-md px-3 py-2 bg-gray-100"
-                value={formNumber}
-                readOnly
-              />
-            </div>
-
-            <div>
-              <label className="text-sm text-gray-600">
-                No. PR
-              </label>
-
-              <input
-                className="w-full border rounded-md px-3 py-2"
-                placeholder="(Left Empty, will be shown after FINISHED)"
-              />
-            </div>
-
-            <div>
-              <label className="text-sm text-gray-600">
-                Subject
-              </label>
-
-              <textarea
-                className="w-full border rounded-md px-3 py-2"
-                rows={3}
-              />
-            </div>
-
-            <div>
-              <label className="text-sm text-gray-600">
-                Return On Outgoing
-              </label>
-
-              <input
-                className="w-full border rounded-md px-3 py-2"
-              />
-            </div>
-
-          </div>
-
-        </div>
-
-      </SubmitContainer>
     </Primitive>
   );
 };

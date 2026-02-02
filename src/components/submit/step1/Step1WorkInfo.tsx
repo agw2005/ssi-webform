@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const SubmitWorkInfo = () => {
+const Step1WorkInfo = () => {
   const SECTIONS = [
     "PROD",
     "PURC",
@@ -140,4 +140,4 @@ const SubmitWorkInfo = () => {
   );
 };
 
-export default SubmitWorkInfo;
+export default Step1WorkInfo;
