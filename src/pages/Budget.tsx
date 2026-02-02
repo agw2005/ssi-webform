@@ -1,3 +1,4 @@
+import { useState } from "react";
 import Primitive from "../components/Primitive";
 import Placeholders from "../dummies/BudgetSearchTable.json";
 
@@ -49,11 +50,31 @@ const PERIODS = [
 ];
 
 const Budget = () => {
+  const [viewMode, setViewMode] = useState<"Budget" | "Report">("Budget");
+
   return (
     <Primitive>
-      <div className="flex gap-2 w-max items-end">
+      <div className="flex gap-2 w-max">
         <div className="h-8 lg:h-9 xl:h-10 | flex items-center w-max">
-          <div className="rounded-l-xl h-full justify-self-center border flex items-center px-2 border-r-0 border-black bg-black text-white select-none">
+          <div
+            onClick={() => {
+              setViewMode("Report");
+            }}
+            className={`text-xs lg:text-sm xl:text-base | ${viewMode !== "Budget" ? "bg-black text-white" : "bg-white text-black hover:text-white hover:bg-gray-700"} rounded-l-xl h-full justify-self-center border flex items-center px-2 border-r-0 border-black select-none`}
+          >
+            View Budget
+          </div>
+          <div
+            onClick={() => {
+              setViewMode("Budget");
+            }}
+            className={`text-xs lg:text-sm xl:text-base | ${viewMode !== "Report" ? "bg-black text-white" : "bg-white text-black hover:text-white hover:bg-gray-700"} rounded-r-xl h-full justify-self-center border flex items-center px-2 border-black select-none`}
+          >
+            View Report
+          </div>
+        </div>
+        <div className="h-8 lg:h-9 xl:h-10 | flex items-center w-max">
+          <div className="text-xs lg:text-sm xl:text-base | rounded-l-xl h-full justify-self-center border flex items-center px-2 border-r-0 border-black bg-black text-white select-none">
             File Resource
           </div>
           <select
@@ -72,7 +93,7 @@ const Budget = () => {
           </select>
         </div>
         <div className="h-8 lg:h-9 xl:h-10 | flex items-center w-max">
-          <div className="rounded-l-xl h-full justify-self-center border flex items-center px-2 border-r-0 border-black bg-black text-white select-none">
+          <div className="text-xs lg:text-sm xl:text-base | rounded-l-xl h-full justify-self-center border flex items-center px-2 border-r-0 border-black bg-black text-white select-none">
             Period
           </div>
           <select
@@ -91,7 +112,9 @@ const Budget = () => {
           </select>
         </div>
         <div className="h-8 lg:h-9 xl:h-10 | text-black hover:text-white active:text-black | bg-white hover:bg-black active:bg-white | border-black hover:border-blue-900 active:border-red-900 | flex items-center border px-4 rounded-xl">
-          <p className="select-none">Search</p>
+          <p className="text-xs lg:text-sm xl:text-base | select-none">
+            Search
+          </p>
         </div>
       </div>
 
