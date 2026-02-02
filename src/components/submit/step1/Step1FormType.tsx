@@ -1,4 +1,4 @@
-const SubmitFormType = () => {
+const Step1FormType = () => {
   return (
     <div className="flex items-start gap-4">
       <label className="w-40">Select Form :</label>
@@ -11,4 +11,4 @@ const SubmitFormType = () => {
   );
 };
 
-export default SubmitFormType;
+export default Step1FormType;

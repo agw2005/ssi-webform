@@ -1,9 +1,14 @@
-const SubmitActions = () => {
+interface Props {
+  onNext: () => void;
+}
+
+const SubmitActions = ({ onNext }: Props) => {
   return (
-    <div className="flex justify-end">
+    <div className="text-right">
       <button
         type="submit"
-        className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition"
+        onClick={onNext}
+        className="bg-blue-600 text-white px-6 py-2 rounded cursor-pointer hover:bg-blue-700"
       >
         Next
       </button>
