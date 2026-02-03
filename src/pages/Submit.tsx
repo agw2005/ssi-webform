@@ -20,11 +20,12 @@ import { generateFormNumber } from "../components/Date.tsx";
 const Submit = () => {
   const [formNumber] = useState<string>(() => generateFormNumber());
 
-  // ref untuk scroll
+  // refs scroll
   const step2Ref = useRef<HTMLDivElement | null>(null);
+  const step3Ref = useRef<HTMLDivElement | null>(null);
 
-  const scrollToStep2 = () => {
-    step2Ref.current?.scrollIntoView({
+  const scrollTo = (ref: React.RefObject<HTMLDivElement | null>) => {
+    ref.current?.scrollIntoView({
       behavior: "smooth",
       block: "start",
     });
@@ -32,15 +33,16 @@ const Submit = () => {
 
   return (
     <Primitive>
-      
+
       {/* STEP 1 */}
       <Step1Container>
         <div className="bg-white rounded-xl p-8 shadow-sm">
           <Step1Header />
           <Step1Attention />
-          <Step1Form onNext={scrollToStep2} />
+          <Step1Form onNext={() => scrollTo(step2Ref)} />
         </div>
       </Step1Container>
+
 
       {/* STEP 2 */}
       <div ref={step2Ref}>
@@ -48,16 +50,23 @@ const Submit = () => {
           <div className="bg-white rounded-xl p-8 shadow-sm">
             <Step2Header />
             <Step2Attention />
-            <Step2Form formNumber={formNumber} />
+            <Step2Form 
+              formNumber={formNumber}
+              onNext={() => scrollTo(step3Ref)}
+              onBack={() => scrollTo(step2Ref)} // nanti bisa ke step1 kalau mau
+            />
           </div>
         </Step2Container>
       </div>
 
-      {/* STEP 3 */}
-      <div className="bg-white rounded-xl p-8 shadow-sm">
-        <Step3Header />
-        <Step3Attention />
-        <Step3Form />
+
+      {/* STEP 3 ✅ FIX */}
+      <div ref={step3Ref}>
+          <div className="bg-white rounded-xl p-8 shadow-sm">
+            <Step3Header />
+            <Step3Attention />
+            <Step3Form />
+          </div>
       </div>
 
     </Primitive>

@@ -1,10 +1,18 @@
 interface Props {
   formNumber: string;
+  onNext: () => void;
+  onBack: () => void;
 }
 
-const Step2Form = ({ formNumber }: Props) => {
+const Step2Form = ({ formNumber, onNext, onBack }: Props) => {
+  const handleNext = (e: React.FormEvent) => {
+    e.preventDefault();
+    onNext();
+  };
+
   return (
-    <div className="space-y-4">
+    <form onSubmit={handleNext} className="space-y-4">
+
       <div>
         <label className="text-sm text-gray-600">No. Form</label>
 
@@ -25,34 +33,46 @@ const Step2Form = ({ formNumber }: Props) => {
       </div>
 
       <div>
-        <label className="text-sm text-gray-600">Subject</label>
+        <label className="text-sm text-gray-600">
+          Subject <span className="text-red-500">*</span>
+        </label>
 
-        <input className="w-full border rounded-md px-3 py-2" />
+        <input
+          required
+          className="w-full border rounded-md px-3 py-2"
+        />
       </div>
 
       <div>
         <label className="text-sm text-gray-600">Return On Outgoing</label>
 
-        <textarea className="w-full border rounded-md px-3 py-2" rows={3} />
+        <textarea
+          className="w-full border rounded-md px-3 py-2"
+          rows={3}
+        />
       </div>
 
-      {/* Buttons */}
+      {/* BUTTONS */}
       <div className="flex justify-end gap-2 mt-6">
+
         <button
           type="button"
-          className="px-4 py-2 bg-orange-400 text-white rounded-md hover:bg-orange-500"
+          onClick={onBack}
+          className="px-6 py-2 bg-orange-400 text-white rounded-lg hover:bg-orange-500 transition cursor-pointer"
         >
           Back
         </button>
 
         <button
-          type="button"
-          className="px-4 py-2 bg-teal-500 text-white rounded-md hover:bg-teal-600"
+          type="submit"
+          className="bg-blue-600 text-white px-6 py-2 rounded-lg shadow-sm hover:bg-blue-700 transition cursor-pointer"
         >
           Next
         </button>
+
       </div>
-    </div>
+
+    </form>
   );
 };
 

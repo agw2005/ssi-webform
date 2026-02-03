@@ -11,6 +11,9 @@ interface Item {
   currency: string;
   rate: number;
   delivery: string;
+  vendor: string;
+  reason: string;
+  IDBudget: string;
 }
 
 const Step3Table = () => {
@@ -31,6 +34,9 @@ const Step3Table = () => {
             <th>Currency</th>
             <th>Rate</th>
             <th>Est. Delivery</th>
+            <th>Vendor</th>
+            <th>Reason</th>
+            <th>ID Budget</th>
             <th>Action</th>
           </tr>
         </thead>
@@ -48,7 +54,9 @@ const Step3Table = () => {
               <td>{item.currency}</td>
               <td>{item.rate}</td>
               <td>{item.delivery}</td>
-
+              <td>{item.vendor}</td>
+              <td>{item.reason}</td>
+              <td>{item.IDBudget}</td>  
               <td>
                 <button
                   type="button"

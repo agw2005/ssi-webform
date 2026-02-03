@@ -6,10 +6,13 @@
     "desc": "Mouse Logitech",
     "qty": 2,
     "measure": "PCS",
-    "unitPrice": 150000,
+    "unitPrice": 16799,
     "currency": "IDR",
     "rate": 1,
-    "delivery": "15-02-2026"
+    "delivery": "15-02-2026",
+    "vendor": "PT. Logitech Indonesia",
+    "reason": "For office use",
+    "IDBudget": "2025LH02-104-MIS"
   },
   {
     "id": 2,
@@ -18,9 +21,12 @@
     "desc": "Keyboard Mechanical",
     "qty": 1,
     "measure": "PCS",
-    "unitPrice": 750000,
+    "unitPrice": 16799,
     "currency": "IDR",
     "rate": 1,
-    "delivery": "16-02-2026"
+    "delivery": "16-02-2026",
+    "vendor": "PT. Keyboard World",
+    "reason": "For gaming setup",
+    "IDBudget": "2025LH02-104-MIS"
   }
 ]
