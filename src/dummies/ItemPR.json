@@ -4,7 +4,7 @@
     "costCenter": "104",
     "nature": "803052000",
     "desc": "Mouse Logitech",
-    "qty": 2,
+    "qty": 1,
     "measure": "PCS",
     "unitPrice": 16799,
     "currency": "IDR",
@@ -21,12 +21,27 @@
     "desc": "Keyboard Mechanical",
     "qty": 1,
     "measure": "PCS",
-    "unitPrice": 16799,
-    "currency": "IDR",
+    "unitPrice": 155.06,
+    "currency": "JPY",
     "rate": 1,
     "delivery": "16-02-2026",
     "vendor": "PT. Keyboard World",
     "reason": "For gaming setup",
+    "IDBudget": "2025LH02-104-MIS"
+  },
+  {
+    "id": 3,
+    "costCenter": "106",
+    "nature": "803052103",
+    "desc": "Dell Monitor",
+    "qty": 1,
+    "measure": "PCS",
+    "unitPrice": 1.27,
+    "currency": "SGD",
+    "rate": 1,
+    "delivery": "16-02-2026",
+    "vendor": "PT. Dell Indonesia",
+    "reason": "For office setup",
     "IDBudget": "2025LH02-104-MIS"
   }
 ]
