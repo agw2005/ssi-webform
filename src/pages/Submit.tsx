@@ -8,13 +8,14 @@ import Step1Form from "../components/submit/step1/Step1Form";
 import Step2Header from "../components/submit/step2/Step2Header";
 import Step2Attention from "../components/submit/step2/Step2Attention";
 import Step2Form from "../components/submit/step2/Step2Form";
-import Step2Container from "../components/submit/step2/Step2Container";
 
 import Step3Header from "../components/submit/step3/Step3Header";
 import Step3Attention from "../components/submit/step3/Step3Attention";
 
 import { generateFormNumber } from "../components/Date";
 import Step3Form from "../components/submit/step3/Step3Form";
+
+import Step4Form from "../components/submit/step4/Step4Form";
 
 const Submit = () => {
   const [formNumber] = useState(() => generateFormNumber());
@@ -41,7 +42,7 @@ const Submit = () => {
           <Step1Form onNext={() => scrollTo(step2Ref)} />
         </div>
       </Step1Container>
-      <Step2Container>
+      <Step1Container>
         {/* STEP 2 */}
         <div ref={step2Ref} className="bg-white rounded-xl p-8 shadow-sm">
           <Step2Header />
@@ -52,7 +53,7 @@ const Submit = () => {
             onBack={() => scrollTo(step1Ref)}
           />
         </div>
-      </Step2Container>
+      </Step1Container>
 
         {/* STEP 3 */}
         <div ref={step3Ref} className="bg-white rounded-xl p-8 shadow-sm">
@@ -61,7 +62,11 @@ const Submit = () => {
           <Step3Form />
         </div>
 
-      
+        {/* STEP 4 */}
+        <Step1Container>
+          <Step4Form />
+        </Step1Container>
+
     </Primitive>
   );
 };

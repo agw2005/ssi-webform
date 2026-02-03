@@ -43,5 +43,20 @@
     "vendor": "PT. Dell Indonesia",
     "reason": "For office setup",
     "IDBudget": "2025LH02-104-MIS"
+  },
+  {
+    "id": 4,
+    "costCenter": "104",
+    "nature": "803052562",
+    "desc": "Peripheral Set",
+    "qty": 1,
+    "measure": "Set",
+    "unitPrice": 1,
+    "currency": "USD",
+    "rate": 1,
+    "delivery": "15-02-2026",
+    "vendor": "PT. Tech Supplies",
+    "reason": "For Mabaru office",
+    "IDBudget": "2025LH02-104-MIS"
   }
 ]

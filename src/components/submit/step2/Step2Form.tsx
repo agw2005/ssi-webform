@@ -31,7 +31,8 @@ const Step2Form = ({ formNumber, onNext, onBack }: Props) => {
         </label>
 
         <input
-          className="w-full border rounded-md px-3 py-2 cursor-not-allowed"
+          readOnly
+          className="w-full border rounded-md px-3 py-2 bg-gray-100 cursor-not-allowed"
           placeholder="(Left Empty, will be shown after FINISHED)"
         />
       </div>

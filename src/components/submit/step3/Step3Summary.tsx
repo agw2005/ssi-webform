@@ -8,16 +8,40 @@ const Step3Summary = () => {
     return <p className="mt-8">Loading forex...</p>;
   }
 
-  const idrRate = forex.rates.IDR;
-  const totalUsageUSD = items.reduce((total, item) => {
-    const totalIDR = item.qty * item.unitPrice;
+  const { rates } = forex;
 
-    const usd = totalIDR / idrRate;
+  /**
+   * Convert ANY currency → USD
+   */
+  const convertToUSD = (price: number, currency: string) => {
+    switch (currency) {
+      case "IDR":
+        return price / rates.IDR;
+
+      case "JPY":
+        return price / rates.JPY;
+
+      case "SGD":
+        return price / rates.SGD;
+
+      case "USD":
+      default:
+        return price;
+    }
+  };
+
+  /**
+   * TOTAL USAGE (USD)
+   */
+  const totalUsageUSD = items.reduce((total, item) => {
+    const itemTotal = item.qty * item.unitPrice;
+
+    const usd = convertToUSD(itemTotal, item.currency);
 
     return total + usd;
   }, 0);
 
-  const BALANCE = 1; // contoh
+  const BALANCE = 1;
   const remain = BALANCE - totalUsageUSD;
 
   return (
