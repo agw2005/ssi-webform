@@ -37,10 +37,7 @@ const Step3Table = () => {
 
         <tbody>
           {data.map((item, index) => (
-            <tr
-              key={item.id}
-              className="text-center border-t hover:bg-gray-50"
-            >
+            <tr key={item.id} className="text-center border-t hover:bg-gray-50">
               <td className="p-2">{index + 1}</td>
               <td>{item.costCenter}</td>
               <td>{item.nature}</td>
@@ -53,7 +50,10 @@ const Step3Table = () => {
               <td>{item.delivery}</td>
 
               <td>
-                <button className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">
+                <button
+                  type="button"
+                  className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+                >
                   delete
                 </button>
               </td>

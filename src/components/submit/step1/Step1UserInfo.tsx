@@ -1,4 +1,4 @@
-import FilterSection from "../../FilterSection";
+import FilterSection from "../../FilterSection.tsx";
 
 const Step1UserInfo = () => {
   return (

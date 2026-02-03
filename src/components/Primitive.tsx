@@ -1,4 +1,4 @@
-import ForexInformation from "./ForexInformation";
+import ForexInformation from "./ForexInformation.tsx";
 import { Link } from "react-router-dom";
 
 interface PrimitiveProps {

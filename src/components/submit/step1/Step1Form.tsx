@@ -1,6 +1,6 @@
-import SubmitUserInfo from "./Step1UserInfo";
-import SubmitWorkInfo from "./Step1WorkInfo";
-import SubmitFormType from "./Step1FormType";
+import SubmitUserInfo from "./Step1UserInfo.tsx";
+import SubmitWorkInfo from "./Step1WorkInfo.tsx";
+import SubmitFormType from "./Step1FormType.tsx";
 
 interface Props {
   onNext: () => void;
