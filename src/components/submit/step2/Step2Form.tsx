@@ -14,7 +14,9 @@ const Step2Form = ({ formNumber, onNext, onBack }: Props) => {
     <form onSubmit={handleNext} className="space-y-4">
 
       <div>
-        <label className="text-sm text-gray-600">No. Form</label>
+        <label className="text-sm text-gray-600">
+          No. Form
+        </label>
 
         <input
           className="w-full border rounded-md px-3 py-2 bg-gray-100 cursor-not-allowed"
@@ -24,7 +26,9 @@ const Step2Form = ({ formNumber, onNext, onBack }: Props) => {
       </div>
 
       <div>
-        <label className="text-sm text-gray-600">No. PR</label>
+        <label className="text-sm text-gray-600">
+          No. PR
+        </label>
 
         <input
           className="w-full border rounded-md px-3 py-2 cursor-not-allowed"
@@ -44,7 +48,9 @@ const Step2Form = ({ formNumber, onNext, onBack }: Props) => {
       </div>
 
       <div>
-        <label className="text-sm text-gray-600">Return On Outgoing</label>
+        <label className="text-sm text-gray-600">
+          Return On Outgoing
+        </label>
 
         <textarea
           className="w-full border rounded-md px-3 py-2"

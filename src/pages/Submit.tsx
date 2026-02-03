@@ -1,28 +1,28 @@
-import { useState, useRef } from "react";
-import Primitive from "../components/Primitive.tsx";
+import { useRef, useState } from "react";
+import Primitive from "../components/Primitive";
+import Step1Container from "../components/submit/step1/Step1Container";
+import Step1Header from "../components/submit/step1/Step1Header";
+import Step1Attention from "../components/submit/step1/Step1Attention";
+import Step1Form from "../components/submit/step1/Step1Form";
 
-import Step1Container from "../components/submit/step1/Step1Container.tsx";
-import Step1Header from "../components/submit/step1/Step1Header.tsx";
-import Step1Attention from "../components/submit/step1/Step1Attention.tsx";
-import Step1Form from "../components/submit/step1/Step1Form.tsx";
+import Step2Header from "../components/submit/step2/Step2Header";
+import Step2Attention from "../components/submit/step2/Step2Attention";
+import Step2Form from "../components/submit/step2/Step2Form";
+import Step2Container from "../components/submit/step2/Step2Container";
 
-import Step2Container from "../components/submit/step2/Step2Container.tsx";
-import Step2Header from "../components/submit/step2/Step2Header.tsx";
-import Step2Attention from "../components/submit/step2/Step2Attention.tsx";
-import Step2Form from "../components/submit/step2/Step2Form.tsx";
+import Step3Header from "../components/submit/step3/Step3Header";
+import Step3Attention from "../components/submit/step3/Step3Attention";
 
-import Step3Header from "../components/submit/step3/Step3Header.tsx";
-import Step3Attention from "../components/submit/step3/Step3Attention.tsx";
-import Step3Form from "../components/submit/step3/Step3Form.tsx";
-
-import { generateFormNumber } from "../components/Date.tsx";
+import { generateFormNumber } from "../components/Date";
+import Step3Form from "../components/submit/step3/Step3Form";
 
 const Submit = () => {
-  const [formNumber] = useState<string>(() => generateFormNumber());
+  const [formNumber] = useState(() => generateFormNumber());
 
-  // refs scroll
-  const step2Ref = useRef<HTMLDivElement | null>(null);
-  const step3Ref = useRef<HTMLDivElement | null>(null);
+  // refs untuk scroll
+  const step1Ref = useRef<HTMLDivElement>(null);
+  const step2Ref = useRef<HTMLDivElement>(null);
+  const step3Ref = useRef<HTMLDivElement>(null);
 
   const scrollTo = (ref: React.RefObject<HTMLDivElement | null>) => {
     ref.current?.scrollIntoView({
@@ -33,42 +33,35 @@ const Submit = () => {
 
   return (
     <Primitive>
-
-      {/* STEP 1 */}
       <Step1Container>
-        <div className="bg-white rounded-xl p-8 shadow-sm">
+        {/* STEP 1 */}
+        <div ref={step1Ref} className="bg-white rounded-xl p-8 shadow-sm">
           <Step1Header />
           <Step1Attention />
           <Step1Form onNext={() => scrollTo(step2Ref)} />
         </div>
       </Step1Container>
+      <Step2Container>
+        {/* STEP 2 */}
+        <div ref={step2Ref} className="bg-white rounded-xl p-8 shadow-sm">
+          <Step2Header />
+          <Step2Attention />
+          <Step2Form
+            formNumber={formNumber}
+            onNext={() => scrollTo(step3Ref)}
+            onBack={() => scrollTo(step1Ref)}
+          />
+        </div>
+      </Step2Container>
 
+        {/* STEP 3 */}
+        <div ref={step3Ref} className="bg-white rounded-xl p-8 shadow-sm">
+          <Step3Header />
+          <Step3Attention />
+          <Step3Form />
+        </div>
 
-      {/* STEP 2 */}
-      <div ref={step2Ref}>
-        <Step2Container>
-          <div className="bg-white rounded-xl p-8 shadow-sm">
-            <Step2Header />
-            <Step2Attention />
-            <Step2Form 
-              formNumber={formNumber}
-              onNext={() => scrollTo(step3Ref)}
-              onBack={() => scrollTo(step2Ref)} // nanti bisa ke step1 kalau mau
-            />
-          </div>
-        </Step2Container>
-      </div>
-
-
-      {/* STEP 3 ✅ FIX */}
-      <div ref={step3Ref}>
-          <div className="bg-white rounded-xl p-8 shadow-sm">
-            <Step3Header />
-            <Step3Attention />
-            <Step3Form />
-          </div>
-      </div>
-
+      
     </Primitive>
   );
 };
