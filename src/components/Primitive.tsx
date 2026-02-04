@@ -25,7 +25,7 @@ const Primitive = ({ children }: PrimitiveProps) => {
                 <Link
                   to={navigation.link}
                   key={index}
-                  className="hover:bg-linear-to-r hover:from-[#25ab81ff] hover:via-[#3c8ecbff] hover:to-[#0d2f78ff] hover:text-transparent hover:bg-clip-text transition | font-bold text-2xl bg-linear-to-r from-[#0d2f78ff] via-[#3c8ecbff] to-[#25ab81ff] text-transparent bg-clip-text"
+                  className="text-xs lg:text-base xl:text-2xl | hover:bg-linear-to-r hover:from-[#25ab81ff] hover:via-[#3c8ecbff] hover:to-[#0d2f78ff] hover:text-transparent hover:bg-clip-text transition | font-bold bg-linear-to-r from-[#0d2f78ff] via-[#3c8ecbff] to-[#25ab81ff] text-transparent bg-clip-text"
                   title="Created by :&#10;Danial Al-Ghazali Walangadi (UNNES 2304130143)&#10;and Antonio Vianzar (UNNES 2304130173)"
                 >
                   WEBFORM
@@ -36,7 +36,7 @@ const Primitive = ({ children }: PrimitiveProps) => {
                 <Link
                   to={navigation.link}
                   key={index}
-                  className="hover:text-yellow-300 transition"
+                  className="text-xs lg:text-base | hover:text-yellow-300 transition"
                 >
                   {navigation.name}
                 </Link>
@@ -45,7 +45,7 @@ const Primitive = ({ children }: PrimitiveProps) => {
         </div>
         <div className="flex flex-wrap">
           <ForexInformation />
-          <div className="px-2 lg:px-4 xl:px-6 2xl:px-8 | bg-black hover:bg-white hover:text-black active:bg-gray-800 active:text-white | flex items-center">
+          <div className="text-xs lg:text-base xl:text-2xl | px-2 lg:px-4 xl:px-6 2xl:px-8 | bg-black hover:bg-white hover:text-black active:bg-gray-800 active:text-white | flex items-center">
             <p className="select-none">User</p>
           </div>
         </div>
