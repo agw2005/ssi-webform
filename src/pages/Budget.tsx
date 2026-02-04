@@ -138,93 +138,16 @@ const Budget = () => {
             {Placeholders.map((placeholder, index) => {
               return (
                 <tr key={index}>
-                  <td className="text-xs lg:text-sm xl:text-base | border break-all p-2">
-                    {placeholder["File Resource"]}
-                  </td>
-                  <td className="text-xs lg:text-sm xl:text-base | border break-all p-2">
-                    {placeholder["Dept"]}
-                  </td>
-                  <td className="text-xs lg:text-sm xl:text-base | border break-all p-2">
-                    {placeholder["Sec Req"]}
-                  </td>
-                  <td className="text-xs lg:text-sm xl:text-base | border break-all p-2">
-                    {placeholder["Nature"]}
-                  </td>
-                  <td className="text-xs lg:text-sm xl:text-base | border break-all p-2">
-                    {placeholder["Description"]}
-                  </td>
-                  <td className="text-xs lg:text-sm xl:text-base | border break-all p-2">
-                    {placeholder["Bud_01"]}
-                  </td>
-                  <td className="text-xs lg:text-sm xl:text-base | border break-all p-2">
-                    {placeholder["Usage01"]}
-                  </td>
-                  <td className="text-xs lg:text-sm xl:text-base | border break-all p-2">
-                    {placeholder["Bud_02"]}
-                  </td>
-                  <td className="text-xs lg:text-sm xl:text-base | border break-all p-2">
-                    {placeholder["Usage02"]}
-                  </td>
-                  <td className="text-xs lg:text-sm xl:text-base | border break-all p-2">
-                    {placeholder["Bud_03"]}
-                  </td>
-                  <td className="text-xs lg:text-sm xl:text-base | border break-all p-2">
-                    {placeholder["Usage03"]}
-                  </td>
-                  <td className="text-xs lg:text-sm xl:text-base | border break-all p-2">
-                    {placeholder["Bud_04"]}
-                  </td>
-                  <td className="text-xs lg:text-sm xl:text-base | border break-all p-2">
-                    {placeholder["Usage04"]}
-                  </td>
-                  <td className="text-xs lg:text-sm xl:text-base | border break-all p-2">
-                    {placeholder["Bud_05"]}
-                  </td>
-                  <td className="text-xs lg:text-sm xl:text-base | border break-all p-2">
-                    {placeholder["Usage05"]}
-                  </td>
-                  <td className="text-xs lg:text-sm xl:text-base | border break-all p-2">
-                    {placeholder["Bud_06"]}
-                  </td>
-                  <td className="text-xs lg:text-sm xl:text-base | border break-all p-2">
-                    {placeholder["Usage06"]}
-                  </td>
-                  <td className="text-xs lg:text-sm xl:text-base | border break-all p-2">
-                    {placeholder["Bud_07"]}
-                  </td>
-                  <td className="text-xs lg:text-sm xl:text-base | border break-all p-2">
-                    {placeholder["Usage07"]}
-                  </td>
-                  <td className="text-xs lg:text-sm xl:text-base | border break-all p-2">
-                    {placeholder["Bud_08"]}
-                  </td>
-                  <td className="text-xs lg:text-sm xl:text-base | border break-all p-2">
-                    {placeholder["Usage08"]}
-                  </td>
-                  <td className="text-xs lg:text-sm xl:text-base | border break-all p-2">
-                    {placeholder["Bud_09"]}
-                  </td>
-                  <td className="text-xs lg:text-sm xl:text-base | border break-all p-2">
-                    {placeholder["Usage09"]}
-                  </td>
-                  <td className="text-xs lg:text-sm xl:text-base | border break-all p-2">
-                    {placeholder["Bud_10"]}
-                  </td>
-                  <td className="text-xs lg:text-sm xl:text-base | border break-all p-2">
-                    {placeholder["Usage10"]}
-                  </td>
-                  <td className="text-xs lg:text-sm xl:text-base | border break-all p-2">
-                    {placeholder["Bud_11"]}
-                  </td>
-                  <td className="text-xs lg:text-sm xl:text-base | border break-all p-2">
-                    {placeholder["Usage11"]}
-                  </td>
-                  <td className="text-xs lg:text-sm xl:text-base | border break-all p-2">
-                    {placeholder["Bud_12"]}
-                  </td>
-                  <td className="text-xs lg:text-sm xl:text-base | border break-all p-2">
-                    {placeholder["Usage12"]}
-                  </td>
+                  {COLUMNS.map((column, index) => {
+                    return (
+                      <td
+                        key={index}
+                        className="text-xs lg:text-sm xl:text-base | border break-all p-2"
+                      >
+                        {placeholder[column as keyof typeof placeholder]}
+                      </td>
+                    );
+                  })}
                 </tr>
               );
             })}
