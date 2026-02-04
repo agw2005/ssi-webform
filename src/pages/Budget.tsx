@@ -289,6 +289,37 @@ const Budget = () => {
               Show Report
             </div>
           </div>
+
+          <div className="flex flex-col p-8 gap-4 bg-green-100 rounded-2xl items-start">
+            <h2 className="text-3xl font-bold text-green-600">
+              Report by Nature
+            </h2>
+            <div className="text-xs tracking-wide bg-green-600 text-white p-2 rounded-lg">
+              Summary Budget
+            </div>
+            <div className="h-8 lg:h-9 xl:h-10 | flex items-center w-max self-center">
+              <div className="text-xs lg:text-sm xl:text-base | rounded-l-xl h-full justify-self-center border flex items-center px-2 border-r-0 border-green-600 bg-green-600 text-white select-none">
+                Period
+              </div>
+              <select
+                name="file-resource"
+                id="file-resource"
+                className="text-xs lg:text-sm xl:text-base | h-full px-4 rounded-r-xl border border-green-600 text-green-600 bg-white outline-none"
+              >
+                <option value="Show All">Show All</option>
+                {PERIODS.map((option, index) => {
+                  return (
+                    <option key={index} value={option}>
+                      {option}
+                    </option>
+                  );
+                })}
+              </select>
+            </div>
+            <div className="hover:shadow-xl | bg-black/5 hover:bg-black/25 active:bg-white | active:text-black | shadow-md self-center px-4 py-2 border rounded-4xl select-none mt-16">
+              Show Report
+            </div>
+          </div>
         </div>
       ) : (
         ""
