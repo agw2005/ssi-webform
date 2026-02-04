@@ -216,6 +216,48 @@ const Budget = () => {
               Show Report
             </div>
           </div>
+
+          <div className="flex flex-col p-8 gap-4 bg-yellow-100 rounded-2xl items-start">
+            <h2 className="text-3xl font-bold text-yellow-600">
+              Report by Quarter
+            </h2>
+            <div className="text-xs tracking-wide bg-yellow-600 text-white p-2 rounded-lg">
+              Summary Budget
+            </div>
+            <div className="h-8 lg:h-9 xl:h-10 | flex items-center w-max self-end">
+              <div className="text-xs lg:text-sm xl:text-base | rounded-l-xl h-full justify-self-center border flex items-center px-2 border-r-0 border-yellow-600 bg-yellow-600 text-white select-none">
+                Month
+              </div>
+              <input
+                type="month"
+                name="month"
+                id="month"
+                className="text-xs lg:text-sm xl:text-base | h-full px-4 rounded-r-xl text-center border border-yellow-600 text-yellow-600 bg-white outline-none"
+              />
+            </div>
+            <div className="h-8 lg:h-9 xl:h-10 | flex items-center w-max self-end">
+              <div className="text-xs lg:text-sm xl:text-base | rounded-l-xl h-full justify-self-center border flex items-center px-2 border-r-0 border-yellow-600 bg-yellow-600 text-white select-none">
+                File Resource
+              </div>
+              <select
+                name="file-resource"
+                id="file-resource"
+                className="text-xs lg:text-sm xl:text-base | h-full px-4 rounded-r-xl border border-yellow-600 text-yellow-600 bg-white outline-none"
+              >
+                <option value="Show All">Show All</option>
+                {OPTIONS.map((option, index) => {
+                  return (
+                    <option key={index} value={option}>
+                      {option}
+                    </option>
+                  );
+                })}
+              </select>
+            </div>
+            <div className="hover:shadow-xl | bg-black/5 hover:bg-black/25 active:bg-white | active:text-black | shadow-md self-center mt-2 px-4 py-2 border rounded-4xl select-none">
+              Show Report
+            </div>
+          </div>
         </div>
       ) : (
         ""
