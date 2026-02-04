@@ -62,7 +62,7 @@ const Budget = () => {
             }}
             className={`text-xs lg:text-sm xl:text-base | ${viewMode !== "Budget" ? "bg-black text-white" : "bg-white text-black hover:text-white hover:bg-gray-700"} rounded-l-xl h-full justify-self-center border flex items-center px-2 border-r-0 border-black select-none`}
           >
-            View Budget
+            View Report
           </div>
           <div
             onClick={() => {
@@ -70,7 +70,7 @@ const Budget = () => {
             }}
             className={`text-xs lg:text-sm xl:text-base | ${viewMode !== "Report" ? "bg-black text-white" : "bg-white text-black hover:text-white hover:bg-gray-700"} rounded-r-xl h-full justify-self-center border flex items-center px-2 border-black select-none`}
           >
-            View Report
+            View Budget
           </div>
         </div>
         <div className="h-8 lg:h-9 xl:h-10 | flex items-center w-max">
