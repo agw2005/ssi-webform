@@ -166,10 +166,8 @@ const Budget = () => {
       )}
 
       {viewMode === "Report" ? (
-        // <div className="overflow-x-auto h-160 mt-4">
-        // </div>
-        <div className="mt-4 flex gap-8">
-          <div className="flex flex-col p-8 gap-4 bg-gray-100 rounded-2xl items-start">
+        <div className="mt-4 flex gap-8 flex-wrap max-w-max">
+          <div className="flex flex-col p-8 gap-4 bg-gray-100 rounded-2xl items-start flex-1">
             <h2 className="text-3xl font-bold text-gray-600">General Report</h2>
             <div className="text-xs tracking-wide bg-gray-600 text-white p-2 rounded-lg">
               Budget Table
@@ -217,7 +215,7 @@ const Budget = () => {
             </div>
           </div>
 
-          <div className="flex flex-col p-8 gap-4 bg-yellow-100 rounded-2xl items-start">
+          <div className="flex flex-col p-8 gap-4 bg-yellow-100 rounded-2xl items-start flex-1">
             <h2 className="text-3xl font-bold text-yellow-600">
               Report by Quarter
             </h2>
@@ -259,7 +257,7 @@ const Budget = () => {
             </div>
           </div>
 
-          <div className="flex flex-col p-8 gap-4 bg-blue-100 rounded-2xl items-start">
+          <div className="flex flex-col p-8 gap-4 bg-blue-100 rounded-2xl items-start flex-1">
             <h2 className="text-3xl font-bold text-blue-600">
               Report by Section
             </h2>
@@ -290,7 +288,7 @@ const Budget = () => {
             </div>
           </div>
 
-          <div className="flex flex-col p-8 gap-4 bg-green-100 rounded-2xl items-start">
+          <div className="flex flex-col p-8 gap-4 bg-green-100 rounded-2xl items-start flex-1">
             <h2 className="text-3xl font-bold text-green-600">
               Report by Nature
             </h2>
