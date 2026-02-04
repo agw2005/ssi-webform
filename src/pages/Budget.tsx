@@ -164,6 +164,62 @@ const Budget = () => {
       ) : (
         ""
       )}
+
+      {viewMode === "Report" ? (
+        // <div className="overflow-x-auto h-160 mt-4">
+        // </div>
+        <div className="mt-4 flex gap-8">
+          <div className="flex flex-col p-8 gap-4 bg-gray-100 rounded-2xl items-start">
+            <h2 className="text-3xl font-bold text-gray-600">General Report</h2>
+            <div className="text-xs tracking-wide bg-gray-600 text-white p-2 rounded-lg">
+              Budget Table
+            </div>
+            <div className="h-8 lg:h-9 xl:h-10 | flex items-center w-max self-end">
+              <div className="text-xs lg:text-sm xl:text-base | rounded-l-xl h-full justify-self-center border flex items-center px-2 border-r-0 border-gray-600 bg-gray-600 text-white select-none">
+                File Resource
+              </div>
+              <select
+                name="file-resource"
+                id="file-resource"
+                className="text-xs lg:text-sm xl:text-base | h-full px-4 rounded-r-xl border border-gray-600 text-gray-600 bg-white outline-none"
+              >
+                <option value="Show All">Show All</option>
+                {OPTIONS.map((option, index) => {
+                  return (
+                    <option key={index} value={option}>
+                      {option}
+                    </option>
+                  );
+                })}
+              </select>
+            </div>
+            <div className="h-8 lg:h-9 xl:h-10 | flex items-center w-max self-end">
+              <div className="text-xs lg:text-sm xl:text-base | rounded-l-xl h-full justify-self-center border flex items-center px-2 border-r-0 border-gray-600 bg-gray-600 text-white select-none">
+                Period
+              </div>
+              <select
+                name="file-resource"
+                id="file-resource"
+                className="text-xs lg:text-sm xl:text-base | h-full px-4 rounded-r-xl border border-gray-600 text-gray-600 bg-white outline-none"
+              >
+                <option value="Show All">Show All</option>
+                {PERIODS.map((option, index) => {
+                  return (
+                    <option key={index} value={option}>
+                      {option}
+                    </option>
+                  );
+                })}
+              </select>
+            </div>
+            <div className="hover:shadow-xl | bg-black/5 hover:bg-black/25 active:bg-white | active:text-black | shadow-md self-center mt-2 px-4 py-2 border rounded-4xl select-none">
+              Show Report
+            </div>
+          </div>
+        </div>
+      ) : (
+        ""
+      )}
     </Primitive>
   );
 };
