@@ -1,12 +1,12 @@
-const Step4Header = () => {
+const Step5Header = () => {
   return (
     <h1 className="text-xl font-bold mb-2">
-      Set Approval
+      Upload Files
       <span className="text-sm font-normal ml-2">
-        Step 4
+        Step 5
       </span>
     </h1>
   );
 };
 
-export default Step4Header;
+export default Step5Header;
