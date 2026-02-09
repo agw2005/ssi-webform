@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import { testConnection } from "./controllers/Test";
 import { getAll as BudgetGet } from "./controllers/Budget";
 import { getAll as FileResourceGet } from "./controllers/FileResource";
+import { getAll as FlowGet } from "./controllers/Flow";
 
 dotenv.config();
 
@@ -29,6 +30,12 @@ expressServer.get("/budget/:page", async (req, res) => {
 expressServer.get("/fileresource/:page", async (req, res) => {
   const page = Number(req.params.page);
   const [rows, __] = await FileResourceGet(pool, page);
+  res.status(200).send(rows);
+});
+
+expressServer.get("/flow/:page", async (req, res) => {
+  const page = Number(req.params.page);
+  const [rows, __] = await FlowGet(pool, page);
   res.status(200).send(rows);
 });
 
