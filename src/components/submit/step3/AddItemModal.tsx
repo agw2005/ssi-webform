@@ -107,7 +107,7 @@ const AddItemModal = ({ isOpen, onClose }: Props) => {
         {/* header */}
         <div className="flex justify-between items-center border-b px-5 py-3">
           <h2 className="font-semibold text-lg">List Item</h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+          <button type="button" onClick={onClose} className="text-gray-400 hover:text-gray-600">
             ✕
           </button>
         </div>
@@ -241,6 +241,7 @@ const AddItemModal = ({ isOpen, onClose }: Props) => {
         {/* footer */}
         <div className="flex justify-end gap-3 border-t px-5 py-3">
           <button
+            type="button"
             onClick={onClose}
             className="px-4 py-2 border rounded-md hover:bg-gray-100"
           >
@@ -248,6 +249,7 @@ const AddItemModal = ({ isOpen, onClose }: Props) => {
           </button>
 
           <button
+            type="button"
             className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
           >
             Save Changes

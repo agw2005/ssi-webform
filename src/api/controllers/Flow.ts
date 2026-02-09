@@ -1,5 +1,5 @@
 import mysql from "mysql2/promise";
-import type { FlowTable } from "../models/Flow";
+import type { FlowTable } from "../models/Flow.d.ts";
 
 export const basicGet = async (
   pool: mysql.Pool,

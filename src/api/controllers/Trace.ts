@@ -1,5 +1,5 @@
 import mysql from "mysql2/promise";
-import type { TraceTable } from "../models/Trace";
+import type { TraceTable } from "../models/Trace.d.ts";
 
 export const basicGet = async (
   pool: mysql.Pool,

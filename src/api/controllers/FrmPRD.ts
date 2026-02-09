@@ -1,5 +1,5 @@
 import mysql from "mysql2/promise";
-import type { FrmPRDTable } from "../models/FrmPRD";
+import type { FrmPRDTable } from "../models/FrmPRD.d.ts";
 
 export const basicGet = async (
   pool: mysql.Pool,

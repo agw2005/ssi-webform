@@ -1,4 +1,4 @@
-import Step4RoleBox from "./Step4RoleBox";
+import Step4RoleBox from "./Step4RoleBox.tsx";
 
 const Step4ApprovalSection = () => {
   return (

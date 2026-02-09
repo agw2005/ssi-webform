@@ -108,6 +108,7 @@ const Step5FileUploader = () => {
               </div>
 
               <button
+                type="button"
                 onClick={() => removeFile(f.id)}
                 className="text-red-500 hover:text-red-700 text-sm font-semibold"
               >

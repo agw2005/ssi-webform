@@ -1,7 +1,7 @@
-import Step3Table from "./Step3Table";
+import Step3Table from "./Step3Table.tsx";
 import { useState } from "react";
-import AddItemModal from "./AddItemModal";
-import Step3Summary from "./Step3Summary";
+import AddItemModal from "./AddItemModal.tsx";
+import Step3Summary from "./Step3Summary.tsx";
 
 interface Props {
   onNext: () => void;
@@ -21,6 +21,7 @@ const [openModal, setOpenModal] = useState(false);
     <div className="space-y-6">
       {/* BUTTON */}
       <button
+        type="button"
         onClick={() => setOpenModal(true)}
         className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md mb-4"
       >

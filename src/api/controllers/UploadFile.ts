@@ -1,5 +1,5 @@
 import mysql from "mysql2/promise";
-import type { UploadFileTable } from "../models/UploadFile";
+import type { UploadFileTable } from "../models/UploadFile.d.ts";
 
 export const basicGet = async (
   pool: mysql.Pool,

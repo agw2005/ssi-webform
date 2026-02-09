@@ -1,5 +1,5 @@
 import mysql from "mysql2/promise";
-import type { FileResourceTable } from "../models/FileResource";
+import type { FileResourceTable } from "../models/FileResource.d.ts";
 
 export const basicGet = async (
   pool: mysql.Pool,

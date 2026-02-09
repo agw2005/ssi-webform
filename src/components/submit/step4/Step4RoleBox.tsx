@@ -1,5 +1,5 @@
 import { useState } from "react";
-import ApprovalPickerModal from "./ApprovalPickerModal";
+import ApprovalPickerModal from "./ApprovalPickerModal.tsx";
 
 interface ApprovalItem {
   section: string;
@@ -21,6 +21,7 @@ const Step4RoleBox = ({ title }: Props) => {
         <h3 className="font-semibold">{title}</h3>
 
         <button
+          type="button"
           onClick={() => setOpen(true)}
           className="px-3 py-1 bg-blue-600 text-white rounded-md text-sm"
         >
@@ -49,6 +50,7 @@ const Step4RoleBox = ({ title }: Props) => {
             </span>
 
             <button
+              type="button"
               onClick={() =>
                 setItems(items.filter((_, i) => i !== idx))
               }

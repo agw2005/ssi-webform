@@ -1,5 +1,5 @@
 import items from "../../../dummies/ItemPR.json";
-import { useForex } from "../../../hooks/useForex";
+import { useForex } from "../../../hooks/useForex.tsx";
 
 const Step3Summary = () => {
   const forex = useForex();

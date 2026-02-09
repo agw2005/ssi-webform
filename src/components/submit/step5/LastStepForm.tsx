@@ -1,5 +1,5 @@
-import Step5Header from "./Step5Header";
-import FileUploader from "./Step5FileUploader";
+import Step5Header from "./Step5Header.tsx";
+import FileUploader from "./Step5FileUploader.tsx";
 
 interface Props {
   onBack: () => void;

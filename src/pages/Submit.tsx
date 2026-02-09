@@ -1,22 +1,22 @@
 import { useRef, useState } from "react";
-import Primitive from "../components/Primitive";
-import Step1Header from "../components/submit/step1/Step1Header";
-import Step1Attention from "../components/submit/step1/Step1Attention";
-import Step1Form from "../components/submit/step1/Step1Form";
+import Primitive from "../components/Primitive.tsx";
+import Step1Header from "../components/submit/step1/Step1Header.tsx";
+import Step1Attention from "../components/submit/step1/Step1Attention.tsx";
+import Step1Form from "../components/submit/step1/Step1Form.tsx";
 
-import Step2Header from "../components/submit/step2/Step2Header";
-import Step2Attention from "../components/submit/step2/Step2Attention";
-import Step2Form from "../components/submit/step2/Step2Form";
+import Step2Header from "../components/submit/step2/Step2Header.tsx";
+import Step2Attention from "../components/submit/step2/Step2Attention.tsx";
+import Step2Form from "../components/submit/step2/Step2Form.tsx";
 
-import Step3Header from "../components/submit/step3/Step3Header";
-import Step3Attention from "../components/submit/step3/Step3Attention";
+import Step3Header from "../components/submit/step3/Step3Header.tsx";
+import Step3Attention from "../components/submit/step3/Step3Attention.tsx";
 
-import { generateFormNumber } from "../components/Date";
-import Step3Form from "../components/submit/step3/Step3Form";
+import { generateFormNumber } from "../components/Date.tsx";
+import Step3Form from "../components/submit/step3/Step3Form.tsx";
 
-import Step4Form from "../components/submit/step4/Step4Form";
+import Step4Form from "../components/submit/step4/Step4Form.tsx";
 
-import LastStepForm from "../components/submit/step5/LastStepForm";
+import LastStepForm from "../components/submit/step5/LastStepForm.tsx";
 
 const Submit = () => {
   const [formNumber] = useState(() => generateFormNumber());

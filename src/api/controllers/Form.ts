@@ -1,5 +1,5 @@
 import mysql from "mysql2/promise";
-import type { FormTable } from "../models/Form";
+import type { FormTable } from "../models/Form.d.ts";
 
 export const basicGet = async (
   pool: mysql.Pool,

@@ -1,5 +1,5 @@
 import mysql from "mysql2/promise";
-import type { RateDollarTempTable } from "../models/RateDollarTemp";
+import type { RateDollarTempTable } from "../models/RateDollarTemp.d.ts";
 
 export const basicGet = async (
   pool: mysql.Pool,

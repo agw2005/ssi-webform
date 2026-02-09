@@ -1,5 +1,5 @@
 import mysql from "mysql2/promise";
-import type { NatureTable } from "../models/Nature";
+import type { NatureTable } from "../models/Nature.d.ts";
 
 export const basicGet = async (
   pool: mysql.Pool,

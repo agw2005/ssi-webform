@@ -1,5 +1,5 @@
 import mysql from "mysql2/promise";
-import type { SectionTable } from "../models/Section";
+import type { SectionTable } from "../models/Section.d.ts";
 
 export const basicGet = async (
   pool: mysql.Pool,

@@ -1,5 +1,5 @@
 import mysql from "mysql2/promise";
-import type { TitleTable } from "../models/Title";
+import type { TitleTable } from "../models/Title.d.ts";
 
 export const basicGet = async (
   pool: mysql.Pool,

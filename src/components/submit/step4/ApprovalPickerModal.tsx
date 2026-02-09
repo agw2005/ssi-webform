@@ -85,6 +85,7 @@ const ApprovalPickerModal = ({ isOpen, onClose, onAdd, title }: Props) => {
 
         <div className="flex justify-end gap-2 mt-6">
           <button
+            type="button"
             onClick={onClose}
             className="px-4 py-2 border rounded-md"
           >
@@ -92,6 +93,7 @@ const ApprovalPickerModal = ({ isOpen, onClose, onAdd, title }: Props) => {
           </button>
 
           <button
+            type="button"
             onClick={handleAdd}
             className="px-4 py-2 bg-blue-600 text-white rounded-md"
           >

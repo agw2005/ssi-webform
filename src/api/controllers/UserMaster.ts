@@ -1,5 +1,5 @@
 import mysql from "mysql2/promise";
-import type { UserMasterTable } from "../models/UserMaster";
+import type { UserMasterTable } from "../models/UserMaster.d.ts";
 
 export const basicGet = async (
   pool: mysql.Pool,

@@ -1,6 +1,6 @@
-import Step4Header from "./Step4Header";
-import Step4Attention from "./Step4Attention";
-import Step4ApprovalSection from "./Step4ApprovalSection";
+import Step4Header from "./Step4Header.tsx";
+import Step4Attention from "./Step4Attention.tsx";
+import Step4ApprovalSection from "./Step4ApprovalSection.tsx";
 
 interface Props {
   onBack: () => void;

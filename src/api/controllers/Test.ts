@@ -1,5 +1,5 @@
 import mysql from "mysql2/promise";
-import type { TestTable } from "../models/Test";
+import type { TestTable } from "../models/Test.d.ts";
 
 export const testConnection = async (pool: mysql.Pool) => {
   const [rows, _] = await pool.query<TestTable[]>("SELECT * FROM test");
