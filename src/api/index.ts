@@ -15,6 +15,7 @@ import { basicGet as RateDollarTempGet } from "./controllers/RateDollarTemp";
 import { basicGet as SectionGet } from "./controllers/Section";
 import { basicGet as TitleGet } from "./controllers/Title";
 import { basicGet as TraceGet } from "./controllers/Trace";
+import { basicGet as TraceDGet } from "./controllers/TraceD";
 
 dotenv.config();
 
@@ -106,6 +107,12 @@ expressServer.get("/title/:page", async (req, res) => {
 expressServer.get("/trace/:page", async (req, res) => {
   const page = Number(req.params.page);
   const [rows, __] = await TraceGet(pool, page);
+  res.status(200).send(rows);
+});
+
+expressServer.get("/traced/:page", async (req, res) => {
+  const page = Number(req.params.page);
+  const [rows, __] = await TraceDGet(pool, page);
   res.status(200).send(rows);
 });
 
