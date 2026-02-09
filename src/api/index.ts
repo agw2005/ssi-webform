@@ -1,11 +1,12 @@
 import express from "express";
 import mysql from "mysql2/promise";
 import dotenv from "dotenv";
+import type { TestTable } from "./models/Test";
 
 dotenv.config();
 
-const express_server = express().use(express.json());
-const connection = await mysql.createConnection({
+const expressServer = express().use(express.json());
+const pool = mysql.createPool({
   host: process.env.DB_HOST,
   port: Number(process.env.DB_PORT),
   user: process.env.DB_USER,
@@ -14,20 +15,15 @@ const connection = await mysql.createConnection({
 });
 
 const testConnection = async () => {
-  try {
-    const [results, metadata] = await connection.query("SELECT * FROM test");
-    console.log(results);
-    console.log(metadata);
-  } catch (err) {
-    console.log(err);
-  }
+  const [rows, _] = await pool.query<TestTable[]>("SELECT * FROM test");
+  console.log(rows[0].first_word + " " + rows[0].second_word);
 };
 
-express_server.get("/", (_, res) => {
-  res.send("Hello World");
+expressServer.get("/", async (_, res) => {
+  res.status(200).send("Healthy");
 });
 
-express_server.listen(process.env.SERVER_PORT, () => {
+expressServer.listen(process.env.SERVER_PORT, () => {
   console.log(
     `Server is running on http://localhost:${process.env.SERVER_PORT}`,
   );
