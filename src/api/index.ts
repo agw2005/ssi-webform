@@ -2,6 +2,7 @@ import express from "express";
 import mysql from "mysql2/promise";
 import dotenv from "dotenv";
 import { testConnection } from "./controllers/Test";
+import { getAll } from "./controllers/Budget";
 
 dotenv.config();
 
@@ -16,6 +17,12 @@ const pool = mysql.createPool({
 
 expressServer.get("/", async (_, res) => {
   res.status(200).send("Healthy");
+});
+
+expressServer.get("/budget/:page", async (req, res) => {
+  const page = Number(req.params.page);
+  const [rows, __] = await getAll(pool, page);
+  res.status(200).send(rows);
 });
 
 expressServer.listen(process.env.SERVER_PORT, () => {
