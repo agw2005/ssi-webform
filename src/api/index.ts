@@ -18,6 +18,7 @@ import { basicGet as TraceGet } from "./controllers/Trace";
 import { basicGet as TraceDGet } from "./controllers/TraceD";
 import { basicGet as TypeGet } from "./controllers/Type";
 import { basicGet as UploadFileGet } from "./controllers/UploadFile";
+import { basicGet as UserMasterGet } from "./controllers/UserMaster";
 
 dotenv.config();
 
@@ -127,6 +128,12 @@ expressServer.get("/type/:page", async (req, res) => {
 expressServer.get("/uploadfile/:page", async (req, res) => {
   const page = Number(req.params.page);
   const [rows, __] = await UploadFileGet(pool, page);
+  res.status(200).send(rows);
+});
+
+expressServer.get("/usermaster/:page", async (req, res) => {
+  const page = Number(req.params.page);
+  const [rows, __] = await UserMasterGet(pool, page);
   res.status(200).send(rows);
 });
 
