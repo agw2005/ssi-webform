@@ -1,19 +1,4 @@
-import { useEffect, useState } from "react";
-
-interface ForexRates {
-  IDR: number;
-  JPY: number;
-  SGD: number;
-}
-
-interface ForexAPIRespnse {
-  amount: number;
-  base: string;
-  date: string;
-  rates: ForexRates;
-}
-const FOREX_API_URL =
-  "https://api.frankfurter.dev/v1/latest?symbols=IDR,JPY,SGD&base=USD";
+import useForex from "../hooks/useForex";
 
 const FOREX_RATES_STRING_FORMAT = {
   minimumFractionDigits: 2,
@@ -21,22 +6,7 @@ const FOREX_RATES_STRING_FORMAT = {
 };
 
 const ForexInformation = () => {
-  const [forexInformation, setForexInformation] =
-    useState<ForexAPIRespnse | null>(null);
-
-  async function fetchForexInformation() {
-    const response = await fetch(FOREX_API_URL);
-    const data: ForexAPIRespnse = await response.json();
-    setForexInformation(data);
-  }
-
-  useEffect(() => {
-    fetchForexInformation();
-  }, []);
-
-  //   useEffect(() => {
-  //     console.log(forexInformation);
-  //   }, [forexInformation]);
+  const forexInformation = useForex();
 
   return (
     <>
