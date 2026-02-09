@@ -1,13 +1,16 @@
 import express from "express";
 import mysql from "mysql2/promise";
+import dotenv from "dotenv";
 
-const server = express();
+dotenv.config();
+
+const express_server = express().use(express.json());
 const connection = await mysql.createConnection({
-  host: "localhost",
-  port: 3333,
-  user: "root",
-  password: "u101",
-  database: "dev",
+  host: process.env.DB_HOST,
+  port: Number(process.env.DB_PORT),
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
 });
 
 const testConnection = async () => {
@@ -20,11 +23,13 @@ const testConnection = async () => {
   }
 };
 
-server.get("/", (_, res) => {
+express_server.get("/", (_, res) => {
   res.send("Hello World");
 });
 
-server.listen(3067, () => {
-  console.log("Server is running on http://localhost:3067");
+express_server.listen(process.env.SERVER_PORT, () => {
+  console.log(
+    `Server is running on http://localhost:${process.env.SERVER_PORT}`,
+  );
   testConnection();
 });
