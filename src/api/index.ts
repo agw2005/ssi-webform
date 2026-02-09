@@ -8,6 +8,7 @@ import { basicGet as FlowGet } from "./controllers/Flow";
 import { basicGet as FormGet } from "./controllers/Form";
 import { basicGet as FrmPRDGet } from "./controllers/FrmPRD";
 import { basicGet as FrmPRHGet } from "./controllers/FrmPRH";
+import { basicGet as FrmPRNoPRGet } from "./controllers/FrmPRNoPR";
 
 dotenv.config();
 
@@ -57,6 +58,12 @@ expressServer.get("/frmprd/:page", async (req, res) => {
 expressServer.get("/frmprh/:page", async (req, res) => {
   const page = Number(req.params.page);
   const [rows, __] = await FrmPRHGet(pool, page);
+  res.status(200).send(rows);
+});
+
+expressServer.get("/frmprnopr/:page", async (req, res) => {
+  const page = Number(req.params.page);
+  const [rows, __] = await FrmPRNoPRGet(pool, page);
   res.status(200).send(rows);
 });
 
