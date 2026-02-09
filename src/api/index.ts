@@ -5,6 +5,7 @@ import { testConnection } from "./controllers/Test";
 import { basicGet as BudgetGet } from "./controllers/Budget";
 import { basicGet as FileResourceGet } from "./controllers/FileResource";
 import { basicGet as FlowGet } from "./controllers/Flow";
+import { basicGet as FormGet } from "./controllers/Form";
 
 dotenv.config();
 
@@ -36,6 +37,12 @@ expressServer.get("/fileresource/:page", async (req, res) => {
 expressServer.get("/flow/:page", async (req, res) => {
   const page = Number(req.params.page);
   const [rows, __] = await FlowGet(pool, page);
+  res.status(200).send(rows);
+});
+
+expressServer.get("/form/:page", async (req, res) => {
+  const page = Number(req.params.page);
+  const [rows, __] = await FormGet(pool, page);
   res.status(200).send(rows);
 });
 
