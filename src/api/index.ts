@@ -2,7 +2,8 @@ import express from "express";
 import mysql from "mysql2/promise";
 import dotenv from "dotenv";
 import { testConnection } from "./controllers/Test";
-import { getAll } from "./controllers/Budget";
+import { getAll as BudgetGet } from "./controllers/Budget";
+import { getAll as FileResourceGet } from "./controllers/FileResource";
 
 dotenv.config();
 
@@ -21,7 +22,13 @@ expressServer.get("/", async (_, res) => {
 
 expressServer.get("/budget/:page", async (req, res) => {
   const page = Number(req.params.page);
-  const [rows, __] = await getAll(pool, page);
+  const [rows, __] = await BudgetGet(pool, page);
+  res.status(200).send(rows);
+});
+
+expressServer.get("/fileresource/:page", async (req, res) => {
+  const page = Number(req.params.page);
+  const [rows, __] = await FileResourceGet(pool, page);
   res.status(200).send(rows);
 });
 
