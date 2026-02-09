@@ -1,7 +1,7 @@
 import mysql from "mysql2/promise";
 import type { FileResourceTable } from "../models/FileResource";
 
-export const getAll = async (
+export const basicGet = async (
   pool: mysql.Pool,
   page: number,
   pagination: number = 50,

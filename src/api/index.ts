@@ -2,9 +2,9 @@ import express from "express";
 import mysql from "mysql2/promise";
 import dotenv from "dotenv";
 import { testConnection } from "./controllers/Test";
-import { getAll as BudgetGet } from "./controllers/Budget";
-import { getAll as FileResourceGet } from "./controllers/FileResource";
-import { getAll as FlowGet } from "./controllers/Flow";
+import { basicGet as BudgetGet } from "./controllers/Budget";
+import { basicGet as FileResourceGet } from "./controllers/FileResource";
+import { basicGet as FlowGet } from "./controllers/Flow";
 
 dotenv.config();
 
