@@ -12,6 +12,7 @@ import { basicGet as FrmPRNoPRGet } from "./controllers/FrmPRNoPR";
 import { basicGet as NatureGet } from "./controllers/Nature";
 import { basicGet as RateDollarGet } from "./controllers/RateDollar";
 import { basicGet as RateDollarTempGet } from "./controllers/RateDollarTemp";
+import { basicGet as SectionGet } from "./controllers/Section";
 
 dotenv.config();
 
@@ -85,6 +86,12 @@ expressServer.get("/ratedollar/:page", async (req, res) => {
 expressServer.get("/ratedollartemp/:page", async (req, res) => {
   const page = Number(req.params.page);
   const [rows, __] = await RateDollarTempGet(pool, page);
+  res.status(200).send(rows);
+});
+
+expressServer.get("/section/:page", async (req, res) => {
+  const page = Number(req.params.page);
+  const [rows, __] = await SectionGet(pool, page);
   res.status(200).send(rows);
 });
 
