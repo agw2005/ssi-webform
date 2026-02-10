@@ -1,6 +1,5 @@
-import { useRef, useState } from "react";
+import { useState } from "react";
 import Primitive from "../components/Primitive.tsx";
-import Step1Form from "../components/submit/step1/Step1Form.tsx";
 
 import Step2Header from "../components/submit/step2/Step2Header.tsx";
 import Step2Attention from "../components/submit/step2/Step2Attention.tsx";
@@ -100,20 +99,6 @@ const OPTIONS = ["EXIM", "FCS", "GA", "MC", "MIS"];
 
 const Submit = () => {
   const [formNumber] = useState(() => generateFormNumber());
-
-  // refs untuk scroll
-  const step1Ref = useRef<HTMLDivElement>(null);
-  const step2Ref = useRef<HTMLDivElement>(null);
-  const step3Ref = useRef<HTMLDivElement>(null);
-  const step4Ref = useRef<HTMLDivElement>(null);
-  const step5Ref = useRef<HTMLDivElement>(null);
-
-  const scrollTo = (ref: React.RefObject<HTMLDivElement | null>) => {
-    ref.current?.scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-    });
-  };
 
   const [deptCode, setDeptCode] = useState<number | undefined>(undefined);
   const [deptLabel, setDeptLabel] = useState<string | undefined>(undefined);
@@ -273,49 +258,38 @@ const Submit = () => {
         </div>
       </div>
 
-      {/* STEP 1 */}
-      <div ref={step1Ref} className="bg-white rounded-xl p-8 shadow-sm">
-        <h1 className="text-xl font-bold mb-2">
-          Fill Your Data <span className="text-sm font-normal">Step 1</span>
-        </h1>
-        <div className="bg-gray-200 text-gray-700 p-3 mb-6 text-sm">
-          <b>ATTENTION</b> You must fill your data correctly
-        </div>
-        <Step1Form onNext={() => scrollTo(step2Ref)} />
-      </div>
-
       {/* STEP 2 */}
-      <div ref={step2Ref} className="bg-white rounded-xl p-8 shadow-sm">
+      <div className="bg-white rounded-xl p-8 shadow-sm">
         <Step2Header />
         <Step2Attention />
         <Step2Form
           formNumber={formNumber}
-          onNext={() => scrollTo(step3Ref)}
-          onBack={() => scrollTo(step1Ref)}
+          onNext={() => scrollTo()}
+          onBack={() => scrollTo()}
         />
       </div>
 
       {/* STEP 3 */}
-      <div ref={step3Ref} className="bg-white rounded-xl p-8 shadow-sm">
+      <div className="bg-white rounded-xl p-8 shadow-sm">
         <Step3Header />
         <Step3Attention />
         <Step3Form
-          onNext={() => scrollTo(step4Ref)}
-          onBack={() => scrollTo(step2Ref)}
+          onNext={() => scrollTo()}
+          onBack={() => scrollTo()}
         />
       </div>
 
       {/* STEP 4 */}
-      <div ref={step4Ref} className="bg-white rounded-xl p-8 shadow-sm mt-8">
+      <div className="bg-white rounded-xl p-8 shadow-sm mt-8">
         <Step4Form
-          onBack={() => scrollTo(step3Ref)}
-          onNext={() => scrollTo(step5Ref)}
+          onBack={() => scrollTo()}
+          onNext={() => scrollTo()}
         />
       </div>
 
       {/* Last Step */}
-      <div ref={step5Ref} className="bg-white rounded-xl p-8 shadow-sm mt-8">
-        <LastStepForm onBack={() => scrollTo(step4Ref)} />
+      <div className="bg-white rounded-xl p-8 shadow-sm mt-8">
+        <LastStepForm onBack={() => scrollTo()} />
       </div>
     </Primitive>
   );
