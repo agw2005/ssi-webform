@@ -620,6 +620,175 @@ const Submit = () => {
         </div>
       </div>
 
+      <div className="rounded-2xl bg-green-100 p-8 flex flex-col gap-4">
+        <h1 className="text-3xl font-bold text-green-600">Step 4</h1>
+        <div className="h-8 lg:h-9 xl:h-10 | flex">
+          <div className="text-xs lg:text-sm | rounded-xl h-full justify-self-center border flex items-center px-2 border-r-0 border-green-900 bg-green-900 text-white select-none">
+            Special Releaser will available if you have "Red Light"
+          </div>
+        </div>
+        <div className="h-8 lg:h-9 xl:h-10 | flex">
+          <div className="text-xs lg:text-sm | rounded-xl h-full justify-self-center border flex items-center px-2 border-r-0 border-green-900 bg-green-900 text-white select-none">
+            Check again your approver before you submit your PR Form
+          </div>
+        </div>
+        <div className="flex flex-col">
+          <div className="h-8 lg:h-9 xl:h-10 | flex">
+            <div className="text-xs lg:text-sm xl:text-base | font-bold rounded-tl-xl h-full justify-self-center border flex items-center px-2 border-r-0 border-green-600 bg-green-600 text-white select-none">
+              Approver*
+            </div>
+            <select
+              name="approver-section"
+              id="approver-section"
+              className="text-xs lg:text-sm xl:text-base | max-w-32 lg:max-w-40 xl:max-w-48 | h-full px-4 border border-green-600 text-green-600 bg-white/50 outline-none"
+            >
+              <option value="" disabled selected>
+                Select Section
+              </option>
+              {SECTIONS.map((section, index) => {
+                return (
+                  <option key={index} value={section}>
+                    {section}
+                  </option>
+                );
+              })}
+            </select>
+            <select
+              name="approver-name"
+              id="approver-name"
+              className="text-xs lg:text-sm xl:text-base | max-w-32 lg:max-w-40 xl:max-w-48 | rounded-tr-xl h-full px-4 border border-green-600 text-green-600 bg-white/50 outline-none"
+            >
+              <option value="" disabled selected>
+                Select Approver
+              </option>
+              {SECTIONS.map((section, index) => {
+                return (
+                  <option key={index} value={section}>
+                    {section}
+                  </option>
+                );
+              })}
+            </select>
+          </div>
+          <div className="text-xs lg:text-sm xl:text-base | flex flex-wrap gap-2 min-h-10 min-w-xl max-w-max font-bold rounded-b-xl rounded-tr-xl justify-self-center border border-green-600 text-white select-none p-2">
+            <div className="flex">
+              <div className="bg-green-900 rounded-l-xl p-2 text-sm">
+                Danial Al Ghazali Walangadi (203)
+              </div>
+              <div className="bg-red-900 hover:bg-red-900/85 active:bg-red-900/70 | rounded-r-xl p-2 text-white text-sm">
+                X
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="flex flex-col">
+          <div className="h-8 lg:h-9 xl:h-10 | flex">
+            <div className="text-xs lg:text-sm xl:text-base | font-bold rounded-tl-xl h-full justify-self-center border flex items-center px-2 border-r-0 border-green-600 bg-green-600 text-white select-none">
+              Releaser*
+            </div>
+            <select
+              name="releaser-section"
+              id="releaser-section"
+              className="text-xs lg:text-sm xl:text-base | max-w-32 lg:max-w-40 xl:max-w-48 | h-full px-4 border border-green-600 text-green-600 bg-white/50 outline-none"
+            >
+              <option value="" disabled selected>
+                Select Section
+              </option>
+              {SECTIONS.map((section, index) => {
+                return (
+                  <option key={index} value={section}>
+                    {section}
+                  </option>
+                );
+              })}
+            </select>
+            <select
+              name="releaser-name"
+              id="releaser-name"
+              className="text-xs lg:text-sm xl:text-base | max-w-32 lg:max-w-40 xl:max-w-48 | rounded-tr-xl h-full px-4 border border-green-600 text-green-600 bg-white/50 outline-none"
+            >
+              <option value="" disabled selected>
+                Select Releaser
+              </option>
+              {SECTIONS.map((section, index) => {
+                return (
+                  <option key={index} value={section}>
+                    {section}
+                  </option>
+                );
+              })}
+            </select>
+          </div>
+          <div className="text-xs lg:text-sm xl:text-base | flex flex-wrap gap-2 min-h-10 min-w-xl max-w-max font-bold rounded-b-xl rounded-tr-xl justify-self-center border border-green-600 text-white select-none p-2">
+            <div className="flex">
+              <div className="bg-green-900 rounded-l-xl p-2 text-sm">
+                Danial Al Ghazali Walangadi (203)
+              </div>
+              <div className="bg-red-900 hover:bg-red-900/85 active:bg-red-900/70 | rounded-r-xl p-2 text-white text-sm">
+                X
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="flex flex-col">
+          <div className="h-8 lg:h-9 xl:h-10 | flex">
+            <div className="text-xs lg:text-sm xl:text-base | font-bold rounded-tl-xl h-full justify-self-center border flex items-center px-2 border-r-0 border-green-600 bg-green-600 text-white select-none">
+              Administrator*
+            </div>
+            <select
+              name="administrator-section"
+              id="administrator-section"
+              className="text-xs lg:text-sm xl:text-base | max-w-32 lg:max-w-40 xl:max-w-48 | h-full px-4 border border-green-600 text-green-600 bg-white/50 outline-none"
+            >
+              <option value="" disabled selected>
+                Select Section
+              </option>
+              {SECTIONS.map((section, index) => {
+                return (
+                  <option key={index} value={section}>
+                    {section}
+                  </option>
+                );
+              })}
+            </select>
+            <select
+              name="administrator-name"
+              id="administrator-name"
+              className="text-xs lg:text-sm xl:text-base | max-w-40 lg:max-w-48 xl:max-w-54 | rounded-tr-xl h-full px-4 border border-green-600 text-green-600 bg-white/50 outline-none"
+            >
+              <option value="" disabled selected>
+                Select Administrator
+              </option>
+              {SECTIONS.map((section, index) => {
+                return (
+                  <option key={index} value={section}>
+                    {section}
+                  </option>
+                );
+              })}
+            </select>
+          </div>
+          <div className="text-xs lg:text-sm xl:text-base | flex flex-wrap gap-2 min-h-10 min-w-xl max-w-max font-bold rounded-b-xl rounded-tr-xl justify-self-center border border-green-600 text-white select-none p-2">
+            <div className="flex">
+              <div className="bg-green-900 rounded-l-xl p-2 text-sm">
+                Danial Al Ghazali Walangadi (203)
+              </div>
+              <div className="bg-red-900 hover:bg-red-900/85 active:bg-red-900/70 | rounded-r-xl p-2 text-white text-sm">
+                X
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="flex gap-2">
+          <div className="bg-green-800 hover:bg-green-800/70 active:bg-green-800/85 | px-4 py-2 border rounded-2xl border-green-800 font-bold tracking-wide text-white select-none">
+            Clear
+          </div>
+          <div className="bg-gray-500 hover:bg-gray-500/70 active:bg-gray-500/85 | px-4 py-2 border rounded-2xl border-gray-500 font-bold tracking-wide text-white select-none">
+            Next
+          </div>
+        </div>
+      </div>
+
       {/* STEP 4 */}
       <div className="bg-white rounded-xl p-8 shadow-sm mt-8">
         <Step4Form onBack={() => scrollTo()} onNext={() => scrollTo()} />
