@@ -1,19 +1,25 @@
 import { useState } from "react";
 import Primitive from "../components/Primitive.tsx";
-
-import Step2Header from "../components/submit/step2/Step2Header.tsx";
-import Step2Attention from "../components/submit/step2/Step2Attention.tsx";
-import Step2Form from "../components/submit/step2/Step2Form.tsx";
-
-import Step3Header from "../components/submit/step3/Step3Header.tsx";
-import Step3Attention from "../components/submit/step3/Step3Attention.tsx";
-
-import { generateFormNumber } from "../components/Date.tsx";
-import Step3Form from "../components/submit/step3/Step3Form.tsx";
-
 import Step4Form from "../components/submit/step4/Step4Form.tsx";
-
 import LastStepForm from "../components/submit/step5/LastStepForm.tsx";
+import Placeholders from "../dummies/NewSubmitFormTable.json";
+
+const COLUMNS = [
+  "Cost Center",
+  "Nature",
+  "Description",
+  "Qty",
+  "Measure",
+  "Unit Price",
+  "Currency",
+  "Rate",
+  "Est. Delivery",
+  "Vendor",
+  "Reason",
+  "ID Budget",
+];
+
+const CURRENCY = ["IDR", "JPY", "SGD", "USD"];
 
 const DEPARTMENTS = [
   { code: "101", label: "General Affair / Personal" },
@@ -98,10 +104,14 @@ const SECTIONS = [
 const OPTIONS = ["EXIM", "FCS", "GA", "MC", "MIS"];
 
 const Submit = () => {
-  const [formNumber] = useState(() => generateFormNumber());
-
   const [deptCode, setDeptCode] = useState<number | undefined>(undefined);
   const [deptLabel, setDeptLabel] = useState<string | undefined>(undefined);
+  const [costCenterCode, setCostCenterCode] = useState<number | undefined>(
+    undefined,
+  );
+  const [costCenterLabel, setCostCenterLabel] = useState<string | undefined>(
+    undefined,
+  );
 
   return (
     <Primitive>
@@ -315,22 +325,299 @@ const Submit = () => {
         </div>
       </div>
 
-      {/* STEP 2 */}
-      <div className="bg-white rounded-xl p-8 shadow-sm">
-        <Step2Header />
-        <Step2Attention />
-        <Step2Form
-          formNumber={formNumber}
-          onNext={() => scrollTo()}
-          onBack={() => scrollTo()}
-        />
-      </div>
-
-      {/* STEP 3 */}
-      <div className="bg-white rounded-xl p-8 shadow-sm">
-        <Step3Header />
-        <Step3Attention />
-        <Step3Form onNext={() => scrollTo()} onBack={() => scrollTo()} />
+      <div className="rounded-2xl bg-yellow-100 p-8 flex flex-col gap-4">
+        <h1 className="text-3xl font-bold text-yellow-600">Step 3</h1>
+        <div className="h-8 lg:h-9 xl:h-10 | flex">
+          <div className="text-xs lg:text-sm | rounded-xl h-full justify-self-center border flex items-center px-2 border-r-0 border-yellow-900 bg-yellow-900 text-white select-none">
+            Do not let your budget get a red light
+          </div>
+        </div>
+        <div className="flex gap-3 h-168">
+          <div className="flex flex-col gap-2">
+            <div className="h-8 lg:h-9 xl:h-10 | flex">
+              <div className="text-xs lg:text-sm xl:text-base | font-bold rounded-l-xl h-full justify-self-center border flex items-center px-2 border-r-0 border-yellow-600 bg-yellow-600 text-white select-none">
+                Cost Center*
+              </div>
+              <select
+                name="cost-center"
+                id="cost-center"
+                className={`text-xs lg:text-sm xl:text-base | flex-1 px-4 border rounded-r-xl border-yellow-600 text-yellow-600 bg-white/50 outline-none`}
+                onChange={(e) => {
+                  const newCostCenterCode = e.target.value;
+                  setCostCenterCode(Number(newCostCenterCode));
+                  setCostCenterLabel(
+                    DEPARTMENTS.find(
+                      (depts) => depts.code === newCostCenterCode,
+                    )?.label,
+                  );
+                }}
+              >
+                <option value="" disabled selected>
+                  Select Cost Center
+                </option>
+                {DEPARTMENTS.map((dept, index) => {
+                  return (
+                    <option key={index} value={dept.code}>
+                      {dept.code}
+                    </option>
+                  );
+                })}
+              </select>
+            </div>
+            {costCenterCode === undefined ? (
+              ""
+            ) : (
+              <div className="h-8 lg:h-9 xl:h-10 | flex">
+                <div className="text-xs lg:text-sm xl:text-base | flex-1 font-bold rounded-xl h-full justify-self-center border flex items-center px-2 border-r-0 border-yellow-900 bg-yellow-900 text-white select-none">
+                  {costCenterLabel}
+                </div>
+              </div>
+            )}
+            <div className="h-8 lg:h-9 xl:h-10 | flex">
+              <div className="text-xs lg:text-sm xl:text-base | font-bold rounded-l-xl h-full justify-self-center border flex items-center px-2 border-r-0 border-yellow-600 bg-yellow-600 text-white select-none">
+                Budget/Nature
+              </div>
+              <select
+                name="budget/nature"
+                id="budget/nature"
+                className={`text-xs lg:text-sm xl:text-base | flex-1 px-4 border rounded-r-xl border-yellow-600 text-yellow-600 bg-white/50 outline-none`}
+              >
+                <option value="" disabled selected>
+                  Select Budget/Nature
+                </option>
+              </select>
+            </div>
+            <div className="h-8 lg:h-9 xl:h-10 | flex">
+              <div className="text-xs lg:text-sm xl:text-base | font-bold rounded-l-xl h-full justify-self-center border flex items-center px-2 border-r-0 border-yellow-600 bg-yellow-600 text-white select-none">
+                Periode
+              </div>
+              <input
+                type="text"
+                name="periode"
+                id="periode"
+                className="text-xs lg:text-sm xl:text-base | flex-1 px-4 rounded-r-xl border border-yellow-600 text-yellow-600 bg-white/50 outline-none"
+              />
+            </div>
+            <div className="h-8 lg:h-9 xl:h-10 | flex">
+              <div className="text-xs lg:text-sm xl:text-base | font-bold rounded-l-xl h-full justify-self-center border flex items-center px-2 border-r-0 border-yellow-600 bg-yellow-600 text-white select-none">
+                Balance
+              </div>
+              <input
+                type="text"
+                name="balance"
+                id="balance"
+                className="text-xs lg:text-sm xl:text-base | flex-1 px-4 rounded-r-xl border border-yellow-600 text-yellow-600 bg-white/50 outline-none"
+              />
+            </div>
+            <div className="h-8 lg:h-9 xl:h-10 | flex">
+              <div className="text-xs lg:text-sm xl:text-base | font-bold rounded-l-xl h-full justify-self-center border flex items-center px-2 border-r-0 border-yellow-600 bg-yellow-600 text-white select-none">
+                Description
+              </div>
+              <input
+                type="text"
+                name="description"
+                id="description"
+                className="text-xs lg:text-sm xl:text-base | flex-1 px-4 rounded-r-xl border border-yellow-600 text-yellow-600 bg-white/50 outline-none"
+              />
+            </div>
+            <div className="h-8 lg:h-9 xl:h-10 | flex">
+              <div className="text-xs lg:text-sm xl:text-base | font-bold rounded-l-xl h-full justify-self-center border flex items-center px-2 border-r-0 border-yellow-600 bg-yellow-600 text-white select-none">
+                Quantity
+              </div>
+              <input
+                type="number"
+                name="quantity"
+                id="quantity"
+                className="text-xs lg:text-sm xl:text-base | flex-1 px-4 rounded-r-xl border border-yellow-600 text-yellow-600 bg-white/50 outline-none"
+              />
+            </div>
+            <div className="h-8 lg:h-9 xl:h-10 | flex">
+              <div className="text-xs lg:text-sm xl:text-base | font-bold rounded-l-xl h-full justify-self-center border flex items-center px-2 border-r-0 border-yellow-600 bg-yellow-600 text-white select-none">
+                Unit Price
+              </div>
+              <input
+                type="number"
+                name="unit-price"
+                id="unit-price"
+                className="text-xs lg:text-sm xl:text-base | flex-1 px-4 rounded-r-xl border border-yellow-600 text-yellow-600 bg-white/50 outline-none"
+              />
+            </div>
+            <div className="h-8 lg:h-9 xl:h-10 | flex">
+              <div className="text-xs lg:text-sm | flex-1 rounded-xl h-full justify-self-center border flex items-center px-2 border-r-0 border-yellow-900 bg-yellow-900 text-white select-none">
+                Jangan gunakan koma. Gunakan titik untuk desimal.
+              </div>
+            </div>
+            <div className="h-8 lg:h-9 xl:h-10 | flex">
+              <div className="text-xs lg:text-sm xl:text-base | font-bold rounded-l-xl h-full justify-self-center border flex items-center px-2 border-r-0 border-yellow-600 bg-yellow-600 text-white select-none">
+                Measure
+              </div>
+              <input
+                type="text"
+                name="measure"
+                id="measure"
+                className="text-xs lg:text-sm xl:text-base | flex-1 px-4 rounded-r-xl border border-yellow-600 text-yellow-600 bg-white/50 outline-none"
+              />
+            </div>
+            <div className="h-8 lg:h-9 xl:h-10 | flex">
+              <div className="text-xs lg:text-sm xl:text-base | font-bold rounded-l-xl h-full justify-self-center border flex items-center px-2 border-r-0 border-yellow-600 bg-yellow-600 text-white select-none">
+                Currency
+              </div>
+              <select
+                name="currency"
+                id="currency"
+                className={`text-xs lg:text-sm xl:text-base | flex-1 px-4 border rounded-r-xl border-yellow-600 text-yellow-600 bg-white/50 outline-none`}
+              >
+                <option value="" disabled selected>
+                  Select Currency
+                </option>
+                {CURRENCY.map((currency, index) => {
+                  return (
+                    <option key={index} value={currency}>
+                      {currency}
+                    </option>
+                  );
+                })}
+              </select>
+            </div>
+            <div className="h-8 lg:h-9 xl:h-10 | flex">
+              <div className="text-xs lg:text-sm xl:text-base | font-bold rounded-l-xl h-full justify-self-center border flex items-center px-2 border-r-0 border-yellow-600 bg-yellow-600 text-white select-none">
+                Vendor
+              </div>
+              <input
+                type="text"
+                name="vendor"
+                id="vendor"
+                className="text-xs lg:text-sm xl:text-base | flex-1 px-4 rounded-r-xl border border-yellow-600 text-yellow-600 bg-white/50 outline-none"
+              />
+            </div>
+            <div className="h-8 lg:h-9 xl:h-10 | flex">
+              <div className="text-xs lg:text-sm xl:text-base | font-bold rounded-l-xl h-full justify-self-center border flex items-center px-2 border-r-0 border-yellow-600 bg-yellow-600 text-white select-none">
+                Reason
+              </div>
+              <input
+                type="text"
+                name="reason"
+                id="reason"
+                className="text-xs lg:text-sm xl:text-base | flex-1 px-4 rounded-r-xl border border-yellow-600 text-yellow-600 bg-white/50 outline-none"
+              />
+            </div>
+            <div className="h-8 lg:h-9 xl:h-10 | flex">
+              <div className="text-xs lg:text-sm xl:text-base | flex-1 font-bold rounded-l-xl h-full justify-self-center border flex items-center justify-center px-2 border-r-0 border-yellow-600 bg-yellow-600 text-white select-none">
+                Estimated Delivery Date
+              </div>
+              <input
+                type="date"
+                name="reason"
+                id="reason"
+                className="text-xs lg:text-sm xl:text-base | px-4 rounded-r-xl border border-yellow-600 text-yellow-600 bg-white/50 outline-none"
+              />
+            </div>
+          </div>
+          <div className="flex-3 overflow-y-auto h-full border">
+            <table className="table-auto border-collapse w-full">
+              <thead className="sticky top-0 z-1 border">
+                <tr>
+                  {COLUMNS.map((column, index) => {
+                    return (
+                      <th
+                        key={index}
+                        className="text-xs border p-2 bg-yellow-800 text-white border-black whitespace-nowrap text-center"
+                      >
+                        {column}
+                      </th>
+                    );
+                  })}
+                  <th className="text-xs border p-2 bg-yellow-800 text-white border-black whitespace-nowrap text-center">
+                    Action
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {Placeholders.map((placeholder, index) => {
+                  return (
+                    <>
+                      <tr key={index}>
+                        {COLUMNS.map((column, index) => {
+                          return (
+                            <td
+                              key={index}
+                              className="text-xs border p-2 whitespace-nowrap text-center"
+                            >
+                              {placeholder[column as keyof typeof placeholder]}
+                            </td>
+                          );
+                        })}
+                        <td className="bg-red-400 hover:bg-red-500 active:bg-red-600 | text-xs border p-2 whitespace-nowrap text-center select-none">
+                          Delete
+                        </td>
+                      </tr>
+                    </>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <h2 className="text-xl font-bold text-yellow-600">Budget Summary</h2>
+        <div className="">
+          <table className="border-collapse w-max">
+            <thead>
+              <tr>
+                <th className="text-xs lg:text-sm xl:text-base | border p-2 bg-yellow-800 text-white border-black whitespace-nowrap text-center">
+                  Cost Center
+                </th>
+                <th className="text-xs lg:text-sm xl:text-base | border p-2 bg-yellow-800 text-white border-black whitespace-nowrap text-center">
+                  Nature
+                </th>
+                <th className="text-xs lg:text-sm xl:text-base | border p-2 bg-yellow-800 text-white border-black whitespace-nowrap text-center">
+                  Periode
+                </th>
+                <th className="text-xs lg:text-sm xl:text-base | border p-2 bg-yellow-800 text-white border-black whitespace-nowrap text-center">
+                  Balance ($)
+                </th>
+                <th className="text-xs lg:text-sm xl:text-base | border p-2 bg-yellow-800 text-white border-black whitespace-nowrap text-center">
+                  Usage ($)
+                </th>
+                <th className="text-xs lg:text-sm xl:text-base | border p-2 bg-yellow-800 text-white border-black whitespace-nowrap text-center">
+                  Remain ($)
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td className="text-xs lg:text-sm xl:text-base | border p-2 wditespace-nowrap text-center">
+                  104
+                </td>
+                <td className="text-xs lg:text-sm xl:text-base | border p-2 wditespace-nowrap text-center">
+                  537003000
+                </td>
+                <td className="text-xs lg:text-sm xl:text-base | border p-2 wditespace-nowrap text-center">
+                  2025LH02-104-MIS
+                </td>
+                <td className="text-xs lg:text-sm xl:text-base | border p-2 wditespace-nowrap text-center">
+                  1.00
+                </td>
+                <td className="text-xs lg:text-sm xl:text-base | border p-2 wditespace-nowrap text-center">
+                  0
+                </td>
+                <td className="text-xs lg:text-sm xl:text-base | border p-2 wditespace-nowrap text-center">
+                  1.00
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div className="flex gap-2">
+          <div className="px-4 py-2 border rounded-lg bg-yellow-800 border-yellow-800 text-white font-bold select-none">
+            Total Usage ($) : 0
+          </div>
+          <div className="bg-yellow-500 hover:bg-yellow-500/70 active:bg-yellow-500/85 | px-4 py-2 border rounded-2xl border-yellow-500 font-bold tracking-wide text-white select-none">
+            Clear
+          </div>
+          <div className="bg-green-800 hover:bg-green-800/70 active:bg-green-800/85 | px-4 py-2 border rounded-2xl border-green-800 font-bold tracking-wide text-white select-none">
+            Next
+          </div>
+        </div>
       </div>
 
       {/* STEP 4 */}
