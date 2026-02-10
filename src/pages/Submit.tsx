@@ -258,6 +258,63 @@ const Submit = () => {
         </div>
       </div>
 
+      <div className="rounded-2xl bg-blue-100 p-8 flex flex-col gap-4">
+        <h1 className="text-3xl font-bold text-blue-600">Step 2</h1>
+        <div className="h-8 lg:h-9 xl:h-10 | flex">
+          <div className="text-xs lg:text-sm xl:text-base | font-bold rounded-l-xl h-full justify-self-center border flex items-center px-2 border-r-0 border-blue-600 bg-blue-600 text-white select-none">
+            No. Form
+          </div>
+          <input
+            disabled
+            type="text"
+            name="no-form"
+            id="no-form"
+            className="text-xs lg:text-sm xl:text-base | h-full px-4 rounded-r-xl border border-blue-600 text-blue-600 bg-black/10 outline-none"
+          />
+        </div>
+        <div className="h-8 lg:h-9 xl:h-10 | flex">
+          <div className="text-xs lg:text-sm xl:text-base | font-bold rounded-l-xl h-full justify-self-center border flex items-center px-2 border-r-0 border-blue-600 bg-blue-600 text-white select-none">
+            No. PR
+          </div>
+          <input
+            disabled
+            type="text"
+            name="no-pr"
+            id="no-pr"
+            className="text-xs lg:text-sm xl:text-base | h-full px-4 rounded-r-xl border border-blue-600 text-blue-600 bg-black/10 outline-none"
+          />
+        </div>
+        <div className="h-8 lg:h-9 xl:h-10 | flex">
+          <div className="text-xs lg:text-sm xl:text-base | font-bold rounded-l-xl h-full justify-self-center border flex items-center px-2 border-r-0 border-blue-600 bg-blue-600 text-white select-none">
+            Subject*
+          </div>
+          <input
+            type="text"
+            name="subject"
+            id="subject"
+            className="text-xs lg:text-sm xl:text-base | h-full px-4 rounded-r-xl border border-blue-600 text-blue-600 bg-white/50 outline-none"
+          />
+        </div>
+        <div className="flex flex-col">
+          <div className="text-xs lg:text-sm xl:text-base | h-8 lg:h-9 xl:h-10 | w-max font-bold rounded-t-xl justify-self-center border flex items-center px-2 border-r-0 border-blue-600 bg-blue-600 text-white select-none">
+            Return on Outgoing
+          </div>
+          <textarea
+            name="subject"
+            id="subject"
+            className="text-xs lg:text-sm xl:text-base | h-32 px-4 py-2 w-1/4 rounded-bl-xl rounded-br-xl rounded-tr-xl border border-blue-600 text-blue-600 bg-white/50 outline-none"
+          />
+        </div>
+        <div className="flex gap-2">
+          <div className="bg-blue-800 hover:bg-blue-800/70 active:bg-blue-800/85 | px-4 py-2 border rounded-2xl border-blue-800 font-bold tracking-wide text-white select-none">
+            Clear
+          </div>
+          <div className="bg-yellow-500 hover:bg-yellow-500/70 active:bg-yellow-500/85 | px-4 py-2 border rounded-2xl border-yellow-500 font-bold tracking-wide text-white select-none">
+            Next
+          </div>
+        </div>
+      </div>
+
       {/* STEP 2 */}
       <div className="bg-white rounded-xl p-8 shadow-sm">
         <Step2Header />
@@ -273,18 +330,12 @@ const Submit = () => {
       <div className="bg-white rounded-xl p-8 shadow-sm">
         <Step3Header />
         <Step3Attention />
-        <Step3Form
-          onNext={() => scrollTo()}
-          onBack={() => scrollTo()}
-        />
+        <Step3Form onNext={() => scrollTo()} onBack={() => scrollTo()} />
       </div>
 
       {/* STEP 4 */}
       <div className="bg-white rounded-xl p-8 shadow-sm mt-8">
-        <Step4Form
-          onBack={() => scrollTo()}
-          onNext={() => scrollTo()}
-        />
+        <Step4Form onBack={() => scrollTo()} onNext={() => scrollTo()} />
       </div>
 
       {/* Last Step */}
