@@ -1,4 +1,4 @@
-import useForex from "../hooks/useForex";
+import useForex from "../hooks/useForex.tsx";
 
 const FOREX_RATES_STRING_FORMAT = {
   minimumFractionDigits: 2,
