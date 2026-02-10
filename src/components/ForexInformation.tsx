@@ -5,8 +5,15 @@ const FOREX_RATES_STRING_FORMAT = {
   maximumFractionDigits: 2,
 };
 
+const LOADING_MESSAGE = "(Loading)";
+const ERROR_MESSAGE = "(Error)";
+
 const ForexInformation = () => {
-  const forexInformation = useForex();
+  const { forexInformation, isLoading, error } = useForex();
+
+  if (error) {
+    console.error(error);
+  }
 
   return (
     <>
@@ -17,10 +24,11 @@ const ForexInformation = () => {
           className="absolute inset-0 w-full h-full opacity-30 select-none"
         />
         <p className="text-xs lg:text-base | z-1">
-          {forexInformation?.rates.SGD.toLocaleString(
-            "en-US",
-            FOREX_RATES_STRING_FORMAT,
-          ) + " "}
+          {isLoading
+            ? LOADING_MESSAGE
+            : error
+              ? ERROR_MESSAGE
+              : `${forexInformation?.rates.SGD.toLocaleString("en-US", FOREX_RATES_STRING_FORMAT)} `}
           <strong>SGD</strong>
         </p>
       </div>
@@ -31,10 +39,11 @@ const ForexInformation = () => {
           className="absolute inset-0 w-full h-full opacity-30 select-none"
         />
         <p className="text-xs lg:text-base | z-1">
-          {forexInformation?.rates.JPY.toLocaleString(
-            "en-US",
-            FOREX_RATES_STRING_FORMAT,
-          ) + " "}
+          {isLoading
+            ? LOADING_MESSAGE
+            : error
+              ? ERROR_MESSAGE
+              : `${forexInformation?.rates.JPY.toLocaleString("en-US", FOREX_RATES_STRING_FORMAT)} `}
           <strong>JPY</strong>
         </p>
       </div>
@@ -45,10 +54,11 @@ const ForexInformation = () => {
           className="absolute inset-0 w-full h-full opacity-30 select-none"
         />
         <p className="text-xs lg:text-base | z-1">
-          {forexInformation?.rates.IDR.toLocaleString(
-            "en-US",
-            FOREX_RATES_STRING_FORMAT,
-          ) + " "}
+          {isLoading
+            ? LOADING_MESSAGE
+            : error
+              ? ERROR_MESSAGE
+              : `${forexInformation?.rates.IDR.toLocaleString("en-US", FOREX_RATES_STRING_FORMAT)} `}
           <strong>IDR</strong>
         </p>
       </div>
@@ -59,11 +69,12 @@ const ForexInformation = () => {
           className="absolute inset-0 w-full h-full opacity-30 select-none"
         />
         <p className="text-xs lg:text-base | z-1">
-          {forexInformation?.amount.toLocaleString(
-            "en-US",
-            FOREX_RATES_STRING_FORMAT,
-          ) + " "}
-          <strong>{forexInformation?.base}</strong>
+          {isLoading
+            ? LOADING_MESSAGE
+            : error
+              ? ERROR_MESSAGE
+              : `${forexInformation?.amount.toLocaleString("en-US", FOREX_RATES_STRING_FORMAT)} `}
+          <strong>USD</strong>
         </p>
       </div>
     </>
