@@ -291,23 +291,21 @@ const ThirdStep = () => {
             <tbody>
               {Placeholders.map((placeholder, index) => {
                 return (
-                  <>
-                    <tr key={index}>
-                      {COLUMNS.map((column, index) => {
-                        return (
-                          <td
-                            key={index}
-                            className="text-xs border p-2 whitespace-nowrap text-center"
-                          >
-                            {placeholder[column as keyof typeof placeholder]}
-                          </td>
-                        );
-                      })}
-                      <td className="bg-red-400 hover:bg-red-500 active:bg-red-600 | text-xs border p-2 whitespace-nowrap text-center select-none">
-                        Delete
-                      </td>
-                    </tr>
-                  </>
+                  <tr key={index}>
+                    {COLUMNS.map((column, index) => {
+                      return (
+                        <td
+                          key={index}
+                          className="text-xs border p-2 whitespace-nowrap text-center"
+                        >
+                          {placeholder[column as keyof typeof placeholder]}
+                        </td>
+                      );
+                    })}
+                    <td className="bg-red-400 hover:bg-red-500 active:bg-red-600 | text-xs border p-2 whitespace-nowrap text-center select-none">
+                      Delete
+                    </td>
+                  </tr>
                 );
               })}
             </tbody>
