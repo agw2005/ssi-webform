@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Primitive from "../components/Primitive.tsx";
 import Placeholders from "../dummies/NewSubmitFormTable.json";
+import EmployeeSectionMappings from "../dummies/Approval.json";
 
 const COLUMNS = [
   "Cost Center",
@@ -110,6 +111,24 @@ const Submit = () => {
   const [costCenterLabel, setCostCenterLabel] = useState<string | undefined>(
     undefined,
   );
+  const [approverSection, setApproverSection] = useState<string | undefined>(
+    undefined,
+  );
+  const [approverName, setApproverName] = useState<string | undefined>(
+    undefined,
+  );
+  const [releaserSection, setReleaserSection] = useState<string | undefined>(
+    undefined,
+  );
+  const [releaserName, setReleaserName] = useState<string | undefined>(
+    undefined,
+  );
+  const [administratorSection, setAdministratorSection] = useState<
+    string | undefined
+  >(undefined);
+  const [administratorName, setAdministratorName] = useState<
+    string | undefined
+  >(undefined);
 
   const checkFileSizeConstraint = (
     inputFiles: React.ChangeEvent<HTMLInputElement>,
@@ -662,14 +681,22 @@ const Submit = () => {
                   name="approver-section"
                   id="approver-section"
                   className="text-xs lg:text-sm xl:text-base | w-full h-full px-4 border border-green-600 text-green-600 bg-white/50 outline-none flex-1"
+                  onChange={(e) => {
+                    if (approverName !== undefined) {
+                      setApproverName("");
+                    }
+                    const newApproverSection = e.target.value;
+                    setApproverSection(newApproverSection);
+                  }}
+                  value={approverSection}
                 >
                   <option value="" disabled selected>
                     Select Section
                   </option>
-                  {SECTIONS.map((section, index) => {
+                  {EmployeeSectionMappings.map((approver, index) => {
                     return (
-                      <option key={index} value={section}>
-                        {section}
+                      <option key={index} value={approver.section}>
+                        {approver.section}
                       </option>
                     );
                   })}
@@ -678,14 +705,21 @@ const Submit = () => {
                   name="approver-name"
                   id="approver-name"
                   className="text-xs lg:text-sm xl:text-base | w-full rounded-tr-xl h-full px-4 border border-green-600 text-green-600 bg-white/50 outline-none flex-1"
+                  onChange={(e) => {
+                    const newApproverName = e.target.value;
+                    setApproverName(newApproverName);
+                  }}
+                  value={approverName}
                 >
                   <option value="" disabled selected>
                     Select Approver
                   </option>
-                  {SECTIONS.map((section, index) => {
+                  {EmployeeSectionMappings.find(
+                    (approver) => approver.section === approverSection,
+                  )?.members.map((member, index) => {
                     return (
-                      <option key={index} value={section}>
-                        {section}
+                      <option key={index} value={member}>
+                        {member}
                       </option>
                     );
                   })}
@@ -751,14 +785,22 @@ const Submit = () => {
                   name="releaser-section"
                   id="releaser-section"
                   className="text-xs lg:text-sm xl:text-base | w-full h-full px-4 border border-green-600 text-green-600 bg-white/50 outline-none flex-1"
+                  onChange={(e) => {
+                    if (releaserName !== undefined) {
+                      setReleaserName("");
+                    }
+                    const newReleaserSection = e.target.value;
+                    setReleaserSection(newReleaserSection);
+                  }}
+                  value={releaserSection}
                 >
                   <option value="" disabled selected>
                     Select Section
                   </option>
-                  {SECTIONS.map((section, index) => {
+                  {EmployeeSectionMappings.map((releaser, index) => {
                     return (
-                      <option key={index} value={section}>
-                        {section}
+                      <option key={index} value={releaser.section}>
+                        {releaser.section}
                       </option>
                     );
                   })}
@@ -767,14 +809,21 @@ const Submit = () => {
                   name="releaser-name"
                   id="releaser-name"
                   className="text-xs lg:text-sm xl:text-base | w-full rounded-tr-xl h-full px-4 border border-green-600 text-green-600 bg-white/50 outline-none flex-1"
+                  onChange={(e) => {
+                    const newReleaserName = e.target.value;
+                    setReleaserName(newReleaserName);
+                  }}
+                  value={releaserName}
                 >
                   <option value="" disabled selected>
                     Select Releaser
                   </option>
-                  {SECTIONS.map((section, index) => {
+                  {EmployeeSectionMappings.find(
+                    (releaser) => releaser.section === releaserSection,
+                  )?.members.map((member, index) => {
                     return (
-                      <option key={index} value={section}>
-                        {section}
+                      <option key={index} value={member}>
+                        {member}
                       </option>
                     );
                   })}
@@ -840,14 +889,22 @@ const Submit = () => {
                   name="administrator-section"
                   id="administrator-section"
                   className="text-xs lg:text-sm xl:text-base | w-full h-full px-4 border border-green-600 text-green-600 bg-white/50 outline-none flex-1"
+                  onChange={(e) => {
+                    if (administratorName !== undefined) {
+                      setAdministratorName("");
+                    }
+                    const newAdministratorSection = e.target.value;
+                    setAdministratorSection(newAdministratorSection);
+                  }}
+                  value={administratorSection}
                 >
                   <option value="" disabled selected>
                     Select Section
                   </option>
-                  {SECTIONS.map((section, index) => {
+                  {EmployeeSectionMappings.map((administrator, index) => {
                     return (
-                      <option key={index} value={section}>
-                        {section}
+                      <option key={index} value={administrator.section}>
+                        {administrator.section}
                       </option>
                     );
                   })}
@@ -856,14 +913,22 @@ const Submit = () => {
                   name="administrator-name"
                   id="administrator-name"
                   className="text-xs lg:text-sm xl:text-base | w-full rounded-tr-xl h-full px-4 border border-green-600 text-green-600 bg-white/50 outline-none flex-1"
+                  onChange={(e) => {
+                    const newAdministratorName = e.target.value;
+                    setAdministratorName(newAdministratorName);
+                  }}
+                  value={administratorName}
                 >
                   <option value="" disabled selected>
                     Select Administrator
                   </option>
-                  {SECTIONS.map((section, index) => {
+                  {EmployeeSectionMappings.find(
+                    (administrator) =>
+                      administrator.section === administratorSection,
+                  )?.members.map((member, index) => {
                     return (
-                      <option key={index} value={section}>
-                        {section}
+                      <option key={index} value={member}>
+                        {member}
                       </option>
                     );
                   })}
