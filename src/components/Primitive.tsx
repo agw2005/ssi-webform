@@ -17,7 +17,7 @@ const NAVIGATIONS = [
 const Primitive = ({ children }: PrimitiveProps) => {
   return (
     <div className="bg-yellow-600/25 min-h-screen pb-16">
-      <nav className="pl-2 lg:pl-4 xl:pl-6 2xl:pl-8 | flex justify-between gap-2 bg-black text-white sticky inset-0">
+      <nav className="pl-2 lg:pl-4 xl:pl-6 2xl:pl-8 | flex justify-between gap-2 bg-black text-white sticky inset-0 z-100">
         <div className="gap-4 lg:gap-6 xl:gap-8 2xl:gap-10 | my-1 lg:my-2 xl:my-3 2xl:my-4 | flex flex-wrap items-center text-center ">
           {NAVIGATIONS.map((navigation, index) => {
             if (navigation.name === "Webform") {
