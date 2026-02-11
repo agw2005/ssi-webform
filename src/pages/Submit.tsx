@@ -111,6 +111,23 @@ const Submit = () => {
     undefined,
   );
 
+  const checkFileSizeConstraint = (
+    inputFiles: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const files = inputFiles.target.files;
+    if (!files) return;
+
+    const MAX_SIZE_BYTES = 5 * 1024 * 1024; // 5 Mb
+    const fileArray = Array.from(files);
+    const invalid = fileArray.filter((file) => file.size > MAX_SIZE_BYTES);
+
+    if (invalid.length > 0) {
+      inputFiles.target.value = "";
+      alert(`One or more files exceeded the 5Mb limit.`);
+      return;
+    }
+  };
+
   return (
     <Primitive>
       <div className="rounded-2xl bg-red-100 p-8 flex flex-col gap-4">
@@ -792,7 +809,8 @@ const Submit = () => {
         <div className="flex flex-col">
           <div className="h-8 lg:h-9 xl:h-10 | flex">
             <div className="text-xs lg:text-sm xl:text-base | font-bold rounded-tl-xl h-full justify-self-center border flex items-center px-2 border-r-0 border-purple-600 bg-purple-600 text-white select-none">
-              Attachment
+              Attachment{" "}
+              <span className="text-xs text-white/80 ml-1">(Max 5Mb)</span>
             </div>
             <label
               htmlFor="attachment"
@@ -804,6 +822,7 @@ const Submit = () => {
                 type="file"
                 name="attachment"
                 id="attachment"
+                onChange={checkFileSizeConstraint}
               />
               <p>Drag & drop files here (or click) to upload</p>
             </label>
