@@ -1,7 +1,5 @@
 import { useState } from "react";
 import Primitive from "../components/Primitive.tsx";
-import Step4Form from "../components/submit/step4/Step4Form.tsx";
-import LastStepForm from "../components/submit/step5/LastStepForm.tsx";
 import Placeholders from "../dummies/NewSubmitFormTable.json";
 
 const COLUMNS = [
@@ -789,14 +787,46 @@ const Submit = () => {
         </div>
       </div>
 
-      {/* STEP 4 */}
-      <div className="bg-white rounded-xl p-8 shadow-sm mt-8">
-        <Step4Form onBack={() => scrollTo()} onNext={() => scrollTo()} />
-      </div>
-
-      {/* Last Step */}
-      <div className="bg-white rounded-xl p-8 shadow-sm mt-8">
-        <LastStepForm onBack={() => scrollTo()} />
+      <div className="rounded-2xl bg-purple-100 p-8 flex flex-col gap-4">
+        <h1 className="text-3xl font-bold text-purple-600">Step 5</h1>
+        <div className="flex flex-col">
+          <div className="h-8 lg:h-9 xl:h-10 | flex">
+            <div className="text-xs lg:text-sm xl:text-base | font-bold rounded-tl-xl h-full justify-self-center border flex items-center px-2 border-r-0 border-purple-600 bg-purple-600 text-white select-none">
+              Attachment
+            </div>
+            <label
+              htmlFor="attachment"
+              className="text-xs lg:text-sm xl:text-base | bg-white/50 hover:bg-purple-600/20 active:bg-purple-600/30 | text-purple-600 hover:text-black active:text-black | rounded-tr-xl h-full justify-self-center flex items-center px-2 border border-purple-600 select-none"
+            >
+              <input
+                hidden
+                multiple
+                type="file"
+                name="attachment"
+                id="attachment"
+              />
+              <p>Drag & drop files here (or click) to upload</p>
+            </label>
+          </div>
+          <div className="text-xs lg:text-sm xl:text-base | flex flex-wrap gap-2 min-h-10 min-w-xl max-w-max font-bold rounded-b-xl rounded-tr-xl justify-self-center border border-purple-600 text-white select-none p-2">
+            <div className="flex">
+              <div className="bg-purple-900 rounded-l-xl p-2 text-sm">
+                Danial Al Ghazali Walangadi (203)
+              </div>
+              <div className="bg-red-900 hover:bg-red-900/85 active:bg-red-900/70 | rounded-r-xl p-2 text-white text-sm">
+                X
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="flex gap-2">
+          <div className="bg-purple-800 hover:bg-purple-800/70 active:bg-purple-800/85 | px-4 py-2 border rounded-2xl border-purple-800 font-bold tracking-wide text-white select-none">
+            Clear
+          </div>
+          <div className="bg-gray-800 hover:bg-gray-800/70 active:bg-gray-800/85 | px-4 py-2 border rounded-2xl border-gray-800 font-bold tracking-wide text-white select-none">
+            Submit
+          </div>
+        </div>
       </div>
     </Primitive>
   );
