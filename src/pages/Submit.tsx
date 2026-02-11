@@ -2,6 +2,7 @@ import { useState } from "react";
 import Primitive from "../components/Primitive.tsx";
 import Placeholders from "../dummies/NewSubmitFormTable.json";
 import EmployeeSectionMappings from "../dummies/Approval.json";
+import FirstStep from "../components/FirstStep.tsx";
 
 const COLUMNS = [
   "Cost Center",
@@ -75,36 +76,7 @@ const DEPARTMENTS = [
   { code: "700", label: "Process Control Section" },
 ];
 
-const SECTIONS = [
-  "MIS",
-  "GA & Personnel",
-  "Accounting",
-  "Purchasing",
-  "PSC",
-  "BM (HRDC)",
-  "RnD",
-  "EC QA-QC",
-  "EXIM",
-  "Material-Control",
-  "FG WHSE",
-  "EC Equipment Engineering OPTO",
-  "EC Production OPTO",
-  "EC Process Engineering OPTO",
-  "FCS",
-  "Process Control",
-  "Job Innovation",
-  "Product Innovation",
-  "Management",
-  "EC Equipment Engineering Compound",
-  "EC Process Engineering Compound",
-  "EC Production Compound",
-];
-
-const OPTIONS = ["EXIM", "FCS", "GA", "MC", "MIS"];
-
 const Submit = () => {
-  const [deptCode, setDeptCode] = useState<number | undefined>(undefined);
-  const [deptLabel, setDeptLabel] = useState<string | undefined>(undefined);
   const [costCenterCode, setCostCenterCode] = useState<number | undefined>(
     undefined,
   );
@@ -151,159 +123,7 @@ const Submit = () => {
     <Primitive>
       <div className="flex flex-col gap-8">
         <div className="flex flex-wrap gap-8">
-          <div className="rounded-2xl bg-red-100 p-8 flex flex-col gap-4 flex-1">
-            <h1 className="text-3xl font-bold text-red-600">Step 1</h1>
-            <div className="h-8 lg:h-9 xl:h-10 | flex">
-              <div className="text-xs lg:text-sm xl:text-base | font-bold rounded-l-xl h-full justify-self-center border flex items-center px-2 border-r-0 border-red-600 bg-red-600 text-white select-none">
-                Your Name*
-              </div>
-              <input
-                type="text"
-                name="your-name"
-                id="your-name"
-                className="text-xs lg:text-sm xl:text-base | h-full px-4 rounded-r-xl border border-red-600 text-red-600 bg-white/50 outline-none flex-1"
-              />
-            </div>
-            <div className="h-8 lg:h-9 xl:h-10 | flex">
-              <div className="text-xs lg:text-sm xl:text-base | font-bold rounded-l-xl h-full justify-self-center border flex items-center px-2 border-r-0 border-red-600 bg-red-600 text-white select-none">
-                Your Section*
-              </div>
-              <select
-                name="your-section"
-                id="your-section"
-                className="text-xs lg:text-sm xl:text-base | flex-1 h-full px-4 rounded-r-xl border border-red-600 text-red-600 bg-white/50 outline-none"
-              >
-                <option value="" disabled selected>
-                  Select Section
-                </option>
-                {SECTIONS.map((section, index) => {
-                  return (
-                    <option key={index} value={section}>
-                      {section}
-                    </option>
-                  );
-                })}
-              </select>
-            </div>
-            <div className="h-8 lg:h-9 xl:h-10 | flex">
-              <div className="text-xs lg:text-sm xl:text-base | font-bold rounded-l-xl h-full justify-self-center border flex items-center px-2 border-r-0 border-red-600 bg-red-600 text-white select-none">
-                Employee No. (NRP)*
-              </div>
-              <input
-                type="text"
-                name="your-employee-number"
-                id="your-employee-number"
-                className="text-xs lg:text-sm xl:text-base | h-full px-4 rounded-r-xl border border-red-600 text-red-600 bg-white/50 outline-none flex-1"
-              />
-            </div>
-            <div className="h-8 lg:h-9 xl:h-10 | flex">
-              <div className="text-xs lg:text-sm xl:text-base | font-bold rounded-l-xl h-full justify-self-center border flex items-center px-2 border-r-0 border-red-600 bg-red-600 text-white select-none">
-                Ext. No.
-              </div>
-              <input
-                type="text"
-                name="your-extension-number"
-                id="your-extension-number"
-                className="text-xs lg:text-sm xl:text-base | h-full px-4 rounded-r-xl border border-red-600 text-red-600 bg-white/50 outline-none flex-1"
-              />
-            </div>
-            <div className="h-8 lg:h-9 xl:h-10 | flex">
-              <div className="text-xs lg:text-sm xl:text-base | whitespace-nowrap font-bold rounded-l-xl h-full justify-self-center border flex items-center px-2 border-r-0 border-red-600 bg-red-600 text-white select-none">
-                Your E-Mail*
-              </div>
-              <input
-                type="text"
-                name="your-email"
-                id="your-email"
-                className="text-xs lg:text-sm xl:text-base | h-full px-4 border border-red-600 text-red-600 bg-white/50 outline-none flex-1"
-              />
-              <div className="text-xs lg:text-sm xl:text-base | whitespace-nowrap font-bold rounded-r-xl h-full justify-self-center border flex items-center px-2 border-r-0 border-red-600 bg-red-600 text-white select-none">
-                @ssi.sharp-world.com
-              </div>
-            </div>
-            <div className="h-8 lg:h-9 xl:h-10 | flex">
-              <div className="text-xs lg:text-sm xl:text-base | font-bold rounded-l-xl h-full justify-self-center border flex items-center px-2 border-r-0 border-red-600 bg-red-600 text-white select-none">
-                File Resource*
-              </div>
-              <select
-                name="file-resource"
-                id="file-resource"
-                className="text-xs lg:text-sm xl:text-base | flex-1 h-full px-4 rounded-r-xl border border-red-600 text-red-600 bg-white/50 outline-none"
-              >
-                <option value="" disabled selected>
-                  Select File Resource
-                </option>
-                {OPTIONS.map((section, index) => {
-                  return (
-                    <option key={index} value={section}>
-                      {section}
-                    </option>
-                  );
-                })}
-              </select>
-            </div>
-            <div className="h-8 lg:h-9 xl:h-10 | flex">
-              <div className="text-xs lg:text-sm xl:text-base | font-bold rounded-l-xl h-full justify-self-center border flex items-center px-2 border-r-0 border-red-600 bg-red-600 text-white select-none">
-                Department*
-              </div>
-              <select
-                name="department"
-                id="department"
-                className={`text-xs lg:text-sm xl:text-base | flex-1 h-full px-4 border ${deptCode === undefined ? "rounded-r-xl" : ""} border-red-600 text-red-600 bg-white/50 outline-none`}
-                onChange={(e) => {
-                  const newDeptCode = e.target.value;
-                  setDeptCode(Number(newDeptCode));
-                  setDeptLabel(
-                    DEPARTMENTS.find((depts) => depts.code === newDeptCode)
-                      ?.label,
-                  );
-                }}
-              >
-                <option value="" disabled selected>
-                  Select Department Code
-                </option>
-                {DEPARTMENTS.map((dept, index) => {
-                  return (
-                    <option key={index} value={dept.code}>
-                      {dept.code}
-                    </option>
-                  );
-                })}
-              </select>
-              {deptCode === undefined ? (
-                ""
-              ) : (
-                <div className="text-xs lg:text-sm xl:text-base | whitespace-nowrap font-bold rounded-r-xl h-full justify-self-center border flex items-center px-2 border-r-0 border-red-600 bg-red-600 text-white select-none">
-                  {deptLabel}
-                </div>
-              )}
-            </div>
-            <div className="h-8 lg:h-9 xl:h-10 | flex">
-              <div className="text-xs lg:text-sm xl:text-base | font-bold rounded-l-xl h-full justify-self-center border flex items-center px-2 border-r-0 border-red-600 bg-red-600 text-white select-none">
-                File Resource*
-              </div>
-              <select
-                name="form"
-                id="form"
-                className="text-xs lg:text-sm xl:text-base | flex-1 h-full px-4 rounded-r-xl border border-red-600 text-red-600 bg-white/50 outline-none"
-              >
-                <option value="" disabled selected>
-                  Select Form
-                </option>
-                <option value="PR">PR</option>
-                <option value="Cash Advance">Cash Advance</option>
-                <option value="Fixed Asset">Fixed Asset</option>
-              </select>
-            </div>
-            <div className="flex gap-2">
-              <div className="bg-black hover:bg-black/70 active:bg-black/85 | px-4 py-2 border rounded-2xl border-black font-bold tracking-wide text-white select-none">
-                Clear
-              </div>
-              <div className="bg-black hover:bg-black/70 active:bg-black/85 | px-4 py-2 border rounded-2xl border-black font-bold tracking-wide text-white select-none">
-                Next
-              </div>
-            </div>
-          </div>
+          <FirstStep />
           <div className="rounded-2xl bg-blue-100 p-8 flex flex-col gap-4 flex-1">
             <h1 className="text-3xl font-bold text-blue-600">Step 2</h1>
             <div className="h-8 lg:h-9 xl:h-10 | flex">
