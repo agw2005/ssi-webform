@@ -4,6 +4,7 @@ import DEPARTMENTS from "../dummies/Departments.json";
 import SelectionInput from "./SelectionInput";
 import TextInput from "./TextInput";
 import NumberInput from "./NumberInput";
+import DateInput from "./DateInput";
 
 const CURRENCY = ["IDR", "JPY", "SGD", "USD"];
 
@@ -140,17 +141,14 @@ const ThirdStep = () => {
             colorIntensity="600"
             requiredInput={false}
           />
-          <div className="h-8 lg:h-9 xl:h-10 | flex">
-            <div className="text-xs lg:text-sm xl:text-base | font-bold rounded-l-xl h-full justify-self-center border flex items-center justify-center px-2 border-r-0 border-yellow-600 bg-yellow-600 text-white select-none">
-              Estimated Delivery Date
-            </div>
-            <input
-              type="date"
-              name="reason"
-              id="reason"
-              className="text-xs lg:text-sm xl:text-base | flex-1 px-4 rounded-r-xl border border-yellow-600 text-yellow-600 bg-white/50 outline-none"
-            />
-          </div>
+          <DateInput
+            label="Estimated Delivery Date"
+            name="estimated-delivery-date"
+            id="estimated-delivery-date"
+            color="yellow"
+            colorIntensity="600"
+            requiredInput={false}
+          />
         </div>
         <div className="flex-3 overflow-auto lg:overflow-y-auto max-h-64 lg:max-h-full lg:h-full border">
           <table className="table-auto border-collapse w-full">
