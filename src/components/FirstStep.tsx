@@ -1,4 +1,5 @@
 import { useState } from "react";
+import TextInput from "./TextInput";
 
 const SECTIONS = [
   "MIS",
@@ -89,17 +90,14 @@ const FirstStep = () => {
   return (
     <div className="rounded-2xl bg-red-100 p-8 flex flex-col gap-4 flex-1">
       <h1 className="text-3xl font-bold text-red-600">Step 1</h1>
-      <div className="h-8 lg:h-9 xl:h-10 | flex">
-        <div className="text-xs lg:text-sm xl:text-base | font-bold rounded-l-xl h-full justify-self-center border flex items-center px-2 border-r-0 border-red-600 bg-red-600 text-white select-none">
-          Your Name*
-        </div>
-        <input
-          type="text"
-          name="your-name"
-          id="your-name"
-          className="text-xs lg:text-sm xl:text-base | h-full px-4 rounded-r-xl border border-red-600 text-red-600 bg-white/50 outline-none flex-1"
-        />
-      </div>
+      <TextInput
+        label="Your Name"
+        name="your-name"
+        id="your-name"
+        color="red"
+        colorIntensity="600"
+        requiredInput={true}
+      />
       <div className="h-8 lg:h-9 xl:h-10 | flex">
         <div className="text-xs lg:text-sm xl:text-base | font-bold rounded-l-xl h-full justify-self-center border flex items-center px-2 border-r-0 border-red-600 bg-red-600 text-white select-none">
           Your Section*
@@ -121,28 +119,22 @@ const FirstStep = () => {
           })}
         </select>
       </div>
-      <div className="h-8 lg:h-9 xl:h-10 | flex">
-        <div className="text-xs lg:text-sm xl:text-base | font-bold rounded-l-xl h-full justify-self-center border flex items-center px-2 border-r-0 border-red-600 bg-red-600 text-white select-none">
-          Employee No. (NRP)*
-        </div>
-        <input
-          type="text"
-          name="your-employee-number"
-          id="your-employee-number"
-          className="text-xs lg:text-sm xl:text-base | h-full px-4 rounded-r-xl border border-red-600 text-red-600 bg-white/50 outline-none flex-1"
-        />
-      </div>
-      <div className="h-8 lg:h-9 xl:h-10 | flex">
-        <div className="text-xs lg:text-sm xl:text-base | font-bold rounded-l-xl h-full justify-self-center border flex items-center px-2 border-r-0 border-red-600 bg-red-600 text-white select-none">
-          Ext. No.
-        </div>
-        <input
-          type="text"
-          name="your-extension-number"
-          id="your-extension-number"
-          className="text-xs lg:text-sm xl:text-base | h-full px-4 rounded-r-xl border border-red-600 text-red-600 bg-white/50 outline-none flex-1"
-        />
-      </div>
+      <TextInput
+        label="Employee No. (NRP)"
+        name="your-employee-number"
+        id="your-employee-number"
+        color="red"
+        colorIntensity="600"
+        requiredInput={true}
+      />
+      <TextInput
+        label="Ext. No."
+        name="your-extension-number"
+        id="your-extension-number"
+        color="red"
+        colorIntensity="600"
+        requiredInput={false}
+      />
       <div className="h-8 lg:h-9 xl:h-10 | flex">
         <div className="text-xs lg:text-sm xl:text-base | whitespace-nowrap font-bold rounded-l-xl h-full justify-self-center border flex items-center px-2 border-r-0 border-red-600 bg-red-600 text-white select-none">
           Your E-Mail*
