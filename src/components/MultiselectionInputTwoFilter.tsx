@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import RemovableSelections from "./RemovableSelections";
 
 interface TwoFilterStringToStringMapping {
@@ -40,10 +40,6 @@ const MultiselectionInputTwoFilter = ({
   const [revealedFilter, setRevealedFilter] = useState<string | undefined>(
     undefined,
   );
-
-  useEffect(() => {
-    console.log(selections);
-  }, [selections]);
 
   return (
     <div className="flex flex-col">
@@ -108,6 +104,7 @@ const MultiselectionInputTwoFilter = ({
         colorIntensity="600"
         array={selections}
         arraySetter={setSelections}
+        getLabel={(inputString) => inputString}
       />
     </div>
   );

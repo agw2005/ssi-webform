@@ -1,16 +1,18 @@
-interface RemovableSelections {
+interface RemovableSelectionsProps<T> {
   color: string;
   colorIntensity: string;
-  array: string[];
-  arraySetter: React.Dispatch<React.SetStateAction<string[]>>;
+  array: T[];
+  arraySetter: React.Dispatch<React.SetStateAction<T[]>>;
+  getLabel: (item: T) => string;
 }
 
-const RemovableSelections = ({
+const RemovableSelections = <T,>({
   color,
   colorIntensity,
   array,
   arraySetter,
-}: RemovableSelections) => {
+  getLabel,
+}: RemovableSelectionsProps<T>) => {
   return (
     <div
       className={`text-xs lg:text-sm xl:text-base | w-full flex flex-wrap gap-2 min-h-10 font-bold rounded-b-xl justify-self-center border border-${color}-${colorIntensity} text-white select-none p-2`}
@@ -21,7 +23,7 @@ const RemovableSelections = ({
             <div
               className={`text-xs lg:text-sm | font-normal bg-${color}-900 rounded-l-xl p-2 flex items-center | to-handle-long-texts:( min-w-0 truncate max-w-64 )`}
             >
-              {selection}
+              {getLabel(selection)}
             </div>
             <div
               className="text-xs lg:text-sm | bg-red-900 hover:bg-red-900/85 active:bg-red-900/70 | font-normal rounded-r-xl p-2 text-white"
