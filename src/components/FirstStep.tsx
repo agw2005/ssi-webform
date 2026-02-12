@@ -1,6 +1,9 @@
 import { useState } from "react";
 import TextInput from "./TextInput";
 import TextInputBetweenLabel from "./TextInputBetweenLabel";
+import SelectionInput from "./SelectionInput";
+
+const FORMS = ["PR", "Cash Advance", "Fixed Asset"];
 
 const SECTIONS = [
   "MIS",
@@ -27,7 +30,7 @@ const SECTIONS = [
   "EC Production Compound",
 ];
 
-const OPTIONS = ["EXIM", "FCS", "GA", "MC", "MIS"];
+const FILE_RESOURCES = ["EXIM", "FCS", "GA", "MC", "MIS"];
 
 const DEPARTMENTS = [
   { code: "101", label: "General Affair / Personal" },
@@ -99,27 +102,16 @@ const FirstStep = () => {
         colorIntensity="600"
         requiredInput={true}
       />
-      <div className="h-8 lg:h-9 xl:h-10 | flex">
-        <div className="text-xs lg:text-sm xl:text-base | font-bold rounded-l-xl h-full justify-self-center border flex items-center px-2 border-r-0 border-red-600 bg-red-600 text-white select-none">
-          Your Section*
-        </div>
-        <select
-          name="your-section"
-          id="your-section"
-          className="text-xs lg:text-sm xl:text-base | flex-1 h-full px-4 rounded-r-xl border border-red-600 text-red-600 bg-white/50 outline-none"
-        >
-          <option value="" disabled selected>
-            Select Section
-          </option>
-          {SECTIONS.map((section, index) => {
-            return (
-              <option key={index} value={section}>
-                {section}
-              </option>
-            );
-          })}
-        </select>
-      </div>
+      <SelectionInput
+        label="Your Section"
+        name="your-section"
+        id="your-section"
+        requiredInput={true}
+        color="red"
+        colorIntensity="600"
+        defaultDisabledValue="Select Section"
+        options={SECTIONS}
+      />
       <TextInput
         label="Employee No. (NRP)"
         name="your-employee-number"
@@ -145,27 +137,16 @@ const FirstStep = () => {
         colorIntensity="600"
         requiredInput={true}
       />
-      <div className="h-8 lg:h-9 xl:h-10 | flex">
-        <div className="text-xs lg:text-sm xl:text-base | font-bold rounded-l-xl h-full justify-self-center border flex items-center px-2 border-r-0 border-red-600 bg-red-600 text-white select-none">
-          File Resource*
-        </div>
-        <select
-          name="file-resource"
-          id="file-resource"
-          className="text-xs lg:text-sm xl:text-base | flex-1 h-full px-4 rounded-r-xl border border-red-600 text-red-600 bg-white/50 outline-none"
-        >
-          <option value="" disabled selected>
-            Select File Resource
-          </option>
-          {OPTIONS.map((section, index) => {
-            return (
-              <option key={index} value={section}>
-                {section}
-              </option>
-            );
-          })}
-        </select>
-      </div>
+      <SelectionInput
+        label="File Resource"
+        name="file-resource"
+        id="file-resource"
+        requiredInput={true}
+        color="red"
+        colorIntensity="600"
+        defaultDisabledValue="Select File Resource"
+        options={FILE_RESOURCES}
+      />
       <div className="h-8 lg:h-9 xl:h-10 | flex">
         <div className="text-xs lg:text-sm xl:text-base | font-bold rounded-l-xl h-full justify-self-center border flex items-center px-2 border-r-0 border-red-600 bg-red-600 text-white select-none">
           Department*
@@ -201,23 +182,16 @@ const FirstStep = () => {
           </div>
         )}
       </div>
-      <div className="h-8 lg:h-9 xl:h-10 | flex">
-        <div className="text-xs lg:text-sm xl:text-base | font-bold rounded-l-xl h-full justify-self-center border flex items-center px-2 border-r-0 border-red-600 bg-red-600 text-white select-none">
-          File Resource*
-        </div>
-        <select
-          name="form"
-          id="form"
-          className="text-xs lg:text-sm xl:text-base | flex-1 h-full px-4 rounded-r-xl border border-red-600 text-red-600 bg-white/50 outline-none"
-        >
-          <option value="" disabled selected>
-            Select Form
-          </option>
-          <option value="PR">PR</option>
-          <option value="Cash Advance">Cash Advance</option>
-          <option value="Fixed Asset">Fixed Asset</option>
-        </select>
-      </div>
+      <SelectionInput
+        label="Select Form"
+        name="form"
+        id="form"
+        requiredInput={true}
+        color="red"
+        colorIntensity="600"
+        defaultDisabledValue="Select Form"
+        options={FORMS}
+      />
       <div className="flex gap-2">
         <div className="bg-black hover:bg-black/70 active:bg-black/85 | px-4 py-2 border rounded-2xl border-black font-bold tracking-wide text-white select-none">
           Clear
