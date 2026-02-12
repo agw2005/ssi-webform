@@ -5,6 +5,7 @@ interface TextInputProps {
   requiredInput: boolean;
   color: string;
   colorIntensity: string;
+  isDisabled?: boolean;
 }
 
 const TextInput = ({
@@ -14,6 +15,7 @@ const TextInput = ({
   color,
   colorIntensity,
   requiredInput,
+  isDisabled = false,
 }: TextInputProps) => {
   return (
     <div className="h-8 lg:h-9 xl:h-10 | flex">
@@ -24,10 +26,11 @@ const TextInput = ({
         {requiredInput ? "*" : ""}
       </div>
       <input
+        disabled={isDisabled}
         type="text"
         name={name}
         id={id}
-        className={`text-xs lg:text-sm xl:text-base | h-full px-4 rounded-r-xl border border-${color}-${colorIntensity} text-${color}-${colorIntensity} bg-white/50 outline-none flex-1`}
+        className={`text-xs lg:text-sm xl:text-base | h-full px-4 rounded-r-xl border border-${color}-${colorIntensity} text-${color}-${colorIntensity} ${isDisabled ? "bg-black/10" : "bg-white/50"} outline-none flex-1`}
       />
     </div>
   );
