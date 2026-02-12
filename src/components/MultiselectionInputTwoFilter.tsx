@@ -62,8 +62,9 @@ const MultiselectionInputTwoFilter = ({
             setDefaultFilter(newDefaultFilter);
           }}
           value={defaultFilter}
+          defaultValue=""
         >
-          <option value="" disabled selected>
+          <option value="" disabled>
             {defaultFilterDefaultValue}
           </option>
           {mappings.map((mapping, index) => {
@@ -84,8 +85,9 @@ const MultiselectionInputTwoFilter = ({
             setSelections([...selections, newRevealedFilter]);
           }}
           value={revealedFilter}
+          defaultValue=""
         >
-          <option value="" disabled selected>
+          <option value="" disabled>
             {revealedFilterDefaultValue}
           </option>
           {mappings
