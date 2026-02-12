@@ -1,5 +1,6 @@
 import { useState } from "react";
 import TextInput from "./TextInput";
+import TextInputBetweenLabel from "./TextInputBetweenLabel";
 
 const SECTIONS = [
   "MIS",
@@ -135,20 +136,15 @@ const FirstStep = () => {
         colorIntensity="600"
         requiredInput={false}
       />
-      <div className="h-8 lg:h-9 xl:h-10 | flex">
-        <div className="text-xs lg:text-sm xl:text-base | whitespace-nowrap font-bold rounded-l-xl h-full justify-self-center border flex items-center px-2 border-r-0 border-red-600 bg-red-600 text-white select-none">
-          Your E-Mail*
-        </div>
-        <input
-          type="text"
-          name="your-email"
-          id="your-email"
-          className="text-xs lg:text-sm xl:text-base | h-full px-4 border border-red-600 text-red-600 bg-white/50 outline-none flex-1"
-        />
-        <div className="text-xs lg:text-sm xl:text-base | whitespace-nowrap font-bold rounded-r-xl h-full justify-self-center border flex items-center px-2 border-r-0 border-red-600 bg-red-600 text-white select-none">
-          @ssi.sharp-world.com
-        </div>
-      </div>
+      <TextInputBetweenLabel
+        leftLabel="Your E-Mail"
+        rightLabel="@ssi.sharp-world.com"
+        name="your-email"
+        id="your-email"
+        color="red"
+        colorIntensity="600"
+        requiredInput={true}
+      />
       <div className="h-8 lg:h-9 xl:h-10 | flex">
         <div className="text-xs lg:text-sm xl:text-base | font-bold rounded-l-xl h-full justify-self-center border flex items-center px-2 border-r-0 border-red-600 bg-red-600 text-white select-none">
           File Resource*
