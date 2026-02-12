@@ -1,6 +1,8 @@
 import Placeholders from "../dummies/NewSubmitFormTable.json";
 import SelectionInputSeparateLabel from "./SelectionInputSeparateLabel";
 import DEPARTMENTS from "../dummies/Departments.json";
+import SelectionInput from "./SelectionInput";
+import TextInput from "./TextInput";
 
 const CURRENCY = ["IDR", "JPY", "SGD", "USD"];
 
@@ -17,6 +19,14 @@ const COLUMNS = [
   "Vendor",
   "Reason",
   "ID Budget",
+];
+
+const BUDGET_NATURE = [
+  "537003000",
+  "803046000",
+  "803052000",
+  "811046000",
+  "811052000",
 ];
 
 const ThirdStep = () => {
@@ -40,53 +50,40 @@ const ThirdStep = () => {
             defaultDisabledValue="Select Cost Center"
             mappings={DEPARTMENTS}
           />
-          <div className="h-8 lg:h-9 xl:h-10 | flex">
-            <div className="text-xs lg:text-sm xl:text-base | font-bold rounded-l-xl h-full justify-self-center border flex items-center px-2 border-r-0 border-yellow-600 bg-yellow-600 text-white select-none">
-              Budget/Nature
-            </div>
-            <select
-              name="budget/nature"
-              id="budget/nature"
-              className={`text-xs lg:text-sm xl:text-base | flex-1 px-4 border rounded-r-xl border-yellow-600 text-yellow-600 bg-white/50 outline-none`}
-            >
-              <option value="" disabled selected>
-                Select Budget/Nature
-              </option>
-            </select>
-          </div>
-          <div className="h-8 lg:h-9 xl:h-10 | flex">
-            <div className="text-xs lg:text-sm xl:text-base | font-bold rounded-l-xl h-full justify-self-center border flex items-center px-2 border-r-0 border-yellow-600 bg-yellow-600 text-white select-none">
-              Periode
-            </div>
-            <input
-              type="text"
-              name="periode"
-              id="periode"
-              className="text-xs lg:text-sm xl:text-base | flex-1 px-4 rounded-r-xl border border-yellow-600 text-yellow-600 bg-white/50 outline-none"
-            />
-          </div>
-          <div className="h-8 lg:h-9 xl:h-10 | flex">
-            <div className="text-xs lg:text-sm xl:text-base | font-bold rounded-l-xl h-full justify-self-center border flex items-center px-2 border-r-0 border-yellow-600 bg-yellow-600 text-white select-none">
-              Balance
-            </div>
-            <input
-              type="text"
-              name="balance"
-              id="balance"
-              className="text-xs lg:text-sm xl:text-base | flex-1 px-4 rounded-r-xl border border-yellow-600 text-yellow-600 bg-white/50 outline-none"
-            />
-          </div>
-          <div className="h-8 lg:h-9 xl:h-10 | flex">
-            <div className="text-xs lg:text-sm xl:text-base | font-bold rounded-l-xl h-full justify-self-center border flex items-center px-2 border-r-0 border-yellow-600 bg-yellow-600 text-white select-none">
-              Description
-            </div>
-            <input
-              type="text"
-              name="description"
-              id="description"
-              className="text-xs lg:text-sm xl:text-base | flex-1 px-4 rounded-r-xl border border-yellow-600 text-yellow-600 bg-white/50 outline-none"
-            />
-          </div>
+          <SelectionInput
+            label="Budget/Nature"
+            name="budget/nature"
+            id="budget/nature"
+            requiredInput={false}
+            color="yellow"
+            colorIntensity="600"
+            defaultDisabledValue="Select Budget/Nature"
+            options={BUDGET_NATURE}
+          />
+          <TextInput
+            label="Periode"
+            name="periode"
+            id="periode"
+            color="yellow"
+            colorIntensity="600"
+            requiredInput={false}
+          />
+          <TextInput
+            label="Balance"
+            name="balance"
+            id="balance"
+            color="yellow"
+            colorIntensity="600"
+            requiredInput={false}
+          />
+          <TextInput
+            label="Description"
+            name="description"
+            id="description"
+            color="yellow"
+            colorIntensity="600"
+            requiredInput={false}
+          />
           <div className="h-8 lg:h-9 xl:h-10 | flex">
             <div className="text-xs lg:text-sm xl:text-base | font-bold rounded-l-xl h-full justify-self-center border flex items-center px-2 border-r-0 border-yellow-600 bg-yellow-600 text-white select-none">
               Quantity
@@ -114,60 +111,40 @@ const ThirdStep = () => {
               Jangan gunakan koma. Gunakan titik untuk desimal.
             </div>
           </div>
-          <div className="h-8 lg:h-9 xl:h-10 | flex">
-            <div className="text-xs lg:text-sm xl:text-base | font-bold rounded-l-xl h-full justify-self-center border flex items-center px-2 border-r-0 border-yellow-600 bg-yellow-600 text-white select-none">
-              Measure
-            </div>
-            <input
-              type="text"
-              name="measure"
-              id="measure"
-              className="text-xs lg:text-sm xl:text-base | flex-1 px-4 rounded-r-xl border border-yellow-600 text-yellow-600 bg-white/50 outline-none"
-            />
-          </div>
-          <div className="h-8 lg:h-9 xl:h-10 | flex">
-            <div className="text-xs lg:text-sm xl:text-base | font-bold rounded-l-xl h-full justify-self-center border flex items-center px-2 border-r-0 border-yellow-600 bg-yellow-600 text-white select-none">
-              Currency
-            </div>
-            <select
-              name="currency"
-              id="currency"
-              className={`text-xs lg:text-sm xl:text-base | flex-1 px-4 border rounded-r-xl border-yellow-600 text-yellow-600 bg-white/50 outline-none`}
-            >
-              <option value="" disabled selected>
-                Select Currency
-              </option>
-              {CURRENCY.map((currency, index) => {
-                return (
-                  <option key={index} value={currency}>
-                    {currency}
-                  </option>
-                );
-              })}
-            </select>
-          </div>
-          <div className="h-8 lg:h-9 xl:h-10 | flex">
-            <div className="text-xs lg:text-sm xl:text-base | font-bold rounded-l-xl h-full justify-self-center border flex items-center px-2 border-r-0 border-yellow-600 bg-yellow-600 text-white select-none">
-              Vendor
-            </div>
-            <input
-              type="text"
-              name="vendor"
-              id="vendor"
-              className="text-xs lg:text-sm xl:text-base | flex-1 px-4 rounded-r-xl border border-yellow-600 text-yellow-600 bg-white/50 outline-none"
-            />
-          </div>
-          <div className="h-8 lg:h-9 xl:h-10 | flex">
-            <div className="text-xs lg:text-sm xl:text-base | font-bold rounded-l-xl h-full justify-self-center border flex items-center px-2 border-r-0 border-yellow-600 bg-yellow-600 text-white select-none">
-              Reason
-            </div>
-            <input
-              type="text"
-              name="reason"
-              id="reason"
-              className="text-xs lg:text-sm xl:text-base | flex-1 px-4 rounded-r-xl border border-yellow-600 text-yellow-600 bg-white/50 outline-none"
-            />
-          </div>
+          <TextInput
+            label="Measure"
+            name="measure"
+            id="measure"
+            color="yellow"
+            colorIntensity="600"
+            requiredInput={false}
+          />
+          <SelectionInput
+            label="Currency"
+            name="currency"
+            id="currency"
+            requiredInput={false}
+            color="yellow"
+            colorIntensity="600"
+            defaultDisabledValue="Select Currency"
+            options={CURRENCY}
+          />
+          <TextInput
+            label="Vendor"
+            name="vendor"
+            id="vendor"
+            color="yellow"
+            colorIntensity="600"
+            requiredInput={false}
+          />
+          <TextInput
+            label="Reason"
+            name="reason"
+            id="reason"
+            color="yellow"
+            colorIntensity="600"
+            requiredInput={false}
+          />
           <div className="h-8 lg:h-9 xl:h-10 | flex">
             <div className="text-xs lg:text-sm xl:text-base | font-bold rounded-l-xl h-full justify-self-center border flex items-center justify-center px-2 border-r-0 border-yellow-600 bg-yellow-600 text-white select-none">
               Estimated Delivery Date
