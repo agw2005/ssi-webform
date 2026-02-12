@@ -1,7 +1,7 @@
-import { useState } from "react";
 import TextInput from "./TextInput";
 import TextInputBetweenLabel from "./TextInputBetweenLabel";
 import SelectionInput from "./SelectionInput";
+import SelectionInputBetweenLabel from "./SelectionInputBetweenLabel";
 
 const FORMS = ["PR", "Cash Advance", "Fixed Asset"];
 
@@ -88,9 +88,6 @@ const DEPARTMENTS = [
 ];
 
 const FirstStep = () => {
-  const [deptCode, setDeptCode] = useState<number | undefined>(undefined);
-  const [deptLabel, setDeptLabel] = useState<string | undefined>(undefined);
-
   return (
     <div className="rounded-2xl bg-red-100 p-8 flex flex-col gap-4 flex-1">
       <h1 className="text-3xl font-bold text-red-600">Step 1</h1>
@@ -147,41 +144,16 @@ const FirstStep = () => {
         defaultDisabledValue="Select File Resource"
         options={FILE_RESOURCES}
       />
-      <div className="h-8 lg:h-9 xl:h-10 | flex">
-        <div className="text-xs lg:text-sm xl:text-base | font-bold rounded-l-xl h-full justify-self-center border flex items-center px-2 border-r-0 border-red-600 bg-red-600 text-white select-none">
-          Department*
-        </div>
-        <select
-          name="department"
-          id="department"
-          className={`text-xs lg:text-sm xl:text-base | flex-1 h-full px-4 border ${deptCode === undefined ? "rounded-r-xl" : ""} border-red-600 text-red-600 bg-white/50 outline-none`}
-          onChange={(e) => {
-            const newDeptCode = e.target.value;
-            setDeptCode(Number(newDeptCode));
-            setDeptLabel(
-              DEPARTMENTS.find((depts) => depts.code === newDeptCode)?.label,
-            );
-          }}
-        >
-          <option value="" disabled selected>
-            Select Department Code
-          </option>
-          {DEPARTMENTS.map((dept, index) => {
-            return (
-              <option key={index} value={dept.code}>
-                {dept.code}
-              </option>
-            );
-          })}
-        </select>
-        {deptCode === undefined ? (
-          ""
-        ) : (
-          <div className="text-xs lg:text-sm xl:text-base | whitespace-nowrap font-bold rounded-r-xl h-full justify-self-center border flex items-center px-2 border-r-0 border-red-600 bg-red-600 text-white select-none">
-            {deptLabel}
-          </div>
-        )}
-      </div>
+      <SelectionInputBetweenLabel
+        label="Department"
+        name="department"
+        id="department"
+        requiredInput={true}
+        color="red"
+        colorIntensity="600"
+        defaultDisabledValue="Select Department Code"
+        mappings={DEPARTMENTS}
+      />
       <SelectionInput
         label="Select Form"
         name="form"

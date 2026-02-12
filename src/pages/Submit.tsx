@@ -11,13 +11,13 @@ const Submit = () => {
       <div className="flex flex-col gap-8">
         <div className="flex flex-wrap gap-8">
           <FirstStep />
-          {/* <SecondStep /> */}
+          <SecondStep />
         </div>
-        {/* <ThirdStep />
+        <ThirdStep />
         <div className="flex flex-wrap gap-8">
           <FourthStep />
           <FifthStep />
-        </div> */}
+        </div>
       </div>
     </Primitive>
   );

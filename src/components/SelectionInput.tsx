@@ -17,7 +17,7 @@ const SelectionInput = ({
   colorIntensity,
   requiredInput,
   defaultDisabledValue,
-  options: array,
+  options,
 }: SelectionInputProps) => {
   return (
     <div className="h-8 lg:h-9 xl:h-10 | flex">
@@ -36,7 +36,7 @@ const SelectionInput = ({
         <option value="" disabled>
           {defaultDisabledValue}
         </option>
-        {array.map((section: string, index: number) => {
+        {options.map((section: string, index: number) => {
           return (
             <option key={index} value={section}>
               {section}
