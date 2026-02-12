@@ -5,6 +5,7 @@ import SelectionInput from "./SelectionInput";
 import TextInput from "./TextInput";
 import NumberInput from "./NumberInput";
 import DateInput from "./DateInput";
+import TipBox from "./TipBox";
 
 const CURRENCY = ["IDR", "JPY", "SGD", "USD"];
 
@@ -35,11 +36,11 @@ const ThirdStep = () => {
   return (
     <div className="rounded-2xl bg-yellow-100 p-8 flex flex-col gap-4">
       <h1 className="text-3xl font-bold text-yellow-600">Step 3</h1>
-      <div className="h-8 lg:h-9 xl:h-10 | flex">
-        <div className="text-xs lg:text-sm | rounded-xl h-full justify-self-center border flex items-center px-2 border-r-0 border-yellow-900 bg-yellow-900 text-white select-none">
-          Do not let your budget get a red light
-        </div>
-      </div>
+      <TipBox
+        label={`Do not let your budget get a red light`}
+        color="yellow"
+        colorIntensity="900"
+      />
       <div className="flex flex-col lg:flex-row gap-3 lg:h-168">
         <div className="flex flex-col gap-2">
           <SelectionInputSeparateLabel
@@ -102,11 +103,11 @@ const ThirdStep = () => {
             colorIntensity="600"
             requiredInput={false}
           />
-          <div className="h-8 lg:h-9 xl:h-10 | flex">
-            <div className="text-xs lg:text-sm | flex-1 rounded-xl h-full justify-self-center border flex items-center px-2 border-r-0 border-yellow-900 bg-yellow-900 text-white select-none">
-              Jangan gunakan koma. Gunakan titik untuk desimal.
-            </div>
-          </div>
+          <TipBox
+            label={`Jangan gunakan koma. Gunakan titik untuk desimal.`}
+            color="yellow"
+            colorIntensity="900"
+          />
           <TextInput
             label="Measure"
             name="measure"
@@ -242,15 +243,18 @@ const ThirdStep = () => {
           </tbody>
         </table>
       </div>
-      <div className="flex gap-2 whitespace-nowrap">
+
+      <div className="flex gap-2">
         <div className="px-4 py-2 border rounded-lg bg-yellow-800 border-yellow-800 text-white font-bold select-none">
           Total Usage ($) : 0
         </div>
-        <div className="bg-black hover:bg-black/70 active:bg-black/85 | px-4 py-2 border rounded-2xl border-black font-bold tracking-wide text-white select-none">
-          Clear
-        </div>
-        <div className="bg-black hover:bg-black/70 active:bg-black/85 | px-4 py-2 border rounded-2xl border-black font-bold tracking-wide text-white select-none">
-          Next
+        <div className="flex gap-2 whitespace-nowrap">
+          <div className="bg-black hover:bg-black/70 active:bg-black/85 | px-4 py-2 border rounded-2xl border-black font-bold tracking-wide text-white select-none">
+            Clear
+          </div>
+          <div className="bg-black hover:bg-black/70 active:bg-black/85 | px-4 py-2 border rounded-2xl border-black font-bold tracking-wide text-white select-none">
+            Next
+          </div>
         </div>
       </div>
     </div>

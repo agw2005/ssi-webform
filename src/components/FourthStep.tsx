@@ -1,5 +1,6 @@
 import { useState } from "react";
 import EmployeeSectionMappings from "../dummies/Approval.json";
+import TipBox from "./TipBox";
 
 const FourthStep = () => {
   const [approverSection, setApproverSection] = useState<string | undefined>(
@@ -24,16 +25,16 @@ const FourthStep = () => {
   return (
     <div className="rounded-2xl bg-green-100 p-8 flex flex-col gap-4 flex-1 w-full">
       <h1 className="text-3xl font-bold text-green-600">Step 4</h1>
-      <div className="h-8 lg:h-9 xl:h-10 | flex">
-        <div className="text-xs lg:text-sm | whitespace-nowrap rounded-xl h-full justify-self-center border flex items-center px-2 border-r-0 border-green-900 bg-green-900 text-white select-none">
-          Special Releaser will available if you have "Red Light"
-        </div>
-      </div>
-      <div className="h-8 lg:h-9 xl:h-10 | flex">
-        <div className="text-xs lg:text-sm | whitespace-nowrap rounded-xl h-full justify-self-center border flex items-center px-2 border-r-0 border-green-900 bg-green-900 text-white select-none">
-          Check again your approver before you submit your PR Form
-        </div>
-      </div>
+      <TipBox
+        label={`Special Releaser will available if you have \"Red Light\"`}
+        color="green"
+        colorIntensity="900"
+      />
+      <TipBox
+        label={`Check again your approver before you submit your PR Form`}
+        color="green"
+        colorIntensity="900"
+      />
       <div className="flex flex-col">
         <div className="h-8 lg:h-9 xl:h-10 | flex">
           <div className="text-xs lg:text-sm xl:text-base | font-bold rounded-tl-xl h-full justify-self-center border flex items-center px-2 border-r-0 border-green-600 bg-green-600 text-white select-none">
