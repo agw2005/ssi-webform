@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Placeholders from "../dummies/NewSubmitFormTable.json";
+import SelectionInputSeparateLabel from "./SelectionInputSeparateLabel";
 
 const CURRENCY = ["IDR", "JPY", "SGD", "USD"];
 
@@ -91,44 +92,16 @@ const ThirdStep = () => {
       </div>
       <div className="flex flex-col lg:flex-row gap-3 lg:h-168">
         <div className="flex flex-col gap-2">
-          <div className="h-8 lg:h-9 xl:h-10 | flex">
-            <div className="text-xs lg:text-sm xl:text-base | font-bold rounded-l-xl h-full justify-self-center border flex items-center px-2 border-r-0 border-yellow-600 bg-yellow-600 text-white select-none">
-              Cost Center*
-            </div>
-            <select
-              name="cost-center"
-              id="cost-center"
-              className={`text-xs lg:text-sm xl:text-base | flex-1 px-4 border rounded-r-xl border-yellow-600 text-yellow-600 bg-white/50 outline-none`}
-              onChange={(e) => {
-                const newCostCenterCode = e.target.value;
-                setCostCenterCode(Number(newCostCenterCode));
-                setCostCenterLabel(
-                  DEPARTMENTS.find((depts) => depts.code === newCostCenterCode)
-                    ?.label,
-                );
-              }}
-            >
-              <option value="" disabled selected>
-                Select Cost Center
-              </option>
-              {DEPARTMENTS.map((dept, index) => {
-                return (
-                  <option key={index} value={dept.code}>
-                    {dept.code}
-                  </option>
-                );
-              })}
-            </select>
-          </div>
-          {costCenterCode === undefined ? (
-            ""
-          ) : (
-            <div className="h-8 lg:h-9 xl:h-10 | flex">
-              <div className="text-xs lg:text-sm xl:text-base | flex-1 font-bold rounded-xl h-full justify-self-center border flex items-center px-2 border-r-0 border-yellow-900 bg-yellow-900 text-white select-none">
-                {costCenterLabel}
-              </div>
-            </div>
-          )}
+          <SelectionInputSeparateLabel
+            label="Cost Center"
+            name="cost-center"
+            id="cost-center"
+            requiredInput={true}
+            color="yellow"
+            colorIntensity="600"
+            defaultDisabledValue="Select Cost Center"
+            mappings={DEPARTMENTS}
+          />
           <div className="h-8 lg:h-9 xl:h-10 | flex">
             <div className="text-xs lg:text-sm xl:text-base | font-bold rounded-l-xl h-full justify-self-center border flex items-center px-2 border-r-0 border-yellow-600 bg-yellow-600 text-white select-none">
               Budget/Nature

@@ -51,10 +51,11 @@ const SelectionInputBetweenLabel = ({
         id={id}
         className={`text-xs lg:text-sm xl:text-base | flex-1 h-full px-4 border ${codeSelection === undefined ? "rounded-r-xl" : ""} border-${color}-${colorIntensity} text-${color}-${colorIntensity} bg-white/50 outline-none`}
         onChange={(e) => {
-          const newDeptCode = e.target.value;
-          setCodeSelection(newDeptCode);
+          const newCodeSelection = e.target.value;
+          setCodeSelection(newCodeSelection);
           setLabelSelection(
-            mappings.find((depts) => depts.code === newDeptCode)?.label,
+            mappings.find((mapping) => mapping.code === newCodeSelection)
+              ?.label,
           );
         }}
         defaultValue=""
@@ -62,10 +63,10 @@ const SelectionInputBetweenLabel = ({
         <option value="" disabled>
           {defaultDisabledValue}
         </option>
-        {mappings.map((dept, index) => {
+        {mappings.map((mapping, index) => {
           return (
-            <option key={index} value={dept.code}>
-              {dept.code}
+            <option key={index} value={mapping.code}>
+              {mapping.code}
             </option>
           );
         })}
