@@ -4,6 +4,10 @@ import SelectionInput from "./SelectionInput";
 import SelectionInputBetweenLabel from "./SelectionInputBetweenLabel";
 import DEPARTMENTS from "../dummies/Departments.json";
 
+interface FirstStepProps {
+  progressSetter: React.Dispatch<React.SetStateAction<number[]>>;
+}
+
 const FORMS = ["PR", "Cash Advance", "Fixed Asset"];
 
 const SECTIONS = [
@@ -33,7 +37,9 @@ const SECTIONS = [
 
 const FILE_RESOURCES = ["EXIM", "FCS", "GA", "MC", "MIS"];
 
-const FirstStep = () => {
+const STEP = 1;
+
+const FirstStep = ({ progressSetter }: FirstStepProps) => {
   return (
     <div className="rounded-2xl bg-red-100 p-8 flex flex-col gap-4 flex-1">
       <h1 className="text-3xl font-bold text-red-600">Step 1</h1>
@@ -111,10 +117,20 @@ const FirstStep = () => {
         options={FORMS}
       />
       <div className="flex gap-2">
-        <div className="bg-black hover:bg-black/70 active:bg-black/85 | px-4 py-2 border rounded-2xl border-black font-bold tracking-wide text-white select-none">
+        <div
+          className="bg-black hover:bg-black/70 active:bg-black/85 | px-4 py-2 border rounded-2xl border-black font-bold tracking-wide text-white select-none"
+          onClick={() => {
+            progressSetter((prev) => prev.filter((num) => num !== STEP));
+          }}
+        >
           Clear
         </div>
-        <div className="bg-black hover:bg-black/70 active:bg-black/85 | px-4 py-2 border rounded-2xl border-black font-bold tracking-wide text-white select-none">
+        <div
+          className="bg-black hover:bg-black/70 active:bg-black/85 | px-4 py-2 border rounded-2xl border-black font-bold tracking-wide text-white select-none"
+          onClick={() => {
+            progressSetter((prev) => [...prev, STEP]);
+          }}
+        >
           Next
         </div>
       </div>

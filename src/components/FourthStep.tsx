@@ -2,7 +2,13 @@ import EmployeeSectionMappings from "../dummies/Approval.json";
 import TipBox from "./TipBox";
 import MultiselectionInputTwoFilter from "./MultiselectionInputTwoFilter";
 
-const FourthStep = () => {
+interface FifthStepProps {
+  progressSetter: React.Dispatch<React.SetStateAction<number[]>>;
+}
+
+const STEP = 4;
+
+const FourthStep = ({ progressSetter }: FifthStepProps) => {
   return (
     <div className="rounded-2xl bg-green-100 p-8 flex flex-col gap-4 flex-1 w-full">
       <h1 className="text-3xl font-bold text-green-600">Step 4</h1>
@@ -56,10 +62,20 @@ const FourthStep = () => {
         mappings={EmployeeSectionMappings}
       />
       <div className="flex gap-2">
-        <div className="bg-black hover:bg-black/70 active:bg-black/85 | px-4 py-2 border rounded-2xl border-black font-bold tracking-wide text-white select-none">
+        <div
+          className="bg-black hover:bg-black/70 active:bg-black/85 | px-4 py-2 border rounded-2xl border-black font-bold tracking-wide text-white select-none"
+          onClick={() => {
+            progressSetter((prev) => prev.filter((num) => num !== STEP));
+          }}
+        >
           Clear
         </div>
-        <div className="bg-black hover:bg-black/70 active:bg-black/85 | px-4 py-2 border rounded-2xl border-black font-bold tracking-wide text-white select-none">
+        <div
+          className="bg-black hover:bg-black/70 active:bg-black/85 | px-4 py-2 border rounded-2xl border-black font-bold tracking-wide text-white select-none"
+          onClick={() => {
+            progressSetter((prev) => [...prev, STEP]);
+          }}
+        >
           Next
         </div>
       </div>

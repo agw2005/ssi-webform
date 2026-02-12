@@ -7,6 +7,10 @@ import NumberInput from "./NumberInput";
 import DateInput from "./DateInput";
 import TipBox from "./TipBox";
 
+interface ThirdStepProps {
+  progressSetter: React.Dispatch<React.SetStateAction<number[]>>;
+}
+
 const CURRENCY = ["IDR", "JPY", "SGD", "USD"];
 
 const COLUMNS = [
@@ -32,7 +36,9 @@ const BUDGET_NATURE = [
   "811052000",
 ];
 
-const ThirdStep = () => {
+const STEP = 3;
+
+const ThirdStep = ({ progressSetter }: ThirdStepProps) => {
   return (
     <div className="rounded-2xl bg-yellow-100 p-8 flex flex-col gap-4">
       <h1 className="text-3xl font-bold text-yellow-600">Step 3</h1>
@@ -249,10 +255,20 @@ const ThirdStep = () => {
           Total Usage ($) : 0
         </div>
         <div className="flex gap-2 whitespace-nowrap">
-          <div className="bg-black hover:bg-black/70 active:bg-black/85 | px-4 py-2 border rounded-2xl border-black font-bold tracking-wide text-white select-none">
+          <div
+            className="bg-black hover:bg-black/70 active:bg-black/85 | px-4 py-2 border rounded-2xl border-black font-bold tracking-wide text-white select-none"
+            onClick={() => {
+              progressSetter((prev) => prev.filter((num) => num !== STEP));
+            }}
+          >
             Clear
           </div>
-          <div className="bg-black hover:bg-black/70 active:bg-black/85 | px-4 py-2 border rounded-2xl border-black font-bold tracking-wide text-white select-none">
+          <div
+            className="bg-black hover:bg-black/70 active:bg-black/85 | px-4 py-2 border rounded-2xl border-black font-bold tracking-wide text-white select-none"
+            onClick={() => {
+              progressSetter((prev) => [...prev, STEP]);
+            }}
+          >
             Next
           </div>
         </div>
