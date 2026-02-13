@@ -8,6 +8,8 @@ interface TextAreaInputProps {
   requiredInput: boolean;
   variant: ColorVariant;
   isDisabled?: boolean;
+  value: string;
+  onChangeHandler: (input: React.ChangeEvent<HTMLTextAreaElement>) => void;
 }
 
 const TextAreaInput = ({
@@ -17,6 +19,8 @@ const TextAreaInput = ({
   requiredInput,
   variant,
   isDisabled = false,
+  value,
+  onChangeHandler,
 }: TextAreaInputProps) => {
   return (
     <div className="flex flex-col">
@@ -31,6 +35,8 @@ const TextAreaInput = ({
         name={name}
         id={id}
         className={`text-xs lg:text-sm xl:text-base | h-32 px-4 py-2 w-full rounded-bl-xl rounded-br-xl rounded-tr-xl border ${resolveColorMappings(variant, "input")} ${isDisabled ? "bg-black/10" : "bg-white/50"} outline-none`}
+        value={value}
+        onChange={onChangeHandler}
       />
     </div>
   );

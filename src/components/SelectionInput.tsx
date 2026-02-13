@@ -9,6 +9,8 @@ interface SelectionInputProps {
   variant: ColorVariant;
   defaultDisabledValue: string;
   options: string[];
+  value: string;
+  onChangeHandler: (input: React.ChangeEvent<HTMLSelectElement>) => void;
 }
 
 const SelectionInput = ({
@@ -19,6 +21,8 @@ const SelectionInput = ({
   requiredInput,
   defaultDisabledValue,
   options,
+  value,
+  onChangeHandler,
 }: SelectionInputProps) => {
   return (
     <div className="h-8 lg:h-9 xl:h-10 | flex">
@@ -32,7 +36,8 @@ const SelectionInput = ({
         name={name}
         id={id}
         className={`text-xs lg:text-sm xl:text-base | flex-1 h-full px-4 rounded-r-xl border ${resolveColorMappings(variant, "input")} bg-white/50 outline-none`}
-        defaultValue=""
+        value={value}
+        onChange={onChangeHandler}
       >
         <option value="" disabled>
           {defaultDisabledValue}

@@ -10,6 +10,8 @@ interface NumberInputProps {
   isDisabled?: boolean;
   minimumValue?: number;
   maximumValue?: number;
+  value: string;
+  onChangeHandler: (input: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 const NumberInput = ({
@@ -21,6 +23,8 @@ const NumberInput = ({
   isDisabled = false,
   minimumValue = 0,
   maximumValue = Number.MAX_SAFE_INTEGER,
+  value,
+  onChangeHandler,
 }: NumberInputProps) => {
   return (
     <div className="h-8 lg:h-9 xl:h-10 | flex">
@@ -38,6 +42,8 @@ const NumberInput = ({
         name={name}
         id={id}
         className={`text-xs lg:text-sm xl:text-base | flex-1 px-4 rounded-r-xl border ${resolveColorMappings(variant, "input")} bg-white/50 outline-none`}
+        value={value}
+        onChange={onChangeHandler}
       />
     </div>
   );

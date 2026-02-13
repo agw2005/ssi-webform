@@ -2,7 +2,7 @@ interface RemovableSelectionsProps<T> {
   color: string;
   colorIntensity: string;
   array: T[];
-  arraySetter: React.Dispatch<React.SetStateAction<T[]>>;
+  arraySetter: (newArray: T[]) => void;
   getLabel: (item: T) => string;
 }
 

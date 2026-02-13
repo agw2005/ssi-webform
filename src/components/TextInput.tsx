@@ -8,6 +8,8 @@ interface TextInputProps {
   requiredInput: boolean;
   variant: ColorVariant;
   isDisabled?: boolean;
+  value: string;
+  onChangeHandler: (input: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 const TextInput = ({
@@ -17,10 +19,9 @@ const TextInput = ({
   variant,
   requiredInput,
   isDisabled = false,
+  value,
+  onChangeHandler,
 }: TextInputProps) => {
-  //ditched dynamic styling with separate color and color intensity.
-  //see: https://tailwindcss.com/docs/detecting-classes-in-source-files#dynamic-class-names
-
   return (
     <div className="h-8 lg:h-9 xl:h-10 | flex">
       <div
@@ -35,6 +36,8 @@ const TextInput = ({
         name={name}
         id={id}
         className={`text-xs lg:text-sm xl:text-base | h-full px-4 rounded-r-xl border ${resolveColorMappings(variant, "input")} ${isDisabled ? "bg-black/10" : "bg-white/50"} outline-none flex-1`}
+        value={value}
+        onChange={onChangeHandler}
       />
     </div>
   );

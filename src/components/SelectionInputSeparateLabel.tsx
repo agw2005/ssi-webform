@@ -1,6 +1,5 @@
 import type { ColorVariant } from "../helper/tailwindColorResolver.ts";
 import { resolveColorMappings } from "../helper/tailwindColorResolver.ts";
-import { useState } from "react";
 
 interface StringToStringMapping {
   code: string;
@@ -15,6 +14,8 @@ interface SelectionInputSeparateLabelProps {
   variant: ColorVariant;
   defaultDisabledValue: string;
   mappings: StringToStringMapping[];
+  value: string;
+  onChangeHandler: (input: React.ChangeEvent<HTMLSelectElement>) => void;
 }
 
 /**
@@ -31,13 +32,11 @@ const SelectionInputSeparateLabel = ({
   variant,
   defaultDisabledValue,
   mappings,
+  value,
+  onChangeHandler,
 }: SelectionInputSeparateLabelProps) => {
-  const [codeSelection, setCodeSelection] = useState<string | undefined>(
-    undefined,
-  );
-  const [labelSelection, setLabelSelection] = useState<string | undefined>(
-    undefined,
-  );
+  const selectedMapping = mappings.find((mapping) => mapping.code === value);
+  const selectedLabel = selectedMapping?.label;
 
   return (
     <div className="flex flex-col gap-2">
@@ -52,15 +51,8 @@ const SelectionInputSeparateLabel = ({
           name={name}
           id={id}
           className={`text-xs lg:text-sm xl:text-base | flex-1 px-4 border rounded-r-xl ${resolveColorMappings(variant, "input")} bg-white/50 outline-none`}
-          onChange={(e) => {
-            const newCodeSelection = e.target.value;
-            setCodeSelection(newCodeSelection);
-            setLabelSelection(
-              mappings.find((mapping) => mapping.code === newCodeSelection)
-                ?.label,
-            );
-          }}
-          defaultValue=""
+          value={value}
+          onChange={onChangeHandler}
         >
           <option value="" disabled>
             {defaultDisabledValue}
@@ -74,14 +66,14 @@ const SelectionInputSeparateLabel = ({
           })}
         </select>
       </div>
-      {codeSelection === undefined ? (
+      {value === "" ? (
         ""
       ) : (
         <div className="h-8 lg:h-9 xl:h-10 | flex">
           <div
             className={`text-xs lg:text-sm xl:text-base | flex-1 font-bold rounded-xl h-full justify-self-center border flex items-center px-2 border-r-0 ${resolveColorMappings(variant, "label")} text-white select-none`}
           >
-            {labelSelection}
+            {selectedLabel}
           </div>
         </div>
       )}

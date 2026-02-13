@@ -18,6 +18,8 @@ interface MultiselectionInputTwoFilterProps {
   defaultFilterDefaultValue: string;
   revealedFilterDefaultValue: string;
   mappings: TwoFilterStringToStringMapping[];
+  selections: string[];
+  onSelectionsChange: (newSelections: string[]) => void;
 }
 
 const MultiselectionInputTwoFilter = ({
@@ -32,8 +34,9 @@ const MultiselectionInputTwoFilter = ({
   defaultFilterDefaultValue,
   revealedFilterDefaultValue,
   mappings,
+  selections,
+  onSelectionsChange,
 }: MultiselectionInputTwoFilterProps) => {
-  const [selections, setSelections] = useState<string[]>([]);
   const [defaultFilter, setDefaultFilter] = useState<string | undefined>(
     undefined,
   );
@@ -82,7 +85,7 @@ const MultiselectionInputTwoFilter = ({
           onChange={(e) => {
             const newRevealedFilter = e.target.value;
             setRevealedFilter("");
-            setSelections([...selections, newRevealedFilter]);
+            onSelectionsChange([...selections, newRevealedFilter]);
           }}
           value={revealedFilter}
           defaultValue=""
@@ -105,7 +108,7 @@ const MultiselectionInputTwoFilter = ({
         color="green"
         colorIntensity="600"
         array={selections}
-        arraySetter={setSelections}
+        arraySetter={onSelectionsChange}
         getLabel={(inputString) => inputString}
       />
     </div>

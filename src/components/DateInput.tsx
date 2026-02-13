@@ -8,6 +8,8 @@ interface DateInputProps {
   requiredInput: boolean;
   variant: ColorVariant;
   isDisabled?: boolean;
+  value: string;
+  onChangeHandler: (input: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 const DateInput = ({
@@ -17,6 +19,8 @@ const DateInput = ({
   variant,
   requiredInput,
   isDisabled = false,
+  value,
+  onChangeHandler,
 }: DateInputProps) => {
   return (
     <div className="h-8 lg:h-9 xl:h-10 | flex">
@@ -32,6 +36,8 @@ const DateInput = ({
         name={name}
         id={id}
         className={`text-xs lg:text-sm xl:text-base | flex-1 px-4 rounded-r-xl border ${resolveColorMappings(variant, "input")} bg-white/50 outline-none`}
+        value={value}
+        onChange={onChangeHandler}
       />
     </div>
   );

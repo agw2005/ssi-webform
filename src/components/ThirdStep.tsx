@@ -6,12 +6,8 @@ import TextInput from "./TextInput";
 import NumberInput from "./NumberInput";
 import DateInput from "./DateInput";
 import TipBox from "./TipBox";
-
-interface ThirdStepProps {
-  progressSetter: React.Dispatch<React.SetStateAction<number[]>>;
-}
-
-const CURRENCY = ["IDR", "JPY", "SGD", "USD"];
+import type { ThirdStepInputs } from "../pages/Submit";
+import { createGenericChangeHandler } from "../helper/genericInputHandler";
 
 const COLUMNS = [
   "Cost Center",
@@ -27,7 +23,6 @@ const COLUMNS = [
   "Reason",
   "ID Budget",
 ];
-
 const BUDGET_NATURE = [
   "537003000",
   "803046000",
@@ -35,10 +30,27 @@ const BUDGET_NATURE = [
   "811046000",
   "811052000",
 ];
-
+const CURRENCY = ["IDR", "JPY", "SGD", "USD"];
 const STEP = 3;
 
-const ThirdStep = ({ progressSetter }: ThirdStepProps) => {
+interface ThirdStepProps {
+  progressSetter: React.Dispatch<React.SetStateAction<number[]>>;
+  thirdStepInputsGetter: ThirdStepInputs;
+  thirdStepInputsInputsSetter: React.Dispatch<
+    React.SetStateAction<ThirdStepInputs>
+  >;
+  thirdStepInputsDefaultValue: ThirdStepInputs;
+}
+
+const ThirdStep = ({
+  progressSetter,
+  thirdStepInputsGetter,
+  thirdStepInputsInputsSetter,
+  thirdStepInputsDefaultValue,
+}: ThirdStepProps) => {
+  const genericChangeHandler = createGenericChangeHandler(
+    thirdStepInputsInputsSetter,
+  );
   return (
     <div className="rounded-2xl bg-yellow-100 p-8 flex flex-col gap-4">
       <h1 className="text-3xl font-bold text-yellow-600">Step 3</h1>
@@ -56,6 +68,8 @@ const ThirdStep = ({ progressSetter }: ThirdStepProps) => {
             variant="yellow"
             defaultDisabledValue="Select Cost Center"
             mappings={DEPARTMENTS}
+            value={thirdStepInputsGetter.costCenter}
+            onChangeHandler={genericChangeHandler("costCenter")}
           />
           <SelectionInput
             label="Budget/Nature"
@@ -65,6 +79,8 @@ const ThirdStep = ({ progressSetter }: ThirdStepProps) => {
             variant="yellow"
             defaultDisabledValue="Select Budget/Nature"
             options={BUDGET_NATURE}
+            value={thirdStepInputsGetter.budgetOrNature}
+            onChangeHandler={genericChangeHandler("budgetOrNature")}
           />
           <TextInput
             label="Periode"
@@ -72,6 +88,8 @@ const ThirdStep = ({ progressSetter }: ThirdStepProps) => {
             id="periode"
             variant="yellow"
             requiredInput={false}
+            value={thirdStepInputsGetter.periode}
+            onChangeHandler={genericChangeHandler("periode")}
           />
           <TextInput
             label="Balance"
@@ -79,6 +97,8 @@ const ThirdStep = ({ progressSetter }: ThirdStepProps) => {
             id="balance"
             variant="yellow"
             requiredInput={false}
+            value={thirdStepInputsGetter.balance}
+            onChangeHandler={genericChangeHandler("balance")}
           />
           <TextInput
             label="Description"
@@ -86,6 +106,8 @@ const ThirdStep = ({ progressSetter }: ThirdStepProps) => {
             id="description"
             variant="yellow"
             requiredInput={false}
+            value={thirdStepInputsGetter.description}
+            onChangeHandler={genericChangeHandler("description")}
           />
           <NumberInput
             label="Quantity"
@@ -93,6 +115,8 @@ const ThirdStep = ({ progressSetter }: ThirdStepProps) => {
             id="quantity"
             variant="yellow"
             requiredInput={false}
+            value={thirdStepInputsGetter.quantity}
+            onChangeHandler={genericChangeHandler("quantity")}
           />
           <NumberInput
             label="Unit Price"
@@ -100,6 +124,8 @@ const ThirdStep = ({ progressSetter }: ThirdStepProps) => {
             id="unit-price"
             variant="yellow"
             requiredInput={false}
+            value={thirdStepInputsGetter.unitPrice}
+            onChangeHandler={genericChangeHandler("unitPrice")}
           />
           <TipBox
             label={`Jangan gunakan koma. Gunakan titik untuk desimal.`}
@@ -111,6 +137,8 @@ const ThirdStep = ({ progressSetter }: ThirdStepProps) => {
             id="measure"
             variant="yellow"
             requiredInput={false}
+            value={thirdStepInputsGetter.measure}
+            onChangeHandler={genericChangeHandler("measure")}
           />
           <SelectionInput
             label="Currency"
@@ -120,6 +148,8 @@ const ThirdStep = ({ progressSetter }: ThirdStepProps) => {
             variant="yellow"
             defaultDisabledValue="Select Currency"
             options={CURRENCY}
+            value={thirdStepInputsGetter.currency}
+            onChangeHandler={genericChangeHandler("currency")}
           />
           <TextInput
             label="Vendor"
@@ -127,6 +157,8 @@ const ThirdStep = ({ progressSetter }: ThirdStepProps) => {
             id="vendor"
             variant="yellow"
             requiredInput={false}
+            value={thirdStepInputsGetter.vendor}
+            onChangeHandler={genericChangeHandler("vendor")}
           />
           <TextInput
             label="Reason"
@@ -134,6 +166,8 @@ const ThirdStep = ({ progressSetter }: ThirdStepProps) => {
             id="reason"
             variant="yellow"
             requiredInput={false}
+            value={thirdStepInputsGetter.reason}
+            onChangeHandler={genericChangeHandler("reason")}
           />
           <DateInput
             label="Estimated Delivery Date"
@@ -141,6 +175,8 @@ const ThirdStep = ({ progressSetter }: ThirdStepProps) => {
             id="estimated-delivery-date"
             variant="yellow"
             requiredInput={false}
+            value={thirdStepInputsGetter.estimatedDeliveryDate}
+            onChangeHandler={genericChangeHandler("estimatedDeliveryDate")}
           />
         </div>
         <div className="flex-3 overflow-auto lg:overflow-y-auto max-h-64 lg:max-h-full lg:h-full border">
@@ -245,6 +281,8 @@ const ThirdStep = ({ progressSetter }: ThirdStepProps) => {
             className="bg-black hover:bg-black/70 active:bg-black/85 | px-4 py-2 border rounded-2xl border-black font-bold tracking-wide text-white select-none"
             onClick={() => {
               progressSetter((prev) => prev.filter((num) => num !== STEP));
+              thirdStepInputsInputsSetter(thirdStepInputsDefaultValue);
+              console.log(thirdStepInputsGetter);
             }}
           >
             Clear
@@ -253,6 +291,7 @@ const ThirdStep = ({ progressSetter }: ThirdStepProps) => {
             className="bg-black hover:bg-black/70 active:bg-black/85 | px-4 py-2 border rounded-2xl border-black font-bold tracking-wide text-white select-none"
             onClick={() => {
               progressSetter((prev) => [...prev, STEP]);
+              console.log(thirdStepInputsGetter);
             }}
           >
             Next

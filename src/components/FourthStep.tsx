@@ -1,14 +1,33 @@
 import EmployeeSectionMappings from "../dummies/Approval.json";
 import TipBox from "./TipBox";
 import MultiselectionInputTwoFilter from "./MultiselectionInputTwoFilter";
-
-interface FifthStepProps {
-  progressSetter: React.Dispatch<React.SetStateAction<number[]>>;
-}
+import type { FourthStepInputs } from "../pages/Submit";
 
 const STEP = 4;
 
-const FourthStep = ({ progressSetter }: FifthStepProps) => {
+interface FifthStepProps {
+  progressSetter: React.Dispatch<React.SetStateAction<number[]>>;
+  fourthStepInputsGetter: FourthStepInputs;
+  fourthStepInputsSetter: React.Dispatch<
+    React.SetStateAction<FourthStepInputs>
+  >;
+  fourthStepInputsDefaultValue: FourthStepInputs;
+}
+
+const FourthStep = ({
+  progressSetter,
+  fourthStepInputsGetter,
+  fourthStepInputsSetter,
+  fourthStepInputsDefaultValue,
+}: FifthStepProps) => {
+  const onChangeHandler =
+    (field: keyof FourthStepInputs) => (newSelections: string[]) => {
+      fourthStepInputsSetter((prev) => ({
+        ...prev,
+        [field]: newSelections,
+      }));
+    };
+
   return (
     <div className="rounded-2xl bg-green-100 p-8 flex flex-col gap-4 flex-1 w-full">
       <h1 className="text-3xl font-bold text-green-600">Step 4</h1>
@@ -32,6 +51,8 @@ const FourthStep = ({ progressSetter }: FifthStepProps) => {
         defaultFilterDefaultValue="Select Section"
         revealedFilterDefaultValue="Select Approver"
         mappings={EmployeeSectionMappings}
+        selections={fourthStepInputsGetter.approver}
+        onSelectionsChange={onChangeHandler("approver")}
       />
       <MultiselectionInputTwoFilter
         label="Releaser"
@@ -45,6 +66,8 @@ const FourthStep = ({ progressSetter }: FifthStepProps) => {
         defaultFilterDefaultValue="Select Section"
         revealedFilterDefaultValue="Select Releaser"
         mappings={EmployeeSectionMappings}
+        selections={fourthStepInputsGetter.releaser}
+        onSelectionsChange={onChangeHandler("releaser")}
       />
       <MultiselectionInputTwoFilter
         label="Administrator"
@@ -58,12 +81,16 @@ const FourthStep = ({ progressSetter }: FifthStepProps) => {
         defaultFilterDefaultValue="Select Section"
         revealedFilterDefaultValue="Select Administrator"
         mappings={EmployeeSectionMappings}
+        selections={fourthStepInputsGetter.administrator}
+        onSelectionsChange={onChangeHandler("administrator")}
       />
       <div className="flex gap-2">
         <div
           className="bg-black hover:bg-black/70 active:bg-black/85 | px-4 py-2 border rounded-2xl border-black font-bold tracking-wide text-white select-none"
           onClick={() => {
             progressSetter((prev) => prev.filter((num) => num !== STEP));
+            fourthStepInputsSetter(fourthStepInputsDefaultValue);
+            console.log(fourthStepInputsGetter);
           }}
         >
           Clear
@@ -72,6 +99,7 @@ const FourthStep = ({ progressSetter }: FifthStepProps) => {
           className="bg-black hover:bg-black/70 active:bg-black/85 | px-4 py-2 border rounded-2xl border-black font-bold tracking-wide text-white select-none"
           onClick={() => {
             progressSetter((prev) => [...prev, STEP]);
+            console.log(fourthStepInputsGetter);
           }}
         >
           Next

@@ -1,7 +1,11 @@
-import { useState } from "react";
 import RemovableSelections from "./RemovableSelections";
 
-const MultifileInput = () => {
+interface MultifileInputProps {
+  uploads: File[];
+  onUploadsChange: (newUploads: File[]) => void;
+}
+
+const MultifileInput = ({ uploads, onUploadsChange }: MultifileInputProps) => {
   const handleFileUpload = (
     elementInput: React.ChangeEvent<HTMLInputElement>,
   ) => {
@@ -18,10 +22,8 @@ const MultifileInput = () => {
       return;
     }
 
-    setFiles([...files, ...inputFiles]);
+    onUploadsChange([...uploads, ...inputFiles]);
   };
-
-  const [files, setFiles] = useState<File[]>([]);
 
   return (
     <>
@@ -52,8 +54,8 @@ const MultifileInput = () => {
       <RemovableSelections
         color="purple"
         colorIntensity="600"
-        array={files}
-        arraySetter={setFiles}
+        array={uploads}
+        arraySetter={onUploadsChange}
         getLabel={(inputFile) => inputFile.name}
       />
     </>

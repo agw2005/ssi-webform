@@ -8,6 +8,8 @@ interface TextInputBetweenLabelProps {
   id: string;
   requiredInput: boolean;
   variant: ColorVariant;
+  value: string;
+  onChangeHandler: (input: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 const TextInputBetweenLabel = ({
@@ -17,6 +19,8 @@ const TextInputBetweenLabel = ({
   id,
   requiredInput,
   variant,
+  value,
+  onChangeHandler,
 }: TextInputBetweenLabelProps) => {
   return (
     <div className="h-8 lg:h-9 xl:h-10 | flex">
@@ -31,6 +35,8 @@ const TextInputBetweenLabel = ({
         name={name}
         id={id}
         className={`text-xs lg:text-sm xl:text-base | h-full px-4 border ${resolveColorMappings(variant, "input")} bg-white/50 outline-none flex-1`}
+        value={value}
+        onChange={onChangeHandler}
       />
       <div
         className={`text-xs lg:text-sm xl:text-base | whitespace-nowrap font-bold rounded-r-xl h-full justify-self-center border flex items-center px-2 border-r-0 ${resolveColorMappings(variant, "label")} text-white select-none`}

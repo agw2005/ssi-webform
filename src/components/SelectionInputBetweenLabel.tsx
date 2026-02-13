@@ -1,4 +1,3 @@
-import { useState } from "react";
 import type { ColorVariant } from "../helper/tailwindColorResolver.ts";
 import { resolveColorMappings } from "../helper/tailwindColorResolver.ts";
 
@@ -15,6 +14,8 @@ interface SelectionInputBetweenLabelProps {
   variant: ColorVariant;
   defaultDisabledValue: string;
   mappings: StringToStringMapping[];
+  value: string;
+  onChangeHandler: (input: React.ChangeEvent<HTMLSelectElement>) => void;
 }
 
 /**
@@ -31,13 +32,12 @@ const SelectionInputBetweenLabel = ({
   variant,
   defaultDisabledValue,
   mappings,
+  value,
+  onChangeHandler,
 }: SelectionInputBetweenLabelProps) => {
-  const [codeSelection, setCodeSelection] = useState<string | undefined>(
-    undefined,
-  );
-  const [labelSelection, setLabelSelection] = useState<string | undefined>(
-    undefined,
-  );
+  const selectedMapping = mappings.find((mapping) => mapping.code === value);
+  const selectedLabel = selectedMapping?.label;
+
   return (
     <div className="h-8 lg:h-9 xl:h-10 | flex">
       <div
@@ -49,16 +49,9 @@ const SelectionInputBetweenLabel = ({
       <select
         name={name}
         id={id}
-        className={`text-xs lg:text-sm xl:text-base | flex-1 h-full px-4 border ${codeSelection === undefined ? "rounded-r-xl" : ""} ${resolveColorMappings(variant, "input")} bg-white/50 outline-none`}
-        onChange={(e) => {
-          const newCodeSelection = e.target.value;
-          setCodeSelection(newCodeSelection);
-          setLabelSelection(
-            mappings.find((mapping) => mapping.code === newCodeSelection)
-              ?.label,
-          );
-        }}
-        defaultValue=""
+        className={`text-xs lg:text-sm xl:text-base | flex-1 h-full px-4 border ${value === "" ? "rounded-r-xl" : ""} ${resolveColorMappings(variant, "input")} bg-white/50 outline-none`}
+        value={value}
+        onChange={onChangeHandler}
       >
         <option value="" disabled>
           {defaultDisabledValue}
@@ -71,13 +64,13 @@ const SelectionInputBetweenLabel = ({
           );
         })}
       </select>
-      {codeSelection === undefined ? (
+      {value === "" ? (
         ""
       ) : (
         <div
           className={`text-xs lg:text-sm xl:text-base | whitespace-nowrap font-bold rounded-r-xl h-full justify-self-center border flex items-center px-2 border-r-0 ${resolveColorMappings(variant, "label")} text-white select-none`}
         >
-          {labelSelection}
+          {selectedLabel}
         </div>
       )}
     </div>
