@@ -14,13 +14,11 @@ const FourthStep = ({ progressSetter }: FifthStepProps) => {
       <h1 className="text-3xl font-bold text-green-600">Step 4</h1>
       <TipBox
         label={`Special Releaser will available if you have \"Red Light\"`}
-        color="green"
-        colorIntensity="900"
+        variant="green"
       />
       <TipBox
         label={`Check again your approver before you submit your PR Form`}
-        color="green"
-        colorIntensity="900"
+        variant="green"
       />
       <MultiselectionInputTwoFilter
         label="Approver"

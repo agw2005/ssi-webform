@@ -1,10 +1,12 @@
+import type { ColorVariant } from "../helper/tailwindColorResolver.ts";
+import { resolveColorMappings } from "../helper/tailwindColorResolver.ts";
+
 interface SelectionInputProps {
   label: string;
   name: string;
   id: string;
   requiredInput: boolean;
-  color: string;
-  colorIntensity: string;
+  variant: ColorVariant;
   defaultDisabledValue: string;
   options: string[];
 }
@@ -13,8 +15,7 @@ const SelectionInput = ({
   label,
   name,
   id,
-  color,
-  colorIntensity,
+  variant,
   requiredInput,
   defaultDisabledValue,
   options,
@@ -22,7 +23,7 @@ const SelectionInput = ({
   return (
     <div className="h-8 lg:h-9 xl:h-10 | flex">
       <div
-        className={`text-xs lg:text-sm xl:text-base | font-bold rounded-l-xl h-full justify-self-center border flex items-center px-2 border-r-0 border-${color}-${colorIntensity} bg-${color}-${colorIntensity} text-white select-none`}
+        className={`text-xs lg:text-sm xl:text-base | font-bold rounded-l-xl h-full justify-self-center border flex items-center px-2 border-r-0 ${resolveColorMappings(variant, "label")} text-white select-none`}
       >
         {label}
         {requiredInput ? "*" : ""}
@@ -30,7 +31,7 @@ const SelectionInput = ({
       <select
         name={name}
         id={id}
-        className={`text-xs lg:text-sm xl:text-base | flex-1 h-full px-4 rounded-r-xl border border-${color}-${colorIntensity} text-${color}-${colorIntensity} bg-white/50 outline-none`}
+        className={`text-xs lg:text-sm xl:text-base | flex-1 h-full px-4 rounded-r-xl border ${resolveColorMappings(variant, "input")} bg-white/50 outline-none`}
         defaultValue=""
       >
         <option value="" disabled>

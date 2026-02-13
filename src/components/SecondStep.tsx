@@ -15,8 +15,7 @@ const SecondStep = ({ progressSetter }: SecondStepProps) => {
         label="No. Form"
         name="no-form"
         id="no-form"
-        color="blue"
-        colorIntensity="600"
+        variant="blue"
         requiredInput={false}
         isDisabled={true}
       />
@@ -24,8 +23,7 @@ const SecondStep = ({ progressSetter }: SecondStepProps) => {
         label="No. PR"
         name="no-pr"
         id="no-pr"
-        color="blue"
-        colorIntensity="600"
+        variant="blue"
         requiredInput={false}
         isDisabled={true}
       />
@@ -33,16 +31,14 @@ const SecondStep = ({ progressSetter }: SecondStepProps) => {
         label="Subject"
         name="subject"
         id="subject"
-        color="blue"
-        colorIntensity="600"
+        variant="blue"
         requiredInput={true}
       />
       <TextAreaInput
         label="Return on Outgoing"
         name="return-on-outgoing"
         id="return-on-outgoing"
-        color="blue"
-        colorIntensity="600"
+        variant="blue"
         requiredInput={true}
       />
       <div className="flex gap-2">

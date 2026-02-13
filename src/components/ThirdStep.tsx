@@ -44,8 +44,7 @@ const ThirdStep = ({ progressSetter }: ThirdStepProps) => {
       <h1 className="text-3xl font-bold text-yellow-600">Step 3</h1>
       <TipBox
         label={`Do not let your budget get a red light`}
-        color="yellow"
-        colorIntensity="900"
+        variant="yellow"
       />
       <div className="flex flex-col lg:flex-row gap-3 lg:h-168">
         <div className="flex flex-col gap-2">
@@ -54,8 +53,7 @@ const ThirdStep = ({ progressSetter }: ThirdStepProps) => {
             name="cost-center"
             id="cost-center"
             requiredInput={true}
-            color="yellow"
-            colorIntensity="600"
+            variant="yellow"
             defaultDisabledValue="Select Cost Center"
             mappings={DEPARTMENTS}
           />
@@ -64,8 +62,7 @@ const ThirdStep = ({ progressSetter }: ThirdStepProps) => {
             name="budget/nature"
             id="budget/nature"
             requiredInput={false}
-            color="yellow"
-            colorIntensity="600"
+            variant="yellow"
             defaultDisabledValue="Select Budget/Nature"
             options={BUDGET_NATURE}
           />
@@ -73,53 +70,46 @@ const ThirdStep = ({ progressSetter }: ThirdStepProps) => {
             label="Periode"
             name="periode"
             id="periode"
-            color="yellow"
-            colorIntensity="600"
+            variant="yellow"
             requiredInput={false}
           />
           <TextInput
             label="Balance"
             name="balance"
             id="balance"
-            color="yellow"
-            colorIntensity="600"
+            variant="yellow"
             requiredInput={false}
           />
           <TextInput
             label="Description"
             name="description"
             id="description"
-            color="yellow"
-            colorIntensity="600"
+            variant="yellow"
             requiredInput={false}
           />
           <NumberInput
             label="Quantity"
             name="quantity"
             id="quantity"
-            color="yellow"
-            colorIntensity="600"
+            variant="yellow"
             requiredInput={false}
           />
           <NumberInput
             label="Unit Price"
             name="unit-price"
             id="unit-price"
-            color="yellow"
-            colorIntensity="600"
+            variant="yellow"
             requiredInput={false}
           />
           <TipBox
             label={`Jangan gunakan koma. Gunakan titik untuk desimal.`}
-            color="yellow"
-            colorIntensity="900"
+            variant="yellow"
           />
           <TextInput
             label="Measure"
             name="measure"
             id="measure"
-            color="yellow"
-            colorIntensity="600"
+            variant="yellow"
             requiredInput={false}
           />
           <SelectionInput
@@ -127,8 +117,7 @@ const ThirdStep = ({ progressSetter }: ThirdStepProps) => {
             name="currency"
             id="currency"
             requiredInput={false}
-            color="yellow"
-            colorIntensity="600"
+            variant="yellow"
             defaultDisabledValue="Select Currency"
             options={CURRENCY}
           />
@@ -136,24 +125,21 @@ const ThirdStep = ({ progressSetter }: ThirdStepProps) => {
             label="Vendor"
             name="vendor"
             id="vendor"
-            color="yellow"
-            colorIntensity="600"
+            variant="yellow"
             requiredInput={false}
           />
           <TextInput
             label="Reason"
             name="reason"
             id="reason"
-            color="yellow"
-            colorIntensity="600"
+            variant="yellow"
             requiredInput={false}
           />
           <DateInput
             label="Estimated Delivery Date"
             name="estimated-delivery-date"
             id="estimated-delivery-date"
-            color="yellow"
-            colorIntensity="600"
+            variant="yellow"
             requiredInput={false}
           />
         </div>

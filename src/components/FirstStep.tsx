@@ -47,8 +47,7 @@ const FirstStep = ({ progressSetter }: FirstStepProps) => {
         label="Your Name"
         name="your-name"
         id="your-name"
-        color="red"
-        colorIntensity="600"
+        variant="red"
         requiredInput={true}
       />
       <SelectionInput
@@ -56,8 +55,7 @@ const FirstStep = ({ progressSetter }: FirstStepProps) => {
         name="your-section"
         id="your-section"
         requiredInput={true}
-        color="red"
-        colorIntensity="600"
+        variant="red"
         defaultDisabledValue="Select Section"
         options={SECTIONS}
       />
@@ -65,16 +63,14 @@ const FirstStep = ({ progressSetter }: FirstStepProps) => {
         label="Employee No. (NRP)"
         name="your-employee-number"
         id="your-employee-number"
-        color="red"
-        colorIntensity="600"
+        variant="red"
         requiredInput={true}
       />
       <TextInput
         label="Ext. No."
         name="your-extension-number"
         id="your-extension-number"
-        color="red"
-        colorIntensity="600"
+        variant="red"
         requiredInput={false}
       />
       <TextInputBetweenLabel
@@ -82,8 +78,7 @@ const FirstStep = ({ progressSetter }: FirstStepProps) => {
         rightLabel="@ssi.sharp-world.com"
         name="your-email"
         id="your-email"
-        color="red"
-        colorIntensity="600"
+        variant="red"
         requiredInput={true}
       />
       <SelectionInput
@@ -91,8 +86,7 @@ const FirstStep = ({ progressSetter }: FirstStepProps) => {
         name="file-resource"
         id="file-resource"
         requiredInput={true}
-        color="red"
-        colorIntensity="600"
+        variant="red"
         defaultDisabledValue="Select File Resource"
         options={FILE_RESOURCES}
       />
@@ -101,8 +95,7 @@ const FirstStep = ({ progressSetter }: FirstStepProps) => {
         name="department"
         id="department"
         requiredInput={true}
-        color="red"
-        colorIntensity="600"
+        variant="red"
         defaultDisabledValue="Select Department Code"
         mappings={DEPARTMENTS}
       />
@@ -111,8 +104,7 @@ const FirstStep = ({ progressSetter }: FirstStepProps) => {
         name="form"
         id="form"
         requiredInput={true}
-        color="red"
-        colorIntensity="600"
+        variant="red"
         defaultDisabledValue="Select Form"
         options={FORMS}
       />
