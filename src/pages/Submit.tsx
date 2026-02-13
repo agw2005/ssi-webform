@@ -6,6 +6,17 @@ import FourthStep from "../components/FourthStep.tsx";
 import FifthStep from "../components/FifthStep.tsx";
 import { useState } from "react";
 
+const PROGRESS_CONSTRAINT = {
+  FIRST_STEP: [1],
+  SECOND_STEP: [1, 2],
+  THIRD_STEP: [1, 2, 3],
+  FOURTH_STEP: [1, 2, 3, 4],
+};
+
+const evaluateConstraint = (totalProgress: number[], constraint: number[]) => {
+  return constraint.every((step) => totalProgress.includes(step));
+};
+
 const Submit = () => {
   const [progress, setProgress] = useState<number[]>([]);
 
@@ -14,24 +25,24 @@ const Submit = () => {
       <div className="flex flex-col gap-8">
         <div className="flex flex-wrap gap-8">
           <FirstStep progressSetter={setProgress} />
-          {[1].every((step) => progress.includes(step)) ? (
+          {evaluateConstraint(progress, PROGRESS_CONSTRAINT.FIRST_STEP) ? (
             <SecondStep progressSetter={setProgress} />
           ) : (
             ""
           )}
         </div>
-        {[1, 2].every((step) => progress.includes(step)) ? (
+        {evaluateConstraint(progress, PROGRESS_CONSTRAINT.SECOND_STEP) ? (
           <ThirdStep progressSetter={setProgress} />
         ) : (
           ""
         )}
         <div className="flex flex-wrap gap-8">
-          {[1, 2, 3].every((step) => progress.includes(step)) ? (
+          {evaluateConstraint(progress, PROGRESS_CONSTRAINT.THIRD_STEP) ? (
             <FourthStep progressSetter={setProgress} />
           ) : (
             ""
           )}
-          {[1, 2, 3, 4].every((step) => progress.includes(step)) ? (
+          {evaluateConstraint(progress, PROGRESS_CONSTRAINT.FOURTH_STEP) ? (
             <FifthStep />
           ) : (
             ""
