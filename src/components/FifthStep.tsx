@@ -1,5 +1,5 @@
-import type { FifthStepInputs } from "../pages/Submit";
-import MultifileInput from "./MultifileInput";
+import type { FifthStepInputs } from "../pages/Submit.tsx";
+import MultifileInput from "./MultifileInput.tsx";
 
 interface FifthStepProps {
   fifthStepInputsGetter: FifthStepInputs;

@@ -1,10 +1,10 @@
-import TextInput from "./TextInput";
-import TextInputBetweenLabel from "./TextInputBetweenLabel";
-import SelectionInput from "./SelectionInput";
-import SelectionInputBetweenLabel from "./SelectionInputBetweenLabel";
+import TextInput from "./TextInput.tsx";
+import TextInputBetweenLabel from "./TextInputBetweenLabel.tsx";
+import SelectionInput from "./SelectionInput.tsx";
+import SelectionInputBetweenLabel from "./SelectionInputBetweenLabel.tsx";
 import DEPARTMENTS from "../dummies/Departments.json";
-import type { FirstStepInputs } from "../pages/Submit";
-import { createGenericChangeHandler } from "../helper/genericInputHandler";
+import type { FirstStepInputs } from "../pages/Submit.tsx";
+import { createGenericChangeHandler } from "../helper/genericInputHandler.ts";
 
 const SECTIONS = [
   "MIS",
@@ -59,7 +59,7 @@ const FirstStep = ({
         name="your-name"
         id="your-name"
         variant="red"
-        requiredInput={true}
+        requiredInput
         value={firstStepInputsGetter.name}
         onChangeHandler={genericChangeHandler("name")}
       />
@@ -67,7 +67,7 @@ const FirstStep = ({
         label="Your Section"
         name="your-section"
         id="your-section"
-        requiredInput={true}
+        requiredInput
         variant="red"
         defaultDisabledValue="Select Section"
         options={SECTIONS}
@@ -79,7 +79,7 @@ const FirstStep = ({
         name="your-employee-number"
         id="your-employee-number"
         variant="red"
-        requiredInput={true}
+        requiredInput
         value={firstStepInputsGetter.nrp}
         onChangeHandler={genericChangeHandler("nrp")}
       />
@@ -98,7 +98,7 @@ const FirstStep = ({
         name="your-email"
         id="your-email"
         variant="red"
-        requiredInput={true}
+        requiredInput
         value={firstStepInputsGetter.email}
         onChangeHandler={genericChangeHandler("email")}
       />
@@ -106,7 +106,7 @@ const FirstStep = ({
         label="File Resource"
         name="file-resource"
         id="file-resource"
-        requiredInput={true}
+        requiredInput
         variant="red"
         defaultDisabledValue="Select File Resource"
         options={FILE_RESOURCES}
@@ -117,7 +117,7 @@ const FirstStep = ({
         label="Department"
         name="department"
         id="department"
-        requiredInput={true}
+        requiredInput
         variant="red"
         defaultDisabledValue="Select Department Code"
         mappings={DEPARTMENTS}
@@ -128,7 +128,7 @@ const FirstStep = ({
         label="Select Form"
         name="form"
         id="form"
-        requiredInput={true}
+        requiredInput
         variant="red"
         defaultDisabledValue="Select Form"
         options={FORMS}

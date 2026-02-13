@@ -1,7 +1,7 @@
-import { createGenericChangeHandler } from "../helper/genericInputHandler";
-import type { SecondStepInputs } from "../pages/Submit";
-import TextAreaInput from "./TextAreaInput";
-import TextInput from "./TextInput";
+import { createGenericChangeHandler } from "../helper/genericInputHandler.ts";
+import type { SecondStepInputs } from "../pages/Submit.tsx";
+import TextAreaInput from "./TextAreaInput.tsx";
+import TextInput from "./TextInput.tsx";
 
 const STEP = 2;
 
@@ -33,7 +33,7 @@ const SecondStep = ({
         id="no-form"
         variant="blue"
         requiredInput={false}
-        isDisabled={true}
+        isDisabled
         value={secondStepInputsGetter.formNumber}
         onChangeHandler={genericChangeHandler("formNumber")}
       />
@@ -43,7 +43,7 @@ const SecondStep = ({
         id="no-pr"
         variant="blue"
         requiredInput={false}
-        isDisabled={true}
+        isDisabled
         value={secondStepInputsGetter.prNumber}
         onChangeHandler={genericChangeHandler("prNumber")}
       />
@@ -52,7 +52,7 @@ const SecondStep = ({
         name="subject"
         id="subject"
         variant="blue"
-        requiredInput={true}
+        requiredInput
         value={secondStepInputsGetter.subject}
         onChangeHandler={genericChangeHandler("subject")}
       />
@@ -61,7 +61,7 @@ const SecondStep = ({
         name="return-on-outgoing"
         id="return-on-outgoing"
         variant="blue"
-        requiredInput={true}
+        requiredInput
         value={secondStepInputsGetter.returnOnOutgoing}
         onChangeHandler={genericChangeHandler("returnOnOutgoing")}
       />

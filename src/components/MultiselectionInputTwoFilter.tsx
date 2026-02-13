@@ -1,5 +1,5 @@
 import { useState } from "react";
-import RemovableSelections from "./RemovableSelections";
+import RemovableSelections from "./RemovableSelections.tsx";
 
 interface TwoFilterStringToStringMapping {
   section: string;

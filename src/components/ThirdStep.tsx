@@ -1,13 +1,13 @@
 import Placeholders from "../dummies/NewSubmitFormTable.json";
-import SelectionInputSeparateLabel from "./SelectionInputSeparateLabel";
+import SelectionInputSeparateLabel from "./SelectionInputSeparateLabel.tsx";
 import DEPARTMENTS from "../dummies/Departments.json";
-import SelectionInput from "./SelectionInput";
-import TextInput from "./TextInput";
-import NumberInput from "./NumberInput";
-import DateInput from "./DateInput";
-import TipBox from "./TipBox";
-import type { ThirdStepInputs } from "../pages/Submit";
-import { createGenericChangeHandler } from "../helper/genericInputHandler";
+import SelectionInput from "./SelectionInput.tsx";
+import TextInput from "./TextInput.tsx";
+import NumberInput from "./NumberInput.tsx";
+import DateInput from "./DateInput.tsx";
+import TipBox from "./TipBox.tsx";
+import type { ThirdStepInputs } from "../pages/Submit.tsx";
+import { createGenericChangeHandler } from "../helper/genericInputHandler.ts";
 
 const COLUMNS = [
   "Cost Center",
@@ -64,7 +64,7 @@ const ThirdStep = ({
             label="Cost Center"
             name="cost-center"
             id="cost-center"
-            requiredInput={true}
+            requiredInput
             variant="yellow"
             defaultDisabledValue="Select Cost Center"
             mappings={DEPARTMENTS}

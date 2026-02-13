@@ -1,7 +1,7 @@
 import EmployeeSectionMappings from "../dummies/Approval.json";
-import TipBox from "./TipBox";
-import MultiselectionInputTwoFilter from "./MultiselectionInputTwoFilter";
-import type { FourthStepInputs } from "../pages/Submit";
+import TipBox from "./TipBox.tsx";
+import MultiselectionInputTwoFilter from "./MultiselectionInputTwoFilter.tsx";
+import type { FourthStepInputs } from "../pages/Submit.tsx";
 
 const STEP = 4;
 
@@ -45,7 +45,7 @@ const FourthStep = ({
         defaultFilterId="approver-section"
         revealedFilterName="approver-name"
         revealedFilterId="approver-name"
-        requiredInput={true}
+        requiredInput
         color="green"
         colorIntensity="600"
         defaultFilterDefaultValue="Select Section"
@@ -60,7 +60,7 @@ const FourthStep = ({
         defaultFilterId="releaser-section"
         revealedFilterName="releaser-name"
         revealedFilterId="releaser-name"
-        requiredInput={true}
+        requiredInput
         color="green"
         colorIntensity="600"
         defaultFilterDefaultValue="Select Section"
@@ -75,7 +75,7 @@ const FourthStep = ({
         defaultFilterId="administrator-section"
         revealedFilterName="administrator-name"
         revealedFilterId="administrator-name"
-        requiredInput={true}
+        requiredInput
         color="green"
         colorIntensity="600"
         defaultFilterDefaultValue="Select Section"
