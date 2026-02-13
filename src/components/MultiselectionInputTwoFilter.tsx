@@ -105,8 +105,7 @@ const MultiselectionInputTwoFilter = ({
         </select>
       </div>
       <RemovableSelections
-        color="green"
-        colorIntensity="600"
+        variant="green"
         array={selections}
         arraySetter={onSelectionsChange}
         getLabel={(inputString) => inputString}

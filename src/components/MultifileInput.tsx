@@ -52,8 +52,7 @@ const MultifileInput = ({ uploads, onUploadsChange }: MultifileInputProps) => {
         </label>
       </div>
       <RemovableSelections
-        color="purple"
-        colorIntensity="600"
+        variant="purple"
         array={uploads}
         arraySetter={onUploadsChange}
         getLabel={(inputFile) => inputFile.name}
