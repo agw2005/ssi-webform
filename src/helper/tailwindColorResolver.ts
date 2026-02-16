@@ -1,6 +1,6 @@
 export type ColorVariant = "red" | "blue" | "yellow" | "green" | "purple";
 
-export type ComponentPart = "label" | "input" | "itemsStorage";
+export type ComponentPart = "label" | "input" | "itemsStorage" | "button";
 
 export const labelColorVariants = {
   red: "border-red-600 bg-red-600",
@@ -26,6 +26,17 @@ export const itemsStorageColorVariants = {
   purple: "border-purple-600 bg-white/0",
 };
 
+export const buttonColorVariants = {
+  red: "border-red-600 bg-red-600 hover:bg-red-600/70 active:bg-red-600/85",
+  blue: "border-blue-600 bg-blue-600 hover:bg-blue-600/70 active:bg-blue-600/85",
+  yellow:
+    "border-yellow-600 bg-yellow-600 hover:bg-yellow-600/70 active:bg-yellow-600/85",
+  green:
+    "border-green-600 bg-green-600 hover:bg-green-600/70 active:bg-green-600/85",
+  purple:
+    "border-purple-600 bg-purple-600 hover:bg-purple-600/70 active:bg-purple-600/85",
+};
+
 export const resolveColorMappings = (
   variant: ColorVariant,
   part: ComponentPart,
@@ -37,10 +48,10 @@ export const resolveColorMappings = (
       return inputColorVariants[variant];
     } else if (part === "itemsStorage") {
       return itemsStorageColorVariants[variant];
+    } else if (part === "button") {
+      return buttonColorVariants[variant];
     } else {
-      throw Error(
-        "Error when resolving color variant (tailwindColorResolver.ts)",
-      );
+      throw Error("Selected color variant or part does not exist");
     }
   } catch (err) {
     console.error(err);
