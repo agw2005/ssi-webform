@@ -9,9 +9,9 @@ const NAVIGATIONS = [
   { name: "Webform", link: "/" },
   { name: "Home", link: "/" },
   { name: "Submit Form", link: "/submit" },
-  { name: "Approval Menu", link: "#" },
+  { name: "Approval Menu", link: "/login" },
   { name: "Budget", link: "/budget" },
-  { name: "Account", link: "#" },
+  { name: "Account", link: "/login" },
 ];
 
 const Primitive = ({ children }: PrimitiveProps) => {
