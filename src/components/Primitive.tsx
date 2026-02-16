@@ -10,6 +10,7 @@ const LINKS = {
   submit: "/submit",
   approval: "/login", //is /login for now. in the future, direct to approval menu page directly
   budget: "/budget",
+  manual: "/manual",
   login: "/login",
 };
 const Primitive = ({ children }: PrimitiveProps) => {
@@ -41,6 +42,12 @@ const Primitive = ({ children }: PrimitiveProps) => {
             className="text-xs lg:text-base | hover:text-yellow-300 transition"
           >
             Budget
+          </Link>
+          <Link
+            to={LINKS.manual}
+            className="text-xs lg:text-base | hover:text-yellow-300 transition"
+          >
+            User Manual
           </Link>
         </div>
         <div className="flex flex-wrap">
