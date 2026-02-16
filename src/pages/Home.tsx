@@ -40,7 +40,7 @@ const Home = () => {
               return (
                 <th
                   key={index}
-                  className="text-xs lg:text-sm xl:text-base | border p-2 bg-blue-800 text-white border-black"
+                  className="text-xs lg:text-sm xl:text-base | whitespace-nowrap border p-2 bg-blue-800 text-white border-black"
                 >
                   {column}
                 </th>
@@ -52,7 +52,7 @@ const Home = () => {
           {Placeholders.map((placeholder, index) => {
             return (
               <tr key={index}>
-                <td className="text-xs lg:text-sm xl:text-base | min-w-14 | border break-all p-2">
+                <td className="text-xs lg:text-sm xl:text-base | text-center border break-all p-2">
                   {placeholder["ID Trace"]}
                 </td>
                 <td className="text-xs lg:text-sm xl:text-base | min-w-12 lg:min-w-16 xl:min-w-20 2xl:min-w-28 | border text-center p-2">

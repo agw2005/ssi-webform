@@ -3,7 +3,7 @@
     "ID": 1,
     "ID Trace": "11111",
     "Red Light Status": "True",
-    "Subject": "Spare part 1",
+    "Subject": "Rubber Coupling",
     "Amount": "101.92",
     "Requestor": "Person 2",
     "Status": "In Progress",
@@ -15,31 +15,31 @@
     "ID": 2,
     "ID Trace": "11112",
     "Red Light Status": "False",
-    "Subject": "Spare part 2",
+    "Subject": "Intake Air Filter",
     "Amount": "299.76",
     "Requestor": "Person 5",
     "Status": "In Progress",
     "Supervisor": "Person 3",
     "Submit Date": "1/26/2026",
-    "Remarks": null
+    "Remarks": ""
   },
   {
     "ID": 3,
     "ID Trace": "11113",
     "Red Light Status": "False",
-    "Subject": "Spare part 3",
+    "Subject": "V-Belt AHU",
     "Amount": "150.50",
     "Requestor": "Person 4",
     "Status": "Completed",
     "Supervisor": "Person 2",
     "Submit Date": "1/25/2026",
-    "Remarks": null
+    "Remarks": ""
   },
   {
     "ID": 4,
     "ID Trace": "11114",
     "Red Light Status": "True",
-    "Subject": "Replacement gear",
+    "Subject": "Upper Electrode H-16041 10-01-008-215",
     "Amount": "425.00",
     "Requestor": "Person 6",
     "Status": "Pending Approval",
@@ -57,7 +57,7 @@
     "Status": "In Progress",
     "Supervisor": "Person 4",
     "Submit Date": "1/27/2026",
-    "Remarks": null
+    "Remarks": ""
   },
   {
     "ID": 6,
@@ -69,7 +69,7 @@
     "Status": "Completed",
     "Supervisor": "Person 5",
     "Submit Date": "1/24/2026",
-    "Remarks": null
+    "Remarks": ""
   },
   {
     "ID": 7,
@@ -93,11 +93,11 @@
     "Status": "In Progress",
     "Supervisor": "Person 6",
     "Submit Date": "1/28/2026",
-    "Remarks": null
+    "Remarks": ""
   },
   {
     "ID": 9,
-    "ID Trace": "11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111",
+    "ID Trace": "11119",
     "Red Light Status": "False",
     "Subject": "A Really Really Really Really Really Really Really Really Really Really Really Really Really Really Really Long Subject",
     "Amount": "9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999",
@@ -105,7 +105,7 @@
     "Status": "Completed",
     "Supervisor": "A Really Really Really Really Really Really Really Really Really Really Really Really Really Really Long Name",
     "Submit Date": "1/23/2026",
-    "Remarks": null
+    "Remarks": ""
   },
   {
     "ID": 10,
@@ -129,7 +129,7 @@
     "Status": "In Progress",
     "Supervisor": "Person 2",
     "Submit Date": "1/31/2026",
-    "Remarks": null
+    "Remarks": ""
   },
   {
     "ID": 12,
@@ -153,7 +153,7 @@
     "Status": "Completed",
     "Supervisor": "Person 6",
     "Submit Date": "1/30/2026",
-    "Remarks": null
+    "Remarks": ""
   },
   {
     "ID": 14,
@@ -165,7 +165,7 @@
     "Status": "In Progress",
     "Supervisor": "Person 5",
     "Submit Date": "1/31/2026",
-    "Remarks": null
+    "Remarks": ""
   },
   {
     "ID": 15,
@@ -189,7 +189,7 @@
     "Status": "In Progress",
     "Supervisor": "Person 4",
     "Submit Date": "2/1/2026",
-    "Remarks": null
+    "Remarks": ""
   },
   {
     "ID": 17,
@@ -201,7 +201,7 @@
     "Status": "Completed",
     "Supervisor": "Person 7",
     "Submit Date": "1/29/2026",
-    "Remarks": null
+    "Remarks": ""
   },
   {
     "ID": 18,
@@ -225,7 +225,7 @@
     "Status": "In Progress",
     "Supervisor": "Person 8",
     "Submit Date": "2/1/2026",
-    "Remarks": null
+    "Remarks": ""
   },
   {
     "ID": 20,
@@ -237,6 +237,6 @@
     "Status": "Completed",
     "Supervisor": "Person 9",
     "Submit Date": "1/31/2026",
-    "Remarks": null
+    "Remarks": ""
   }
 ]
