@@ -6,6 +6,7 @@ import FilterDateRange from "../components/FilterDateRange.tsx";
 import FilterPagingRange from "../components/FilterPagingRange.tsx";
 import Search from "../components/Search.tsx";
 import Placeholders from "../dummies/HomeTable.json";
+import { Link } from "react-router-dom";
 
 const COLUMNS = [
   "ID Trace",
@@ -58,7 +59,12 @@ const Home = () => {
                   {placeholder["Red Light Status"]}
                 </td>
                 <td className="text-xs lg:text-sm xl:text-base | border break-all p-2">
-                  {placeholder["Subject"]}
+                  <Link
+                    className="text-blue-700 underline"
+                    to={`/request/${placeholder["ID"]}`}
+                  >
+                    {placeholder["Subject"]}
+                  </Link>
                 </td>
                 <td className="text-xs lg:text-sm xl:text-base | border break-all p-2">
                   {placeholder["Amount"]}

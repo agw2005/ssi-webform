@@ -7,6 +7,7 @@ import Submit from "./pages/Submit.tsx";
 import Budget from "./pages/Budget.tsx";
 import Login from "./pages/Login.tsx";
 import Manual from "./pages/Manual.tsx";
+import Request from "./pages/Request.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -17,6 +18,7 @@ createRoot(document.getElementById("root")!).render(
         <Route path="/budget" element={<Budget />} />
         <Route path="/login" element={<Login />} />
         <Route path="/manual" element={<Manual />} />
+        <Route path="/request/:requestId" element={<Request />} />
       </Routes>
     </BrowserRouter>
   </StrictMode>,

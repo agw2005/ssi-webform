@@ -1,5 +1,6 @@
 [
   {
+    "ID": 1,
     "ID Trace": "11111",
     "Red Light Status": "True",
     "Subject": "Spare part 1",
@@ -11,6 +12,7 @@
     "Remarks": "[RL]"
   },
   {
+    "ID": 2,
     "ID Trace": "11112",
     "Red Light Status": "False",
     "Subject": "Spare part 2",
@@ -22,6 +24,7 @@
     "Remarks": null
   },
   {
+    "ID": 3,
     "ID Trace": "11113",
     "Red Light Status": "False",
     "Subject": "Spare part 3",
@@ -33,6 +36,7 @@
     "Remarks": null
   },
   {
+    "ID": 4,
     "ID Trace": "11114",
     "Red Light Status": "True",
     "Subject": "Replacement gear",
@@ -44,6 +48,7 @@
     "Remarks": "[RL]"
   },
   {
+    "ID": 5,
     "ID Trace": "11115",
     "Red Light Status": "False",
     "Subject": "Tool kit",
@@ -55,6 +60,7 @@
     "Remarks": null
   },
   {
+    "ID": 6,
     "ID Trace": "11116",
     "Red Light Status": "False",
     "Subject": "Safety gloves",
@@ -66,6 +72,7 @@
     "Remarks": null
   },
   {
+    "ID": 7,
     "ID Trace": "11117",
     "Red Light Status": "True",
     "Subject": "Circuit board",
@@ -77,6 +84,7 @@
     "Remarks": "[RL]"
   },
   {
+    "ID": 8,
     "ID Trace": "11118",
     "Red Light Status": "False",
     "Subject": "Sensor unit",
@@ -88,6 +96,7 @@
     "Remarks": null
   },
   {
+    "ID": 9,
     "ID Trace": "11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111",
     "Red Light Status": "False",
     "Subject": "A Really Really Really Really Really Really Really Really Really Really Really Really Really Really Really Long Subject",
@@ -99,6 +108,7 @@
     "Remarks": null
   },
   {
+    "ID": 10,
     "ID Trace": "11120",
     "Red Light Status": "True",
     "Subject": "Hydraulic pump",
@@ -110,6 +120,7 @@
     "Remarks": "[RL]"
   },
   {
+    "ID": 11,
     "ID Trace": "11121",
     "Red Light Status": "False",
     "Subject": "Cooling fan",
@@ -121,6 +132,7 @@
     "Remarks": null
   },
   {
+    "ID": 12,
     "ID Trace": "11122",
     "Red Light Status": "True",
     "Subject": "Pressure valve",
@@ -132,6 +144,7 @@
     "Remarks": "[RL]"
   },
   {
+    "ID": 13,
     "ID Trace": "11123",
     "Red Light Status": "False",
     "Subject": "Maintenance oil",
@@ -143,6 +156,7 @@
     "Remarks": null
   },
   {
+    "ID": 14,
     "ID Trace": "11124",
     "Red Light Status": "False",
     "Subject": "Bearing set",
@@ -154,6 +168,7 @@
     "Remarks": null
   },
   {
+    "ID": 15,
     "ID Trace": "11125",
     "Red Light Status": "True",
     "Subject": "Industrial motor",
@@ -165,6 +180,7 @@
     "Remarks": "[RL]"
   },
   {
+    "ID": 16,
     "ID Trace": "11126",
     "Red Light Status": "False",
     "Subject": "Lubrication pump",
@@ -176,6 +192,7 @@
     "Remarks": null
   },
   {
+    "ID": 17,
     "ID Trace": "11127",
     "Red Light Status": "False",
     "Subject": "Air filter",
@@ -187,6 +204,7 @@
     "Remarks": null
   },
   {
+    "ID": 18,
     "ID Trace": "11128",
     "Red Light Status": "True",
     "Subject": "Control module",
@@ -198,6 +216,7 @@
     "Remarks": "[RL]"
   },
   {
+    "ID": 19,
     "ID Trace": "11129",
     "Red Light Status": "False",
     "Subject": "Power cable",
@@ -209,6 +228,7 @@
     "Remarks": null
   },
   {
+    "ID": 20,
     "ID Trace": "11130",
     "Red Light Status": "False",
     "Subject": "Diagnostic tool",
