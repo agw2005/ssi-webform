@@ -99,8 +99,8 @@ const Budget = () => {
                 Period
               </div>
               <select
-                name="file-resource"
-                id="file-resource"
+                name="period"
+                id="period"
                 className="text-xs lg:text-sm xl:text-base | h-full px-4 rounded-r-xl border outline-none"
               >
                 <option value="Show All">Show All</option>
@@ -180,8 +180,8 @@ const Budget = () => {
                   File Resource
                 </div>
                 <select
-                  name="file-resource"
-                  id="file-resource"
+                  name="general-report-file-resource"
+                  id="general-report-file-resource"
                   className="text-xs lg:text-sm xl:text-base | h-full px-4 rounded-r-xl border border-gray-600 text-gray-600 bg-white outline-none"
                 >
                   <option value="Show All">Show All</option>
@@ -199,8 +199,8 @@ const Budget = () => {
                   Period
                 </div>
                 <select
-                  name="file-resource"
-                  id="file-resource"
+                  name="general-report-period"
+                  id="general-report-period"
                   className="text-xs lg:text-sm xl:text-base | h-full px-4 rounded-r-xl border border-gray-600 text-gray-600 bg-white outline-none"
                 >
                   <option value="Show All">Show All</option>
@@ -243,8 +243,8 @@ const Budget = () => {
                   File Resource
                 </div>
                 <select
-                  name="file-resource"
-                  id="file-resource"
+                  name="report-by-quarter-file-resource"
+                  id="report-by-quarter-file-resource"
                   className="text-xs lg:text-sm xl:text-base | h-full px-4 rounded-r-xl border border-yellow-600 text-yellow-600 bg-white outline-none"
                 >
                   <option value="Show All">Show All</option>
@@ -276,8 +276,8 @@ const Budget = () => {
                   Period
                 </div>
                 <select
-                  name="file-resource"
-                  id="file-resource"
+                  name="report-by-section-period"
+                  id="report-by-section-period"
                   className="text-xs lg:text-sm xl:text-base | h-full px-4 rounded-r-xl border border-blue-600 text-blue-600 bg-white outline-none"
                 >
                   <option value="Show All">Show All</option>
@@ -309,8 +309,8 @@ const Budget = () => {
                   Period
                 </div>
                 <select
-                  name="file-resource"
-                  id="file-resource"
+                  name="report-by-nature-period"
+                  id="report-by-nature-period"
                   className="text-xs lg:text-sm xl:text-base | h-full px-4 rounded-r-xl border border-green-600 text-green-600 bg-white outline-none"
                 >
                   <option value="Show All">Show All</option>
