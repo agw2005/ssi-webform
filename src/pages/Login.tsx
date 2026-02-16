@@ -4,6 +4,7 @@ import TextInput from "../components/TextInput";
 import { resolveColorMappings } from "../helper/tailwindColorResolver";
 import { Link } from "react-router-dom";
 import { createGenericChangeHandler } from "../helper/genericInputHandler";
+import PasswordInput from "../components/PasswordInput";
 
 interface LoginInformation {
   nrp: string;
@@ -25,7 +26,7 @@ const Login = () => {
   return (
     <Primitive>
       <div className="flex flex-col gap-2">
-        <div className="flex gap-2 flex-wrap">
+        <div className="flex flex-col gap-2 max-w-1/4">
           <TextInput
             label="NRP"
             name="user-nrp"
@@ -36,7 +37,7 @@ const Login = () => {
             value={loginInformation.nrp}
             onChangeHandler={loginInformationOnChangeHandler("nrp")}
           />
-          <TextInput
+          <PasswordInput
             label="Password"
             name="user-password"
             id="user-password"
@@ -47,14 +48,14 @@ const Login = () => {
             onChangeHandler={loginInformationOnChangeHandler("password")}
           />
           <div
-            className={`text-xs lg:text-sm xl:text-base | text-white font-bold flex items-center px-4 rounded-xl ${resolveColorMappings("yellow", "button")} select-none`}
+            className={`text-xs lg:text-sm xl:text-base | w-max text-white font-bold flex items-center px-4 py-2 rounded-xl ${resolveColorMappings("yellow", "button")} select-none`}
             onClick={() => {
               console.log(loginInformation);
               setLoginInformation(LOGIN_INFORMATION_DEFAULT_VALUE);
             }}
           >
             {" "}
-            Sign in
+            <button>Sign in</button>
           </div>
         </div>
         <Link
