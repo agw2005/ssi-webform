@@ -1,10 +1,10 @@
 import { useState } from "react";
-import Primitive from "../components/Primitive";
-import TextInput from "../components/TextInput";
-import { resolveColorMappings } from "../helper/tailwindColorResolver";
+import Primitive from "../components/Primitive.tsx";
+import TextInput from "../components/TextInput.tsx";
+import { resolveColorMappings } from "../helper/tailwindColorResolver.ts";
 import { Link } from "react-router-dom";
-import { createGenericChangeHandler } from "../helper/genericInputHandler";
-import PasswordInput from "../components/PasswordInput";
+import { createGenericChangeHandler } from "../helper/genericInputHandler.ts";
+import PasswordInput from "../components/PasswordInput.tsx";
 
 interface LoginInformation {
   nrp: string;
@@ -31,7 +31,7 @@ const Login = () => {
             label="NRP"
             name="user-nrp"
             id="user-nrp"
-            requiredInput={true}
+            requiredInput
             variant="yellow"
             isDisabled={false}
             value={loginInformation.nrp}
@@ -41,7 +41,7 @@ const Login = () => {
             label="Password"
             name="user-password"
             id="user-password"
-            requiredInput={true}
+            requiredInput
             variant="yellow"
             isDisabled={false}
             value={loginInformation.password}
@@ -55,7 +55,7 @@ const Login = () => {
             }}
           >
             {" "}
-            <button>Sign in</button>
+            <button type="button">Sign in</button>
           </div>
         </div>
         <Link
