@@ -45,9 +45,16 @@ const Primitive = ({ children }: PrimitiveProps) => {
         </div>
         <div className="flex flex-wrap">
           <ForexInformation />
-          <div className="text-xs lg:text-base | px-2 lg:px-4 xl:px-6 2xl:px-8 | bg-black hover:bg-white hover:text-black active:bg-gray-800 active:text-white | flex items-center">
+          <Link
+            to={
+              NAVIGATIONS.filter(
+                (navigation) => navigation.name === "Account",
+              )[0].link
+            }
+            className="text-xs lg:text-base | px-2 lg:px-4 xl:px-6 2xl:px-8 | bg-black hover:bg-white hover:text-black active:bg-gray-800 active:text-white | flex items-center"
+          >
             <p className="select-none">User</p>
-          </div>
+          </Link>
         </div>
       </nav>
       <main className="mx-4 lg:mx-8 xl:mx-12 2xl:mx-16 | mt-4 lg:mt-8 xl:mt-12 2xl:mt-16 | bg-white p-4">
