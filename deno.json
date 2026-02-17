@@ -1,0 +1,6 @@
+{
+  "name": "ssi-webform",
+  "version": "0.0.0",
+  "exports": "./mod.ts",
+  "workspace": ["./server", "./client"]
+}
