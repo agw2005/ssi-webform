@@ -1,5 +1,6 @@
 import { Application, Router } from "@oak/oak";
 import {
+  authenticate,
   getPagedBudgets,
   getPagedFileResources,
   getPagedFlows,
@@ -17,8 +18,12 @@ import {
   getPagedTypes,
   getPagedUploadFiles,
   getPagedUserMasters,
+  getUserAuthInfo,
+  guest,
   healthCheck,
 } from "./routes.ts";
+import login from "./auth/main.ts";
+import isAuthenticated from "./auth/authMiddleware.ts";
 
 const oakApp = new Application();
 const oakRouter = new Router();
@@ -41,6 +46,11 @@ oakRouter.get("/traced/:page", getPagedTraceDs);
 oakRouter.get("/type/:page", getPagedTypes);
 oakRouter.get("/uploadfile/:page", getPagedUploadFiles);
 oakRouter.get("/usermaster/:page", getPagedUserMasters);
+oakRouter.get("/guest", guest);
+oakRouter.get("/auth", isAuthenticated, authenticate);
+oakRouter.get("/authInfo/:page", getUserAuthInfo);
+
+oakRouter.post("/login", login);
 
 oakApp.use(oakRouter.routes());
 oakApp.use(oakRouter.allowedMethods());

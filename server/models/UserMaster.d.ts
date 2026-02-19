@@ -11,3 +11,8 @@ export interface UserMasterTable extends RowDataPacket {
   Email: string;
   LastLogin: string;
 }
+
+export interface UserMasterAuthInformation extends RowDataPacket {
+  Password: string;
+  NRP: string;
+}

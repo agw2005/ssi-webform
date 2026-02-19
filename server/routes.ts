@@ -14,7 +14,10 @@ import { basicGet as TraceGet } from "./controllers/Trace.ts";
 import { basicGet as TraceDGet } from "./controllers/TraceD.ts";
 import { basicGet as TypeGet } from "./controllers/Type.ts";
 import { basicGet as UploadFileGet } from "./controllers/UploadFile.ts";
-import { basicGet as UserMasterGet } from "./controllers/UserMaster.ts";
+import {
+  authInformation,
+  basicGet as UserMasterGet,
+} from "./controllers/UserMaster.ts";
 import type { RouterContext } from "@oak/oak";
 import databasePool from "./dbpool.ts";
 
@@ -154,4 +157,22 @@ export const getPagedUserMasters = async (
   const [rows, _metadata] = await UserMasterGet(databasePool, page);
   ctx.response.status = 200;
   ctx.response.body = rows;
+};
+
+export const getUserAuthInfo = async (
+  ctx: RouterContext<"/authInfo/:page">,
+) => {
+  const page = Number(ctx.params.page);
+  const [rows, _metadata] = await authInformation(databasePool, page);
+  ctx.response.status = 200;
+  ctx.response.body = rows;
+};
+
+export const guest = (ctx: RouterContext<"/guest">) => {
+  ctx.response.body =
+    "This page doesn't require authentication - Connection success";
+};
+
+export const authenticate = (ctx: RouterContext<"/auth">) => {
+  ctx.response.body = "This page requires authentication - Connection success";
 };
