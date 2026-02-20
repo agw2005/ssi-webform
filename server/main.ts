@@ -54,6 +54,18 @@ oakRouter.post("/login", login);
 
 oakApp.use(oakRouter.routes());
 oakApp.use(oakRouter.allowedMethods());
+oakApp.use((ctx, next) => {
+  ctx.response.headers.set(
+    "Access-Control-Allow-Origin",
+    "http://localhost:8000",
+  );
+  ctx.response.headers.set(
+    "Access-Control-Allow-Methods",
+    "GET, POST, OPTIONS",
+  );
+  ctx.response.headers.set("Access-Control-Allow-Headers", "Content-Type");
+  return next();
+});
 
 if (import.meta.main) {
   console.log(`Server is running on http://localhost:8000`);
