@@ -168,11 +168,6 @@ export const getUserAuthInfo = async (
   ctx.response.body = rows;
 };
 
-export const guest = (ctx: RouterContext<"/guest">) => {
-  ctx.response.body =
-    "This page doesn't require authentication - Connection success";
-};
-
 export const authenticate = (ctx: RouterContext<"/auth">) => {
   ctx.response.status = 200;
   ctx.response.body = {

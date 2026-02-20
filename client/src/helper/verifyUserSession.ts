@@ -6,7 +6,7 @@ const verifyUserSession = async () => {
   const storedToken = localStorage.getItem("session_token");
 
   if (!storedToken) {
-    console.error("No token found");
+    // console.error("No token found");
     return;
   }
 
@@ -21,10 +21,10 @@ const verifyUserSession = async () => {
     const responseJson: AuthResponse = await response.json();
 
     if (response.ok) {
-      console.log(responseJson.message);
+      // console.log(responseJson.message);
       return responseJson.verdict;
     } else {
-      console.error(responseJson.message);
+      // console.error(responseJson.message);
       return responseJson.verdict;
     }
   } catch (err) {

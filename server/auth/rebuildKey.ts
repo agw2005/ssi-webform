@@ -7,7 +7,7 @@ dotenv.config();
 const rebuildKey = async () => {
   const jwtKeyString = process.env.JWT_KEY;
   if (!jwtKeyString) {
-    throw new Error("JWT_KEY environment variable is missing.");
+    throw new Error("JWT_KEY environment variable is missing");
   }
   const jwtKeyBytes = decodeBase64(jwtKeyString);
   const jwtKey = await crypto.subtle.importKey(

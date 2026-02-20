@@ -20,7 +20,6 @@ import {
   getPagedUploadFiles,
   getPagedUserMasters,
   getUserAuthInfo,
-  guest,
   healthCheck,
 } from "./routes.ts";
 import login from "./auth/main.ts";
@@ -47,7 +46,6 @@ oakRouter.get("/traced/:page", getPagedTraceDs);
 oakRouter.get("/type/:page", getPagedTypes);
 oakRouter.get("/uploadfile/:page", getPagedUploadFiles);
 oakRouter.get("/usermaster/:page", getPagedUserMasters);
-oakRouter.get("/guest", guest);
 oakRouter.get("/auth", isAuthenticated, authenticate);
 oakRouter.get("/authInfo/:page", getUserAuthInfo);
 
