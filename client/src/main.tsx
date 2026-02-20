@@ -8,15 +8,16 @@ import Login from "./pages/Login.tsx";
 import Manual from "./pages/Manual.tsx";
 import Request from "./pages/Request.tsx";
 import Approve from "./pages/Approve.tsx";
-import jwtAuthLoader from "./helper/verifyAuthorization.ts";
+import { verifyIsNotAuthorized } from "./helper/verifyIsNotAuthorized.ts";
+import { verifyIsAuthorized } from "./helper/verifyIsAuthorized.ts";
 
 const router = createBrowserRouter([
   { path: "/", element: <Home /> },
   { path: "/submit", element: <Submit /> },
   { path: "/budget", element: <Budget /> },
-  { path: "/login", element: <Login /> },
+  { path: "/login", element: <Login />, loader: verifyIsAuthorized },
   { path: "/manual", element: <Manual /> },
-  { path: "/approve", element: <Approve />, loader: jwtAuthLoader },
+  { path: "/approve", element: <Approve />, loader: verifyIsNotAuthorized },
   { path: "/request/:requestId", element: <Request /> },
 ]);
 

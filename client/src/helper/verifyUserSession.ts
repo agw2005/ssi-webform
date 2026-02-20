@@ -1,10 +1,7 @@
-import { redirect } from "react-router-dom";
-
 interface AuthResponse {
   message: string;
   verdict: boolean;
 }
-
 const verifyUserSession = async () => {
   const storedToken = localStorage.getItem("session_token");
 
@@ -36,12 +33,4 @@ const verifyUserSession = async () => {
   }
 };
 
-const jwtAuthLoader = async () => {
-  const isAuthorized = await verifyUserSession();
-  if (!isAuthorized) {
-    throw redirect("/login");
-  }
-  return null;
-};
-
-export default jwtAuthLoader;
+export default verifyUserSession;
