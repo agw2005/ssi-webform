@@ -59,7 +59,12 @@ const Primitive = ({ children }: PrimitiveProps) => {
           ) : (
             <Link
               onClick={() => {
-                localStorage.removeItem("session_token");
+                const confirmLogout = globalThis.confirm(
+                  "Are you sure you want to log out?",
+                );
+                if (confirmLogout) {
+                  localStorage.removeItem("session_token");
+                }
               }}
               to={LINKS.login}
               className="text-xs lg:text-base | hover:text-yellow-300 transition"
