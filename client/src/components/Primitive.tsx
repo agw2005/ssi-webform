@@ -8,10 +8,9 @@ interface PrimitiveProps {
 const LINKS = {
   home: "/",
   submit: "/submit",
-  approval: "/login", //is /login for now. in the future, direct to approval menu page directly
+  approval: "/approve",
   budget: "/budget",
   manual: "/manual",
-  login: "/login",
 };
 const Primitive = ({ children }: PrimitiveProps) => {
   return (
@@ -52,12 +51,9 @@ const Primitive = ({ children }: PrimitiveProps) => {
         </div>
         <div className="flex flex-wrap">
           <ForexInformation />
-          <Link
-            to={LINKS.login}
-            className="text-xs lg:text-base | px-2 lg:px-4 xl:px-6 2xl:px-8 | bg-black hover:bg-white hover:text-black active:bg-gray-800 active:text-white | flex items-center"
-          >
+          <div className="text-xs lg:text-base | px-2 lg:px-4 xl:px-6 2xl:px-8 | bg-black hover:bg-white hover:text-black active:bg-gray-800 active:text-white | flex items-center">
             <p className="select-none">Requestor</p>
-          </Link>
+          </div>
         </div>
       </nav>
       <main className="mx-4 lg:mx-8 xl:mx-12 2xl:mx-16 | mt-4 lg:mt-8 xl:mt-12 2xl:mt-16 | bg-white p-4">

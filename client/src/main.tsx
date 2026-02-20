@@ -8,6 +8,7 @@ import Budget from "./pages/Budget.tsx";
 import Login from "./pages/Login.tsx";
 import Manual from "./pages/Manual.tsx";
 import Request from "./pages/Request.tsx";
+import Approve from "./pages/Approve.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -18,6 +19,7 @@ createRoot(document.getElementById("root")!).render(
         <Route path="/budget" element={<Budget />} />
         <Route path="/login" element={<Login />} />
         <Route path="/manual" element={<Manual />} />
+        <Route path="/approve" element={<Approve />} />
         <Route path="/request/:requestId" element={<Request />} />
       </Routes>
     </BrowserRouter>
