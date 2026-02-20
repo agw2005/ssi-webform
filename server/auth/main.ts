@@ -4,6 +4,11 @@ import { create, getNumericDate } from "@zaubrik/djwt";
 import type { Payload, Header } from "@zaubrik/djwt";
 import rebuildKey from "./rebuildKey.ts";
 
+interface ResponseBody {
+  NRP: string;
+  jwt: string;
+}
+
 const jwtKey = await rebuildKey();
 
 const jwtHeader: Header = { alg: "HS512", type: "JWT" };
@@ -27,11 +32,12 @@ const login = async (ctx: RouterContext<"/login">) => {
         };
         const jwt = await create(jwtHeader, jwtPayload, jwtKey);
         if (jwt) {
-          ctx.response.status = 200;
-          ctx.response.body = {
+          const responseBody: ResponseBody = {
             NRP: userMaster.NRP,
             jwt,
           };
+          ctx.response.status = 200;
+          ctx.response.body = responseBody;
         } else {
           ctx.response.status = 500;
           ctx.response.body = {

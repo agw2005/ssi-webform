@@ -174,5 +174,9 @@ export const guest = (ctx: RouterContext<"/guest">) => {
 };
 
 export const authenticate = (ctx: RouterContext<"/auth">) => {
-  ctx.response.body = "This page requires authentication - Connection success";
+  ctx.response.status = 200;
+  ctx.response.body = {
+    message: "Authentication success",
+    verdict: true,
+  };
 };
