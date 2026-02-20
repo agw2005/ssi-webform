@@ -1,7 +1,6 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { BrowserRouter } from "react-router-dom";
-import { Routes, Route } from "react-router-dom";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Home from "./pages/Home.tsx";
 import Submit from "./pages/Submit.tsx";
 import Budget from "./pages/Budget.tsx";
@@ -9,19 +8,20 @@ import Login from "./pages/Login.tsx";
 import Manual from "./pages/Manual.tsx";
 import Request from "./pages/Request.tsx";
 import Approve from "./pages/Approve.tsx";
+import jwtAuthLoader from "./helper/verifyAuthorization.ts";
+
+const router = createBrowserRouter([
+  { path: "/", element: <Home /> },
+  { path: "/submit", element: <Submit /> },
+  { path: "/budget", element: <Budget /> },
+  { path: "/login", element: <Login /> },
+  { path: "/manual", element: <Manual /> },
+  { path: "/approve", element: <Approve />, loader: jwtAuthLoader },
+  { path: "/request/:requestId", element: <Request /> },
+]);
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/submit" element={<Submit />} />
-        <Route path="/budget" element={<Budget />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/manual" element={<Manual />} />
-        <Route path="/approve" element={<Approve />} />
-        <Route path="/request/:requestId" element={<Request />} />
-      </Routes>
-    </BrowserRouter>
+    <RouterProvider router={router} />
   </StrictMode>,
 );
