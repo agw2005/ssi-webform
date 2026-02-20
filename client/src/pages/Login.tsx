@@ -2,7 +2,7 @@ import { useState } from "react";
 import Primitive from "../components/Primitive.tsx";
 import TextInput from "../components/TextInput.tsx";
 import { resolveColorMappings } from "../helper/tailwindColorResolver.ts";
-import { Link, redirect } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { createGenericChangeHandler } from "../helper/genericInputHandler.ts";
 import PasswordInput from "../components/PasswordInput.tsx";
 
@@ -29,41 +29,43 @@ const LOGIN_INFORMATION_DEFAULT_VALUE: LoginInformation = {
   password: "",
 };
 
-const handleLoginSubmit = async (data: LoginInformation) => {
-  const payload: LoginRequest = {
-    value: {
-      NRP: data.nrp,
-      Password: data.password,
-    },
-  };
-
-  try {
-    const response = await fetch("http://localhost:8000/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "applications/json",
-      },
-      body: JSON.stringify(payload),
-    });
-    const responseBody: LoginResponse = await response.json();
-    if (response.ok) {
-      console.log(responseBody.message);
-      localStorage.setItem("session_token", responseBody.jwt);
-      throw redirect("/approve");
-    } else {
-      console.log(responseBody.message);
-    }
-  } catch (err) {
-    console.error(err);
-  }
-};
-
 const Login = () => {
   const [loginInformation, setLoginInformation] = useState<LoginInformation>(
     LOGIN_INFORMATION_DEFAULT_VALUE,
   );
   const loginInformationOnChangeHandler =
     createGenericChangeHandler(setLoginInformation);
+
+  const navigate = useNavigate();
+
+  const handleLoginSubmit = async (data: LoginInformation) => {
+    const payload: LoginRequest = {
+      value: {
+        NRP: data.nrp,
+        Password: data.password,
+      },
+    };
+
+    try {
+      const response = await fetch("http://localhost:8000/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "applications/json",
+        },
+        body: JSON.stringify(payload),
+      });
+      const responseBody: LoginResponse = await response.json();
+      if (response.ok) {
+        console.log(responseBody.message);
+        localStorage.setItem("session_token", responseBody.jwt);
+        navigate("/approve");
+      } else {
+        console.log(responseBody.message);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   return (
     <Primitive>
