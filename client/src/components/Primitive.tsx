@@ -1,3 +1,4 @@
+import { useAuth } from "../hooks/useAuth.tsx";
 import ForexInformation from "./ForexInformation.tsx";
 import { Link } from "react-router-dom";
 
@@ -11,8 +12,11 @@ const LINKS = {
   approval: "/approve",
   budget: "/budget",
   manual: "/manual",
+  login: "/login",
 };
 const Primitive = ({ children }: PrimitiveProps) => {
+  const { isAuthorized, isLoading } = useAuth();
+
   return (
     <div className="bg-yellow-600/25 min-h-screen pb-16">
       <nav className="pl-2 lg:pl-4 xl:pl-6 2xl:pl-8 | flex justify-between gap-2 bg-black text-white sticky inset-0 z-100">
@@ -48,11 +52,28 @@ const Primitive = ({ children }: PrimitiveProps) => {
           >
             User Manual
           </Link>
+          {isLoading ? (
+            "Logout"
+          ) : !isAuthorized ? (
+            ""
+          ) : (
+            <Link
+              onClick={() => {
+                localStorage.removeItem("session_token");
+              }}
+              to={LINKS.login}
+              className="text-xs lg:text-base | hover:text-yellow-300 transition"
+            >
+              Logout
+            </Link>
+          )}
         </div>
         <div className="flex flex-wrap">
           <ForexInformation />
           <div className="text-xs lg:text-base | px-2 lg:px-4 xl:px-6 2xl:px-8 | bg-black hover:bg-white hover:text-black active:bg-gray-800 active:text-white | flex items-center">
-            <p className="select-none">Requestor</p>
+            <p className="select-none">
+              {isLoading ? "Loading" : isAuthorized ? "Approver" : "Requestor"}
+            </p>
           </div>
         </div>
       </nav>
