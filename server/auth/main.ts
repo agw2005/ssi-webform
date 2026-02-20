@@ -5,6 +5,7 @@ import type { Payload, Header } from "@zaubrik/djwt";
 import rebuildKey from "./rebuildKey.ts";
 
 interface ResponseBody {
+  message: string;
   NRP: string;
   jwt: string;
 }
@@ -33,16 +34,21 @@ const login = async (ctx: RouterContext<"/login">) => {
         const jwt = await create(jwtHeader, jwtPayload, jwtKey);
         if (jwt) {
           const responseBody: ResponseBody = {
+            message: "Valid credentials",
             NRP: userMaster.NRP,
             jwt,
           };
           ctx.response.status = 200;
           ctx.response.body = responseBody;
         } else {
-          ctx.response.status = 500;
-          ctx.response.body = {
-            message: "JWT Token did not exist despite correct credentials.",
+          const responseBody: ResponseBody = {
+            message:
+              "Token was not successfully generated despite correct credentials",
+            NRP: userMaster.NRP,
+            jwt: "",
           };
+          ctx.response.status = 500;
+          ctx.response.body = responseBody;
         }
         return;
       }
@@ -51,10 +57,13 @@ const login = async (ctx: RouterContext<"/login">) => {
     response = await fetch(`http://localhost:8000/authInfo/${page}`);
     userMasters = await response.json();
   }
-  ctx.response.status = 422;
-  ctx.response.body = {
-    message: "Invalid Credentials.",
+  const responseBody: ResponseBody = {
+    message: "Invalid credentials",
+    NRP: "",
+    jwt: "",
   };
+  ctx.response.status = 422;
+  ctx.response.body = responseBody;
 };
 
 export default login;
