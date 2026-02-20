@@ -10,14 +10,25 @@ import Request from "./pages/Request.tsx";
 import Approve from "./pages/Approve.tsx";
 import { verifyIsNotAuthorized } from "./helper/verifyIsNotAuthorized.ts";
 import { verifyIsAuthorized } from "./helper/verifyIsAuthorized.ts";
+import LoadingFallback from "./components/LoadingFallback.tsx";
 
 const router = createBrowserRouter([
   { path: "/", element: <Home /> },
   { path: "/submit", element: <Submit /> },
   { path: "/budget", element: <Budget /> },
-  { path: "/login", element: <Login />, loader: verifyIsAuthorized },
+  {
+    path: "/login",
+    element: <Login />,
+    loader: verifyIsAuthorized,
+    hydrateFallbackElement: <LoadingFallback />,
+  },
   { path: "/manual", element: <Manual /> },
-  { path: "/approve", element: <Approve />, loader: verifyIsNotAuthorized },
+  {
+    path: "/approve",
+    element: <Approve />,
+    loader: verifyIsNotAuthorized,
+    hydrateFallbackElement: <LoadingFallback />,
+  },
   { path: "/request/:requestId", element: <Request /> },
 ]);
 
