@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Primitive from "../components/reusable/Primitive.tsx";
 import Placeholders from "../dummies/BudgetSearchTable.json" with { type: "json" };
+import BudgetViewFilters from "../components/non-reusable/budget/BudgetViewFilters.tsx";
 
 const COLUMNS = [
   "File Resource",
@@ -33,7 +34,7 @@ const COLUMNS = [
   "Bud_12",
   "Usage12",
 ];
-const OPTIONS = ["EXIM", "FCS", "GA", "MC", "MIS"];
+const FILE_RESOURCES = ["EXIM", "FCS", "GA", "MC", "MIS"];
 const PERIODS = [
   "2025LH",
   "2025FH",
@@ -51,6 +52,8 @@ const PERIODS = [
 
 const Budget = () => {
   const [viewMode, setViewMode] = useState<"Budget" | "Report">("Budget");
+  const [fileResource, setFileResource] = useState("");
+  const [period, setPeriod] = useState("");
 
   return (
     <Primitive>
@@ -74,51 +77,18 @@ const Budget = () => {
           </div>
         </div>
         {viewMode === "Budget" ? (
-          <>
-            <div className="h-8 lg:h-9 xl:h-10 | flex items-center w-max">
-              <div className="text-xs lg:text-sm xl:text-base | rounded-l-xl h-full justify-self-center border flex items-center px-2 border-r-0 border-black bg-black text-white select-none">
-                File Resource
-              </div>
-              <select
-                name="file-resource"
-                id="file-resource"
-                className="text-xs lg:text-sm xl:text-base | h-full px-4 rounded-r-xl border outline-none"
-              >
-                <option value="Show All">Show All</option>
-                {OPTIONS.map((option, index) => {
-                  return (
-                    <option key={index} value={option}>
-                      {option}
-                    </option>
-                  );
-                })}
-              </select>
-            </div>
-            <div className="h-8 lg:h-9 xl:h-10 | flex items-center w-max">
-              <div className="text-xs lg:text-sm xl:text-base | rounded-l-xl h-full justify-self-center border flex items-center px-2 border-r-0 border-black bg-black text-white select-none">
-                Period
-              </div>
-              <select
-                name="period"
-                id="period"
-                className="text-xs lg:text-sm xl:text-base | h-full px-4 rounded-r-xl border outline-none"
-              >
-                <option value="Show All">Show All</option>
-                {PERIODS.map((option, index) => {
-                  return (
-                    <option key={index} value={option}>
-                      {option}
-                    </option>
-                  );
-                })}
-              </select>
-            </div>
-            <div className="h-8 lg:h-9 xl:h-10 | text-black hover:text-white active:text-black | bg-white hover:bg-black active:bg-white | border-black hover:border-blue-900 active:border-red-900 | flex items-center border px-4 rounded-xl">
-              <p className="text-xs lg:text-sm xl:text-base | select-none">
-                Search
-              </p>
-            </div>
-          </>
+          <BudgetViewFilters
+            fileResources={FILE_RESOURCES}
+            periods={PERIODS}
+            fileResourceValue={fileResource}
+            periodValue={period}
+            fileResourceOnChange={(e) => {
+              setFileResource(e.currentTarget.value);
+            }}
+            periodOnChange={(e) => {
+              setPeriod(e.currentTarget.value);
+            }}
+          />
         ) : (
           ""
         )}
@@ -185,7 +155,7 @@ const Budget = () => {
                   className="text-xs lg:text-sm xl:text-base | h-full px-4 rounded-r-xl border border-gray-600 text-gray-600 bg-white outline-none"
                 >
                   <option value="Show All">Show All</option>
-                  {OPTIONS.map((option, index) => {
+                  {FILE_RESOURCES.map((option, index) => {
                     return (
                       <option key={index} value={option}>
                         {option}
@@ -248,7 +218,7 @@ const Budget = () => {
                   className="text-xs lg:text-sm xl:text-base | h-full px-4 rounded-r-xl border border-yellow-600 text-yellow-600 bg-white outline-none"
                 >
                   <option value="Show All">Show All</option>
-                  {OPTIONS.map((option, index) => {
+                  {FILE_RESOURCES.map((option, index) => {
                     return (
                       <option key={index} value={option}>
                         {option}
