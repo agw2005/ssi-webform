@@ -2,6 +2,7 @@ import { useState } from "react";
 import Primitive from "../components/reusable/Primitive.tsx";
 import Placeholders from "../dummies/BudgetSearchTable.json" with { type: "json" };
 import BudgetViewFilters from "../components/non-reusable/budget/BudgetViewFilters.tsx";
+import Switch from "../components/reusable/Switch.tsx";
 
 const COLUMNS = [
   "File Resource",
@@ -58,24 +59,16 @@ const Budget = () => {
   return (
     <Primitive>
       <div className="flex gap-2 w-max">
-        <div className="h-8 lg:h-9 xl:h-10 | flex items-center w-max">
-          <div
-            onClick={() => {
-              setViewMode("Report");
-            }}
-            className={`text-xs lg:text-sm xl:text-base | ${viewMode !== "Budget" ? "bg-black text-white" : "bg-white text-black hover:text-white hover:bg-gray-700"} rounded-l-xl h-full justify-self-center border flex items-center px-2 border-r-0 border-black select-none`}
-          >
-            View Report
-          </div>
-          <div
-            onClick={() => {
-              setViewMode("Budget");
-            }}
-            className={`text-xs lg:text-sm xl:text-base | ${viewMode !== "Report" ? "bg-black text-white" : "bg-white text-black hover:text-white hover:bg-gray-700"} rounded-r-xl h-full justify-self-center border flex items-center px-2 border-black select-none`}
-          >
-            View Budget
-          </div>
-        </div>
+        <Switch
+          id="budget-report-view-switch"
+          variant="red"
+          onValue="Report"
+          offValue="Budget"
+          onLabel="View Report"
+          offLabel="View Budget"
+          setter={setViewMode}
+          getter={viewMode}
+        />
         {viewMode === "Budget" ? (
           <BudgetViewFilters
             fileResources={FILE_RESOURCES}

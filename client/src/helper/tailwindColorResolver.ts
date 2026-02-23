@@ -6,7 +6,13 @@ export type ColorVariant =
   | "purple"
   | "black";
 
-export type ComponentPart = "label" | "input" | "itemsStorage" | "button";
+export type ComponentPart =
+  | "label"
+  | "input"
+  | "itemsStorage"
+  | "button"
+  | "switchOn"
+  | "switchOff";
 
 export const labelColorVariants = {
   red: "border-red-600 bg-red-600",
@@ -47,6 +53,28 @@ export const buttonColorVariants = {
   black: "border-black bg-black hover:bg-black/70 active:bg-black/85",
 };
 
+export const switchOnColorVariants = {
+  red: "border-red-600 bg-red-600 text-white",
+  blue: "border-blue-600 bg-blue-600 text-white",
+  yellow: "border-yellow-600 bg-yellow-600 text-white",
+  green: "border-green-600 bg-green-600 text-white",
+  purple: "border-purple-600 bg-purple-600 text-white",
+  black: "border-black bg-black text-white",
+};
+
+export const switchOffColorVariants = {
+  red: "border-red-600 bg-red-600/0 text-red-600 hover:text-red-600 hover:bg-red-600/20",
+  blue: "border-blue-600 bg-blue-600/0 text-blue-600 hover:text-blue-600 hover:bg-blue-600/20",
+  yellow:
+    "border-yellow-600 bg-yellow-600/0 text-yellow-600 hover:text-yellow-600 hover:bg-yellow-600/20",
+  green:
+    "border-green-600 bg-green-600/0 text-green-600 hover:text-green-600 hover:bg-green-600/20",
+  purple:
+    "border-purple-600 bg-purple-600/0 text-purple-600 hover:text-purple-600 hover:bg-purple-600/20",
+  black:
+    "border-black bg-white/0 text-black hover:text-white hover:bg-black/20",
+};
+
 export const resolveColorMappings = (
   variant: ColorVariant,
   part: ComponentPart,
@@ -60,6 +88,10 @@ export const resolveColorMappings = (
       return itemsStorageColorVariants[variant];
     } else if (part === "button") {
       return buttonColorVariants[variant];
+    } else if (part === "switchOn") {
+      return switchOnColorVariants[variant];
+    } else if (part === "switchOff") {
+      return switchOffColorVariants[variant];
     } else {
       throw Error("Selected color variant or part does not exist");
     }
