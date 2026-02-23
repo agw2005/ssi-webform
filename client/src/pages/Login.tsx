@@ -5,6 +5,7 @@ import { resolveColorMappings } from "../helper/tailwindColorResolver.ts";
 import { Link, useNavigate } from "react-router-dom";
 import { createGenericChangeHandler } from "../helper/genericInputHandler.ts";
 import PasswordInput from "../components/reusable/inputs/PasswordInput.tsx";
+import TipBox from "../components/reusable/TipBox.tsx";
 
 interface LoginInformation {
   nrp: string;
@@ -33,6 +34,8 @@ const Login = () => {
   const [loginInformation, setLoginInformation] = useState<LoginInformation>(
     LOGIN_INFORMATION_DEFAULT_VALUE,
   );
+  const [showInvalidCredentialsWarning, setShowInvalidCredentialsWarning] =
+    useState(false);
   const loginInformationOnChangeHandler =
     createGenericChangeHandler(setLoginInformation);
 
@@ -60,7 +63,7 @@ const Login = () => {
         localStorage.setItem("session_token", responseBody.jwt);
         navigate("/approve");
       } else {
-        // console.log(responseBody.message);
+        setShowInvalidCredentialsWarning(true);
       }
     } catch (err) {
       console.error(err);
@@ -70,6 +73,11 @@ const Login = () => {
   return (
     <Primitive>
       <div className="flex flex-col gap-2">
+        {showInvalidCredentialsWarning ? (
+          <TipBox label="Invalid Credentials" variant="red" />
+        ) : (
+          ""
+        )}
         <div className="flex flex-col gap-2 max-w-1/4">
           <TextInput
             label="NRP"
@@ -96,6 +104,7 @@ const Login = () => {
             onClick={() => {
               handleLoginSubmit(loginInformation);
               setLoginInformation(LOGIN_INFORMATION_DEFAULT_VALUE);
+              setShowInvalidCredentialsWarning(false);
             }}
           >
             {" "}
