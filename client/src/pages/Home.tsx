@@ -1,11 +1,11 @@
 import Primitive from "../components/Primitive.tsx";
-import Search from "../components/Search.tsx";
 import Placeholders from "../dummies/HomeTable.json" with { type: "json" };
-import { Link } from "react-router-dom";
 import SelectionInput from "../components/SelectionInput.tsx";
-import { useState } from "react";
 import NumberInput from "../components/NumberInput.tsx";
 import DateRangeInput from "../components/DateRangeInput.tsx";
+import TextInput from "../components/TextInput.tsx";
+import { Link } from "react-router-dom";
+import { useState } from "react";
 
 const COLUMNS = [
   "ID Trace",
@@ -46,7 +46,13 @@ const SECTIONS = [
 ];
 
 const STATUSES = ["All Status", "Final Approved", "In Progress", "Rejected"];
-const EMPLOYEES = ["Administrator", "Person 1", "Person 2", "Person 3"];
+const EMPLOYEES = [
+  "All Supervisor",
+  "Administrator",
+  "Person 1",
+  "Person 2",
+  "Person 3",
+];
 
 const Home = () => {
   const [sectionFilter, setSectionFilter] = useState("");
@@ -55,6 +61,7 @@ const Home = () => {
   const [pagingRange, setPagingRange] = useState(20);
   const [startingDate, setStartingDate] = useState("");
   const [endingDate, setEndingDate] = useState("");
+  const [searchField, setSearchField] = useState("");
 
   return (
     <Primitive>
@@ -119,7 +126,17 @@ const Home = () => {
             setPagingRange(Number(e.currentTarget.value));
           }}
         />
-        <Search />
+        <TextInput
+          label="Search"
+          name="search"
+          id="search"
+          variant="red"
+          requiredInput={false}
+          value={searchField}
+          onChangeHandler={(e) => {
+            setSearchField(e.currentTarget.value);
+          }}
+        />
       </div>
       <table className="table-auto border-collapse min-w-full max-w-full mt-4">
         <thead>
