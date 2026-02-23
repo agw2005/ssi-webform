@@ -1,11 +1,11 @@
 import { useState } from "react";
 import Primitive from "../components/reusable/Primitive.tsx";
 import TextInput from "../components/reusable/inputs/TextInput.tsx";
-import { resolveColorMappings } from "../helper/tailwindColorResolver.ts";
 import { Link, useNavigate } from "react-router-dom";
 import { createGenericChangeHandler } from "../helper/genericInputHandler.ts";
 import PasswordInput from "../components/reusable/inputs/PasswordInput.tsx";
 import TipBox from "../components/reusable/TipBox.tsx";
+import Button from "../components/reusable/Button.tsx";
 
 interface LoginInformation {
   nrp: string;
@@ -84,7 +84,7 @@ const Login = () => {
             name="user-nrp"
             id="user-nrp"
             requiredInput
-            variant="yellow"
+            variant="black"
             isDisabled={false}
             value={loginInformation.nrp}
             onChangeHandler={loginInformationOnChangeHandler("nrp")}
@@ -94,21 +94,21 @@ const Login = () => {
             name="user-password"
             id="user-password"
             requiredInput
-            variant="yellow"
+            variant="black"
             isDisabled={false}
             value={loginInformation.password}
             onChangeHandler={loginInformationOnChangeHandler("password")}
           />
+
           <div
-            className={`text-xs lg:text-sm xl:text-base | w-max text-white font-bold flex items-center px-4 py-2 rounded-xl ${resolveColorMappings("yellow", "button")} select-none`}
+            className="flex"
             onClick={() => {
               handleLoginSubmit(loginInformation);
               setLoginInformation(LOGIN_INFORMATION_DEFAULT_VALUE);
               setShowInvalidCredentialsWarning(false);
             }}
           >
-            {" "}
-            <button type="button">Sign in</button>
+            <Button id="login-submit" variant="black" label="Sign in" />
           </div>
         </div>
         <Link
