@@ -61,7 +61,7 @@ const Budget = () => {
       <div className="flex gap-2 w-max">
         <Switch
           id="budget-report-view-switch"
-          variant="red"
+          variant="black"
           onValue="Report"
           offValue="Budget"
           onLabel="View Report"
@@ -71,6 +71,7 @@ const Budget = () => {
         />
         {viewMode === "Budget" ? (
           <BudgetViewFilters
+            variants="black"
             fileResources={FILE_RESOURCES}
             periods={PERIODS}
             fileResourceValue={fileResource}

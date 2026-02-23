@@ -1,6 +1,9 @@
+import type { ColorVariant } from "../../../helper/tailwindColorResolver.ts";
+import Button from "../../reusable/Button.tsx";
 import SelectionInput from "../../reusable/inputs/SelectionInput.tsx";
 
 interface BudgetViewFiltersProps {
+  variants: ColorVariant;
   fileResources: string[];
   periods: string[];
   fileResourceValue: string;
@@ -10,6 +13,7 @@ interface BudgetViewFiltersProps {
 }
 
 const BudgetViewFilters = ({
+  variants,
   fileResources,
   periods,
   fileResourceValue,
@@ -24,7 +28,7 @@ const BudgetViewFilters = ({
           label="File Resource"
           name="budget-view-file-resource"
           id="budget-view-file-resource"
-          variant="black"
+          variant={variants}
           requiredInput={false}
           defaultDisabledValue="Show All"
           options={["Show All", ...fileResources]}
@@ -35,18 +39,14 @@ const BudgetViewFilters = ({
           label="Period"
           name="budget-view-period"
           id="budget-view-period"
-          variant="black"
+          variant={variants}
           requiredInput={false}
           defaultDisabledValue="Show All"
           options={["Show All", ...periods]}
           value={periodValue}
           onChangeHandler={periodOnChange}
         />
-        <div className="h-8 lg:h-9 xl:h-10 | text-black hover:text-white active:text-black | bg-white hover:bg-black active:bg-white | border-black hover:border-blue-900 active:border-red-900 | flex items-center border px-4 rounded-xl">
-          <p className="text-xs lg:text-sm xl:text-base | select-none">
-            Search
-          </p>
-        </div>
+        <Button id="budget-search" variant="black" label="Search" />
       </div>
     </>
   );

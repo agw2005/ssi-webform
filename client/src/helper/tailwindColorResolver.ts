@@ -50,7 +50,8 @@ export const buttonColorVariants = {
     "border-green-600 bg-green-600 hover:bg-green-600/70 active:bg-green-600/85",
   purple:
     "border-purple-600 bg-purple-600 hover:bg-purple-600/70 active:bg-purple-600/85",
-  black: "border-black bg-black hover:bg-black/70 active:bg-black/85",
+  black:
+    "border-black bg-black hover:bg-black/70 active:bg-black/85 text-white",
 };
 
 export const switchOnColorVariants = {
@@ -72,7 +73,7 @@ export const switchOffColorVariants = {
   purple:
     "border-purple-600 bg-purple-600/0 text-purple-600 hover:text-purple-600 hover:bg-purple-600/20",
   black:
-    "border-black bg-white/0 text-black hover:text-white hover:bg-black/20",
+    "border-black bg-white/0 text-black hover:text-white hover:bg-black/50",
 };
 
 export const resolveColorMappings = (
