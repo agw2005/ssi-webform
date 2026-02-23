@@ -1,8 +1,8 @@
 import { useState } from "react";
 import Primitive from "../components/reusable/Primitive.tsx";
-import Placeholders from "../dummies/BudgetSearchTable.json" with { type: "json" };
 import BudgetViewFilters from "../components/non-reusable/budget/BudgetViewFilters.tsx";
 import Switch from "../components/reusable/Switch.tsx";
+import BudgetView from "../components/non-reusable/budget/BudgetView.tsx";
 
 const COLUMNS = [
   "File Resource",
@@ -88,46 +88,7 @@ const Budget = () => {
         )}
       </div>
 
-      {viewMode === "Budget" ? (
-        <div className="overflow-x-auto h-160 mt-4">
-          <table className="table-auto border-collapse mt-4">
-            <thead className="sticky top-0 z-10 border">
-              <tr>
-                {COLUMNS.map((column, index) => {
-                  return (
-                    <th
-                      key={index}
-                      className="text-xs lg:text-sm xl:text-base | border p-2 bg-blue-800 text-white border-black whitespace-nowrap text-center"
-                    >
-                      {column}
-                    </th>
-                  );
-                })}
-              </tr>
-            </thead>
-            <tbody>
-              {Placeholders.map((placeholder, index) => {
-                return (
-                  <tr key={index}>
-                    {COLUMNS.map((column, index) => {
-                      return (
-                        <td
-                          key={index}
-                          className="text-xs lg:text-sm xl:text-base | border p-2 whitespace-nowrap text-center"
-                        >
-                          {placeholder[column as keyof typeof placeholder]}
-                        </td>
-                      );
-                    })}
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      ) : (
-        ""
-      )}
+      {viewMode === "Budget" ? <BudgetView columns={COLUMNS} /> : ""}
 
       {viewMode === "Report" ? (
         <div className="mt-4 flex gap-4 flex-wrap">
