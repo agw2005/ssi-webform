@@ -1,4 +1,4 @@
-import RemovableSelections from "./RemovableSelections.tsx";
+import RemovableSelections from "../RemovableSelections.tsx";
 
 interface MultifileInputProps {
   uploads: File[];

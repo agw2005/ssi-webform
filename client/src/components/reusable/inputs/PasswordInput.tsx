@@ -1,31 +1,27 @@
-import type { ColorVariant } from "../helper/tailwindColorResolver.ts";
-import { resolveColorMappings } from "../helper/tailwindColorResolver.ts";
+import type { ColorVariant } from "../../../helper/tailwindColorResolver.ts";
+import { resolveColorMappings } from "../../../helper/tailwindColorResolver.ts";
 
-interface NumberInputProps {
+interface PasswordInputProps {
   label: string;
   name: string;
   id: string;
   requiredInput: boolean;
   variant: ColorVariant;
   isDisabled?: boolean;
-  minimumValue?: number;
-  maximumValue?: number;
   value: string;
   onChangeHandler: (input: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-const NumberInput = ({
+const PasswordInput = ({
   label,
   name,
   id,
   variant,
   requiredInput,
   isDisabled = false,
-  minimumValue = 0,
-  maximumValue = Number.MAX_SAFE_INTEGER,
   value,
   onChangeHandler,
-}: NumberInputProps) => {
+}: PasswordInputProps) => {
   return (
     <div className="h-8 lg:h-9 xl:h-10 | flex">
       <div
@@ -35,13 +31,11 @@ const NumberInput = ({
         {requiredInput ? "*" : ""}
       </div>
       <input
-        min={minimumValue}
-        max={maximumValue}
         disabled={isDisabled}
-        type="number"
+        type="password"
         name={name}
         id={id}
-        className={`text-xs lg:text-sm xl:text-base | flex-1 px-4 rounded-r-xl border ${resolveColorMappings(variant, "input")} bg-white/50 outline-none`}
+        className={`text-xs lg:text-sm xl:text-base | h-full px-4 rounded-r-xl border ${resolveColorMappings(variant, "input")} ${isDisabled ? "bg-black/10" : "bg-white/50"} outline-none flex-1`}
         value={value}
         onChange={onChangeHandler}
       />
@@ -49,4 +43,4 @@ const NumberInput = ({
   );
 };
 
-export default NumberInput;
+export default PasswordInput;

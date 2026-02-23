@@ -1,9 +1,9 @@
-import Primitive from "../components/Primitive.tsx";
-import FirstStep from "../components/FirstStep.tsx";
-import SecondStep from "../components/SecondStep.tsx";
-import ThirdStep from "../components/ThirdStep.tsx";
-import FourthStep from "../components/FourthStep.tsx";
-import FifthStep from "../components/FifthStep.tsx";
+import Primitive from "../components/reusable/Primitive.tsx";
+import FirstStep from "../components/non-reusable/submit/FirstStep.tsx";
+import SecondStep from "../components/non-reusable/submit/SecondStep.tsx";
+import ThirdStep from "../components/non-reusable/submit/ThirdStep.tsx";
+import FourthStep from "../components/non-reusable/submit/FourthStep.tsx";
+import FifthStep from "../components/non-reusable/submit/FifthStep.tsx";
 import { useState } from "react";
 
 export interface FirstStepInputs {

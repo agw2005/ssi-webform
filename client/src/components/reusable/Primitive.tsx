@@ -1,5 +1,5 @@
-import { useAuth } from "../hooks/useAuth.tsx";
-import ForexInformation from "./ForexInformation.tsx";
+import { useAuth } from "../../hooks/useAuth.tsx";
+import ForexInformation from "../non-reusable/navbar/ForexInformation.tsx";
 import { Link } from "react-router-dom";
 
 interface PrimitiveProps {

@@ -1,8 +1,8 @@
-import EmployeeSectionMappings from "../dummies/Approval.json" with { type: "json" };
+import EmployeeSectionMappings from "../../../dummies/Approval.json" with { type: "json" };
 
-import TipBox from "./TipBox.tsx";
-import MultiselectionInputTwoFilter from "./MultiselectionInputTwoFilter.tsx";
-import type { FourthStepInputs } from "../pages/Submit.tsx";
+import TipBox from "../../reusable/TipBox.tsx";
+import MultiselectionInputTwoFilter from "../../reusable/inputs/MultiselectionInputTwoFilter.tsx";
+import type { FourthStepInputs } from "../../../pages/Submit.tsx";
 
 const STEP = 4;
 

@@ -1,4 +1,4 @@
-import Primitive from "../components/Primitive.tsx";
+import Primitive from "../components/reusable/Primitive.tsx";
 
 const Manual = () => {
   return <Primitive>Manual</Primitive>;

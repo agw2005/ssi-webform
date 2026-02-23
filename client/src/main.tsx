@@ -10,7 +10,7 @@ import Request from "./pages/Request.tsx";
 import Approve from "./pages/Approve.tsx";
 import { verifyIsNotAuthorized } from "./helper/verifyIsNotAuthorized.ts";
 import { verifyIsAuthorized } from "./helper/verifyIsAuthorized.ts";
-import LoadingFallback from "./components/LoadingFallback.tsx";
+import LoadingFallback from "./components/reusable/LoadingFallback.tsx";
 
 const router = createBrowserRouter([
   { path: "/", element: <Home /> },

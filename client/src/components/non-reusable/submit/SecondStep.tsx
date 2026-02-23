@@ -1,7 +1,7 @@
-import { createGenericChangeHandler } from "../helper/genericInputHandler.ts";
-import type { SecondStepInputs } from "../pages/Submit.tsx";
-import TextAreaInput from "./TextAreaInput.tsx";
-import TextInput from "./TextInput.tsx";
+import { createGenericChangeHandler } from "../../../helper/genericInputHandler.ts";
+import type { SecondStepInputs } from "../../../pages/Submit.tsx";
+import TextAreaInput from "../../reusable/inputs/TextAreaInput.tsx";
+import TextInput from "../../reusable/inputs/TextInput.tsx";
 
 const STEP = 2;
 

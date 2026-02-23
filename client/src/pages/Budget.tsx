@@ -1,5 +1,5 @@
 import { useState } from "react";
-import Primitive from "../components/Primitive.tsx";
+import Primitive from "../components/reusable/Primitive.tsx";
 import Placeholders from "../dummies/BudgetSearchTable.json" with { type: "json" };
 
 const COLUMNS = [

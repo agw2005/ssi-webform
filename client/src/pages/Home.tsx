@@ -1,9 +1,9 @@
-import Primitive from "../components/Primitive.tsx";
+import Primitive from "../components/reusable/Primitive.tsx";
 import Placeholders from "../dummies/HomeTable.json" with { type: "json" };
-import SelectionInput from "../components/SelectionInput.tsx";
-import NumberInput from "../components/NumberInput.tsx";
-import DateRangeInput from "../components/DateRangeInput.tsx";
-import TextInput from "../components/TextInput.tsx";
+import SelectionInput from "../components/reusable/inputs/SelectionInput.tsx";
+import NumberInput from "../components/reusable/inputs/NumberInput.tsx";
+import DateRangeInput from "../components/reusable/inputs/DateRangeInput.tsx";
+import TextInput from "../components/reusable/inputs/TextInput.tsx";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 

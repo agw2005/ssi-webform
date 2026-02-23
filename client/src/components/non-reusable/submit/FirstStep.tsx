@@ -1,10 +1,10 @@
-import TextInput from "./TextInput.tsx";
-import TextInputBetweenLabel from "./TextInputBetweenLabel.tsx";
-import SelectionInput from "./SelectionInput.tsx";
-import SelectionInputBetweenLabel from "./SelectionInputBetweenLabel.tsx";
-import DEPARTMENTS from "../dummies/Departments.json" with { type: "json" };
-import type { FirstStepInputs } from "../pages/Submit.tsx";
-import { createGenericChangeHandler } from "../helper/genericInputHandler.ts";
+import TextInput from "../../reusable/inputs/TextInput.tsx";
+import TextInputBetweenLabel from "../../reusable/inputs/TextInputBetweenLabel.tsx";
+import SelectionInput from "../../reusable/inputs/SelectionInput.tsx";
+import SelectionInputBetweenLabel from "../../reusable/inputs/SelectionInputBetweenLabel.tsx";
+import DEPARTMENTS from "../../../dummies/Departments.json" with { type: "json" };
+import type { FirstStepInputs } from "../../../pages/Submit.tsx";
+import { createGenericChangeHandler } from "../../../helper/genericInputHandler.ts";
 
 const SECTIONS = [
   "MIS",

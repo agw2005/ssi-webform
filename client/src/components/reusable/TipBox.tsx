@@ -1,5 +1,5 @@
-import type { ColorVariant } from "../helper/tailwindColorResolver.ts";
-import { resolveColorMappings } from "../helper/tailwindColorResolver.ts";
+import type { ColorVariant } from "../../helper/tailwindColorResolver.ts";
+import { resolveColorMappings } from "../../helper/tailwindColorResolver.ts";
 
 interface TipBoxProps {
   label: string;

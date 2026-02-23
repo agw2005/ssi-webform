@@ -1,10 +1,10 @@
 import { useState } from "react";
-import Primitive from "../components/Primitive.tsx";
-import TextInput from "../components/TextInput.tsx";
+import Primitive from "../components/reusable/Primitive.tsx";
+import TextInput from "../components/reusable/inputs/TextInput.tsx";
 import { resolveColorMappings } from "../helper/tailwindColorResolver.ts";
 import { Link, useNavigate } from "react-router-dom";
 import { createGenericChangeHandler } from "../helper/genericInputHandler.ts";
-import PasswordInput from "../components/PasswordInput.tsx";
+import PasswordInput from "../components/reusable/inputs/PasswordInput.tsx";
 
 interface LoginInformation {
   nrp: string;

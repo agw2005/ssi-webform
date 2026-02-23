@@ -1,13 +1,13 @@
-import Placeholders from "../dummies/NewSubmitFormTable.json" with { type: "json" };
-import SelectionInputSeparateLabel from "./SelectionInputSeparateLabel.tsx";
-import DEPARTMENTS from "../dummies/Departments.json" with { type: "json" };
-import SelectionInput from "./SelectionInput.tsx";
-import TextInput from "./TextInput.tsx";
-import NumberInput from "./NumberInput.tsx";
-import DateInput from "./DateInput.tsx";
-import TipBox from "./TipBox.tsx";
-import type { ThirdStepInputs } from "../pages/Submit.tsx";
-import { createGenericChangeHandler } from "../helper/genericInputHandler.ts";
+import Placeholders from "../../../dummies/NewSubmitFormTable.json" with { type: "json" };
+import SelectionInputSeparateLabel from "../../reusable/inputs/SelectionInputSeparateLabel.tsx";
+import DEPARTMENTS from "../../../dummies/Departments.json" with { type: "json" };
+import SelectionInput from "../../reusable/inputs/SelectionInput.tsx";
+import TextInput from "../../reusable/inputs/TextInput.tsx";
+import NumberInput from "../../reusable/inputs/NumberInput.tsx";
+import DateInput from "../../reusable/inputs/DateInput.tsx";
+import TipBox from "../../reusable/TipBox.tsx";
+import type { ThirdStepInputs } from "../../../pages/Submit.tsx";
+import { createGenericChangeHandler } from "../../../helper/genericInputHandler.ts";
 
 const COLUMNS = [
   "Cost Center",

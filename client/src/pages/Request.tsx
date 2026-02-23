@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom";
-import Primitive from "../components/Primitive.tsx";
+import Primitive from "../components/reusable/Primitive.tsx";
 import RequestPlaceholders from "../dummies/HomeTable.json" with { type: "json" };
 
 interface Request {
