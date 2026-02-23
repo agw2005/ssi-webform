@@ -206,8 +206,7 @@ const Request = () => {
               }`}
             >
               <div className="flex-1 px-4 py-2">{key}</div>
-              <div className="flex-1 px-4 py-2">{value}</div>
-              <div className="flex-8"></div>
+              <div className="flex-9 px-4 py-2">{value}</div>
             </div>
           ))}
         </div>
