@@ -1,11 +1,11 @@
 import Primitive from "../components/Primitive.tsx";
-import FilterDateRange from "../components/FilterDateRange.tsx";
 import Search from "../components/Search.tsx";
 import Placeholders from "../dummies/HomeTable.json" with { type: "json" };
 import { Link } from "react-router-dom";
 import SelectionInput from "../components/SelectionInput.tsx";
 import { useState } from "react";
 import NumberInput from "../components/NumberInput.tsx";
+import DateRangeInput from "../components/DateRangeInput.tsx";
 
 const COLUMNS = [
   "ID Trace",
@@ -53,58 +53,72 @@ const Home = () => {
   const [statusFilter, setStatusFilter] = useState("");
   const [supervisorFilter, setSupervisorFilter] = useState("");
   const [pagingRange, setPagingRange] = useState(20);
+  const [startingDate, setStartingDate] = useState("");
+  const [endingDate, setEndingDate] = useState("");
 
   return (
     <Primitive>
-      <div className="flex justify-between gap-2 flex-wrap">
-        <div className="flex flex-wrap gap-2">
-          <SelectionInput
-            label="Section"
-            name="filter-section"
-            id="filter-section"
-            variant="red"
-            requiredInput={false}
-            defaultDisabledValue="All Section"
-            options={SECTIONS}
-            value={sectionFilter}
-            onChangeHandler={(e) => setSectionFilter(e.target.value)}
-          />
-          <SelectionInput
-            label="Status"
-            name="filter-status"
-            id="filter-status"
-            variant="red"
-            requiredInput={false}
-            defaultDisabledValue="All Status"
-            options={STATUSES}
-            value={statusFilter}
-            onChangeHandler={(e) => setStatusFilter(e.currentTarget.value)}
-          />
-          <SelectionInput
-            label="Supervisor"
-            name="filter-supervisor"
-            id="filter-supervisor"
-            variant="red"
-            requiredInput={false}
-            defaultDisabledValue="All Supervisor"
-            options={EMPLOYEES}
-            value={supervisorFilter}
-            onChangeHandler={(e) => setSupervisorFilter(e.currentTarget.value)}
-          />
-          <FilterDateRange />
-          <NumberInput
-            label="Items"
-            name="paging-range"
-            id="paging-range"
-            requiredInput={false}
-            variant="red"
-            minimumValue={0}
-            value={String(pagingRange)}
-            onChangeHandler={(e) => {
-              setPagingRange(Number(e.currentTarget.value));
-            }}
-          />
-        </div>
+      <div className="flex gap-2 flex-wrap">
+        <SelectionInput
+          label="Section"
+          name="filter-section"
+          id="filter-section"
+          variant="red"
+          requiredInput={false}
+          defaultDisabledValue="All Section"
+          options={SECTIONS}
+          value={sectionFilter}
+          onChangeHandler={(e) => setSectionFilter(e.target.value)}
+        />
+        <SelectionInput
+          label="Status"
+          name="filter-status"
+          id="filter-status"
+          variant="red"
+          requiredInput={false}
+          defaultDisabledValue="All Status"
+          options={STATUSES}
+          value={statusFilter}
+          onChangeHandler={(e) => setStatusFilter(e.currentTarget.value)}
+        />
+        <SelectionInput
+          label="Supervisor"
+          name="filter-supervisor"
+          id="filter-supervisor"
+          variant="red"
+          requiredInput={false}
+          defaultDisabledValue="All Supervisor"
+          options={EMPLOYEES}
+          value={supervisorFilter}
+          onChangeHandler={(e) => setSupervisorFilter(e.currentTarget.value)}
+        />
+        <DateRangeInput
+          name="filter-date-range"
+          id="filter-date-range"
+          variant="red"
+          firstDateRequiredInput={false}
+          secondDateRequiredInput={false}
+          startingDateValue={startingDate}
+          endingDateValue={endingDate}
+          startingDateOnChangeHandler={(e) =>
+            setStartingDate(e.currentTarget.value)
+          }
+          endingOnDateChangeHandler={(e) =>
+            setEndingDate(e.currentTarget.value)
+          }
+        />
+        <NumberInput
+          label="Items"
+          name="paging-range"
+          id="paging-range"
+          requiredInput={false}
+          variant="red"
+          minimumValue={0}
+          value={String(pagingRange)}
+          onChangeHandler={(e) => {
+            setPagingRange(Number(e.currentTarget.value));
+          }}
+        />
         <Search />
       </div>
       <table className="table-auto border-collapse min-w-full max-w-full mt-4">
