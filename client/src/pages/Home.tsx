@@ -70,7 +70,7 @@ const Home = () => {
           label="Section"
           name="filter-section"
           id="filter-section"
-          variant="red"
+          variant="black"
           requiredInput={false}
           defaultDisabledValue="All Section"
           options={SECTIONS}
@@ -81,7 +81,7 @@ const Home = () => {
           label="Status"
           name="filter-status"
           id="filter-status"
-          variant="red"
+          variant="black"
           requiredInput={false}
           defaultDisabledValue="All Status"
           options={STATUSES}
@@ -92,7 +92,7 @@ const Home = () => {
           label="Supervisor"
           name="filter-supervisor"
           id="filter-supervisor"
-          variant="red"
+          variant="black"
           requiredInput={false}
           defaultDisabledValue="All Supervisor"
           options={EMPLOYEES}
@@ -102,7 +102,7 @@ const Home = () => {
         <DateRangeInput
           name="filter-date-range"
           id="filter-date-range"
-          variant="red"
+          variant="black"
           firstDateRequiredInput={false}
           secondDateRequiredInput={false}
           startingDateValue={startingDate}
@@ -119,7 +119,7 @@ const Home = () => {
           name="paging-range"
           id="paging-range"
           requiredInput={false}
-          variant="red"
+          variant="black"
           minimumValue={0}
           value={String(pagingRange)}
           onChangeHandler={(e) => {
@@ -130,7 +130,7 @@ const Home = () => {
           label="Search"
           name="search"
           id="search"
-          variant="red"
+          variant="black"
           requiredInput={false}
           value={searchField}
           onChangeHandler={(e) => {

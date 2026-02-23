@@ -1,4 +1,10 @@
-export type ColorVariant = "red" | "blue" | "yellow" | "green" | "purple";
+export type ColorVariant =
+  | "red"
+  | "blue"
+  | "yellow"
+  | "green"
+  | "purple"
+  | "black";
 
 export type ComponentPart = "label" | "input" | "itemsStorage" | "button";
 
@@ -8,6 +14,7 @@ export const labelColorVariants = {
   yellow: "border-yellow-600 bg-yellow-600",
   green: "border-green-600 bg-green-600",
   purple: "border-purple-600 bg-purple-600",
+  black: "border-black bg-black",
 };
 
 export const inputColorVariants = {
@@ -16,6 +23,7 @@ export const inputColorVariants = {
   yellow: "border-yellow-600 text-yellow-600",
   green: "border-green-600 text-green-600",
   purple: "border-purple-600 text-purple-600",
+  black: "border-black text-black",
 };
 
 export const itemsStorageColorVariants = {
@@ -24,6 +32,7 @@ export const itemsStorageColorVariants = {
   yellow: "border-yellow-600 bg-white/0",
   green: "border-green-600 bg-white/0",
   purple: "border-purple-600 bg-white/0",
+  black: "border-black bg-white/0",
 };
 
 export const buttonColorVariants = {
@@ -35,6 +44,7 @@ export const buttonColorVariants = {
     "border-green-600 bg-green-600 hover:bg-green-600/70 active:bg-green-600/85",
   purple:
     "border-purple-600 bg-purple-600 hover:bg-purple-600/70 active:bg-purple-600/85",
+  black: "border-black bg-black hover:bg-black/70 active:bg-black/85",
 };
 
 export const resolveColorMappings = (
