@@ -1,12 +1,11 @@
 import Primitive from "../components/Primitive.tsx";
-import FilterSection from "../components/FilterSection.tsx";
-import FilterStatus from "../components/FilterStatus.tsx";
-import FilterEmployee from "../components/FilterEmployee.tsx";
 import FilterDateRange from "../components/FilterDateRange.tsx";
-import FilterPagingRange from "../components/FilterPagingRange.tsx";
 import Search from "../components/Search.tsx";
 import Placeholders from "../dummies/HomeTable.json" with { type: "json" };
 import { Link } from "react-router-dom";
+import SelectionInput from "../components/SelectionInput.tsx";
+import { useState } from "react";
+import NumberInput from "../components/NumberInput.tsx";
 
 const COLUMNS = [
   "ID Trace",
@@ -20,16 +19,91 @@ const COLUMNS = [
   "Remarks",
 ];
 
+const SECTIONS = [
+  "All Section",
+  "MIS",
+  "GA & Personnel",
+  "Accounting",
+  "Purchasing",
+  "PSC",
+  "BM (HRDC)",
+  "RnD",
+  "EC QA-QC",
+  "EXIM",
+  "Material-Control",
+  "FG WHSE",
+  "EC Equipment Engineering OPTO",
+  "EC Production OPTO",
+  "EC Process Engineering OPTO",
+  "FCS",
+  "Process Control",
+  "Job Innovation",
+  "Product Innovation",
+  "Management",
+  "EC Equipment Engineering Compound",
+  "EC Process Engineering Compound",
+  "EC Production Compound",
+];
+
+const STATUSES = ["All Status", "Final Approved", "In Progress", "Rejected"];
+const EMPLOYEES = ["Administrator", "Person 1", "Person 2", "Person 3"];
+
 const Home = () => {
+  const [sectionFilter, setSectionFilter] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
+  const [supervisorFilter, setSupervisorFilter] = useState("");
+  const [pagingRange, setPagingRange] = useState(20);
+
   return (
     <Primitive>
       <div className="flex justify-between gap-2 flex-wrap">
         <div className="flex flex-wrap gap-2">
-          <FilterSection />
-          <FilterStatus />
-          <FilterEmployee />
+          <SelectionInput
+            label="Section"
+            name="filter-section"
+            id="filter-section"
+            variant="red"
+            requiredInput={false}
+            defaultDisabledValue="All Section"
+            options={SECTIONS}
+            value={sectionFilter}
+            onChangeHandler={(e) => setSectionFilter(e.target.value)}
+          />
+          <SelectionInput
+            label="Status"
+            name="filter-status"
+            id="filter-status"
+            variant="red"
+            requiredInput={false}
+            defaultDisabledValue="All Status"
+            options={STATUSES}
+            value={statusFilter}
+            onChangeHandler={(e) => setStatusFilter(e.currentTarget.value)}
+          />
+          <SelectionInput
+            label="Supervisor"
+            name="filter-supervisor"
+            id="filter-supervisor"
+            variant="red"
+            requiredInput={false}
+            defaultDisabledValue="All Supervisor"
+            options={EMPLOYEES}
+            value={supervisorFilter}
+            onChangeHandler={(e) => setSupervisorFilter(e.currentTarget.value)}
+          />
           <FilterDateRange />
-          <FilterPagingRange />
+          <NumberInput
+            label="Items"
+            name="paging-range"
+            id="paging-range"
+            requiredInput={false}
+            variant="red"
+            minimumValue={0}
+            value={String(pagingRange)}
+            onChangeHandler={(e) => {
+              setPagingRange(Number(e.currentTarget.value));
+            }}
+          />
         </div>
         <Search />
       </div>
