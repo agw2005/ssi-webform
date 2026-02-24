@@ -95,7 +95,7 @@ const ThirdStep = ({
   };
 
   const requiredFieldsAreEmpty = () => {
-    if (thirdStepInputsGetter.usages === thirdStepInputsDefaultValue.usages) {
+    if (thirdStepInputsGetter.usages.length === 0) {
       return true;
     } else {
       return false;
