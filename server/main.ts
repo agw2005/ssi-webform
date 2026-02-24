@@ -1,5 +1,4 @@
 import { Application, Router } from "@oak/oak";
-import { oakCors } from "@tajpouria/cors";
 import {
   authenticate,
   getPagedBudgets,
@@ -51,7 +50,29 @@ oakRouter.get("/authInfo/:page", getUserAuthInfo);
 
 oakRouter.post("/login", login);
 
-oakApp.use(oakCors());
+oakApp.use(async (ctx, next) => {
+  ctx.response.headers.set(
+    "Access-Control-Allow-Origin",
+    "http://localhost:5173",
+  );
+  ctx.response.headers.set(
+    "Access-Control-Allow-Methods",
+    "GET, POST, OPTIONS",
+  );
+  ctx.response.headers.set(
+    "Access-Control-Allow-Headers",
+    "Content-Type, Authorization",
+  );
+  ctx.response.headers.set("Access-Control-Max-Age", "86400");
+
+  if (ctx.request.method === "OPTIONS") {
+    ctx.response.status = 204;
+    return;
+  }
+
+  await next();
+});
+
 oakApp.use(oakRouter.routes());
 oakApp.use(oakRouter.allowedMethods());
 
