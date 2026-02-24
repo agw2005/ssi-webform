@@ -63,7 +63,7 @@ const Primitive = ({ children }: PrimitiveProps) => {
                   "Are you sure you want to log out?",
                 );
                 if (confirmLogout) {
-                  localStorage.removeItem("session_token");
+                  sessionStorage.removeItem("session_token");
                 }
               }}
               to={LINKS.login}

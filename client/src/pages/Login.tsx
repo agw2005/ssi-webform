@@ -60,7 +60,7 @@ const Login = () => {
       const responseBody: LoginResponse = await response.json();
       if (response.ok) {
         // console.log(responseBody.message);
-        localStorage.setItem("session_token", responseBody.jwt);
+        sessionStorage.setItem("session_token", responseBody.jwt);
         navigate("/approve");
       } else {
         setShowInvalidCredentialsWarning(true);

@@ -3,7 +3,7 @@ interface AuthResponse {
   verdict: boolean;
 }
 const verifyUserSession = async () => {
-  const storedToken = localStorage.getItem("session_token");
+  const storedToken = sessionStorage.getItem("session_token");
 
   if (!storedToken) {
     // console.error("No token found");
