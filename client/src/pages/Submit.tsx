@@ -117,6 +117,58 @@ const Submit = () => {
     DEFAULT_VALUES.fifthStep,
   );
 
+  const allRequiredFieldsAreFilled = () => {
+    const { ext, ...filteredFirstStep } = firstStepInputs;
+    const { ext: _d1, ...defaultFirstStep } = DEFAULT_VALUES.firstStep;
+    const { formNumber, prNumber, ...filteredSecondStep } = secondStepInputs;
+    const {
+      formNumber: _d2,
+      prNumber: _d3,
+      ...defaultSecondStep
+    } = DEFAULT_VALUES.secondStep;
+
+    console.log(`Ignoring fields : ${ext}, ${formNumber}, ${prNumber}}`);
+
+    const currentValues = {
+      firstStep: filteredFirstStep,
+      secondStep: filteredSecondStep,
+    };
+
+    const comparisonDefaults = {
+      firstStep: defaultFirstStep,
+      secondStep: defaultSecondStep,
+    };
+
+    const someRequiredFieldsAreEmpty =
+      currentValues.firstStep.name === comparisonDefaults.firstStep.name ||
+      currentValues.firstStep.section ===
+        comparisonDefaults.firstStep.section ||
+      currentValues.firstStep.nrp === comparisonDefaults.firstStep.nrp ||
+      currentValues.firstStep.email === comparisonDefaults.firstStep.email ||
+      currentValues.firstStep.fileResource ===
+        comparisonDefaults.firstStep.fileResource ||
+      currentValues.firstStep.department ===
+        comparisonDefaults.firstStep.department ||
+      currentValues.firstStep.form === comparisonDefaults.firstStep.form ||
+      currentValues.secondStep.subject ===
+        comparisonDefaults.secondStep.subject ||
+      currentValues.secondStep.returnOnOutgoing ===
+        comparisonDefaults.secondStep.returnOnOutgoing ||
+      thirdStepInputs.usages.length === 0 ||
+      fourthStepInputs.approver.length === 0 ||
+      fourthStepInputs.releaser.length === 0 ||
+      fourthStepInputs.administrator.length === 0;
+
+    console.log({
+      firstStepInputs,
+      secondStepInputs,
+      thirdStepInputs,
+      fourthStepInputs,
+      fifthStepInputs,
+    });
+    return someRequiredFieldsAreEmpty;
+  };
+
   return (
     <Primitive>
       <div className="flex flex-col gap-8">
@@ -164,6 +216,7 @@ const Submit = () => {
               fifthStepInputsGetter={fifthStepInputs}
               fifthStepInputsSetter={setFifthStepInputs}
               fifthStepInputsDefaultValue={DEFAULT_VALUES.fifthStep}
+              evaluateSubmission={allRequiredFieldsAreFilled}
             />
           ) : (
             ""

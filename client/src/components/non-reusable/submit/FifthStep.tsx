@@ -5,12 +5,14 @@ interface FifthStepProps {
   fifthStepInputsGetter: FifthStepInputs;
   fifthStepInputsSetter: React.Dispatch<React.SetStateAction<FifthStepInputs>>;
   fifthStepInputsDefaultValue: FifthStepInputs;
+  evaluateSubmission: () => boolean;
 }
 
 const FifthStep = ({
   fifthStepInputsGetter,
   fifthStepInputsSetter,
   fifthStepInputsDefaultValue,
+  evaluateSubmission,
 }: FifthStepProps) => {
   const onChangeHandler =
     (field: keyof FifthStepInputs) => (newFiles: File[]) => {
@@ -42,7 +44,13 @@ const FifthStep = ({
         <div
           className="bg-black hover:bg-black/70 active:bg-black/85 | px-4 py-2 border rounded-2xl border-black font-bold tracking-wide text-white select-none"
           onClick={() => {
-            console.log(fifthStepInputsGetter);
+            if (evaluateSubmission()) {
+              globalThis.confirm(
+                "One or more fields from across the steps may be empty. Feel them out before you can submit your PR.",
+              );
+            } else {
+              console.log(fifthStepInputsGetter);
+            }
           }}
         >
           Submit
