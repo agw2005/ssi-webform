@@ -5,6 +5,9 @@ import TextInput from "../../reusable/inputs/TextInput.tsx";
 
 const STEP = 2;
 
+const EMPTY_FIELDS_WARNING =
+  "One or more required fields are empty. Please fill them out before proceeding.";
+
 interface SecondStepProps {
   progressSetter: React.Dispatch<React.SetStateAction<number[]>>;
   secondStepInputsGetter: SecondStepInputs;
@@ -23,6 +26,18 @@ const SecondStep = ({
   const genericChangeHandler = createGenericChangeHandler(
     secondStepInputsInputsSetter,
   );
+
+  const requiredFieldsAreEmpty = () => {
+    if (
+      secondStepInputsGetter.subject === secondStepInputsDefaultValue.subject ||
+      secondStepInputsGetter.returnOnOutgoing ===
+        secondStepInputsDefaultValue.returnOnOutgoing
+    ) {
+      return true;
+    } else {
+      return false;
+    }
+  };
 
   return (
     <div className="rounded-2xl bg-blue-100 p-8 flex flex-col gap-4 flex-1">
@@ -79,8 +94,12 @@ const SecondStep = ({
         <div
           className="bg-black hover:bg-black/70 active:bg-black/85 | px-4 py-2 border rounded-2xl border-black font-bold tracking-wide text-white select-none"
           onClick={() => {
-            progressSetter((prev) => [...prev, STEP]);
-            console.log(secondStepInputsGetter);
+            if (!requiredFieldsAreEmpty()) {
+              progressSetter((prev) => [...prev, STEP]);
+              console.log(secondStepInputsGetter);
+            } else {
+              globalThis.confirm(EMPTY_FIELDS_WARNING);
+            }
           }}
         >
           Next

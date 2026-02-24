@@ -34,6 +34,9 @@ const FILE_RESOURCES = ["EXIM", "FCS", "GA", "MC", "MIS"];
 const FORMS = ["PR", "Cash Advance", "Fixed Asset"];
 const STEP = 1;
 
+const EMPTY_FIELDS_WARNING =
+  "One or more required fields are empty. Please fill them out before proceeding.";
+
 interface FirstStepProps {
   progressSetter: React.Dispatch<React.SetStateAction<number[]>>;
   firstStepInputsGetter: FirstStepInputs;
@@ -173,9 +176,7 @@ const FirstStep = ({
               progressSetter((prev) => [...prev, STEP]);
               console.log(firstStepInputsGetter);
             } else {
-              globalThis.confirm(
-                "One or more required fields are empty. Please fill them out before proceeding.",
-              );
+              globalThis.confirm(EMPTY_FIELDS_WARNING);
             }
           }}
         >
