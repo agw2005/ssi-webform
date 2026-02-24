@@ -36,6 +36,12 @@ const BUDGET_NATURE = [
 const CURRENCY = ["IDR", "JPY", "SGD", "USD"];
 const STEP = 3;
 
+const EMPTY_FIELDS_WARNING =
+  "You need to enter at least 1 usage before proceeding.";
+
+const EMPTY_USAGE_FIELDS_WARNING =
+  "One or more required usage fields are empty.\nPlease fill them out before adding a usage.";
+
 export interface Usage {
   costCenter: string;
   budgetOrNature: string;
@@ -86,6 +92,33 @@ const ThirdStep = ({
   const formatDate = (estDeliveryDate: string) => {
     const [year, month, day] = dateSplitter(estDeliveryDate);
     return `${day}-${month}-${year}`;
+  };
+
+  const requiredFieldsAreEmpty = () => {
+    if (thirdStepInputsGetter.usages === thirdStepInputsDefaultValue.usages) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+
+  const requiredUsageFieldsAreEmpty = () => {
+    if (
+      usageField.costCenter === DEFAULT_USAGE.costCenter ||
+      usageField.budgetOrNature === DEFAULT_USAGE.budgetOrNature ||
+      usageField.description === DEFAULT_USAGE.description ||
+      usageField.quantity === DEFAULT_USAGE.quantity ||
+      usageField.unitPrice === DEFAULT_USAGE.unitPrice ||
+      usageField.measure === DEFAULT_USAGE.measure ||
+      usageField.currency === DEFAULT_USAGE.currency ||
+      usageField.vendor === DEFAULT_USAGE.vendor ||
+      usageField.reason === DEFAULT_USAGE.reason ||
+      usageField.estimatedDeliveryDate === DEFAULT_USAGE.estimatedDeliveryDate
+    ) {
+      return true;
+    } else {
+      return false;
+    }
   };
 
   return (
@@ -219,10 +252,14 @@ const ThirdStep = ({
           />
           <div
             onClick={() => {
-              const newThirdStepInputs: ThirdStepInputs = {
-                usages: [...thirdStepInputsGetter.usages, usageField],
-              };
-              thirdStepInputsInputsSetter(newThirdStepInputs);
+              if (!requiredUsageFieldsAreEmpty()) {
+                const newThirdStepInputs: ThirdStepInputs = {
+                  usages: [...thirdStepInputsGetter.usages, usageField],
+                };
+                thirdStepInputsInputsSetter(newThirdStepInputs);
+              } else {
+                globalThis.confirm(EMPTY_USAGE_FIELDS_WARNING);
+              }
             }}
           >
             <Button id="add-usage" variant="yellow" label="Add Usage" />
@@ -376,8 +413,12 @@ const ThirdStep = ({
           <div
             className="bg-black hover:bg-black/70 active:bg-black/85 | px-4 py-2 border rounded-2xl border-black font-bold tracking-wide text-white select-none"
             onClick={() => {
-              progressSetter((prev) => [...prev, STEP]);
-              console.log(thirdStepInputsGetter);
+              if (!requiredFieldsAreEmpty()) {
+                progressSetter((prev) => [...prev, STEP]);
+                console.log(thirdStepInputsGetter);
+              } else {
+                globalThis.confirm(EMPTY_FIELDS_WARNING);
+              }
             }}
           >
             Next
