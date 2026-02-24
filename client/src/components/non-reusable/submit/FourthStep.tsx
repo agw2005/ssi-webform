@@ -6,6 +6,9 @@ import type { FourthStepInputs } from "../../../pages/Submit.tsx";
 
 const STEP = 4;
 
+const EMPTY_FIELDS_WARNING =
+  "One or more required fields are empty. Please fill them out before proceeding.";
+
 interface FifthStepProps {
   progressSetter: React.Dispatch<React.SetStateAction<number[]>>;
   fourthStepInputsGetter: FourthStepInputs;
@@ -28,6 +31,13 @@ const FourthStep = ({
         [field]: newSelections,
       }));
     };
+
+  const requiredFieldsAreEmpty = () => {
+    const hasNoApprover = fourthStepInputsGetter.approver.length === 0;
+    const hasNoReleaser = fourthStepInputsGetter.releaser.length === 0;
+    const hasNoAdmin = fourthStepInputsGetter.administrator.length === 0;
+    return hasNoApprover || hasNoReleaser || hasNoAdmin;
+  };
 
   return (
     <div className="rounded-2xl bg-green-100 p-8 flex flex-col gap-4 flex-1 w-full">
@@ -99,8 +109,12 @@ const FourthStep = ({
         <div
           className="bg-black hover:bg-black/70 active:bg-black/85 | px-4 py-2 border rounded-2xl border-black font-bold tracking-wide text-white select-none"
           onClick={() => {
-            progressSetter((prev) => [...prev, STEP]);
-            console.log(fourthStepInputsGetter);
+            if (!requiredFieldsAreEmpty()) {
+              progressSetter((prev) => [...prev, STEP]);
+              console.log(fourthStepInputsGetter);
+            } else {
+              globalThis.confirm(EMPTY_FIELDS_WARNING);
+            }
           }}
         >
           Next
