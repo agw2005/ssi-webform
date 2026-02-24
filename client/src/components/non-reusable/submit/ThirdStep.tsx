@@ -1,4 +1,3 @@
-import Placeholders from "../../../dummies/NewSubmitFormTable.json" with { type: "json" };
 import SelectionInputSeparateLabel from "../../reusable/inputs/SelectionInputSeparateLabel.tsx";
 import DEPARTMENTS from "../../../dummies/Departments.json" with { type: "json" };
 import SelectionInput from "../../reusable/inputs/SelectionInput.tsx";
@@ -8,8 +7,11 @@ import DateInput from "../../reusable/inputs/DateInput.tsx";
 import TipBox from "../../reusable/TipBox.tsx";
 import type { ThirdStepInputs } from "../../../pages/Submit.tsx";
 import { createGenericChangeHandler } from "../../../helper/genericInputHandler.ts";
+import { useState } from "react";
+import Button from "../../reusable/Button.tsx";
+import { dateSplitter } from "../../../helper/dateSplitter.ts";
 
-const COLUMNS = [
+const USAGE_ATTRIBUTES = [
   "Cost Center",
   "Nature",
   "Description",
@@ -23,6 +25,7 @@ const COLUMNS = [
   "Reason",
   "ID Budget",
 ];
+
 const BUDGET_NATURE = [
   "537003000",
   "803046000",
@@ -32,6 +35,36 @@ const BUDGET_NATURE = [
 ];
 const CURRENCY = ["IDR", "JPY", "SGD", "USD"];
 const STEP = 3;
+
+export interface Usage {
+  costCenter: string;
+  budgetOrNature: string;
+  periode: string;
+  balance: string;
+  description: string;
+  quantity: string;
+  unitPrice: string;
+  measure: string;
+  currency: string;
+  vendor: string;
+  reason: string;
+  estimatedDeliveryDate: string;
+}
+
+const DEFAULT_USAGE = {
+  costCenter: "",
+  budgetOrNature: "",
+  periode: "2025LH02",
+  balance: "5,000",
+  description: "",
+  quantity: "",
+  unitPrice: "",
+  measure: "",
+  currency: "",
+  vendor: "",
+  reason: "",
+  estimatedDeliveryDate: "",
+};
 
 interface ThirdStepProps {
   progressSetter: React.Dispatch<React.SetStateAction<number[]>>;
@@ -48,9 +81,13 @@ const ThirdStep = ({
   thirdStepInputsInputsSetter,
   thirdStepInputsDefaultValue,
 }: ThirdStepProps) => {
-  const genericChangeHandler = createGenericChangeHandler(
-    thirdStepInputsInputsSetter,
-  );
+  const [usageField, setUsageField] = useState<Usage>(DEFAULT_USAGE);
+  const genericChangeHandler = createGenericChangeHandler(setUsageField);
+  const formatDate = (estDeliveryDate: string) => {
+    const [year, month, day] = dateSplitter(estDeliveryDate);
+    return `${day}-${month}-${year}`;
+  };
+
   return (
     <div className="rounded-2xl bg-yellow-100 p-8 flex flex-col gap-4">
       <h1 className="text-3xl font-bold text-yellow-600">Step 3</h1>
@@ -68,18 +105,18 @@ const ThirdStep = ({
             variant="yellow"
             defaultDisabledValue="Select Cost Center"
             mappings={DEPARTMENTS}
-            value={thirdStepInputsGetter.costCenter}
+            value={usageField.costCenter}
             onChangeHandler={genericChangeHandler("costCenter")}
           />
           <SelectionInput
             label="Budget/Nature"
             name="budget/nature"
             id="budget/nature"
-            requiredInput={false}
+            requiredInput
             variant="yellow"
             defaultDisabledValue="Select Budget/Nature"
             options={BUDGET_NATURE}
-            value={thirdStepInputsGetter.budgetOrNature}
+            value={usageField.budgetOrNature}
             onChangeHandler={genericChangeHandler("budgetOrNature")}
           />
           <TextInput
@@ -88,7 +125,8 @@ const ThirdStep = ({
             id="periode"
             variant="yellow"
             requiredInput={false}
-            value={thirdStepInputsGetter.periode}
+            isDisabled
+            value={usageField.periode}
             onChangeHandler={genericChangeHandler("periode")}
           />
           <TextInput
@@ -96,8 +134,9 @@ const ThirdStep = ({
             name="balance"
             id="balance"
             variant="yellow"
-            requiredInput={false}
-            value={thirdStepInputsGetter.balance}
+            requiredInput
+            isDisabled
+            value={usageField.balance}
             onChangeHandler={genericChangeHandler("balance")}
           />
           <TextInput
@@ -105,8 +144,8 @@ const ThirdStep = ({
             name="description"
             id="description"
             variant="yellow"
-            requiredInput={false}
-            value={thirdStepInputsGetter.description}
+            requiredInput
+            value={usageField.description}
             onChangeHandler={genericChangeHandler("description")}
           />
           <NumberInput
@@ -114,8 +153,8 @@ const ThirdStep = ({
             name="quantity"
             id="quantity"
             variant="yellow"
-            requiredInput={false}
-            value={thirdStepInputsGetter.quantity}
+            requiredInput
+            value={usageField.quantity}
             onChangeHandler={genericChangeHandler("quantity")}
           />
           <NumberInput
@@ -124,7 +163,7 @@ const ThirdStep = ({
             id="unit-price"
             variant="yellow"
             requiredInput={false}
-            value={thirdStepInputsGetter.unitPrice}
+            value={usageField.unitPrice}
             onChangeHandler={genericChangeHandler("unitPrice")}
           />
           <TipBox
@@ -136,19 +175,19 @@ const ThirdStep = ({
             name="measure"
             id="measure"
             variant="yellow"
-            requiredInput={false}
-            value={thirdStepInputsGetter.measure}
+            requiredInput
+            value={usageField.measure}
             onChangeHandler={genericChangeHandler("measure")}
           />
           <SelectionInput
             label="Currency"
             name="currency"
             id="currency"
-            requiredInput={false}
+            requiredInput
             variant="yellow"
             defaultDisabledValue="Select Currency"
             options={CURRENCY}
-            value={thirdStepInputsGetter.currency}
+            value={usageField.currency}
             onChangeHandler={genericChangeHandler("currency")}
           />
           <TextInput
@@ -156,8 +195,8 @@ const ThirdStep = ({
             name="vendor"
             id="vendor"
             variant="yellow"
-            requiredInput={false}
-            value={thirdStepInputsGetter.vendor}
+            requiredInput
+            value={usageField.vendor}
             onChangeHandler={genericChangeHandler("vendor")}
           />
           <TextInput
@@ -165,8 +204,8 @@ const ThirdStep = ({
             name="reason"
             id="reason"
             variant="yellow"
-            requiredInput={false}
-            value={thirdStepInputsGetter.reason}
+            requiredInput
+            value={usageField.reason}
             onChangeHandler={genericChangeHandler("reason")}
           />
           <DateInput
@@ -174,22 +213,32 @@ const ThirdStep = ({
             name="estimated-delivery-date"
             id="estimated-delivery-date"
             variant="yellow"
-            requiredInput={false}
-            value={thirdStepInputsGetter.estimatedDeliveryDate}
+            requiredInput
+            value={usageField.estimatedDeliveryDate}
             onChangeHandler={genericChangeHandler("estimatedDeliveryDate")}
           />
+          <div
+            onClick={() => {
+              const newThirdStepInputs: ThirdStepInputs = {
+                usages: [...thirdStepInputsGetter.usages, usageField],
+              };
+              thirdStepInputsInputsSetter(newThirdStepInputs);
+            }}
+          >
+            <Button id="add-usage" variant="yellow" label="Add Usage" />
+          </div>
         </div>
         <div className="flex-3 overflow-auto lg:overflow-y-auto max-h-64 lg:max-h-full lg:h-full border">
           <table className="table-auto border-collapse w-full">
             <thead className="sticky top-0 z-1 border">
               <tr>
-                {COLUMNS.map((column, index) => {
+                {USAGE_ATTRIBUTES.map((attribute, index) => {
                   return (
                     <th
                       key={index}
                       className="text-xs border p-2 bg-yellow-800 text-white border-black whitespace-nowrap text-center"
                     >
-                      {column}
+                      {attribute}
                     </th>
                   );
                 })}
@@ -199,20 +248,57 @@ const ThirdStep = ({
               </tr>
             </thead>
             <tbody>
-              {Placeholders.map((placeholder, index) => {
+              {thirdStepInputsGetter.usages.map((usage, index) => {
                 return (
                   <tr key={index}>
-                    {COLUMNS.map((column, index) => {
-                      return (
-                        <td
-                          key={index}
-                          className="text-xs border p-2 whitespace-nowrap text-center"
-                        >
-                          {placeholder[column as keyof typeof placeholder]}
-                        </td>
-                      );
-                    })}
-                    <td className="bg-red-400 hover:bg-red-500 active:bg-red-600 | text-xs border p-2 whitespace-nowrap text-center select-none">
+                    <td className="text-xs border p-2 whitespace-nowrap text-center">
+                      {usage.costCenter}
+                    </td>
+                    <td className="text-xs border p-2 whitespace-nowrap text-center">
+                      {usage.budgetOrNature}
+                    </td>
+                    <td className="text-xs border p-2 whitespace-nowrap text-center">
+                      {usage.description}
+                    </td>
+                    <td className="text-xs border p-2 whitespace-nowrap text-center">
+                      {usage.quantity}
+                    </td>
+                    <td className="text-xs border p-2 whitespace-nowrap text-center">
+                      {usage.measure}
+                    </td>
+                    <td className="text-xs border p-2 whitespace-nowrap text-center">
+                      {usage.unitPrice}
+                    </td>
+                    <td className="text-xs border p-2 whitespace-nowrap text-center">
+                      {usage.currency}
+                    </td>
+                    <td className="text-xs border p-2 whitespace-nowrap text-center">
+                      [RATE]{/* Placeholder of rate for the time being */}
+                    </td>
+                    <td className="text-xs border p-2 whitespace-nowrap text-center">
+                      {formatDate(usage.estimatedDeliveryDate)}
+                    </td>
+                    <td className="text-xs border p-2 whitespace-nowrap text-center">
+                      {usage.vendor}
+                    </td>
+                    <td className="text-xs border p-2 whitespace-nowrap text-center">
+                      {usage.reason}
+                    </td>
+                    <td className="text-xs border p-2 whitespace-nowrap text-center">
+                      [ID] {/* Placeholder of ID Budget for the time being */}
+                    </td>
+                    <td
+                      className="bg-red-400 hover:bg-red-500 active:bg-red-600 | text-xs border p-2 whitespace-nowrap text-center select-none"
+                      onClick={() => {
+                        const newUsages = thirdStepInputsGetter.usages.filter(
+                          (_, innerIndex) => innerIndex !== index,
+                        );
+                        const newThirdStepInputs: ThirdStepInputs = {
+                          usages: [...newUsages],
+                        };
+                        thirdStepInputsInputsSetter(newThirdStepInputs);
+                      }}
+                    >
                       Delete
                     </td>
                   </tr>

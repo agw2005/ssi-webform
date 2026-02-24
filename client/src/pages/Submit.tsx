@@ -24,7 +24,7 @@ export interface SecondStepInputs {
   returnOnOutgoing: string;
 }
 
-export interface ThirdStepInputs {
+export interface Usage {
   costCenter: string;
   budgetOrNature: string;
   periode: string;
@@ -37,6 +37,10 @@ export interface ThirdStepInputs {
   vendor: string;
   reason: string;
   estimatedDeliveryDate: string;
+}
+
+export interface ThirdStepInputs {
+  usages: Usage[];
 }
 
 export interface FourthStepInputs {
@@ -78,18 +82,7 @@ const DEFAULT_VALUES = {
     returnOnOutgoing: "",
   },
   thirdStep: {
-    costCenter: "",
-    budgetOrNature: "",
-    periode: "",
-    balance: "",
-    description: "",
-    quantity: "",
-    unitPrice: "",
-    measure: "",
-    currency: "",
-    vendor: "",
-    reason: "",
-    estimatedDeliveryDate: "",
+    usages: [],
   },
   fourthStep: {
     approver: [],
