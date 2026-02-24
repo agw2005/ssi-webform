@@ -257,6 +257,7 @@ const ThirdStep = ({
                   usages: [...thirdStepInputsGetter.usages, usageField],
                 };
                 thirdStepInputsInputsSetter(newThirdStepInputs);
+                setUsageField(DEFAULT_USAGE);
               } else {
                 globalThis.confirm(EMPTY_USAGE_FIELDS_WARNING);
               }
@@ -403,6 +404,7 @@ const ThirdStep = ({
           <div
             className="bg-black hover:bg-black/70 active:bg-black/85 | px-4 py-2 border rounded-2xl border-black font-bold tracking-wide text-white select-none"
             onClick={() => {
+              setUsageField(DEFAULT_USAGE);
               progressSetter((prev) => prev.filter((num) => num !== STEP));
               thirdStepInputsInputsSetter(thirdStepInputsDefaultValue);
               console.log(thirdStepInputsGetter);
