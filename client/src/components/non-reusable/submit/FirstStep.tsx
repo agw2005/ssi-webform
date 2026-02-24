@@ -53,6 +53,24 @@ const FirstStep = ({
     firstStepInputsInputsSetter,
   );
 
+  const requiredFieldsAreEmpty = () => {
+    if (
+      firstStepInputsGetter.name === firstStepInputsDefaultValue.name ||
+      firstStepInputsGetter.section === firstStepInputsDefaultValue.section ||
+      firstStepInputsGetter.nrp === firstStepInputsDefaultValue.nrp ||
+      firstStepInputsGetter.email === firstStepInputsDefaultValue.email ||
+      firstStepInputsGetter.fileResource ===
+        firstStepInputsDefaultValue.fileResource ||
+      firstStepInputsGetter.department ===
+        firstStepInputsDefaultValue.department ||
+      firstStepInputsGetter.form === firstStepInputsDefaultValue.form
+    ) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+
   return (
     <div className="rounded-2xl bg-red-100 p-8 flex flex-col gap-4 flex-1">
       <h1 className="text-3xl font-bold text-red-600">Step 1</h1>
@@ -151,8 +169,14 @@ const FirstStep = ({
         <div
           className="bg-black hover:bg-black/70 active:bg-black/85 | px-4 py-2 border rounded-2xl border-black font-bold tracking-wide text-white select-none"
           onClick={() => {
-            progressSetter((prev) => [...prev, STEP]);
-            console.log(firstStepInputsGetter);
+            if (!requiredFieldsAreEmpty()) {
+              progressSetter((prev) => [...prev, STEP]);
+              console.log(firstStepInputsGetter);
+            } else {
+              globalThis.confirm(
+                "One or more required fields are empty. Please fill them out before proceeding.",
+              );
+            }
           }}
         >
           Next
