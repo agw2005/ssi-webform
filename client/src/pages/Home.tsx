@@ -72,11 +72,12 @@ const Home = () => {
           variant="black"
           requiredInput={false}
           defaultDisabledValue="All Section"
-          options={
-            !sectionNames
+          options={[
+            "All Section",
+            ...(!sectionNames
               ? []
-              : sectionNames.map((section) => section.SectionName)
-          }
+              : sectionNames.map((section) => section.SectionName)),
+          ]}
           value={sectionFilter}
           onChangeHandler={(e) => setSectionFilter(e.target.value)}
         />
@@ -98,11 +99,12 @@ const Home = () => {
           variant="black"
           requiredInput={false}
           defaultDisabledValue="All Supervisor"
-          options={
-            !supervisorNames
+          options={[
+            "All Supervisor",
+            ...(!supervisorNames
               ? []
-              : supervisorNames.map((supervisor) => supervisor.NameUser)
-          }
+              : supervisorNames.map((supervisor) => supervisor.NameUser)),
+          ]}
           value={supervisorFilter}
           onChangeHandler={(e) => setSupervisorFilter(e.currentTarget.value)}
         />
