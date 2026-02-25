@@ -4,7 +4,7 @@
   "exports": "./mod.ts",
   "tasks": {
     "dev": "deno run --watch --allow-net --allow-env --allow-read main.ts",
-    "keygen": "deno run ----allow-read --allow-write ./auth/generateKey.ts"
+    "keygen": "deno run --allow-read --allow-write ./auth/generateKey.ts"
   },
   "imports": {
     "@oak/oak": "jsr:@oak/oak@^17.2.0",
