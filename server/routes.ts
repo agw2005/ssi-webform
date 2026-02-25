@@ -16,6 +16,7 @@ import { basicGet as TypeGet } from "./controllers/Type.ts";
 import { basicGet as UploadFileGet } from "./controllers/UploadFile.ts";
 import {
   authInformation,
+  supervisorNames,
   basicGet as UserMasterGet,
 } from "./controllers/UserMaster.ts";
 import type { RouterContext } from "@oak/oak";
@@ -220,6 +221,14 @@ export const getUserAuthInfo = async (
     page,
     pagination,
   );
+  ctx.response.status = 200;
+  ctx.response.body = rows;
+};
+
+export const getSupervisorNames = async (
+  ctx: RouterContext<"/usermaster/names">,
+) => {
+  const [rows, _metadata] = await supervisorNames(databasePool);
   ctx.response.status = 200;
   ctx.response.body = rows;
 };

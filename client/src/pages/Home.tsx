@@ -5,9 +5,10 @@ import NumberInput from "../components/reusable/inputs/NumberInput.tsx";
 import DateRangeInput from "../components/reusable/inputs/DateRangeInput.tsx";
 import TextInput from "../components/reusable/inputs/TextInput.tsx";
 import { Link } from "react-router-dom";
-import { useEffect, useRef, useState } from "react";
-import type { SectionNames } from "@scope/server";
+import { useState } from "react";
+import type { SectionNames, SupervisorNames } from "@scope/server";
 import LoadingFallback from "../components/reusable/LoadingFallback.tsx";
+import useFetch from "../hooks/useFetch.tsx";
 
 const COLUMNS = [
   "ID Trace",
@@ -22,15 +23,9 @@ const COLUMNS = [
 ];
 
 const STATUSES = ["All Status", "Final Approved", "In Progress", "Rejected"];
-const EMPLOYEES = [
-  "All Supervisor",
-  "Administrator",
-  "Person 1",
-  "Person 2",
-  "Person 3",
-];
 
 const SECTION_NAMES_URL = "http://localhost:8000/section/names";
+const SUPERVISOR_NAMES_URL = "http://localhost:8000/usermaster/names";
 
 const Home = () => {
   const [sectionFilter, setSectionFilter] = useState("");
@@ -41,48 +36,28 @@ const Home = () => {
   const [endingDate, setEndingDate] = useState("");
   const [searchField, setSearchField] = useState("");
 
-  const abortControllerRef = useRef<AbortController | null>(null);
-  const [error, setError] = useState<Error | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [sectionNames, setSectionNames] = useState<SectionNames[]>([]);
+  const {
+    data: sectionNames,
+    isLoading: isSectionLoading,
+    isError: sectionError,
+  } = useFetch<SectionNames>(SECTION_NAMES_URL);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      abortControllerRef.current?.abort();
-      abortControllerRef.current = new AbortController();
-      setIsLoading(true);
-      try {
-        const response = await fetch(SECTION_NAMES_URL, {
-          signal: abortControllerRef.current?.signal,
-        });
-        const sectionNames: SectionNames[] = await response.json();
-        setSectionNames(sectionNames);
-      } catch (err) {
-        if (err instanceof Error && err.name === "AbortError") {
-          return;
-        }
+  const {
+    data: supervisorNames,
+    isLoading: isSupervisorLoading,
+    isError: supervisorError,
+  } = useFetch<SupervisorNames>(SUPERVISOR_NAMES_URL);
 
-        const error: Error = new Error(
-          `Encountered an error when fetching API. Please ensure your connection is stable.\n(${err}).`,
-        );
-        setError(error);
-        console.error(error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchData();
-  }, []);
-
-  if (isLoading) {
+  if (isSectionLoading || isSupervisorLoading) {
     return <LoadingFallback />;
   }
 
-  if (error) {
+  if (sectionError || supervisorError) {
     return (
       <div className="m-4">
         <div>Something unexpected happened.</div>
-        <div>Error message : {error?.message}</div>
+        {sectionError ? sectionError.message : ""}
+        {supervisorError ? supervisorError.message : ""}
       </div>
     );
   }
@@ -97,7 +72,11 @@ const Home = () => {
           variant="black"
           requiredInput={false}
           defaultDisabledValue="All Section"
-          options={sectionNames.map((section) => section.SectionName)}
+          options={
+            !sectionNames
+              ? []
+              : sectionNames.map((section) => section.SectionName)
+          }
           value={sectionFilter}
           onChangeHandler={(e) => setSectionFilter(e.target.value)}
         />
@@ -119,7 +98,11 @@ const Home = () => {
           variant="black"
           requiredInput={false}
           defaultDisabledValue="All Supervisor"
-          options={EMPLOYEES}
+          options={
+            !supervisorNames
+              ? []
+              : supervisorNames.map((supervisor) => supervisor.NameUser)
+          }
           value={supervisorFilter}
           onChangeHandler={(e) => setSupervisorFilter(e.currentTarget.value)}
         />
