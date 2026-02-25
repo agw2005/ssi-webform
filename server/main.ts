@@ -23,6 +23,7 @@ import {
 } from "./routes.ts";
 import login from "./auth/main.ts";
 import isAuthenticated from "./auth/authMiddleware.ts";
+import { handleCors } from "./handleCors.ts";
 
 const oakApp = new Application();
 const oakRouter = new Router();
@@ -53,25 +54,7 @@ oakRouter.get("/authInfo/:page", getUserAuthInfo);
 oakRouter.post("/login", login);
 
 oakApp.use(async (ctx, next) => {
-  ctx.response.headers.set(
-    "Access-Control-Allow-Origin",
-    "http://localhost:5173",
-  );
-  ctx.response.headers.set(
-    "Access-Control-Allow-Methods",
-    "GET, POST, OPTIONS",
-  );
-  ctx.response.headers.set(
-    "Access-Control-Allow-Headers",
-    "Content-Type, Authorization",
-  );
-  ctx.response.headers.set("Access-Control-Max-Age", "86400");
-
-  if (ctx.request.method === "OPTIONS") {
-    ctx.response.status = 204;
-    return;
-  }
-
+  handleCors(ctx);
   await next();
 });
 
