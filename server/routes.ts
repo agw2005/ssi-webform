@@ -8,7 +8,7 @@ import { basicGet as FrmPRNoPRGet } from "./controllers/FrmPRNoPR.ts";
 import { basicGet as NatureGet } from "./controllers/Nature.ts";
 import { basicGet as RateDollarGet } from "./controllers/RateDollar.ts";
 import { basicGet as RateDollarTempGet } from "./controllers/RateDollarTemp.ts";
-import { basicGet as SectionGet } from "./controllers/Section.ts";
+import { basicGet as SectionGet, sectionNames } from "./controllers/Section.ts";
 import { basicGet as TitleGet } from "./controllers/Title.ts";
 import { basicGet as TraceGet } from "./controllers/Trace.ts";
 import { basicGet as TraceDGet } from "./controllers/TraceD.ts";
@@ -140,6 +140,12 @@ export const getSectionsPaginated = async (
   const pagination = Number(ctx.params.pagination);
   const page = Number(ctx.params.page);
   const [rows, _metadata] = await SectionGet(databasePool, page, pagination);
+  ctx.response.status = 200;
+  ctx.response.body = rows;
+};
+
+export const getSectionNames = async (ctx: RouterContext<"/section/names">) => {
+  const [rows, _metadata] = await sectionNames(databasePool);
   ctx.response.status = 200;
   ctx.response.body = rows;
 };

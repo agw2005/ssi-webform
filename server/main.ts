@@ -11,6 +11,7 @@ import {
   getNaturesPaginated,
   getRateDollarsPaginated,
   getRateDollarTempsPaginated,
+  getSectionNames,
   getSectionsPaginated,
   getTitlesPaginated,
   getTraceDsPaginated,
@@ -47,6 +48,8 @@ oakRouter.get("/traced/:pagination/:page", getTraceDsPaginated);
 oakRouter.get("/type/:pagination/:page", getTypesPaginated);
 oakRouter.get("/uploadfile/:pagination/:page", getUploadFilesPaginated);
 oakRouter.get("/usermaster/:pagination/:page", getUserMastersPaginated);
+
+oakRouter.get("/section/names", getSectionNames);
 
 oakRouter.get("/auth", isAuthenticated, authenticate);
 oakRouter.get("/authInfo/:page", getUserAuthInfo);

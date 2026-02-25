@@ -5,7 +5,9 @@ import NumberInput from "../components/reusable/inputs/NumberInput.tsx";
 import DateRangeInput from "../components/reusable/inputs/DateRangeInput.tsx";
 import TextInput from "../components/reusable/inputs/TextInput.tsx";
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import type { SectionNames } from "@scope/server";
+import LoadingFallback from "../components/reusable/LoadingFallback.tsx";
 
 const COLUMNS = [
   "ID Trace",
@@ -19,32 +21,6 @@ const COLUMNS = [
   "Remarks",
 ];
 
-const SECTIONS = [
-  "All Section",
-  "MIS",
-  "GA & Personnel",
-  "Accounting",
-  "Purchasing",
-  "PSC",
-  "BM (HRDC)",
-  "RnD",
-  "EC QA-QC",
-  "EXIM",
-  "Material-Control",
-  "FG WHSE",
-  "EC Equipment Engineering OPTO",
-  "EC Production OPTO",
-  "EC Process Engineering OPTO",
-  "FCS",
-  "Process Control",
-  "Job Innovation",
-  "Product Innovation",
-  "Management",
-  "EC Equipment Engineering Compound",
-  "EC Process Engineering Compound",
-  "EC Production Compound",
-];
-
 const STATUSES = ["All Status", "Final Approved", "In Progress", "Rejected"];
 const EMPLOYEES = [
   "All Supervisor",
@@ -54,6 +30,8 @@ const EMPLOYEES = [
   "Person 3",
 ];
 
+const SECTION_NAMES_URL = "http://localhost:8000/section/names";
+
 const Home = () => {
   const [sectionFilter, setSectionFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
@@ -62,6 +40,52 @@ const Home = () => {
   const [startingDate, setStartingDate] = useState("");
   const [endingDate, setEndingDate] = useState("");
   const [searchField, setSearchField] = useState("");
+
+  const abortControllerRef = useRef<AbortController | null>(null);
+  const [error, setError] = useState<Error | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [sectionNames, setSectionNames] = useState<SectionNames[]>([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      abortControllerRef.current?.abort();
+      abortControllerRef.current = new AbortController();
+      setIsLoading(true);
+      try {
+        const response = await fetch(SECTION_NAMES_URL, {
+          signal: abortControllerRef.current?.signal,
+        });
+        const sectionNames: SectionNames[] = await response.json();
+        setSectionNames(sectionNames);
+      } catch (err) {
+        if (err instanceof Error && err.name === "AbortError") {
+          return;
+        }
+
+        const error: Error = new Error(
+          `Encountered an error when fetching API. Please ensure your connection is stable.\n(${err}).`,
+        );
+        setError(error);
+        console.error(error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+
+  if (isLoading) {
+    return <LoadingFallback />;
+  }
+
+  if (error) {
+    return (
+      <div className="m-4">
+        <div>Something unexpected happened.</div>
+        <div>Error message : {error?.message}</div>
+      </div>
+    );
+  }
 
   return (
     <Primitive>
@@ -73,7 +97,7 @@ const Home = () => {
           variant="black"
           requiredInput={false}
           defaultDisabledValue="All Section"
-          options={SECTIONS}
+          options={sectionNames.map((section) => section.SectionName)}
           value={sectionFilter}
           onChangeHandler={(e) => setSectionFilter(e.target.value)}
         />
