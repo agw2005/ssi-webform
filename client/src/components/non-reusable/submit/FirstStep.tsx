@@ -5,31 +5,11 @@ import SelectionInputBetweenLabel from "../../reusable/inputs/SelectionInputBetw
 import DEPARTMENTS from "../../../dummies/Departments.json" with { type: "json" };
 import type { FirstStepInputs } from "../../../pages/Submit.tsx";
 import { createGenericChangeHandler } from "../../../helper/genericInputHandler.ts";
+import useFetch from "../../../hooks/useFetch.tsx";
+import type { SectionNames } from "@scope/server";
+import LoadingFallback from "../../reusable/LoadingFallback.tsx";
 
-const SECTIONS = [
-  "MIS",
-  "GA & Personnel",
-  "Accounting",
-  "Purchasing",
-  "PSC",
-  "BM (HRDC)",
-  "RnD",
-  "EC QA-QC",
-  "EXIM",
-  "Material-Control",
-  "FG WHSE",
-  "EC Equipment Engineering OPTO",
-  "EC Production OPTO",
-  "EC Process Engineering OPTO",
-  "FCS",
-  "Process Control",
-  "Job Innovation",
-  "Product Innovation",
-  "Management",
-  "EC Equipment Engineering Compound",
-  "EC Process Engineering Compound",
-  "EC Production Compound",
-];
+const SECTION_NAMES_URL = "http://localhost:8000/section/names";
 const FILE_RESOURCES = ["EXIM", "FCS", "GA", "MC", "MIS"];
 const FORMS = ["PR", "Cash Advance", "Fixed Asset"];
 const STEP = 1;
@@ -74,6 +54,25 @@ const FirstStep = ({
     }
   };
 
+  const {
+    data: sectionNames,
+    isLoading: isSectionLoading,
+    isError: sectionError,
+  } = useFetch<SectionNames>(SECTION_NAMES_URL);
+
+  if (isSectionLoading) {
+    return <LoadingFallback />;
+  }
+
+  if (sectionError) {
+    return (
+      <div className="m-4">
+        <div>Something unexpected happened.</div>
+        {sectionError ? sectionError.message : ""}
+      </div>
+    );
+  }
+
   return (
     <div className="rounded-2xl bg-red-100 p-8 flex flex-col gap-4 flex-1">
       <h1 className="text-3xl font-bold text-red-600">Step 1</h1>
@@ -93,7 +92,11 @@ const FirstStep = ({
         requiredInput
         variant="red"
         defaultDisabledValue="Select Section"
-        options={SECTIONS}
+        options={
+          !sectionNames
+            ? []
+            : sectionNames?.map((section) => section.SectionName)
+        }
         value={firstStepInputsGetter.section}
         onChangeHandler={genericChangeHandler("section")}
       />
