@@ -26,135 +26,180 @@ export const healthCheck = (ctx: RouterContext<"/">) => {
   ctx.response.body = "Healthy";
 };
 
-export const getPagedBudgets = async (ctx: RouterContext<"/budget/:page">) => {
-  const page = Number(ctx.params.page);
-  const [rows, _metadata] = await BudgetGet(databasePool, page);
-  ctx.response.status = 200;
-  ctx.response.body = rows;
-};
-
-export const getPagedFileResources = async (
-  ctx: RouterContext<"/fileresource/:page">,
+export const getBudgetsPaginated = async (
+  ctx: RouterContext<"/budget/:pagination/:page">,
 ) => {
+  const pagination = Number(ctx.params.pagination);
   const page = Number(ctx.params.page);
-  const [rows, _metadata] = await FileResourceGet(databasePool, page);
+  const [rows, _metadata] = await BudgetGet(databasePool, page, pagination);
   ctx.response.status = 200;
   ctx.response.body = rows;
 };
 
-export const getPagedFlows = async (ctx: RouterContext<"/flow/:page">) => {
-  const page = Number(ctx.params.page);
-  const [rows, _metadata] = await FlowGet(databasePool, page);
-  ctx.response.status = 200;
-  ctx.response.body = rows;
-};
-
-export const getPagedForms = async (ctx: RouterContext<"/form/:page">) => {
-  const page = Number(ctx.params.page);
-  const [rows, _metadata] = await FormGet(databasePool, page);
-  ctx.response.status = 200;
-  ctx.response.body = rows;
-};
-
-export const getPagedFrmPRDs = async (ctx: RouterContext<"/frmprd/:page">) => {
-  const page = Number(ctx.params.page);
-  const [rows, _metadata] = await FrmPRDGet(databasePool, page);
-  ctx.response.status = 200;
-  ctx.response.body = rows;
-};
-
-export const getPagedFrmPRHs = async (ctx: RouterContext<"/frmprh/:page">) => {
-  const page = Number(ctx.params.page);
-  const [rows, _metadata] = await FrmPRHGet(databasePool, page);
-  ctx.response.status = 200;
-  ctx.response.body = rows;
-};
-
-export const getPagedFrmNoPRs = async (
-  ctx: RouterContext<"/frmprnopr/:page">,
+export const getFileResourcesPaginated = async (
+  ctx: RouterContext<"/fileresource/:pagination/:page">,
 ) => {
+  const pagination = Number(ctx.params.pagination);
   const page = Number(ctx.params.page);
-  const [rows, _metadata] = await FrmPRNoPRGet(databasePool, page);
+  const [rows, _metadata] = await FileResourceGet(
+    databasePool,
+    page,
+    pagination,
+  );
   ctx.response.status = 200;
   ctx.response.body = rows;
 };
 
-export const getPagedNatures = async (ctx: RouterContext<"/nature/:page">) => {
-  const page = Number(ctx.params.page);
-  const [rows, _metadata] = await NatureGet(databasePool, page);
-  ctx.response.status = 200;
-  ctx.response.body = rows;
-};
-
-export const getPagedRateDollars = async (
-  ctx: RouterContext<"/ratedollar/:page">,
+export const getFlowsPaginated = async (
+  ctx: RouterContext<"/flow/:pagination/:page">,
 ) => {
+  const pagination = Number(ctx.params.pagination);
   const page = Number(ctx.params.page);
-  const [rows, _metadata] = await RateDollarGet(databasePool, page);
+  const [rows, _metadata] = await FlowGet(databasePool, page, pagination);
   ctx.response.status = 200;
   ctx.response.body = rows;
 };
 
-export const getPagedRateDollarTemps = async (
-  ctx: RouterContext<"/ratedollartemp/:page">,
+export const getFormsPaginated = async (
+  ctx: RouterContext<"/form/:pagination/:page">,
 ) => {
+  const pagination = Number(ctx.params.pagination);
   const page = Number(ctx.params.page);
-  const [rows, _metadata] = await RateDollarTempGet(databasePool, page);
+  const [rows, _metadata] = await FormGet(databasePool, page, pagination);
   ctx.response.status = 200;
   ctx.response.body = rows;
 };
 
-export const getPagedSections = async (
-  ctx: RouterContext<"/section/:page">,
+export const getFrmPRDsPaginated = async (
+  ctx: RouterContext<"/frmprd/:pagination/:page">,
 ) => {
+  const pagination = Number(ctx.params.pagination);
   const page = Number(ctx.params.page);
-  const [rows, _metadata] = await SectionGet(databasePool, page);
+  const [rows, _metadata] = await FrmPRDGet(databasePool, page, pagination);
   ctx.response.status = 200;
   ctx.response.body = rows;
 };
 
-export const getPagedTitles = async (ctx: RouterContext<"/title/:page">) => {
-  const page = Number(ctx.params.page);
-  const [rows, _metadata] = await TitleGet(databasePool, page);
-  ctx.response.status = 200;
-  ctx.response.body = rows;
-};
-
-export const getPagedTraces = async (ctx: RouterContext<"/trace/:page">) => {
-  const page = Number(ctx.params.page);
-  const [rows, _metadata] = await TraceGet(databasePool, page);
-  ctx.response.status = 200;
-  ctx.response.body = rows;
-};
-
-export const getPagedTraceDs = async (ctx: RouterContext<"/traced/:page">) => {
-  const page = Number(ctx.params.page);
-  const [rows, _metadata] = await TraceDGet(databasePool, page);
-  ctx.response.status = 200;
-  ctx.response.body = rows;
-};
-
-export const getPagedTypes = async (ctx: RouterContext<"/type/:page">) => {
-  const page = Number(ctx.params.page);
-  const [rows, _metadata] = await TypeGet(databasePool, page);
-  ctx.response.status = 200;
-  ctx.response.body = rows;
-};
-
-export const getPagedUploadFiles = async (
-  ctx: RouterContext<"/uploadfile/:page">,
+export const getFrmPRHsPaginated = async (
+  ctx: RouterContext<"/frmprh/:pagination/:page">,
 ) => {
+  const pagination = Number(ctx.params.pagination);
   const page = Number(ctx.params.page);
-  const [rows, _metadata] = await UploadFileGet(databasePool, page);
+  const [rows, _metadata] = await FrmPRHGet(databasePool, page, pagination);
   ctx.response.status = 200;
   ctx.response.body = rows;
 };
 
-export const getPagedUserMasters = async (
-  ctx: RouterContext<"/usermaster/:page">,
+export const getFrmNoPRsPaginated = async (
+  ctx: RouterContext<"/frmprnopr/:pagination/:page">,
 ) => {
+  const pagination = Number(ctx.params.pagination);
   const page = Number(ctx.params.page);
-  const [rows, _metadata] = await UserMasterGet(databasePool, page);
+  const [rows, _metadata] = await FrmPRNoPRGet(databasePool, page, pagination);
+  ctx.response.status = 200;
+  ctx.response.body = rows;
+};
+
+export const getNaturesPaginated = async (
+  ctx: RouterContext<"/nature/:pagination/:page">,
+) => {
+  const pagination = Number(ctx.params.pagination);
+  const page = Number(ctx.params.page);
+  const [rows, _metadata] = await NatureGet(databasePool, page, pagination);
+  ctx.response.status = 200;
+  ctx.response.body = rows;
+};
+
+export const getRateDollarsPaginated = async (
+  ctx: RouterContext<"/ratedollar/:pagination/:page">,
+) => {
+  const pagination = Number(ctx.params.pagination);
+  const page = Number(ctx.params.page);
+  const [rows, _metadata] = await RateDollarGet(databasePool, page, pagination);
+  ctx.response.status = 200;
+  ctx.response.body = rows;
+};
+
+export const getRateDollarTempsPaginated = async (
+  ctx: RouterContext<"/ratedollartemp/:pagination/:page">,
+) => {
+  const pagination = Number(ctx.params.pagination);
+  const page = Number(ctx.params.page);
+  const [rows, _metadata] = await RateDollarTempGet(
+    databasePool,
+    page,
+    pagination,
+  );
+  ctx.response.status = 200;
+  ctx.response.body = rows;
+};
+
+export const getSectionsPaginated = async (
+  ctx: RouterContext<"/section/:pagination/:page">,
+) => {
+  const pagination = Number(ctx.params.pagination);
+  const page = Number(ctx.params.page);
+  const [rows, _metadata] = await SectionGet(databasePool, page, pagination);
+  ctx.response.status = 200;
+  ctx.response.body = rows;
+};
+
+export const getTitlesPaginated = async (
+  ctx: RouterContext<"/title/:pagination/:page">,
+) => {
+  const pagination = Number(ctx.params.pagination);
+  const page = Number(ctx.params.page);
+  const [rows, _metadata] = await TitleGet(databasePool, page, pagination);
+  ctx.response.status = 200;
+  ctx.response.body = rows;
+};
+
+export const getTracesPaginated = async (
+  ctx: RouterContext<"/trace/:pagination/:page">,
+) => {
+  const pagination = Number(ctx.params.pagination);
+  const page = Number(ctx.params.page);
+  const [rows, _metadata] = await TraceGet(databasePool, page, pagination);
+  ctx.response.status = 200;
+  ctx.response.body = rows;
+};
+
+export const getTraceDsPaginated = async (
+  ctx: RouterContext<"/traced/:pagination/:page">,
+) => {
+  const pagination = Number(ctx.params.pagination);
+  const page = Number(ctx.params.page);
+  const [rows, _metadata] = await TraceDGet(databasePool, page, pagination);
+  ctx.response.status = 200;
+  ctx.response.body = rows;
+};
+
+export const getTypesPaginated = async (
+  ctx: RouterContext<"/type/:pagination/:page">,
+) => {
+  const pagination = Number(ctx.params.pagination);
+  const page = Number(ctx.params.page);
+  const [rows, _metadata] = await TypeGet(databasePool, page, pagination);
+  ctx.response.status = 200;
+  ctx.response.body = rows;
+};
+
+export const getUploadFilesPaginated = async (
+  ctx: RouterContext<"/uploadfile/:pagination/:page">,
+) => {
+  const pagination = Number(ctx.params.pagination);
+  const page = Number(ctx.params.page);
+  const [rows, _metadata] = await UploadFileGet(databasePool, page, pagination);
+  ctx.response.status = 200;
+  ctx.response.body = rows;
+};
+
+export const getUserMastersPaginated = async (
+  ctx: RouterContext<"/usermaster/:pagination/:page">,
+) => {
+  const pagination = Number(ctx.params.pagination);
+  const page = Number(ctx.params.page);
+  const [rows, _metadata] = await UserMasterGet(databasePool, page, pagination);
   ctx.response.status = 200;
   ctx.response.body = rows;
 };
@@ -162,8 +207,13 @@ export const getPagedUserMasters = async (
 export const getUserAuthInfo = async (
   ctx: RouterContext<"/authInfo/:page">,
 ) => {
+  const pagination = 50;
   const page = Number(ctx.params.page);
-  const [rows, _metadata] = await authInformation(databasePool, page);
+  const [rows, _metadata] = await authInformation(
+    databasePool,
+    page,
+    pagination,
+  );
   ctx.response.status = 200;
   ctx.response.body = rows;
 };
