@@ -1,4 +1,7 @@
-import { basicGet as BudgetGet } from "./controllers/Budget.ts";
+import {
+  allFileResources,
+  basicGet as BudgetGet,
+} from "./controllers/Budget.ts";
 import { basicGet as FileResourceGet } from "./controllers/FileResource.ts";
 import { basicGet as FlowGet } from "./controllers/Flow.ts";
 import { basicGet as FormGet } from "./controllers/Form.ts";
@@ -33,6 +36,14 @@ export const getBudgetsPaginated = async (
   const pagination = Number(ctx.params.pagination);
   const page = Number(ctx.params.page);
   const [rows, _metadata] = await BudgetGet(databasePool, page, pagination);
+  ctx.response.status = 200;
+  ctx.response.body = rows;
+};
+
+export const getAllFileResources = async (
+  ctx: RouterContext<"/budget/fileresources">,
+) => {
+  const [rows, _metadata] = await allFileResources(databasePool);
   ctx.response.status = 200;
   ctx.response.body = rows;
 };

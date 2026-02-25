@@ -4,6 +4,9 @@ import BudgetViewFilters from "../components/non-reusable/budget/BudgetViewFilte
 import Switch from "../components/reusable/Switch.tsx";
 import BudgetView from "../components/non-reusable/budget/BudgetView.tsx";
 import ReportView from "../components/non-reusable/budget/ReportView.tsx";
+import LoadingFallback from "../components/reusable/LoadingFallback.tsx";
+import type { FileResource } from "@scope/server";
+import useFetch from "../hooks/useFetch.tsx";
 
 const COLUMNS = [
   "File Resource",
@@ -36,7 +39,7 @@ const COLUMNS = [
   "Bud_12",
   "Usage12",
 ];
-const FILE_RESOURCES = ["EXIM", "FCS", "GA", "MC", "MIS"];
+
 const PERIODS = [
   "2025LH",
   "2025FH",
@@ -52,10 +55,31 @@ const PERIODS = [
   "2020FH",
 ];
 
+const FILE_RESOURCES_URL = "http://localhost:8000/budget/fileresources";
+
 const Budget = () => {
   const [viewMode, setViewMode] = useState<"Budget" | "Report">("Budget");
   const [fileResource, setFileResource] = useState("");
   const [period, setPeriod] = useState("");
+
+  const {
+    data: fileResources,
+    isLoading: isFileResourcesLoading,
+    isError: isFileResourcesError,
+  } = useFetch<FileResource>(FILE_RESOURCES_URL);
+
+  if (isFileResourcesLoading) {
+    return <LoadingFallback />;
+  }
+
+  if (isFileResourcesError) {
+    return (
+      <div className="m-4">
+        <div>Something unexpected happened.</div>
+        {isFileResourcesError ? isFileResourcesError.message : ""}
+      </div>
+    );
+  }
 
   return (
     <Primitive>
@@ -73,7 +97,11 @@ const Budget = () => {
         {viewMode === "Budget" ? (
           <BudgetViewFilters
             variants="black"
-            fileResources={FILE_RESOURCES}
+            fileResources={
+              !fileResources
+                ? []
+                : fileResources.map((budget) => budget.FileResource)
+            }
             periods={PERIODS}
             fileResourceValue={fileResource}
             periodValue={period}
@@ -92,7 +120,14 @@ const Budget = () => {
       {viewMode === "Budget" ? <BudgetView columns={COLUMNS} /> : ""}
 
       {viewMode === "Report" ? (
-        <ReportView fileResources={FILE_RESOURCES} periods={PERIODS} />
+        <ReportView
+          fileResources={
+            !fileResources
+              ? []
+              : fileResources.map((budget) => budget.FileResource)
+          }
+          periods={PERIODS}
+        />
       ) : (
         ""
       )}

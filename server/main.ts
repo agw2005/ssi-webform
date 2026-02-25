@@ -1,6 +1,7 @@
 import { Application, Router } from "@oak/oak";
 import {
   authenticate,
+  getAllFileResources,
   getBudgetsPaginated,
   getFileResourcesPaginated,
   getFlowsPaginated,
@@ -32,6 +33,7 @@ const oakRouter = new Router();
 
 oakRouter.get("/", healthCheck);
 
+// Basic GET
 oakRouter.get("/budget/:pagination/:page", getBudgetsPaginated);
 oakRouter.get("/fileresource/:pagination/:page", getFileResourcesPaginated);
 oakRouter.get("/flow/:pagination/:page", getFlowsPaginated);
@@ -50,12 +52,14 @@ oakRouter.get("/type/:pagination/:page", getTypesPaginated);
 oakRouter.get("/uploadfile/:pagination/:page", getUploadFilesPaginated);
 oakRouter.get("/usermaster/:pagination/:page", getUserMastersPaginated);
 
+// Specific GET
 oakRouter.get("/section/names", getSectionNames);
 oakRouter.get("/usermaster/names", getSupervisorNames);
+oakRouter.get("/budget/fileresources", getAllFileResources);
 
+// Auth
 oakRouter.get("/auth", isAuthenticated, authenticate);
 oakRouter.get("/authInfo/:page", getUserAuthInfo);
-
 oakRouter.post("/login", login);
 
 oakApp.use(async (ctx, next) => {
