@@ -5,7 +5,7 @@ import Switch from "../components/reusable/Switch.tsx";
 import BudgetView from "../components/non-reusable/budget/BudgetView.tsx";
 import ReportView from "../components/non-reusable/budget/ReportView.tsx";
 import LoadingFallback from "../components/reusable/LoadingFallback.tsx";
-import type { FileResource } from "@scope/server";
+import type { FileResource, Period } from "@scope/server";
 import useFetch from "../hooks/useFetch.tsx";
 
 const COLUMNS = [
@@ -40,22 +40,8 @@ const COLUMNS = [
   "Usage12",
 ];
 
-const PERIODS = [
-  "2025LH",
-  "2025FH",
-  "2024LH",
-  "2024FH",
-  "2023LH",
-  "2023FH",
-  "2022LH",
-  "2022FH",
-  "2021LH",
-  "2021FH",
-  "2020LH",
-  "2020FH",
-];
-
 const FILE_RESOURCES_URL = "http://localhost:8000/budget/fileresources";
+const PERIODS_URL = "http://localhost:8000/budget/periods";
 
 const Budget = () => {
   const [viewMode, setViewMode] = useState<"Budget" | "Report">("Budget");
@@ -68,15 +54,22 @@ const Budget = () => {
     isError: isFileResourcesError,
   } = useFetch<FileResource>(FILE_RESOURCES_URL);
 
-  if (isFileResourcesLoading) {
+  const {
+    data: periods,
+    isLoading: isPeriodsLoading,
+    isError: isPeriodsError,
+  } = useFetch<Period>(PERIODS_URL);
+
+  if (isFileResourcesLoading && isPeriodsLoading) {
     return <LoadingFallback />;
   }
 
-  if (isFileResourcesError) {
+  if (isFileResourcesError && isPeriodsError) {
     return (
       <div className="m-4">
         <div>Something unexpected happened.</div>
         {isFileResourcesError ? isFileResourcesError.message : ""}
+        {isPeriodsError ? isPeriodsError.message : ""}
       </div>
     );
   }
@@ -102,7 +95,7 @@ const Budget = () => {
                 ? []
                 : fileResources.map((budget) => budget.FileResource)
             }
-            periods={PERIODS}
+            periods={!periods ? [] : periods.map((period) => period.Period)}
             fileResourceValue={fileResource}
             periodValue={period}
             fileResourceOnChange={(e) => {
@@ -126,7 +119,7 @@ const Budget = () => {
               ? []
               : fileResources.map((budget) => budget.FileResource)
           }
-          periods={PERIODS}
+          periods={!periods ? [] : periods.map((period) => period.Period)}
         />
       ) : (
         ""
