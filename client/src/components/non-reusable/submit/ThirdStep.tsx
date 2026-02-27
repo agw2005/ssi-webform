@@ -12,6 +12,7 @@ import { dateSplitter } from "../../../helper/dateSplitter.ts";
 import type { Department, Nature } from "@scope/server";
 import useFetch from "../../../hooks/useFetch.tsx";
 import LoadingFallback from "../../reusable/LoadingFallback.tsx";
+import getCurrentPeriod from "../../../helper/getCurrentPeriod.ts";
 
 const DEPARTMENTS_URL = "http://localhost:8000/frmprnopr/departments";
 const NATURES_URL = "http://localhost:8000/budget/nature";
@@ -58,7 +59,7 @@ export interface Usage {
 const DEFAULT_USAGE = {
   costCenter: "",
   budgetOrNature: "",
-  periode: "2025LH02",
+  periode: getCurrentPeriod(),
   balance: "5,000",
   description: "",
   quantity: "",
