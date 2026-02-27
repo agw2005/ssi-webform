@@ -9,6 +9,7 @@ import { useState } from "react";
 import type { SectionNames, SupervisorNames } from "@scope/server";
 import LoadingFallback from "../components/reusable/LoadingFallback.tsx";
 import useFetch from "../hooks/useFetch.tsx";
+import capitalize from "../helper/capitalize.ts";
 
 const COLUMNS = [
   "ID Trace",
@@ -103,7 +104,9 @@ const Home = () => {
             "All Supervisor",
             ...(!supervisorNames
               ? []
-              : supervisorNames.map((supervisor) => supervisor.NameUser)),
+              : supervisorNames.map((supervisor) =>
+                  capitalize(supervisor.NameUser),
+                )),
           ]}
           value={supervisorFilter}
           onChangeHandler={(e) => setSupervisorFilter(e.currentTarget.value)}
