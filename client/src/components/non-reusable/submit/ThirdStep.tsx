@@ -9,11 +9,12 @@ import { createGenericChangeHandler } from "../../../helper/genericInputHandler.
 import { useState } from "react";
 import Button from "../../reusable/Button.tsx";
 import { dateSplitter } from "../../../helper/dateSplitter.ts";
-import type { Department } from "@scope/server";
+import type { Department, Nature } from "@scope/server";
 import useFetch from "../../../hooks/useFetch.tsx";
 import LoadingFallback from "../../reusable/LoadingFallback.tsx";
 
 const DEPARTMENTS_URL = "http://localhost:8000/frmprnopr/departments";
+const NATURES_URL = "http://localhost:8000/budget/nature";
 
 const USAGE_ATTRIBUTES = [
   "Cost Center",
@@ -30,13 +31,6 @@ const USAGE_ATTRIBUTES = [
   "ID Budget",
 ];
 
-const BUDGET_NATURE = [
-  "537003000",
-  "803046000",
-  "803052000",
-  "811046000",
-  "811052000",
-];
 const CURRENCY = ["IDR", "JPY", "SGD", "USD"];
 const STEP = 3;
 
@@ -131,7 +125,13 @@ const ThirdStep = ({
     isError: isDepartmentsError,
   } = useFetch<Department>(DEPARTMENTS_URL);
 
-  if (isDepartmentsLoading) {
+  const {
+    data: natures,
+    isLoading: isNaturesLoading,
+    isError: isNaturesError,
+  } = useFetch<Nature>(`${NATURES_URL}/${usageField.costCenter || "103"}`);
+
+  if (isDepartmentsLoading || isNaturesLoading) {
     return <LoadingFallback />;
   }
 
@@ -177,8 +177,13 @@ const ThirdStep = ({
             id="budget/nature"
             requiredInput
             variant="yellow"
+            isDisabled={usageField.costCenter === ""}
             defaultDisabledValue="Select Budget/Nature"
-            options={BUDGET_NATURE}
+            options={
+              !natures || isNaturesError
+                ? []
+                : natures.map((nature) => nature.Nature)
+            }
             value={usageField.budgetOrNature}
             onChangeHandler={genericChangeHandler("budgetOrNature")}
           />

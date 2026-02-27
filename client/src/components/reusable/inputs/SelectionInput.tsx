@@ -7,6 +7,7 @@ interface SelectionInputProps {
   id: string;
   requiredInput: boolean;
   variant: ColorVariant;
+  isDisabled?: boolean;
   defaultDisabledValue: string;
   options: string[];
   value: string;
@@ -18,6 +19,7 @@ const SelectionInput = ({
   name,
   id,
   variant,
+  isDisabled = false,
   requiredInput,
   defaultDisabledValue,
   options,
@@ -35,9 +37,10 @@ const SelectionInput = ({
       <select
         name={name}
         id={id}
-        className={`text-xs lg:text-sm xl:text-base | flex-1 h-full px-4 rounded-r-xl border ${resolveColorMappings(variant, "input")} bg-white/50 outline-none`}
+        className={`text-xs lg:text-sm xl:text-base | flex-1 h-full px-4 rounded-r-xl border ${resolveColorMappings(variant, "input")} ${isDisabled ? "bg-black/10" : "bg-white/50"} outline-none`}
         value={value}
         onChange={onChangeHandler}
+        disabled={isDisabled}
       >
         <option value="" disabled>
           {defaultDisabledValue}
