@@ -2,6 +2,7 @@ import {
   allFileResources,
   allPeriods,
   basicGet as BudgetGet,
+  natureByCostCenter,
 } from "./controllers/Budget.ts";
 import { basicGet as FileResourceGet } from "./controllers/FileResource.ts";
 import { basicGet as FlowGet } from "./controllers/Flow.ts";
@@ -58,6 +59,15 @@ export const getAllFileResources = async (
 
 export const getAllPeriods = async (ctx: RouterContext<"/budget/periods">) => {
   const [rows, _metadata] = await allPeriods(databasePool);
+  ctx.response.status = 200;
+  ctx.response.body = rows;
+};
+
+export const getNaturesOfCostCenter = async (
+  ctx: RouterContext<"/budget/nature/:costcenter">,
+) => {
+  const costcenter = Number(ctx.params.costcenter);
+  const [rows, _metadata] = await natureByCostCenter(databasePool, costcenter);
   ctx.response.status = 200;
   ctx.response.body = rows;
 };

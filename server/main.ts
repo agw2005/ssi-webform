@@ -11,6 +11,7 @@ import {
   getFrmNoPRsPaginated,
   getFrmPRDsPaginated,
   getFrmPRHsPaginated,
+  getNaturesOfCostCenter,
   getNaturesPaginated,
   getRateDollarsPaginated,
   getRateDollarTempsPaginated,
@@ -36,6 +37,15 @@ const oakRouter = new Router();
 
 oakRouter.get("/", healthCheck);
 
+// Specific GET
+oakRouter.get("/section/names", getSectionNames);
+oakRouter.get("/section/users", getSectionUsers);
+oakRouter.get("/usermaster/names", getSupervisorNames);
+oakRouter.get("/budget/fileresources", getAllFileResources);
+oakRouter.get("/budget/periods", getAllPeriods);
+oakRouter.get("/budget/nature/:costcenter", getNaturesOfCostCenter);
+oakRouter.get("/frmprnopr/departments", getAllDepartments);
+
 // Basic GET
 oakRouter.get("/budget/:pagination/:page", getBudgetsPaginated);
 oakRouter.get("/fileresource/:pagination/:page", getFileResourcesPaginated);
@@ -54,14 +64,6 @@ oakRouter.get("/traced/:pagination/:page", getTraceDsPaginated);
 oakRouter.get("/type/:pagination/:page", getTypesPaginated);
 oakRouter.get("/uploadfile/:pagination/:page", getUploadFilesPaginated);
 oakRouter.get("/usermaster/:pagination/:page", getUserMastersPaginated);
-
-// Specific GET
-oakRouter.get("/section/names", getSectionNames);
-oakRouter.get("/section/users", getSectionUsers);
-oakRouter.get("/usermaster/names", getSupervisorNames);
-oakRouter.get("/budget/fileresources", getAllFileResources);
-oakRouter.get("/budget/periods", getAllPeriods);
-oakRouter.get("/frmprnopr/departments", getAllDepartments);
 
 // Auth
 oakRouter.get("/auth", isAuthenticated, authenticate);

@@ -1,5 +1,9 @@
 import type mysql from "mysql2/promise";
-import type { BudgetPeriod, BudgetTable } from "../models/Budget.d.ts";
+import type {
+  BudgetNature,
+  BudgetPeriod,
+  BudgetTable,
+} from "../models/Budget.d.ts";
 
 /**
  * A basic GET, affecting all attributes with pagination support.
@@ -49,6 +53,26 @@ export const allPeriods = async (pool: mysql.Pool) => {
     FROM Budget
     WHERE Periode IS NOT NULL AND Periode <> ''
     ORDER BY Period DESC`,
+  );
+  return [rows, metadata];
+};
+
+/**
+ * GET all instance of available natures by a single cost center.
+ * @param pool An instance of mysql2 database pool
+ * @param costCenter A valid cost center value
+ * @returns An array of budget, containing all the natures of a cost center and a metadata variable
+ */
+export const natureByCostCenter = async (
+  pool: mysql.Pool,
+  costCenter: number,
+) => {
+  const [rows, metadata] = await pool.query<BudgetNature[]>(
+    `SELECT DISTINCT Nature
+    FROM Budget
+    WHERE CostCenter = ?
+    ORDER BY Nature DESC`,
+    [costCenter],
   );
   return [rows, metadata];
 };
