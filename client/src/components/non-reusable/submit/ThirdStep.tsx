@@ -1,5 +1,4 @@
 import SelectionInputSeparateLabel from "../../reusable/inputs/SelectionInputSeparateLabel.tsx";
-import DEPARTMENTS from "../../../dummies/Departments.json" with { type: "json" };
 import SelectionInput from "../../reusable/inputs/SelectionInput.tsx";
 import TextInput from "../../reusable/inputs/TextInput.tsx";
 import NumberInput from "../../reusable/inputs/NumberInput.tsx";
@@ -10,6 +9,11 @@ import { createGenericChangeHandler } from "../../../helper/genericInputHandler.
 import { useState } from "react";
 import Button from "../../reusable/Button.tsx";
 import { dateSplitter } from "../../../helper/dateSplitter.ts";
+import type { Department } from "@scope/server";
+import useFetch from "../../../hooks/useFetch.tsx";
+import LoadingFallback from "../../reusable/LoadingFallback.tsx";
+
+const DEPARTMENTS_URL = "http://localhost:8000/frmprnopr/departments";
 
 const USAGE_ATTRIBUTES = [
   "Cost Center",
@@ -121,6 +125,25 @@ const ThirdStep = ({
     }
   };
 
+  const {
+    data: departments,
+    isLoading: isDepartmentsLoading,
+    isError: isDepartmentsError,
+  } = useFetch<Department>(DEPARTMENTS_URL);
+
+  if (isDepartmentsLoading) {
+    return <LoadingFallback />;
+  }
+
+  if (isDepartmentsError) {
+    return (
+      <div className="m-4">
+        <div>Something unexpected happened.</div>
+        {isDepartmentsError ? isDepartmentsError.message : ""}
+      </div>
+    );
+  }
+
   return (
     <div className="rounded-2xl bg-yellow-100 p-8 flex flex-col gap-4">
       <h1 className="text-3xl font-bold text-yellow-600">Step 3</h1>
@@ -137,7 +160,14 @@ const ThirdStep = ({
             requiredInput
             variant="yellow"
             defaultDisabledValue="Select Cost Center"
-            mappings={DEPARTMENTS}
+            mappings={
+              !departments
+                ? []
+                : departments.map((department) => ({
+                    code: department.CostCenter,
+                    label: department.Description,
+                  }))
+            }
             value={usageField.costCenter}
             onChangeHandler={genericChangeHandler("costCenter")}
           />
