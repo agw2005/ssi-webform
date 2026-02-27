@@ -1,6 +1,7 @@
 import { Application, Router } from "@oak/oak";
 import {
   authenticate,
+  getAllDepartments,
   getAllFileResources,
   getAllPeriods,
   getBudgetsPaginated,
@@ -58,6 +59,7 @@ oakRouter.get("/section/names", getSectionNames);
 oakRouter.get("/usermaster/names", getSupervisorNames);
 oakRouter.get("/budget/fileresources", getAllFileResources);
 oakRouter.get("/budget/periods", getAllPeriods);
+oakRouter.get("/frmprnopr/departments", getAllDepartments);
 
 // Auth
 oakRouter.get("/auth", isAuthenticated, authenticate);

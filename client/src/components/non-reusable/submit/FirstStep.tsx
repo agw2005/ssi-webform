@@ -2,16 +2,16 @@ import TextInput from "../../reusable/inputs/TextInput.tsx";
 import TextInputBetweenLabel from "../../reusable/inputs/TextInputBetweenLabel.tsx";
 import SelectionInput from "../../reusable/inputs/SelectionInput.tsx";
 import SelectionInputBetweenLabel from "../../reusable/inputs/SelectionInputBetweenLabel.tsx";
-import DEPARTMENTS from "../../../dummies/Departments.json" with { type: "json" };
 import type { FirstStepInputs } from "../../../pages/Submit.tsx";
 import { createGenericChangeHandler } from "../../../helper/genericInputHandler.ts";
 import useFetch from "../../../hooks/useFetch.tsx";
-import type { FileResource, SectionNames } from "@scope/server";
+import type { Department, FileResource, SectionNames } from "@scope/server";
 import LoadingFallback from "../../reusable/LoadingFallback.tsx";
 import fileResourceFetchHandler from "../../../helper/fileResourceFetchHandler.ts";
 
 const SECTION_NAMES_URL = "http://localhost:8000/section/names";
 const FILE_RESOURCES_URL = "http://localhost:8000/budget/fileresources";
+const DEPARTMENTS_URL = "http://localhost:8000/frmprnopr/departments";
 
 const FORMS = ["PR", "Cash Advance", "Fixed Asset"];
 const STEP = 1;
@@ -68,16 +68,23 @@ const FirstStep = ({
     isError: isFileResourcesError,
   } = useFetch<FileResource>(FILE_RESOURCES_URL);
 
-  if (isSectionLoading && isFileResourcesLoading) {
+  const {
+    data: departments,
+    isLoading: isDepartmentsLoading,
+    isError: isDepartmentsError,
+  } = useFetch<Department>(DEPARTMENTS_URL);
+
+  if (isSectionLoading || isFileResourcesLoading || isDepartmentsLoading) {
     return <LoadingFallback />;
   }
 
-  if (isSectionError && isFileResourcesError) {
+  if (isSectionError || isFileResourcesError || isDepartmentsError) {
     return (
       <div className="m-4">
         <div>Something unexpected happened.</div>
         {isSectionError ? isSectionError.message : ""}
         {isFileResourcesError ? isFileResourcesError.message : ""}
+        {isDepartmentsError ? isDepartmentsError.message : ""}
       </div>
     );
   }
@@ -155,7 +162,14 @@ const FirstStep = ({
         requiredInput
         variant="red"
         defaultDisabledValue="Select Department Code"
-        mappings={DEPARTMENTS}
+        mappings={
+          !departments
+            ? []
+            : departments.map((department) => ({
+                code: department.CostCenter,
+                label: department.Description,
+              }))
+        }
         value={firstStepInputsGetter.department}
         onChangeHandler={genericChangeHandler("department")}
       />

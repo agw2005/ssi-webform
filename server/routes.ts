@@ -8,7 +8,10 @@ import { basicGet as FlowGet } from "./controllers/Flow.ts";
 import { basicGet as FormGet } from "./controllers/Form.ts";
 import { basicGet as FrmPRDGet } from "./controllers/FrmPRD.ts";
 import { basicGet as FrmPRHGet } from "./controllers/FrmPRH.ts";
-import { basicGet as FrmPRNoPRGet } from "./controllers/FrmPRNoPR.ts";
+import {
+  allDepartments,
+  basicGet as FrmPRNoPRGet,
+} from "./controllers/FrmPRNoPR.ts";
 import { basicGet as NatureGet } from "./controllers/Nature.ts";
 import { basicGet as RateDollarGet } from "./controllers/RateDollar.ts";
 import { basicGet as RateDollarTempGet } from "./controllers/RateDollarTemp.ts";
@@ -115,6 +118,14 @@ export const getFrmNoPRsPaginated = async (
   const pagination = Number(ctx.params.pagination);
   const page = Number(ctx.params.page);
   const [rows, _metadata] = await FrmPRNoPRGet(databasePool, page, pagination);
+  ctx.response.status = 200;
+  ctx.response.body = rows;
+};
+
+export const getAllDepartments = async (
+  ctx: RouterContext<"/frmprnopr/departments">,
+) => {
+  const [rows, _metadata] = await allDepartments(databasePool);
   ctx.response.status = 200;
   ctx.response.body = rows;
 };
