@@ -33,3 +33,10 @@ export interface BudgetPeriod extends RowDataPacket {
 export interface BudgetNature extends RowDataPacket {
   Nature: string;
 }
+
+/**
+ * Interface for the `Budget` table used to get the balance.
+ */
+export interface BudgetBalance extends RowDataPacket {
+  Balance: string;
+}

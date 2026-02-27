@@ -3,6 +3,7 @@ import {
   allPeriods,
   basicGet as BudgetGet,
   natureByCostCenter,
+  singleBalance,
 } from "./controllers/Budget.ts";
 import { basicGet as FileResourceGet } from "./controllers/FileResource.ts";
 import { basicGet as FlowGet } from "./controllers/Flow.ts";
@@ -68,6 +69,22 @@ export const getNaturesOfCostCenter = async (
 ) => {
   const costcenter = Number(ctx.params.costcenter);
   const [rows, _metadata] = await natureByCostCenter(databasePool, costcenter);
+  ctx.response.status = 200;
+  ctx.response.body = rows;
+};
+
+export const getSingleBalance = async (
+  ctx: RouterContext<"/budget/nature/:costcenter/:periode/:nature">,
+) => {
+  const costcenter = Number(ctx.params.costcenter);
+  const periode = String(ctx.params.periode);
+  const nature = String(ctx.params.nature);
+  const [rows, _metadata] = await singleBalance(
+    databasePool,
+    costcenter,
+    periode,
+    nature,
+  );
   ctx.response.status = 200;
   ctx.response.body = rows;
 };

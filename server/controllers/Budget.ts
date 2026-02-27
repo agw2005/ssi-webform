@@ -1,5 +1,6 @@
 import type mysql from "mysql2/promise";
 import type {
+  BudgetBalance,
   BudgetNature,
   BudgetPeriod,
   BudgetTable,
@@ -73,6 +74,31 @@ export const natureByCostCenter = async (
     WHERE CostCenter = ?
     ORDER BY Nature DESC`,
     [costCenter],
+  );
+  return [rows, metadata];
+};
+
+/**
+ * GET an instance of balance by a the cost center, periode, and nature.
+ * @param pool An instance of mysql2 database pool
+ * @param costCenter A valid cost center value
+ * @param periode A valid periode value
+ * @param nature A valid nature value
+ * @returns An array of budget, containing a single balance and a metadata variable
+ */
+export const singleBalance = async (
+  pool: mysql.Pool,
+  costCenter: number,
+  periode: string,
+  nature: string,
+) => {
+  const [rows, metadata] = await pool.query<BudgetBalance[]>(
+    `SELECT DISTINCT Balance
+    FROM Budget
+    WHERE CostCenter = ?
+    AND Periode = ?
+    AND Nature = ?`,
+    [costCenter, periode, nature],
   );
   return [rows, metadata];
 };

@@ -18,6 +18,7 @@ import {
   getSectionNames,
   getSectionsPaginated,
   getSectionUsers,
+  getSingleBalance,
   getSupervisorNames,
   getTitlesPaginated,
   getTraceDsPaginated,
@@ -44,6 +45,7 @@ oakRouter.get("/usermaster/names", getSupervisorNames);
 oakRouter.get("/budget/fileresources", getAllFileResources);
 oakRouter.get("/budget/periods", getAllPeriods);
 oakRouter.get("/budget/nature/:costcenter", getNaturesOfCostCenter);
+oakRouter.get("/budget/nature/:costcenter/:periode/:nature", getSingleBalance);
 oakRouter.get("/frmprnopr/departments", getAllDepartments);
 
 // Basic GET
