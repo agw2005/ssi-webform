@@ -1,5 +1,6 @@
 import {
   allFileResources,
+  allPeriods,
   basicGet as BudgetGet,
 } from "./controllers/Budget.ts";
 import { basicGet as FileResourceGet } from "./controllers/FileResource.ts";
@@ -44,6 +45,12 @@ export const getAllFileResources = async (
   ctx: RouterContext<"/budget/fileresources">,
 ) => {
   const [rows, _metadata] = await allFileResources(databasePool);
+  ctx.response.status = 200;
+  ctx.response.body = rows;
+};
+
+export const getAllPeriods = async (ctx: RouterContext<"/budget/periods">) => {
+  const [rows, _metadata] = await allPeriods(databasePool);
   ctx.response.status = 200;
   ctx.response.body = rows;
 };

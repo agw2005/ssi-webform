@@ -19,3 +19,10 @@ export interface BudgetTable extends RowDataPacket {
 export interface BudgetFileResource extends RowDataPacket {
   FileResource: string;
 }
+
+/**
+ * Interface for the `Budget` table used to get the periods.
+ */
+export interface BudgetPeriod extends RowDataPacket {
+  Period: string;
+}

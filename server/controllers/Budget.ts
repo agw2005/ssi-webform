@@ -1,5 +1,5 @@
 import type mysql from "mysql2/promise";
-import type { BudgetTable } from "../models/Budget.d.ts";
+import type { BudgetPeriod, BudgetTable } from "../models/Budget.d.ts";
 
 /**
  * A basic GET, affecting all attributes with pagination support.
@@ -24,7 +24,7 @@ export const basicGet = async (
 };
 
 /**
- * GET all instance of file resources (for some reason all 25 file resources are in the Budget table rather than the FileResource table)
+ * GET all instance of file resources (for some reason all 25 file resources are in the Budget table rather than the FileResource table).
  * @param pool An instance of mysql2 database pool
  * @returns An array of budget, containing its file resources and a metadata variable
  */
@@ -34,6 +34,21 @@ export const allFileResources = async (pool: mysql.Pool) => {
     FROM Budget
     WHERE FileResource <> ''
     ORDER BY FileResource ASC`,
+  );
+  return [rows, metadata];
+};
+
+/**
+ * GET all instance of available periods.
+ * @param pool An instance of mysql2 database pool
+ * @returns An array of budget, containing its periods and a metadata variable
+ */
+export const allPeriods = async (pool: mysql.Pool) => {
+  const [rows, metadata] = await pool.query<BudgetPeriod[]>(
+    `SELECT DISTINCT SUBSTRING(Periode, 1, 6) AS Period
+    FROM Budget
+    WHERE Periode IS NOT NULL AND Periode <> ''
+    ORDER BY Period DESC`,
   );
   return [rows, metadata];
 };

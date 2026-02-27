@@ -2,6 +2,7 @@ import { Application, Router } from "@oak/oak";
 import {
   authenticate,
   getAllFileResources,
+  getAllPeriods,
   getBudgetsPaginated,
   getFileResourcesPaginated,
   getFlowsPaginated,
@@ -56,6 +57,7 @@ oakRouter.get("/usermaster/:pagination/:page", getUserMastersPaginated);
 oakRouter.get("/section/names", getSectionNames);
 oakRouter.get("/usermaster/names", getSupervisorNames);
 oakRouter.get("/budget/fileresources", getAllFileResources);
+oakRouter.get("/budget/periods", getAllPeriods);
 
 // Auth
 oakRouter.get("/auth", isAuthenticated, authenticate);
