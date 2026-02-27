@@ -1,10 +1,14 @@
-import EmployeeSectionMappings from "../../../dummies/Approval.json" with { type: "json" };
-
 import TipBox from "../../reusable/TipBox.tsx";
 import MultiselectionInputTwoFilter from "../../reusable/inputs/MultiselectionInputTwoFilter.tsx";
 import type { FourthStepInputs } from "../../../pages/Submit.tsx";
+import type { UserSection } from "../../../../../server/models/Section.d.ts";
+import useFetch from "../../../hooks/useFetch.tsx";
+import LoadingFallback from "../../reusable/LoadingFallback.tsx";
+import userSectionReducer from "../../../helper/userSectionReducer.ts";
 
 const STEP = 4;
+
+const USER_SECTION_MAPPINGS_URL = "http://localhost:8000/section/users";
 
 const EMPTY_FIELDS_WARNING =
   "One or more required fields are empty. Please fill them out before proceeding.";
@@ -39,6 +43,25 @@ const FourthStep = ({
     return hasNoApprover || hasNoReleaser || hasNoAdmin;
   };
 
+  const {
+    data: userSectionMappings,
+    isLoading: isUserSectionMappingsLoading,
+    isError: isUserSectionMappingsError,
+  } = useFetch<UserSection>(USER_SECTION_MAPPINGS_URL);
+
+  if (isUserSectionMappingsLoading) {
+    return <LoadingFallback />;
+  }
+
+  if (isUserSectionMappingsError) {
+    return (
+      <div className="m-4">
+        <div>Something unexpected happened.</div>
+        {isUserSectionMappingsError ? isUserSectionMappingsError.message : ""}
+      </div>
+    );
+  }
+
   return (
     <div className="rounded-2xl bg-green-100 p-8 flex flex-col gap-4 flex-1 w-full">
       <h1 className="text-3xl font-bold text-green-600">Step 4</h1>
@@ -61,7 +84,14 @@ const FourthStep = ({
         colorIntensity="600"
         defaultFilterDefaultValue="Select Section"
         revealedFilterDefaultValue="Select Approver"
-        mappings={EmployeeSectionMappings}
+        mappings={
+          !userSectionMappings
+            ? []
+            : userSectionReducer(userSectionMappings).map((mapping) => ({
+                filter: mapping.domain,
+                subfilters: mapping.subdomain,
+              }))
+        }
         selections={fourthStepInputsGetter.approver}
         onSelectionsChange={onChangeHandler("approver")}
       />
@@ -76,7 +106,14 @@ const FourthStep = ({
         colorIntensity="600"
         defaultFilterDefaultValue="Select Section"
         revealedFilterDefaultValue="Select Releaser"
-        mappings={EmployeeSectionMappings}
+        mappings={
+          !userSectionMappings
+            ? []
+            : userSectionReducer(userSectionMappings).map((mapping) => ({
+                filter: mapping.domain,
+                subfilters: mapping.subdomain,
+              }))
+        }
         selections={fourthStepInputsGetter.releaser}
         onSelectionsChange={onChangeHandler("releaser")}
       />
@@ -91,7 +128,14 @@ const FourthStep = ({
         colorIntensity="600"
         defaultFilterDefaultValue="Select Section"
         revealedFilterDefaultValue="Select Administrator"
-        mappings={EmployeeSectionMappings}
+        mappings={
+          !userSectionMappings
+            ? []
+            : userSectionReducer(userSectionMappings).map((mapping) => ({
+                filter: mapping.domain,
+                subfilters: mapping.subdomain,
+              }))
+        }
         selections={fourthStepInputsGetter.administrator}
         onSelectionsChange={onChangeHandler("administrator")}
       />

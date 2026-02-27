@@ -16,6 +16,7 @@ import {
   getRateDollarTempsPaginated,
   getSectionNames,
   getSectionsPaginated,
+  getSectionUsers,
   getSupervisorNames,
   getTitlesPaginated,
   getTraceDsPaginated,
@@ -56,6 +57,7 @@ oakRouter.get("/usermaster/:pagination/:page", getUserMastersPaginated);
 
 // Specific GET
 oakRouter.get("/section/names", getSectionNames);
+oakRouter.get("/section/users", getSectionUsers);
 oakRouter.get("/usermaster/names", getSupervisorNames);
 oakRouter.get("/budget/fileresources", getAllFileResources);
 oakRouter.get("/budget/periods", getAllPeriods);

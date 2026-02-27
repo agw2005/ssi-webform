@@ -16,3 +16,12 @@ export interface SectionNames extends RowDataPacket {
   IDSection: number;
   SectionName: string;
 }
+
+/**
+ * Interface for the `Section` table used to get the username and section mappings.
+ */
+export interface UserSection extends RowDataPacket {
+  IDSection: number;
+  SectionName: string;
+  NameUser: string;
+}

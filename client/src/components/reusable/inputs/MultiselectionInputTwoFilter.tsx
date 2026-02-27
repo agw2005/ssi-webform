@@ -2,8 +2,8 @@ import { useState } from "react";
 import RemovableSelections from "../RemovableSelections.tsx";
 
 interface TwoFilterStringToStringMapping {
-  section: string;
-  members: string[];
+  filter: string;
+  subfilters: string[];
 }
 
 interface MultiselectionInputTwoFilterProps {
@@ -72,8 +72,8 @@ const MultiselectionInputTwoFilter = ({
           </option>
           {mappings.map((mapping, index) => {
             return (
-              <option key={index} value={mapping.section}>
-                {mapping.section}
+              <option key={index} value={mapping.filter}>
+                {mapping.filter}
               </option>
             );
           })}
@@ -94,8 +94,8 @@ const MultiselectionInputTwoFilter = ({
             {revealedFilterDefaultValue}
           </option>
           {mappings
-            .find((mapping) => mapping.section === defaultFilter)
-            ?.members.map((member, index) => {
+            .find((mapping) => mapping.filter === defaultFilter)
+            ?.subfilters.map((member, index) => {
               return (
                 <option key={index} value={member}>
                   {member}

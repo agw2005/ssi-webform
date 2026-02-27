@@ -1,5 +1,9 @@
 import type mysql from "mysql2/promise";
-import type { SectionNames, SectionTable } from "../models/Section.d.ts";
+import type {
+  SectionNames,
+  SectionTable,
+  UserSection,
+} from "../models/Section.d.ts";
 
 /**
  * A basic GET, affecting all attributes with pagination support.
@@ -32,6 +36,21 @@ export const sectionNames = async (pool: mysql.Pool) => {
   const [rows, metadata] = await pool.query<SectionNames[]>(
     `SELECT IDSection, SectionName
     FROM Section`,
+  );
+  return [rows, metadata];
+};
+
+/**
+ * GET all instance of section name and the user name.
+ * @param pool An instance of mysql2 database pool
+ * @returns An array of section, containing its section name and the user name, and a metadata variable
+ */
+export const userSectionMappings = async (pool: mysql.Pool) => {
+  const [rows, metadata] = await pool.query<UserSection[]>(
+    `SELECT Section.SectionName, UserMaster.NameUser
+    FROM Section
+    INNER JOIN UserMaster
+    ON Section.IDSection = UserMaster.IDSection;`,
   );
   return [rows, metadata];
 };
