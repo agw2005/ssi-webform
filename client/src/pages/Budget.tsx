@@ -8,38 +8,6 @@ import LoadingFallback from "../components/reusable/LoadingFallback.tsx";
 import type { FileResource, Period } from "@scope/server";
 import useFetch from "../hooks/useFetch.tsx";
 
-const COLUMNS = [
-  "File Resource",
-  "Dept",
-  "Sec Req",
-  "Nature",
-  "Description",
-  "Bud_01",
-  "Usage01",
-  "Bud_02",
-  "Usage02",
-  "Bud_03",
-  "Usage03",
-  "Bud_04",
-  "Usage04",
-  "Bud_05",
-  "Usage05",
-  "Bud_06",
-  "Usage06",
-  "Bud_07",
-  "Usage07",
-  "Bud_08",
-  "Usage08",
-  "Bud_09",
-  "Usage09",
-  "Bud_10",
-  "Usage10",
-  "Bud_11",
-  "Usage11",
-  "Bud_12",
-  "Usage12",
-];
-
 const FILE_RESOURCES_URL = "http://localhost:8000/budget/fileresources";
 const PERIODS_URL = "http://localhost:8000/budget/periods";
 
@@ -110,7 +78,7 @@ const Budget = () => {
         )}
       </div>
 
-      {viewMode === "Budget" ? <BudgetView columns={COLUMNS} /> : ""}
+      {viewMode === "Budget" ? <BudgetView /> : ""}
 
       {viewMode === "Report" ? (
         <ReportView
