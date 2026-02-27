@@ -6,11 +6,13 @@ import DEPARTMENTS from "../../../dummies/Departments.json" with { type: "json" 
 import type { FirstStepInputs } from "../../../pages/Submit.tsx";
 import { createGenericChangeHandler } from "../../../helper/genericInputHandler.ts";
 import useFetch from "../../../hooks/useFetch.tsx";
-import type { SectionNames } from "@scope/server";
+import type { FileResource, SectionNames } from "@scope/server";
 import LoadingFallback from "../../reusable/LoadingFallback.tsx";
+import fileResourceFetchHandler from "../../../helper/fileResourceFetchHandler.ts";
 
 const SECTION_NAMES_URL = "http://localhost:8000/section/names";
-const FILE_RESOURCES = ["EXIM", "FCS", "GA", "MC", "MIS"];
+const FILE_RESOURCES_URL = "http://localhost:8000/budget/fileresources";
+
 const FORMS = ["PR", "Cash Advance", "Fixed Asset"];
 const STEP = 1;
 
@@ -57,18 +59,25 @@ const FirstStep = ({
   const {
     data: sectionNames,
     isLoading: isSectionLoading,
-    isError: sectionError,
+    isError: isSectionError,
   } = useFetch<SectionNames>(SECTION_NAMES_URL);
 
-  if (isSectionLoading) {
+  const {
+    data: fileResources,
+    isLoading: isFileResourcesLoading,
+    isError: isFileResourcesError,
+  } = useFetch<FileResource>(FILE_RESOURCES_URL);
+
+  if (isSectionLoading && isFileResourcesLoading) {
     return <LoadingFallback />;
   }
 
-  if (sectionError) {
+  if (isSectionError && isFileResourcesError) {
     return (
       <div className="m-4">
         <div>Something unexpected happened.</div>
-        {sectionError ? sectionError.message : ""}
+        {isSectionError ? isSectionError.message : ""}
+        {isFileResourcesError ? isFileResourcesError.message : ""}
       </div>
     );
   }
@@ -135,7 +144,7 @@ const FirstStep = ({
         requiredInput
         variant="red"
         defaultDisabledValue="Select File Resource"
-        options={FILE_RESOURCES}
+        options={fileResourceFetchHandler(fileResources)}
         value={firstStepInputsGetter.fileResource}
         onChangeHandler={genericChangeHandler("fileResource")}
       />

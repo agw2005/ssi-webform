@@ -7,6 +7,7 @@ import ReportView from "../components/non-reusable/budget/ReportView.tsx";
 import LoadingFallback from "../components/reusable/LoadingFallback.tsx";
 import type { FileResource, Period } from "@scope/server";
 import useFetch from "../hooks/useFetch.tsx";
+import fileResourceFetchHandler from "../helper/fileResourceFetchHandler.ts";
 
 const FILE_RESOURCES_URL = "http://localhost:8000/budget/fileresources";
 const PERIODS_URL = "http://localhost:8000/budget/periods";
@@ -58,11 +59,7 @@ const Budget = () => {
         {viewMode === "Budget" ? (
           <BudgetViewFilters
             variants="black"
-            fileResources={
-              !fileResources
-                ? []
-                : fileResources.map((budget) => budget.FileResource)
-            }
+            fileResources={fileResourceFetchHandler(fileResources)}
             periods={!periods ? [] : periods.map((period) => period.Period)}
             fileResourceValue={fileResource}
             periodValue={period}
