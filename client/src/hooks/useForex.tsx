@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 
-interface ForexRates {
+export interface ForexRates {
   IDR: number;
   JPY: number;
   SGD: number;

@@ -13,6 +13,7 @@ import type { Balance, Department, Nature } from "@scope/server";
 import useFetch from "../../../hooks/useFetch.tsx";
 import LoadingFallback from "../../reusable/LoadingFallback.tsx";
 import getCurrentPeriod from "../../../helper/getCurrentPeriod.ts";
+import useForex, { type ForexRates } from "../../../hooks/useForex.tsx";
 
 const DEPARTMENTS_URL = "http://localhost:8000/frmprnopr/departments";
 const NATURES_URL = "http://localhost:8000/budget/nature";
@@ -34,6 +35,15 @@ const USAGE_ATTRIBUTES = [
   "Vendor",
   "Reason",
   "ID Budget",
+];
+
+const BUDGET_SUMMARY_ATTRIBUTES = [
+  "Cost Center",
+  "Nature",
+  "Periode",
+  "Balance ($)",
+  "Usage ($)",
+  "Remain ($)",
 ];
 
 const CURRENCY = ["IDR", "JPY", "SGD", "USD"];
@@ -94,6 +104,12 @@ const ThirdStep = ({
   thirdStepInputsDefaultValue,
 }: ThirdStepProps) => {
   const [usageField, setUsageField] = useState<Usage>(DEFAULT_USAGE);
+
+  const {
+    forexInformation,
+    isLoading: _forexIsLoading,
+    error: _forexIsError,
+  } = useForex();
 
   const genericChangeHandler = createGenericChangeHandler(setUsageField);
 
@@ -406,7 +422,7 @@ const ThirdStep = ({
                       {usage.currency}
                     </td>
                     <td className="text-xs border p-2 whitespace-nowrap text-center">
-                      [RATE]{/* Placeholder of rate for the time being */}
+                      {`${usage.currency === "USD" ? `${(Number(usage.quantity) * Number(usage.unitPrice)).toFixed(2)}` : ((Number(usage.unitPrice) * Number(usage.quantity)) / Number((forexInformation?.rates[usage.currency as keyof ForexRates] || 1).toFixed(2))).toFixed(2)} USD`}
                     </td>
                     <td className="text-xs border p-2 whitespace-nowrap text-center">
                       {formatDate(usage.estimatedDeliveryDate)}
@@ -446,24 +462,16 @@ const ThirdStep = ({
         <table className="border-collapse w-full lg:w-max">
           <thead>
             <tr>
-              <th className="text-xs lg:text-sm xl:text-base | border p-2 bg-yellow-800 text-white border-black whitespace-nowrap text-center">
-                Cost Center
-              </th>
-              <th className="text-xs lg:text-sm xl:text-base | border p-2 bg-yellow-800 text-white border-black whitespace-nowrap text-center">
-                Nature
-              </th>
-              <th className="text-xs lg:text-sm xl:text-base | border p-2 bg-yellow-800 text-white border-black whitespace-nowrap text-center">
-                Periode
-              </th>
-              <th className="text-xs lg:text-sm xl:text-base | border p-2 bg-yellow-800 text-white border-black whitespace-nowrap text-center">
-                Balance ($)
-              </th>
-              <th className="text-xs lg:text-sm xl:text-base | border p-2 bg-yellow-800 text-white border-black whitespace-nowrap text-center">
-                Usage ($)
-              </th>
-              <th className="text-xs lg:text-sm xl:text-base | border p-2 bg-yellow-800 text-white border-black whitespace-nowrap text-center">
-                Remain ($)
-              </th>
+              {BUDGET_SUMMARY_ATTRIBUTES.map((attribute, index) => {
+                return (
+                  <th
+                    key={index}
+                    className="text-xs lg:text-sm xl:text-base | border p-2 bg-yellow-800 text-white border-black whitespace-nowrap text-center"
+                  >
+                    {attribute}
+                  </th>
+                );
+              })}
             </tr>
           </thead>
           <tbody>
