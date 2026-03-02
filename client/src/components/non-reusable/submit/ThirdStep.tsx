@@ -6,7 +6,7 @@ import DateInput from "../../reusable/inputs/DateInput.tsx";
 import TipBox from "../../reusable/TipBox.tsx";
 import type { ThirdStepInputs } from "../../../pages/Submit.tsx";
 import { createGenericChangeHandler } from "../../../helper/genericInputHandler.ts";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Button from "../../reusable/Button.tsx";
 import { dateSplitter } from "../../../helper/dateSplitter.ts";
 import type { Balance, Department, Nature } from "@scope/server";
@@ -71,6 +71,14 @@ export interface Usage {
   vendor: string;
   reason: string;
   estimatedDeliveryDate: string;
+}
+
+interface BudgetSummary {
+  costCenter: string;
+  budgetOrNature: string;
+  periode: string;
+  balance: number;
+  totalUsageUSD: number;
 }
 
 const DEFAULT_USAGE = {
@@ -161,6 +169,44 @@ const ThirdStep = ({
     const [year, month, day] = dateSplitter(estDeliveryDate);
     return `${day}-${month}-${year}`;
   };
+
+  const summarizedBudgets = useMemo(() => {
+    const summaryMap = thirdStepInputsGetter.usages.reduce(
+      (accumulator, usage) => {
+        const costCenterAndNatureCombination = `${usage.costCenter}-${usage.budgetOrNature}`;
+        const rawValue = Number(usage.quantity) * Number(usage.unitPrice);
+
+        const forexRate =
+          usage.currency === "USD"
+            ? 1
+            : Number(
+                (
+                  forexInformation?.rates[usage.currency as keyof ForexRates] ||
+                  1
+                ).toFixed(2),
+              );
+
+        const usdValue = rawValue / forexRate;
+
+        if (!accumulator[costCenterAndNatureCombination]) {
+          accumulator[costCenterAndNatureCombination] = {
+            costCenter: usage.costCenter,
+            budgetOrNature: usage.budgetOrNature,
+            periode: usage.periode,
+            balance: Number(usage.balance || 0),
+            totalUsageUSD: 0,
+          };
+        }
+
+        accumulator[costCenterAndNatureCombination].totalUsageUSD += usdValue;
+
+        return accumulator;
+      },
+      {} as Record<string, BudgetSummary>,
+    );
+
+    return Object.values(summaryMap);
+  }, [thirdStepInputsGetter.usages, forexInformation?.rates]);
 
   const requiredFieldsAreEmpty = () => {
     if (thirdStepInputsGetter.usages.length === 0) {
@@ -272,7 +318,7 @@ const ThirdStep = ({
             name="balance"
             id="balance"
             variant="yellow"
-            requiredInput
+            requiredInput={false}
             isDisabled
             value={usageField.balance}
             onChangeHandler={genericChangeHandler("balance")}
@@ -300,7 +346,7 @@ const ThirdStep = ({
             name="unit-price"
             id="unit-price"
             variant="yellow"
-            requiredInput={false}
+            requiredInput
             value={usageField.unitPrice}
             onChangeHandler={genericChangeHandler("unitPrice")}
           />
@@ -475,26 +521,40 @@ const ThirdStep = ({
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td className="text-xs lg:text-sm xl:text-base | border p-2 wditespace-nowrap text-center">
-                104
-              </td>
-              <td className="text-xs lg:text-sm xl:text-base | border p-2 wditespace-nowrap text-center">
-                537003000
-              </td>
-              <td className="text-xs lg:text-sm xl:text-base | border p-2 wditespace-nowrap text-center">
-                2025LH02-104-MIS
-              </td>
-              <td className="text-xs lg:text-sm xl:text-base | border p-2 wditespace-nowrap text-center">
-                1.00
-              </td>
-              <td className="text-xs lg:text-sm xl:text-base | border p-2 wditespace-nowrap text-center">
-                0
-              </td>
-              <td className="text-xs lg:text-sm xl:text-base | border p-2 wditespace-nowrap text-center">
-                1.00
-              </td>
-            </tr>
+            {summarizedBudgets.map((summary, index) => {
+              const remainingBalance = summary.balance - summary.totalUsageUSD;
+              return (
+                <tr key={index}>
+                  <td className="text-xs lg:text-sm xl:text-base | border p-2 whitespace-nowrap text-center">
+                    {summary.costCenter}
+                  </td>
+                  <td className="text-xs lg:text-sm xl:text-base | border p-2 whitespace-nowrap text-center">
+                    {summary.budgetOrNature}
+                  </td>
+                  <td className="text-xs lg:text-sm xl:text-base | border p-2 whitespace-nowrap text-center">
+                    {summary.periode}
+                  </td>
+                  <td className="text-xs lg:text-sm xl:text-base | border p-2 whitespace-nowrap text-center">
+                    {summary.balance.toFixed(2)}
+                  </td>
+                  <td className="text-xs lg:text-sm xl:text-base | border p-2 whitespace-nowrap text-center">
+                    {summary.totalUsageUSD.toFixed(2)}
+                  </td>
+                  <td
+                    className={`text-xs lg:text-sm xl:text-base |  | border p-2 whitespace-nowrap text-center`}
+                  >
+                    <span
+                      className={
+                        remainingBalance < 0 ? "font-bold text-red-500" : ""
+                      }
+                    >
+                      {remainingBalance.toFixed(2)}{" "}
+                      {remainingBalance < 0 ? "[RL]" : ""}
+                    </span>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
