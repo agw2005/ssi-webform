@@ -9,13 +9,17 @@ import { createGenericChangeHandler } from "../../../helper/genericInputHandler.
 import { useState } from "react";
 import Button from "../../reusable/Button.tsx";
 import { dateSplitter } from "../../../helper/dateSplitter.ts";
-import type { Department, Nature } from "@scope/server";
+import type { Balance, Department, Nature } from "@scope/server";
 import useFetch from "../../../hooks/useFetch.tsx";
 import LoadingFallback from "../../reusable/LoadingFallback.tsx";
 import getCurrentPeriod from "../../../helper/getCurrentPeriod.ts";
 
 const DEPARTMENTS_URL = "http://localhost:8000/frmprnopr/departments";
 const NATURES_URL = "http://localhost:8000/budget/nature";
+const BALANCE_URL = (costCenter: string, period: string, nature: string) =>
+  `http://localhost:8000/budget/nature/${costCenter}/${period}/${nature}`;
+
+const NO_BALANCE_VALUE = "No balance detected";
 
 const USAGE_ATTRIBUTES = [
   "Cost Center",
@@ -41,6 +45,9 @@ const EMPTY_FIELDS_WARNING =
 const EMPTY_USAGE_FIELDS_WARNING =
   "One or more required usage fields are empty.\nPlease fill them out before adding a usage.";
 
+const FETCHING_BALANCE_ERROR =
+  "Failed to fetch balance. Please try again or contact the administrator.\n";
+
 export interface Usage {
   costCenter: string;
   budgetOrNature: string;
@@ -60,7 +67,7 @@ const DEFAULT_USAGE = {
   costCenter: "",
   budgetOrNature: "",
   periode: getCurrentPeriod(),
-  balance: "5,000",
+  balance: NO_BALANCE_VALUE,
   description: "",
   quantity: "",
   unitPrice: "",
@@ -95,7 +102,43 @@ const ThirdStep = ({
       ...prev,
       costCenter: e.target.value,
       budgetOrNature: DEFAULT_USAGE.budgetOrNature,
+      balance: DEFAULT_USAGE.balance,
     }));
+  };
+
+  const handleBudgetOrNatureChange = async (
+    e: React.ChangeEvent<HTMLSelectElement>,
+  ) => {
+    setUsageField((prev) => ({
+      ...prev,
+      budgetOrNature: e.target.value,
+    }));
+
+    try {
+      const balanceResponse = await fetch(
+        BALANCE_URL(usageField.costCenter, usageField.periode, e.target.value),
+      );
+
+      if (!balanceResponse.ok) {
+        throw new Error(`HTTP error! status: ${balanceResponse.status}`);
+      }
+
+      const balance: Balance[] = await balanceResponse.json();
+
+      if (balance.length === 0) {
+        setUsageField((prev) => ({
+          ...prev,
+          balance: NO_BALANCE_VALUE,
+        }));
+      } else {
+        setUsageField((prev) => ({
+          ...prev,
+          balance: balance[0].Balance,
+        }));
+      }
+    } catch (err) {
+      console.error(FETCHING_BALANCE_ERROR, err);
+    }
   };
 
   const formatDate = (estDeliveryDate: string) => {
@@ -196,7 +239,7 @@ const ThirdStep = ({
                 : natures.map((nature) => nature.Nature)
             }
             value={usageField.budgetOrNature}
-            onChangeHandler={genericChangeHandler("budgetOrNature")}
+            onChangeHandler={handleBudgetOrNatureChange}
           />
           <TextInput
             label="Periode"
@@ -298,6 +341,12 @@ const ThirdStep = ({
           />
           <div
             onClick={() => {
+              if (usageField.balance === NO_BALANCE_VALUE) {
+                globalThis.confirm(
+                  "Your balance is empty. Please select a different Nature.",
+                );
+                return;
+              }
               if (!requiredUsageFieldsAreEmpty()) {
                 const newThirdStepInputs: ThirdStepInputs = {
                   usages: [...thirdStepInputsGetter.usages, usageField],
