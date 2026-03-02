@@ -87,7 +87,17 @@ const ThirdStep = ({
   thirdStepInputsDefaultValue,
 }: ThirdStepProps) => {
   const [usageField, setUsageField] = useState<Usage>(DEFAULT_USAGE);
+
   const genericChangeHandler = createGenericChangeHandler(setUsageField);
+
+  const handleCostCenterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setUsageField((prev) => ({
+      ...prev,
+      costCenter: e.target.value,
+      budgetOrNature: DEFAULT_USAGE.budgetOrNature,
+    }));
+  };
+
   const formatDate = (estDeliveryDate: string) => {
     const [year, month, day] = dateSplitter(estDeliveryDate);
     return `${day}-${month}-${year}`;
@@ -170,7 +180,7 @@ const ThirdStep = ({
                   }))
             }
             value={usageField.costCenter}
-            onChangeHandler={genericChangeHandler("costCenter")}
+            onChangeHandler={handleCostCenterChange}
           />
           <SelectionInput
             label="Budget/Nature"
