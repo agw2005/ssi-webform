@@ -208,6 +208,12 @@ const ThirdStep = ({
     return Object.values(summaryMap);
   }, [thirdStepInputsGetter.usages, forexInformation?.rates]);
 
+  const totalUsage = useMemo(() => {
+    return summarizedBudgets.reduce((total, summary) => {
+      return total + summary.totalUsageUSD;
+    }, 0);
+  }, [summarizedBudgets]);
+
   const requiredFieldsAreEmpty = () => {
     if (thirdStepInputsGetter.usages.length === 0) {
       return true;
@@ -561,7 +567,7 @@ const ThirdStep = ({
 
       <div className="flex gap-2">
         <div className="px-4 py-2 border rounded-lg bg-yellow-800 border-yellow-800 text-white font-bold select-none">
-          Total Usage ($) : 0
+          Total Usage ($) : {totalUsage.toFixed(2)}
         </div>
         <div className="flex gap-2 whitespace-nowrap">
           <div
