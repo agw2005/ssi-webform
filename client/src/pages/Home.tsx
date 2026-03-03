@@ -4,11 +4,21 @@ import NumberInput from "../components/reusable/inputs/NumberInput.tsx";
 import DateRangeInput from "../components/reusable/inputs/DateRangeInput.tsx";
 import TextInput from "../components/reusable/inputs/TextInput.tsx";
 import { Link } from "react-router-dom";
-import { useState } from "react";
-import type { SectionNames, SupervisorNames, FormRequest } from "@scope/server";
+import { useEffect, useState } from "react";
+import type { SectionName, SupervisorNames, FormRequest } from "@scope/server";
 import LoadingFallback from "../components/reusable/LoadingFallback.tsx";
 import useFetch from "../hooks/useFetch.tsx";
 import capitalize from "../helper/capitalize.ts";
+
+interface SectionPayload {
+  IDSection: number;
+  SectionName: string;
+}
+
+interface SupervisorPayload {
+  NameUser: string;
+  IDUser: number;
+}
 
 const COLUMNS = [
   "ID Trace",
@@ -22,10 +32,10 @@ const COLUMNS = [
 ];
 
 const STATUSES = ["All Status", "Final Approved", "In Progress", "Rejected"];
-
+const SELECT_ALL_INDEX = -99;
 const SECTION_NAMES_URL = "http://localhost:8000/section/names";
 const SUPERVISOR_NAMES_URL = "http://localhost:8000/usermaster/names";
-const REQUESTS_URL = "http://localhost:8000/trace/requests/100/1";
+const REQUESTS_URL = "http://localhost:8000/trace/requests";
 
 const formatDate = (dateString: string) => {
   try {
@@ -39,10 +49,24 @@ const formatDate = (dateString: string) => {
   }
 };
 
+const DEFAULT_SECTION_FILTER: SectionPayload = {
+  IDSection: SELECT_ALL_INDEX,
+  SectionName: "",
+};
+
+const DEFAULT_SUPERVISOR_FILTER: SupervisorPayload = {
+  NameUser: "",
+  IDUser: SELECT_ALL_INDEX,
+};
+
 const Home = () => {
-  const [sectionFilter, setSectionFilter] = useState("");
+  const [sectionFilter, setSectionFilter] = useState<SectionPayload>(
+    DEFAULT_SECTION_FILTER,
+  );
   const [statusFilter, setStatusFilter] = useState("");
-  const [supervisorFilter, setSupervisorFilter] = useState("");
+  const [supervisorFilter, setSupervisorFilter] = useState<SupervisorPayload>(
+    DEFAULT_SUPERVISOR_FILTER,
+  );
   const [pagingRange, setPagingRange] = useState(20);
   const [startingDate, setStartingDate] = useState("");
   const [endingDate, setEndingDate] = useState("");
@@ -62,7 +86,7 @@ const Home = () => {
     data: sectionNames,
     isLoading: isSectionLoading,
     isError: sectionError,
-  } = useFetch<SectionNames>(SECTION_NAMES_URL);
+  } = useFetch<SectionName>(SECTION_NAMES_URL);
 
   const {
     data: supervisorNames,
@@ -70,23 +94,84 @@ const Home = () => {
     isError: supervisorError,
   } = useFetch<SupervisorNames>(SUPERVISOR_NAMES_URL);
 
-  const {
-    data: requests,
-    isLoading: isRequestsLoading,
-    isError: isRequestsError,
-  } = useFetch<FormRequest>(REQUESTS_URL);
+  const [requestData, setRequestData] = useState<FormRequest[] | null>(null);
+  const [isRequestDataLoading, setIsRequestDataLoading] = useState(false);
+  const [isRequestDataError, setIsRequestDataError] = useState<Error | null>(
+    null,
+  );
+  useEffect(() => {
+    const requestUrl = new URL(REQUESTS_URL);
+    const abortController = new AbortController();
+    setIsRequestDataLoading(true);
 
-  if (isSectionLoading || isSupervisorLoading || isRequestsLoading) {
+    if (sectionFilter.IDSection !== SELECT_ALL_INDEX) {
+      requestUrl.searchParams.set(
+        "requestorsectionid",
+        sectionFilter.IDSection.toString(),
+      );
+    }
+    if (statusFilter !== "All Status" && statusFilter !== "") {
+      requestUrl.searchParams.set("status", statusFilter);
+    }
+    if (supervisorFilter.IDUser !== SELECT_ALL_INDEX) {
+      requestUrl.searchParams.set(
+        "currentsupervisorid",
+        String(supervisorFilter.IDUser),
+      );
+    }
+    if (startingDate) requestUrl.searchParams.set("startdate", startingDate);
+    if (endingDate) requestUrl.searchParams.set("enddate", endingDate);
+
+    requestUrl.searchParams.set("pagination", String(pagingRange));
+
+    const fetchData = async () => {
+      try {
+        const response = await fetch(requestUrl.toString(), {
+          signal: abortController.signal,
+        });
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const responseJson: FormRequest[] = await response.json();
+        setRequestData(responseJson);
+      } catch (err) {
+        if (err instanceof Error && err.name === "AbortError") {
+          return;
+        }
+        const error: Error = new Error(
+          `Encountered an error when fetching API. Please ensure your connection is stable.\n(${err}).`,
+        );
+        setIsRequestDataError(error);
+      } finally {
+        setIsRequestDataLoading(false);
+      }
+    };
+
+    fetchData();
+
+    return () => {
+      abortController.abort();
+    };
+  }, [
+    sectionFilter,
+    statusFilter,
+    supervisorFilter,
+    pagingRange,
+    startingDate,
+    endingDate,
+  ]);
+
+  if (isSectionLoading || isSupervisorLoading) {
     return <LoadingFallback />;
   }
 
-  if (sectionError || supervisorError || isRequestsError) {
+  if (sectionError || supervisorError) {
     return (
       <div className="m-4">
         <div>Something unexpected happened.</div>
         {sectionError ? sectionError.message : ""}
         {supervisorError ? supervisorError.message : ""}
-        {isRequestsError ? isRequestsError.message : ""}
+        {isRequestDataError ? isRequestDataError.message : ""}
       </div>
     );
   }
@@ -107,8 +192,27 @@ const Home = () => {
               ? []
               : sectionNames.map((section) => section.SectionName)),
           ]}
-          value={sectionFilter}
-          onChangeHandler={(e) => setSectionFilter(e.target.value)}
+          value={sectionFilter.SectionName}
+          onChangeHandler={(e) => {
+            const selectedSectionName = e.target.value;
+
+            if (
+              selectedSectionName === "All Section" ||
+              selectedSectionName === ""
+            ) {
+              setSectionFilter(DEFAULT_SECTION_FILTER);
+            } else {
+              const matchedSection = sectionNames?.find(
+                (section) => section.SectionName === selectedSectionName,
+              );
+              if (matchedSection) {
+                setSectionFilter({
+                  IDSection: matchedSection.IDSection,
+                  SectionName: matchedSection.SectionName,
+                });
+              }
+            }
+          }}
         />
         <SelectionInput
           label="Status"
@@ -136,8 +240,32 @@ const Home = () => {
                   capitalize(supervisor.NameUser),
                 )),
           ]}
-          value={supervisorFilter}
-          onChangeHandler={(e) => setSupervisorFilter(e.currentTarget.value)}
+          value={
+            supervisorFilter.NameUser === ""
+              ? ""
+              : capitalize(supervisorFilter.NameUser)
+          }
+          onChangeHandler={(e) => {
+            const selectedSupervisorName = e.target.value;
+
+            if (
+              selectedSupervisorName === "All Supervisor" ||
+              selectedSupervisorName === ""
+            ) {
+              setSupervisorFilter(DEFAULT_SUPERVISOR_FILTER);
+            } else {
+              const matchedSupervisor = supervisorNames?.find(
+                (supervisor) =>
+                  capitalize(supervisor.NameUser) === selectedSupervisorName,
+              );
+              if (matchedSupervisor) {
+                setSupervisorFilter({
+                  NameUser: capitalize(matchedSupervisor.NameUser),
+                  IDUser: matchedSupervisor.IDUser,
+                });
+              }
+            }
+          }}
         />
         <DateRangeInput
           name="filter-date-range"
@@ -178,69 +306,73 @@ const Home = () => {
           }}
         />
       </div>
-      <table className="table-auto border-collapse min-w-full max-w-full mt-4">
-        <thead>
-          <tr>
-            {COLUMNS.map((column, index) => {
-              return (
-                <th
-                  key={index}
-                  className="text-xs lg:text-sm xl:text-base | whitespace-nowrap border p-2 bg-blue-800 text-white border-black"
-                >
-                  {column}
-                </th>
-              );
-            })}
-          </tr>
-        </thead>
-        <tbody>
-          {requests &&
-            requests.map((request, index) => {
-              return (
-                <tr key={index}>
-                  <td className="text-xs lg:text-sm xl:text-base | whitespace-nowrap text-center border break-all p-2">
-                    {request.IDTrace}
-                  </td>
-                  <td className="text-xs lg:text-sm xl:text-base | border break-all p-2">
-                    <Link
-                      className="text-blue-700 underline"
-                      to={`/request/${request.IDTrace}`}
-                    >
-                      {request.Subject}
-                    </Link>{" "}
-                    {/* {"True" === "True" ? (
+      {isRequestDataLoading ? (
+        <LoadingFallback />
+      ) : (
+        <table className="table-auto border-collapse min-w-full max-w-full mt-4">
+          <thead>
+            <tr>
+              {COLUMNS.map((column, index) => {
+                return (
+                  <th
+                    key={index}
+                    className="text-xs lg:text-sm xl:text-base | whitespace-nowrap border p-2 bg-blue-800 text-white border-black"
+                  >
+                    {column}
+                  </th>
+                );
+              })}
+            </tr>
+          </thead>
+          <tbody>
+            {requestData &&
+              requestData.map((request, index) => {
+                return (
+                  <tr key={index}>
+                    <td className="text-xs lg:text-sm xl:text-base | whitespace-nowrap text-center border break-all p-2">
+                      {request.IDTrace}
+                    </td>
+                    <td className="text-xs lg:text-sm xl:text-base | border break-all p-2">
+                      <Link
+                        className="text-blue-700 underline"
+                        to={`/request/${request.IDTrace}`}
+                      >
+                        {request.Subject}
+                      </Link>{" "}
+                      {/* {"True" === "True" ? (
                       <span className="text-red-500 font-bold drop-shadow">
                         Red Light
                       </span>
                     ) : (
                       ""
                     )} */}
-                  </td>
-                  <td className="text-xs lg:text-sm xl:text-base | whitespace-nowrap border break-all p-2">
-                    {request.Amount}
-                  </td>
-                  <td className="text-xs lg:text-sm xl:text-base | whitespace-nowrap border break-all p-2">
-                    {capitalize(request.Requestor)}
-                  </td>
-                  <td
-                    className={`text-xs lg:text-sm xl:text-base | whitespace-nowrap border text-center p-2 ${statusStyling(request.Status)}`}
-                  >
-                    {request.Status}
-                  </td>
-                  <td className="text-xs lg:text-sm xl:text-base | whitespace-nowrap border break-all p-2">
-                    {capitalize(request.CurrentSupervisor)}
-                  </td>
-                  <td className="text-xs lg:text-sm xl:text-base | whitespace-nowrap border text-center p-2">
-                    {formatDate(request.SubmitDate)}
-                  </td>
-                  <td className="text-xs lg:text-sm xl:text-base | whitespace-nowrap border min-w-16 text-center p-2">
-                    {request.Remarks}
-                  </td>
-                </tr>
-              );
-            })}
-        </tbody>
-      </table>
+                    </td>
+                    <td className="text-xs lg:text-sm xl:text-base | whitespace-nowrap border break-all p-2">
+                      {request.Amount}
+                    </td>
+                    <td className="text-xs lg:text-sm xl:text-base | whitespace-nowrap border break-all p-2">
+                      {capitalize(request.Requestor)}
+                    </td>
+                    <td
+                      className={`text-xs lg:text-sm xl:text-base | whitespace-nowrap border text-center p-2 ${statusStyling(request.Status)}`}
+                    >
+                      {request.Status}
+                    </td>
+                    <td className="text-xs lg:text-sm xl:text-base | whitespace-nowrap border break-all p-2">
+                      {capitalize(request.CurrentSupervisor)}
+                    </td>
+                    <td className="text-xs lg:text-sm xl:text-base | whitespace-nowrap border text-center p-2">
+                      {formatDate(request.SubmitDate)}
+                    </td>
+                    <td className="text-xs lg:text-sm xl:text-base | whitespace-nowrap border min-w-16 text-center p-2">
+                      {request.Remarks}
+                    </td>
+                  </tr>
+                );
+              })}
+          </tbody>
+        </table>
+      )}
     </Primitive>
   );
 };

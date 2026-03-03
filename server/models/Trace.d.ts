@@ -23,8 +23,11 @@ export interface TraceRequests extends RowDataPacket {
   Subject: string;
   Amount: number;
   Requestor: string;
+  RequestorSection: string;
+  RequestorSectionId: number;
   Status: string;
   CurrentSupervisor: string;
+  CurrentSupervisorId: number;
   SubmitDate: string;
   Remarks: string;
 }

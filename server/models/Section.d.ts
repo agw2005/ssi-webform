@@ -12,7 +12,7 @@ export interface SectionTable extends RowDataPacket {
 /**
  * Interface for the `Section` table used to get the section names.
  */
-export interface SectionNames extends RowDataPacket {
+export interface SectionName extends RowDataPacket {
   IDSection: number;
   SectionName: string;
 }

@@ -1,6 +1,6 @@
 import type mysql from "mysql2/promise";
 import type {
-  SectionNames,
+  SectionName,
   SectionTable,
   UserSection,
 } from "../models/Section.d.ts";
@@ -33,7 +33,7 @@ export const basicGet = async (
  * @returns An array of section, containing its section name and identifier, and a metadata variable
  */
 export const sectionNames = async (pool: mysql.Pool) => {
-  const [rows, metadata] = await pool.query<SectionNames[]>(
+  const [rows, metadata] = await pool.query<SectionName[]>(
     `SELECT IDSection, SectionName
     FROM Section`,
   );

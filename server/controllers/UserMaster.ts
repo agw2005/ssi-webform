@@ -1,7 +1,7 @@
 import type mysql from "mysql2/promise";
 import type {
   UserMasterAuthInformation,
-  UserMasterNames,
+  UserMasterName,
   UserMasterTable,
 } from "../models/UserMaster.d.ts";
 
@@ -53,8 +53,8 @@ export const authInformation = async (
  * @returns An array of usermaster, containing its NRP and password, and a metadata variable
  */
 export const supervisorNames = async (pool: mysql.Pool) => {
-  const [rows, metadata] = await pool.query<UserMasterNames[]>(
-    `SELECT NameUser 
+  const [rows, metadata] = await pool.query<UserMasterName[]>(
+    `SELECT NameUser, IDUser
     FROM UserMaster
     ORDER BY NameUser ASC`,
   );

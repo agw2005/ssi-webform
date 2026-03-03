@@ -237,12 +237,36 @@ export const getTracesPaginated = async (
   ctx.response.body = rows;
 };
 
-export const getRequests = async (
-  ctx: RouterContext<"/trace/requests/:pagination/:page">,
-) => {
-  const pagination = Number(ctx.params.pagination);
-  const page = Number(ctx.params.page);
-  const [rows, _metadata] = await homeRequests(databasePool, page, pagination);
+export const getRequests = async (ctx: RouterContext<"/trace/requests">) => {
+  const params = ctx.request.url.searchParams;
+
+  const requestorSectionId = params.has("requestorsectionid")
+    ? Number(params.get("requestorsectionid"))
+    : null;
+
+  const status = params.get("status") || null;
+
+  const currentSupervisorId = params.has("currentsupervisorid")
+    ? Number(params.get("currentsupervisorid"))
+    : null;
+
+  const startDate = params.get("startdate") || null;
+
+  const endDate = params.get("enddate") || null;
+
+  const pagination = Number(params.get("pagination")) || 50;
+  const page = Number(params.get("page")) || 1;
+
+  const [rows, _metadata] = await homeRequests(
+    databasePool,
+    page,
+    pagination,
+    requestorSectionId,
+    status,
+    currentSupervisorId,
+    startDate,
+    endDate,
+  );
   ctx.response.status = 200;
   ctx.response.body = rows;
 };

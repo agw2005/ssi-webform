@@ -26,6 +26,7 @@ export interface UserMasterAuthInformation extends RowDataPacket {
 /**
  * Interface for the `UserMaster` table used to get the user names.
  */
-export interface UserMasterNames extends RowDataPacket {
-  UserName: string;
+export interface UserMasterName extends RowDataPacket {
+  NameUser: string;
+  IDUser: number;
 }
