@@ -9,6 +9,7 @@ import type { SectionName, SupervisorNames, FormRequest } from "@scope/server";
 import LoadingFallback from "../components/reusable/LoadingFallback.tsx";
 import useFetch from "../hooks/useFetch.tsx";
 import capitalize from "../helper/capitalize.ts";
+import PagingButton from "../components/reusable/PagingButton.tsx";
 
 interface SectionPayload {
   IDSection: number;
@@ -19,6 +20,10 @@ interface SupervisorPayload {
   NameUser: string;
   IDUser: number;
   DisplayLabel: string;
+}
+
+interface CountResponsePayload {
+  COUNT: number;
 }
 
 const COLUMNS = [
@@ -37,6 +42,7 @@ const SELECT_ALL_INDEX = -99;
 const SECTION_NAMES_URL = "http://localhost:8000/section/names";
 const SUPERVISOR_NAMES_URL = "http://localhost:8000/usermaster/names";
 const REQUESTS_URL = "http://localhost:8000/trace/requests";
+const REQUESTS_COUNT_URL = "http://localhost:8000/trace/requests/count";
 
 const formatDate = (dateString: string) => {
   try {
@@ -69,10 +75,12 @@ const Home = () => {
   const [supervisorFilter, setSupervisorFilter] = useState<SupervisorPayload>(
     DEFAULT_SUPERVISOR_FILTER,
   );
+  const [currentPage, setCurrentPage] = useState(1);
   const [pagingRange, setPagingRange] = useState(20);
   const [startingDate, setStartingDate] = useState("");
   const [endingDate, setEndingDate] = useState("");
   const [searchField, setSearchField] = useState("");
+  const [totalRequestInstances, setTotalRequestInstances] = useState(0);
 
   const statusStyling = (status: string) => {
     if (status === "Final Approved") {
@@ -128,41 +136,57 @@ const Home = () => {
     });
   }, [supervisorNames]);
 
-  useEffect(() => {
-    const requestUrl = new URL(REQUESTS_URL);
-    const abortController = new AbortController();
-    setIsRequestDataLoading(true);
-
+  const applyFilters = (url: URL) => {
     if (sectionFilter.IDSection !== SELECT_ALL_INDEX) {
-      requestUrl.searchParams.set(
+      url.searchParams.set(
         "requestorsectionid",
         sectionFilter.IDSection.toString(),
       );
     }
     if (statusFilter !== "All Status" && statusFilter !== "") {
-      requestUrl.searchParams.set("status", statusFilter);
+      url.searchParams.set("status", statusFilter);
     }
     if (supervisorFilter.IDUser !== SELECT_ALL_INDEX) {
-      requestUrl.searchParams.set(
+      url.searchParams.set(
         "currentsupervisorid",
         String(supervisorFilter.IDUser),
       );
     }
-    if (startingDate) requestUrl.searchParams.set("startdate", startingDate);
-    if (endingDate) requestUrl.searchParams.set("enddate", endingDate);
+    if (startingDate) url.searchParams.set("startdate", startingDate);
+    if (endingDate) url.searchParams.set("enddate", endingDate);
+  };
+
+  useEffect(() => {
+    const requestUrl = new URL(REQUESTS_URL);
+    const countUrl = new URL(REQUESTS_COUNT_URL);
+    const abortController = new AbortController();
+    setIsRequestDataLoading(true);
+
+    applyFilters(requestUrl);
+    applyFilters(countUrl);
 
     requestUrl.searchParams.set("pagination", String(pagingRange));
+    requestUrl.searchParams.set("page", String(currentPage));
 
     const fetchData = async () => {
       try {
-        const response = await fetch(requestUrl.toString(), {
-          signal: abortController.signal,
-        });
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+        const [requestResponse, countResponse] = await Promise.all([
+          fetch(requestUrl.toString(), { signal: abortController.signal }),
+          fetch(countUrl.toString(), { signal: abortController.signal }),
+        ]);
+
+        if (!requestResponse.ok || !countResponse.ok) {
+          throw new Error(`HTTP error! status: ${requestResponse.status}`);
         }
-        const responseJson: FormRequest[] = await response.json();
-        setRequestData(responseJson);
+
+        const requestResponseJson: FormRequest[] = await requestResponse.json();
+        const countResponseJson: CountResponsePayload[] =
+          await countResponse.json();
+
+        setRequestData(requestResponseJson);
+        if (countResponseJson && countResponseJson.length > 0) {
+          setTotalRequestInstances(countResponseJson[0].COUNT);
+        }
       } catch (err) {
         if (err instanceof Error && err.name === "AbortError") {
           return;
@@ -186,9 +210,15 @@ const Home = () => {
     statusFilter,
     supervisorFilter,
     pagingRange,
+    currentPage,
     startingDate,
     endingDate,
   ]);
+
+  const totalPages = Math.max(
+    1,
+    Math.ceil(totalRequestInstances / pagingRange),
+  );
 
   if (isSectionLoading || isSupervisorLoading) {
     return <LoadingFallback />;
@@ -223,6 +253,7 @@ const Home = () => {
           ]}
           value={sectionFilter.SectionName}
           onChangeHandler={(e) => {
+            setCurrentPage(1);
             const selectedSectionName = e.target.value;
 
             if (
@@ -252,7 +283,10 @@ const Home = () => {
           defaultDisabledValue="All Status"
           options={STATUSES}
           value={statusFilter}
-          onChangeHandler={(e) => setStatusFilter(e.currentTarget.value)}
+          onChangeHandler={(e) => {
+            setCurrentPage(1);
+            setStatusFilter(e.currentTarget.value);
+          }}
         />
         <SelectionInput
           label="Supervisor"
@@ -273,6 +307,7 @@ const Home = () => {
               : supervisorFilter.DisplayLabel
           }
           onChangeHandler={(e) => {
+            setCurrentPage(1);
             const selectedLabel = e.target.value;
 
             if (selectedLabel === "All Supervisor" || selectedLabel === "") {
@@ -299,12 +334,14 @@ const Home = () => {
           secondDateRequiredInput={false}
           startingDateValue={startingDate}
           endingDateValue={endingDate}
-          startingDateOnChangeHandler={(e) =>
-            setStartingDate(e.currentTarget.value)
-          }
-          endingOnDateChangeHandler={(e) =>
-            setEndingDate(e.currentTarget.value)
-          }
+          startingDateOnChangeHandler={(e) => {
+            setCurrentPage(1);
+            setStartingDate(e.currentTarget.value);
+          }}
+          endingOnDateChangeHandler={(e) => {
+            setCurrentPage(1);
+            setEndingDate(e.currentTarget.value);
+          }}
         />
         <NumberInput
           label="Items"
@@ -315,8 +352,18 @@ const Home = () => {
           minimumValue={0}
           value={String(pagingRange)}
           onChangeHandler={(e) => {
+            setCurrentPage(1);
             setPagingRange(Number(e.currentTarget.value));
           }}
+        />
+        <PagingButton
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onIncrement={() =>
+            setCurrentPage((prev) => Math.min(totalPages, prev + 1))
+          }
+          onDecrement={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
+          variant="black"
         />
         <TextInput
           label="Search"
@@ -326,10 +373,12 @@ const Home = () => {
           requiredInput={false}
           value={searchField}
           onChangeHandler={(e) => {
+            setCurrentPage(1);
             setSearchField(e.currentTarget.value);
           }}
         />
       </div>
+
       {isRequestDataLoading ? (
         <LoadingFallback />
       ) : (

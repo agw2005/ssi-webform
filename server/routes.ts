@@ -23,7 +23,11 @@ import {
   userSectionMappings,
 } from "./controllers/Section.ts";
 import { basicGet as TitleGet } from "./controllers/Title.ts";
-import { homeRequests, basicGet as TraceGet } from "./controllers/Trace.ts";
+import {
+  homeRequests,
+  homeRequestsCount,
+  basicGet as TraceGet,
+} from "./controllers/Trace.ts";
 import { basicGet as TraceDGet } from "./controllers/TraceD.ts";
 import { basicGet as TypeGet } from "./controllers/Type.ts";
 import { basicGet as UploadFileGet } from "./controllers/UploadFile.ts";
@@ -261,6 +265,37 @@ export const getRequests = async (ctx: RouterContext<"/trace/requests">) => {
     databasePool,
     page,
     pagination,
+    requestorSectionId,
+    status,
+    currentSupervisorId,
+    startDate,
+    endDate,
+  );
+  ctx.response.status = 200;
+  ctx.response.body = rows;
+};
+
+export const getRequestsCount = async (
+  ctx: RouterContext<"/trace/requests/count">,
+) => {
+  const params = ctx.request.url.searchParams;
+
+  const requestorSectionId = params.has("requestorsectionid")
+    ? Number(params.get("requestorsectionid"))
+    : null;
+
+  const status = params.get("status") || null;
+
+  const currentSupervisorId = params.has("currentsupervisorid")
+    ? Number(params.get("currentsupervisorid"))
+    : null;
+
+  const startDate = params.get("startdate") || null;
+
+  const endDate = params.get("enddate") || null;
+
+  const [rows, _metadata] = await homeRequestsCount(
+    databasePool,
     requestorSectionId,
     status,
     currentSupervisorId,

@@ -1,5 +1,9 @@
 import type mysql from "mysql2/promise";
-import type { TraceRequests, TraceTable } from "../models/Trace.d.ts";
+import type {
+  TraceRequests,
+  TraceRequestsCount,
+  TraceTable,
+} from "../models/Trace.d.ts";
 
 /**
  * A basic GET, affecting all attributes with pagination support.
@@ -77,6 +81,48 @@ export const homeRequests = async (
       endDate,
       (page - 1) * numRows,
       numRows,
+    ],
+  );
+  return [rows, metadata];
+};
+
+export const homeRequestsCount = async (
+  pool: mysql.Pool,
+  requestorSectionId: number | null,
+  status: string | null,
+  currentSupervisorId: number | null,
+  startDate: string | null,
+  endDate: string | null,
+) => {
+  const [rows, metadata] = await pool.query<TraceRequestsCount[]>(
+    `SELECT 
+      COUNT(*) AS COUNT
+    FROM Trace
+    INNER JOIN frm_PR_H
+    ON frm_PR_H.NoForm = Trace.NoForm
+    INNER JOIN UserMaster
+    On Trace.ProcessedBy = UserMaster.IDUser
+    WHERE 
+      (? IS NULL OR Trace.IDSection = ?)
+    AND
+      (? IS NULL OR Trace.Status = ?)
+    AND
+      (? IS NULL OR UserMaster.IDUser = ?)
+    AND
+      (? IS NULL OR Trace.SubmitDate >= ?)
+    AND
+      (? IS NULL OR Trace.SubmitDate <= ?)`,
+    [
+      requestorSectionId,
+      requestorSectionId,
+      status,
+      status,
+      currentSupervisorId,
+      currentSupervisorId,
+      startDate,
+      startDate,
+      endDate,
+      endDate,
     ],
   );
   return [rows, metadata];

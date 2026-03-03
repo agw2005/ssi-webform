@@ -31,3 +31,7 @@ export interface TraceRequests extends RowDataPacket {
   SubmitDate: string;
   Remarks: string;
 }
+
+export interface TraceRequestsCount extends RowDataPacket {
+  Count: number;
+}
