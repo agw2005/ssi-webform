@@ -370,13 +370,12 @@ const Home = () => {
           }}
         />
         <PagingButton
+          name="paging-button"
+          id="paging-button"
+          variant="black"
           currentPage={currentPage}
           totalPages={totalPages}
-          onIncrement={() =>
-            setCurrentPage((prev) => Math.min(totalPages, prev + 1))
-          }
-          onDecrement={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
-          variant="black"
+          onInputChangeHandler={(e) => setCurrentPage(Number(e.target.value))}
         />
         <TextInput
           label="Search"
