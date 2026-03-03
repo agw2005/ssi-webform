@@ -66,6 +66,8 @@ export const homeRequests = async (
       (? IS NULL OR Trace.SubmitDate >= ?)
     AND
       (? IS NULL OR Trace.SubmitDate <= ?)
+    AND
+      Trace.Status IN ('Final Approved', 'In Progress', 'Rejected', 'Cancelled', 'Expired')
     ORDER BY SubmitDate DESC
     LIMIT ? , ?`,
     [

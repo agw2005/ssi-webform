@@ -38,7 +38,14 @@ const COLUMNS = [
   "Remarks",
 ];
 
-const STATUSES = ["All Status", "Final Approved", "In Progress", "Rejected"];
+const STATUSES = [
+  "All Status",
+  "Final Approved",
+  "In Progress",
+  "Rejected",
+  "Cancelled",
+  "Expired",
+];
 const SELECT_ALL_INDEX = -99;
 const SECTION_NAMES_URL = "http://localhost:8000/section/names";
 const SUPERVISOR_NAMES_URL = "http://localhost:8000/usermaster/names";
