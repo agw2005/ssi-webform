@@ -4,7 +4,7 @@ import NumberInput from "../components/reusable/inputs/NumberInput.tsx";
 import DateRangeInput from "../components/reusable/inputs/DateRangeInput.tsx";
 import TextInput from "../components/reusable/inputs/TextInput.tsx";
 import { Link } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import type { SectionName, SupervisorNames, FormRequest } from "@scope/server";
 import LoadingFallback from "../components/reusable/LoadingFallback.tsx";
 import useFetch from "../hooks/useFetch.tsx";
@@ -18,6 +18,7 @@ interface SectionPayload {
 interface SupervisorPayload {
   NameUser: string;
   IDUser: number;
+  DisplayLabel: string;
 }
 
 const COLUMNS = [
@@ -57,6 +58,7 @@ const DEFAULT_SECTION_FILTER: SectionPayload = {
 const DEFAULT_SUPERVISOR_FILTER: SupervisorPayload = {
   NameUser: "",
   IDUser: SELECT_ALL_INDEX,
+  DisplayLabel: "",
 };
 
 const Home = () => {
@@ -99,6 +101,33 @@ const Home = () => {
   const [isRequestDataError, setIsRequestDataError] = useState<Error | null>(
     null,
   );
+
+  const handleDuplicateNameSupervisors = useMemo(() => {
+    if (!supervisorNames) return [];
+
+    const nameFrequency = new Map<string, number>();
+    for (const supervisor of supervisorNames) {
+      const capitalizedName = capitalize(supervisor.NameUser);
+      nameFrequency.set(
+        capitalizedName,
+        (nameFrequency.get(capitalizedName) || 0) + 1,
+      );
+    }
+
+    return supervisorNames.map((supervisor) => {
+      const capitalizedName = capitalize(supervisor.NameUser);
+      const isDuplicate = (nameFrequency.get(capitalizedName) || 0) > 1;
+
+      return {
+        IDUser: supervisor.IDUser,
+        NameUser: capitalizedName,
+        displayedName: isDuplicate
+          ? `${capitalizedName} (${supervisor.IDUser})`
+          : capitalizedName,
+      };
+    });
+  }, [supervisorNames]);
+
   useEffect(() => {
     const requestUrl = new URL(REQUESTS_URL);
     const abortController = new AbortController();
@@ -234,34 +263,29 @@ const Home = () => {
           defaultDisabledValue="All Supervisor"
           options={[
             "All Supervisor",
-            ...(!supervisorNames
-              ? []
-              : supervisorNames.map((supervisor) =>
-                  capitalize(supervisor.NameUser),
-                )),
+            ...handleDuplicateNameSupervisors.map(
+              (supervisor) => supervisor.displayedName,
+            ),
           ]}
           value={
-            supervisorFilter.NameUser === ""
+            supervisorFilter.DisplayLabel === ""
               ? ""
-              : capitalize(supervisorFilter.NameUser)
+              : supervisorFilter.DisplayLabel
           }
           onChangeHandler={(e) => {
-            const selectedSupervisorName = e.target.value;
+            const selectedLabel = e.target.value;
 
-            if (
-              selectedSupervisorName === "All Supervisor" ||
-              selectedSupervisorName === ""
-            ) {
+            if (selectedLabel === "All Supervisor" || selectedLabel === "") {
               setSupervisorFilter(DEFAULT_SUPERVISOR_FILTER);
             } else {
-              const matchedSupervisor = supervisorNames?.find(
-                (supervisor) =>
-                  capitalize(supervisor.NameUser) === selectedSupervisorName,
+              const matchedSupervisor = handleDuplicateNameSupervisors.find(
+                (supervisor) => supervisor.displayedName === selectedLabel,
               );
               if (matchedSupervisor) {
                 setSupervisorFilter({
-                  NameUser: capitalize(matchedSupervisor.NameUser),
+                  NameUser: matchedSupervisor.NameUser,
                   IDUser: matchedSupervisor.IDUser,
+                  DisplayLabel: matchedSupervisor.displayedName,
                 });
               }
             }
@@ -359,7 +383,12 @@ const Home = () => {
                       {request.Status}
                     </td>
                     <td className="text-xs lg:text-sm xl:text-base | whitespace-nowrap border break-all p-2">
-                      {capitalize(request.CurrentSupervisor)}
+                      {
+                        handleDuplicateNameSupervisors.find(
+                          (supervisor) =>
+                            supervisor.IDUser === request.CurrentSupervisorId,
+                        )?.displayedName
+                      }
                     </td>
                     <td className="text-xs lg:text-sm xl:text-base | whitespace-nowrap border text-center p-2">
                       {formatDate(request.SubmitDate)}
