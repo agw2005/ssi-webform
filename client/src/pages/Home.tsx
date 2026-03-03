@@ -1,24 +1,22 @@
 import Primitive from "../components/reusable/Primitive.tsx";
-import Placeholders from "../dummies/HomeTable.json" with { type: "json" };
 import SelectionInput from "../components/reusable/inputs/SelectionInput.tsx";
 import NumberInput from "../components/reusable/inputs/NumberInput.tsx";
 import DateRangeInput from "../components/reusable/inputs/DateRangeInput.tsx";
 import TextInput from "../components/reusable/inputs/TextInput.tsx";
 import { Link } from "react-router-dom";
 import { useState } from "react";
-import type { SectionNames, SupervisorNames } from "@scope/server";
+import type { SectionNames, SupervisorNames, FormRequest } from "@scope/server";
 import LoadingFallback from "../components/reusable/LoadingFallback.tsx";
 import useFetch from "../hooks/useFetch.tsx";
 import capitalize from "../helper/capitalize.ts";
 
 const COLUMNS = [
   "ID Trace",
-  "Red Light",
   "Subject",
   "Amount",
   "Requestor",
   "Status",
-  "Supervisor",
+  "Current Supervisor",
   "Submit Date",
   "Remarks",
 ];
@@ -27,6 +25,19 @@ const STATUSES = ["All Status", "Final Approved", "In Progress", "Rejected"];
 
 const SECTION_NAMES_URL = "http://localhost:8000/section/names";
 const SUPERVISOR_NAMES_URL = "http://localhost:8000/usermaster/names";
+const REQUESTS_URL = "http://localhost:8000/trace/requests/100/1";
+
+const formatDate = (dateString: string) => {
+  try {
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) {
+      throw new Error("Invalid date string value");
+    }
+    return date.toISOString().split("T")[0];
+  } catch (err) {
+    console.error(err);
+  }
+};
 
 const Home = () => {
   const [sectionFilter, setSectionFilter] = useState("");
@@ -36,6 +47,16 @@ const Home = () => {
   const [startingDate, setStartingDate] = useState("");
   const [endingDate, setEndingDate] = useState("");
   const [searchField, setSearchField] = useState("");
+
+  const statusStyling = (status: string) => {
+    if (status === "Final Approved") {
+      return "bg-green-300";
+    } else if (status === "In Progress") {
+      return "bg-yellow-300";
+    } else {
+      return "bg-red-700 font-bold text-white border-black";
+    }
+  };
 
   const {
     data: sectionNames,
@@ -49,16 +70,23 @@ const Home = () => {
     isError: supervisorError,
   } = useFetch<SupervisorNames>(SUPERVISOR_NAMES_URL);
 
-  if (isSectionLoading || isSupervisorLoading) {
+  const {
+    data: requests,
+    isLoading: isRequestsLoading,
+    isError: isRequestsError,
+  } = useFetch<FormRequest>(REQUESTS_URL);
+
+  if (isSectionLoading || isSupervisorLoading || isRequestsLoading) {
     return <LoadingFallback />;
   }
 
-  if (sectionError || supervisorError) {
+  if (sectionError || supervisorError || isRequestsError) {
     return (
       <div className="m-4">
         <div>Something unexpected happened.</div>
         {sectionError ? sectionError.message : ""}
         {supervisorError ? supervisorError.message : ""}
+        {isRequestsError ? isRequestsError.message : ""}
       </div>
     );
   }
@@ -166,44 +194,51 @@ const Home = () => {
           </tr>
         </thead>
         <tbody>
-          {Placeholders.map((placeholder, index) => {
-            return (
-              <tr key={index}>
-                <td className="text-xs lg:text-sm xl:text-base | text-center border break-all p-2">
-                  {placeholder["ID Trace"]}
-                </td>
-                <td className="text-xs lg:text-sm xl:text-base | min-w-12 lg:min-w-16 xl:min-w-20 2xl:min-w-28 | border text-center p-2">
-                  {placeholder["Red Light Status"]}
-                </td>
-                <td className="text-xs lg:text-sm xl:text-base | border break-all p-2">
-                  <Link
-                    className="text-blue-700 underline"
-                    to={`/request/${placeholder["ID"]}`}
+          {requests &&
+            requests.map((request, index) => {
+              return (
+                <tr key={index}>
+                  <td className="text-xs lg:text-sm xl:text-base | whitespace-nowrap text-center border break-all p-2">
+                    {request.IDTrace}
+                  </td>
+                  <td className="text-xs lg:text-sm xl:text-base | border break-all p-2">
+                    <Link
+                      className="text-blue-700 underline"
+                      to={`/request/${request.IDTrace}`}
+                    >
+                      {request.Subject}
+                    </Link>{" "}
+                    {/* {"True" === "True" ? (
+                      <span className="text-red-500 font-bold drop-shadow">
+                        Red Light
+                      </span>
+                    ) : (
+                      ""
+                    )} */}
+                  </td>
+                  <td className="text-xs lg:text-sm xl:text-base | whitespace-nowrap border break-all p-2">
+                    {request.Amount}
+                  </td>
+                  <td className="text-xs lg:text-sm xl:text-base | whitespace-nowrap border break-all p-2">
+                    {capitalize(request.Requestor)}
+                  </td>
+                  <td
+                    className={`text-xs lg:text-sm xl:text-base | whitespace-nowrap border text-center p-2 ${statusStyling(request.Status)}`}
                   >
-                    {placeholder["Subject"]}
-                  </Link>
-                </td>
-                <td className="text-xs lg:text-sm xl:text-base | border break-all p-2">
-                  {placeholder["Amount"]}
-                </td>
-                <td className="text-xs lg:text-sm xl:text-base | border break-all p-2">
-                  {placeholder["Requestor"]}
-                </td>
-                <td className="text-xs lg:text-sm xl:text-base | border min-w-full text-center p-2">
-                  {placeholder["Status"]}
-                </td>
-                <td className="text-xs lg:text-sm xl:text-base | border break-all p-2">
-                  {placeholder["Supervisor"]}
-                </td>
-                <td className="text-xs lg:text-sm xl:text-base | border text-center p-2">
-                  {placeholder["Submit Date"]}
-                </td>
-                <td className="text-xs lg:text-sm xl:text-base | border min-w-16 text-center p-2">
-                  {placeholder["Remarks"]}
-                </td>
-              </tr>
-            );
-          })}
+                    {request.Status}
+                  </td>
+                  <td className="text-xs lg:text-sm xl:text-base | whitespace-nowrap border break-all p-2">
+                    {capitalize(request.CurrentSupervisor)}
+                  </td>
+                  <td className="text-xs lg:text-sm xl:text-base | whitespace-nowrap border text-center p-2">
+                    {formatDate(request.SubmitDate)}
+                  </td>
+                  <td className="text-xs lg:text-sm xl:text-base | whitespace-nowrap border min-w-16 text-center p-2">
+                    {request.Remarks}
+                  </td>
+                </tr>
+              );
+            })}
         </tbody>
       </table>
     </Primitive>

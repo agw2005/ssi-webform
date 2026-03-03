@@ -15,6 +15,7 @@ import {
   getNaturesPaginated,
   getRateDollarsPaginated,
   getRateDollarTempsPaginated,
+  getRequests,
   getSectionNames,
   getSectionsPaginated,
   getSectionUsers,
@@ -47,6 +48,7 @@ oakRouter.get("/budget/periods", getAllPeriods);
 oakRouter.get("/budget/nature/:costcenter", getNaturesOfCostCenter);
 oakRouter.get("/budget/nature/:costcenter/:periode/:nature", getSingleBalance);
 oakRouter.get("/frmprnopr/departments", getAllDepartments);
+oakRouter.get("/trace/requests/:pagination/:page", getRequests);
 
 // Basic GET
 oakRouter.get("/budget/:pagination/:page", getBudgetsPaginated);

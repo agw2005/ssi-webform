@@ -6,7 +6,7 @@
     "Subject": "Rubber Coupling",
     "Amount": "101.92",
     "Requestor": "Person 2",
-    "Status": "In Progress",
+    "Status": "Rejected",
     "Supervisor": "Person 1",
     "Submit Date": "1/28/2026",
     "Remarks": "[RL]"
@@ -30,7 +30,7 @@
     "Subject": "V-Belt AHU",
     "Amount": "150.50",
     "Requestor": "Person 4",
-    "Status": "Completed",
+    "Status": "Final Approved",
     "Supervisor": "Person 2",
     "Submit Date": "1/25/2026",
     "Remarks": ""
@@ -42,7 +42,7 @@
     "Subject": "Upper Electrode H-16041 10-01-008-215",
     "Amount": "425.00",
     "Requestor": "Person 6",
-    "Status": "Pending Approval",
+    "Status": "In Progress",
     "Supervisor": "Person 1",
     "Submit Date": "1/29/2026",
     "Remarks": "[RL]"
@@ -66,7 +66,7 @@
     "Subject": "Safety gloves",
     "Amount": "35.20",
     "Requestor": "Person 8",
-    "Status": "Completed",
+    "Status": "Final Approved",
     "Supervisor": "Person 5",
     "Submit Date": "1/24/2026",
     "Remarks": ""
@@ -78,7 +78,7 @@
     "Subject": "Circuit board",
     "Amount": "612.30",
     "Requestor": "Person 9",
-    "Status": "Pending Approval",
+    "Status": "In Progress",
     "Supervisor": "Person 3",
     "Submit Date": "1/30/2026",
     "Remarks": "[RL]"
@@ -102,7 +102,7 @@
     "Subject": "A Really Really Really Really Really Really Really Really Really Really Really Really Really Really Really Long Subject",
     "Amount": "9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999",
     "Requestor": "A Really Really Really Really Really Really Really Really Really Really Really Really Really Really Long Name",
-    "Status": "Completed",
+    "Status": "Final Approved",
     "Supervisor": "A Really Really Really Really Really Really Really Really Really Really Really Really Really Really Long Name",
     "Submit Date": "1/23/2026",
     "Remarks": ""
@@ -114,7 +114,7 @@
     "Subject": "Hydraulic pump",
     "Amount": "980.15",
     "Requestor": "Person 12",
-    "Status": "Pending Approval",
+    "Status": "In Progress",
     "Supervisor": "Person 4",
     "Submit Date": "1/29/2026",
     "Remarks": "[RL]"
@@ -138,7 +138,7 @@
     "Subject": "Pressure valve",
     "Amount": "310.40",
     "Requestor": "Person 14",
-    "Status": "Pending Approval",
+    "Status": "In Progress",
     "Supervisor": "Person 3",
     "Submit Date": "2/1/2026",
     "Remarks": "[RL]"
@@ -150,7 +150,7 @@
     "Subject": "Maintenance oil",
     "Amount": "22.90",
     "Requestor": "Person 15",
-    "Status": "Completed",
+    "Status": "Final Approved",
     "Supervisor": "Person 6",
     "Submit Date": "1/30/2026",
     "Remarks": ""
@@ -174,7 +174,7 @@
     "Subject": "Industrial motor",
     "Amount": "1250.00",
     "Requestor": "Person 17",
-    "Status": "Pending Approval",
+    "Status": "In Progress",
     "Supervisor": "Person 1",
     "Submit Date": "2/2/2026",
     "Remarks": "[RL]"
@@ -198,7 +198,7 @@
     "Subject": "Air filter",
     "Amount": "48.95",
     "Requestor": "Person 19",
-    "Status": "Completed",
+    "Status": "Final Approved",
     "Supervisor": "Person 7",
     "Submit Date": "1/29/2026",
     "Remarks": ""
@@ -210,7 +210,7 @@
     "Subject": "Control module",
     "Amount": "845.70",
     "Requestor": "Person 20",
-    "Status": "Pending Approval",
+    "Status": "In Progress",
     "Supervisor": "Person 6",
     "Submit Date": "2/2/2026",
     "Remarks": "[RL]"
@@ -234,7 +234,7 @@
     "Subject": "Diagnostic tool",
     "Amount": "399.99",
     "Requestor": "Person 22",
-    "Status": "Completed",
+    "Status": "Final Approved",
     "Supervisor": "Person 9",
     "Submit Date": "1/31/2026",
     "Remarks": ""

@@ -17,3 +17,14 @@ export interface TraceTable extends RowDataPacket {
   LevelProgress: string;
   Remarks: string;
 }
+
+export interface TraceRequests extends RowDataPacket {
+  IDTrace: number;
+  Subject: string;
+  Amount: number;
+  Requestor: string;
+  Status: string;
+  CurrentSupervisor: string;
+  SubmitDate: string;
+  Remarks: string;
+}

@@ -23,7 +23,7 @@ import {
   userSectionMappings,
 } from "./controllers/Section.ts";
 import { basicGet as TitleGet } from "./controllers/Title.ts";
-import { basicGet as TraceGet } from "./controllers/Trace.ts";
+import { homeRequests, basicGet as TraceGet } from "./controllers/Trace.ts";
 import { basicGet as TraceDGet } from "./controllers/TraceD.ts";
 import { basicGet as TypeGet } from "./controllers/Type.ts";
 import { basicGet as UploadFileGet } from "./controllers/UploadFile.ts";
@@ -233,6 +233,16 @@ export const getTracesPaginated = async (
   const pagination = Number(ctx.params.pagination);
   const page = Number(ctx.params.page);
   const [rows, _metadata] = await TraceGet(databasePool, page, pagination);
+  ctx.response.status = 200;
+  ctx.response.body = rows;
+};
+
+export const getRequests = async (
+  ctx: RouterContext<"/trace/requests/:pagination/:page">,
+) => {
+  const pagination = Number(ctx.params.pagination);
+  const page = Number(ctx.params.page);
+  const [rows, _metadata] = await homeRequests(databasePool, page, pagination);
   ctx.response.status = 200;
   ctx.response.body = rows;
 };
