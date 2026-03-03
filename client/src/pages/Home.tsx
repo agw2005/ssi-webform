@@ -10,6 +10,7 @@ import LoadingFallback from "../components/reusable/LoadingFallback.tsx";
 import useFetch from "../hooks/useFetch.tsx";
 import capitalize from "../helper/capitalize.ts";
 import PagingButton from "../components/reusable/PagingButton.tsx";
+import Button from "../components/reusable/Button.tsx";
 
 interface SectionPayload {
   IDSection: number;
@@ -56,31 +57,30 @@ const formatDate = (dateString: string) => {
   }
 };
 
-const DEFAULT_SECTION_FILTER: SectionPayload = {
-  IDSection: SELECT_ALL_INDEX,
-  SectionName: "",
-};
-
-const DEFAULT_SUPERVISOR_FILTER: SupervisorPayload = {
-  NameUser: "",
-  IDUser: SELECT_ALL_INDEX,
-  DisplayLabel: "",
+const DEFAULT_FILTERS = {
+  section: { IDSection: SELECT_ALL_INDEX, SectionName: "" },
+  supervisor: { NameUser: "", IDUser: SELECT_ALL_INDEX, DisplayLabel: "" },
+  status: "",
+  pagingRange: 20,
+  date: "",
+  search: "",
 };
 
 const Home = () => {
   const [sectionFilter, setSectionFilter] = useState<SectionPayload>(
-    DEFAULT_SECTION_FILTER,
+    DEFAULT_FILTERS.section,
   );
-  const [statusFilter, setStatusFilter] = useState("");
+  const [statusFilter, setStatusFilter] = useState(DEFAULT_FILTERS.status);
   const [supervisorFilter, setSupervisorFilter] = useState<SupervisorPayload>(
-    DEFAULT_SUPERVISOR_FILTER,
+    DEFAULT_FILTERS.supervisor,
   );
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pagingRange, setPagingRange] = useState(20);
-  const [startingDate, setStartingDate] = useState("");
-  const [endingDate, setEndingDate] = useState("");
-  const [searchField, setSearchField] = useState("");
+  const [pagingRange, setPagingRange] = useState(DEFAULT_FILTERS.pagingRange);
+  const [startingDate, setStartingDate] = useState(DEFAULT_FILTERS.date);
+  const [endingDate, setEndingDate] = useState(DEFAULT_FILTERS.date);
+  const [searchField, setSearchField] = useState(DEFAULT_FILTERS.search);
+
   const [totalRequestInstances, setTotalRequestInstances] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
 
   const statusStyling = (status: string) => {
     if (status === "Final Approved") {
@@ -260,7 +260,7 @@ const Home = () => {
               selectedSectionName === "All Section" ||
               selectedSectionName === ""
             ) {
-              setSectionFilter(DEFAULT_SECTION_FILTER);
+              setSectionFilter(DEFAULT_FILTERS.section);
             } else {
               const matchedSection = sectionNames?.find(
                 (section) => section.SectionName === selectedSectionName,
@@ -311,7 +311,7 @@ const Home = () => {
             const selectedLabel = e.target.value;
 
             if (selectedLabel === "All Supervisor" || selectedLabel === "") {
-              setSupervisorFilter(DEFAULT_SUPERVISOR_FILTER);
+              setSupervisorFilter(DEFAULT_FILTERS.supervisor);
             } else {
               const matchedSupervisor = handleDuplicateNameSupervisors.find(
                 (supervisor) => supervisor.displayedName === selectedLabel,
@@ -377,6 +377,20 @@ const Home = () => {
             setSearchField(e.currentTarget.value);
           }}
         />
+        <div
+          onClick={() => {
+            setCurrentPage(1);
+            setSectionFilter(DEFAULT_FILTERS.section);
+            setStatusFilter(DEFAULT_FILTERS.status);
+            setSupervisorFilter(DEFAULT_FILTERS.supervisor);
+            setPagingRange(DEFAULT_FILTERS.pagingRange);
+            setStartingDate(DEFAULT_FILTERS.date);
+            setEndingDate(DEFAULT_FILTERS.date);
+            setSearchField(DEFAULT_FILTERS.search);
+          }}
+        >
+          <Button id="reset-filters" variant="black" label="Reset" />
+        </div>
       </div>
 
       {isRequestDataLoading ? (
