@@ -1,5 +1,4 @@
 import type { ColorVariant } from "../../../helper/tailwindColorResolver.ts";
-import Button from "../../reusable/Button.tsx";
 import SelectionInput from "../../reusable/inputs/SelectionInput.tsx";
 
 interface BudgetViewFiltersProps {
@@ -46,7 +45,6 @@ const BudgetViewFilters = ({
           value={periodValue}
           onChangeHandler={periodOnChange}
         />
-        <Button id="budget-search" variant="black" label="Search" />
       </div>
     </>
   );

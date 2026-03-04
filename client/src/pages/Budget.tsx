@@ -75,7 +75,11 @@ const Budget = () => {
         )}
       </div>
 
-      {viewMode === "Budget" ? <BudgetView /> : ""}
+      {viewMode === "Budget" ? (
+        <BudgetView periode={period} fileResource={fileResource} />
+      ) : (
+        ""
+      )}
 
       {viewMode === "Report" ? (
         <ReportView

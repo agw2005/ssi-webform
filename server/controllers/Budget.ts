@@ -4,6 +4,7 @@ import type {
   BudgetNature,
   BudgetPeriod,
   BudgetTable,
+  BudgetViewInformation,
 } from "../models/Budget.d.ts";
 
 /**
@@ -99,6 +100,38 @@ export const singleBalance = async (
     AND Periode = ?
     AND Nature = ?`,
     [costCenter, periode, nature],
+  );
+  return [rows, metadata];
+};
+
+/**
+ * GET an instance of budget that contains information to be served in the budget view of the Budget page.
+ * @param pool An instance of mysql2 database pool
+ * @param periode A valid cost center value
+ * @param fileResource A valid periode value
+ * @returns An array of budget, containing a single balance and a metadata variable
+ */
+export const viewInformation = async (
+  pool: mysql.Pool,
+  periode: string | null,
+  fileResource: string | null,
+) => {
+  const [rows, metadata] = await pool.query<BudgetViewInformation[]>(
+    `SELECT
+      Budget.Periode,
+      Budget.FileResource,
+      Budget.IDSection AS Department,
+      Budget.CostCenter,
+      Budget.Nature,
+      Nature.Description,
+      Budget.Budget,
+      Budget.Balance
+    From Budget
+    INNER JOIN Nature
+      ON Nature.Nature = Budget.Nature
+    WHERE (? IS NULL OR Budget.Periode LIKE CONCAT( ? , '%' ))
+    AND (? IS NULL OR Budget.FileResource = ?);`,
+    [periode, periode, fileResource, fileResource],
   );
   return [rows, metadata];
 };

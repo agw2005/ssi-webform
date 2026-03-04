@@ -118,12 +118,6 @@ const Home = () => {
     isError: supervisorError,
   } = useFetch<SupervisorNames>(SUPERVISOR_NAMES_URL);
 
-  const [requestData, setRequestData] = useState<FormRequest[] | null>(null);
-  const [isRequestDataLoading, setIsRequestDataLoading] = useState(false);
-  const [isRequestDataError, setIsRequestDataError] = useState<Error | null>(
-    null,
-  );
-
   const handleDuplicateNameSupervisors = useMemo(() => {
     if (!supervisorNames) return [];
 
@@ -150,7 +144,13 @@ const Home = () => {
     });
   }, [supervisorNames]);
 
-  const applyFilters = (url: URL) => {
+  const [requestData, setRequestData] = useState<FormRequest[] | null>(null);
+  const [isRequestDataLoading, setIsRequestDataLoading] = useState(false);
+  const [isRequestDataError, setIsRequestDataError] = useState<Error | null>(
+    null,
+  );
+
+  const applyParams = (url: URL) => {
     if (sectionFilter.IDSection !== SELECT_ALL_INDEX) {
       url.searchParams.set(
         "requestorsectionid",
@@ -176,8 +176,8 @@ const Home = () => {
     const abortController = new AbortController();
     setIsRequestDataLoading(true);
 
-    applyFilters(requestUrl);
-    applyFilters(countUrl);
+    applyParams(requestUrl);
+    applyParams(countUrl);
 
     requestUrl.searchParams.set("pagination", String(pagingRange));
     requestUrl.searchParams.set("page", String(currentPage));

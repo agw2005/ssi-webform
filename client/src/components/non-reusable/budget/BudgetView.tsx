@@ -1,83 +1,38 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import LoadingFallback from "../../reusable/LoadingFallback.tsx";
+import formatNumberToString from "../../../helper/formatNumberToString.ts";
 
-interface MonthlyQuantifier {
-  January: number;
-  February: number;
-  March: number;
-  April: number;
-  May: number;
-  June: number;
-  July: number;
-  August: number;
-  September: number;
-  October: number;
-  November: number;
-  December: number;
+const BUDGET_VIEW_URL = "http://localhost:8000/budget";
+
+interface BudgetViewProps {
+  periode: string;
+  fileResource: string;
 }
 
-interface BudgetViewData {
-  Period: string;
+interface BudgetViewResponse {
+  Periode: string;
   FileResource: string;
-  DeptID: string;
+  Department: number;
   CostCenter: string;
   Nature: string;
   Description: string;
-  Budget: MonthlyQuantifier;
-  Usage: MonthlyQuantifier;
-  Balance: MonthlyQuantifier;
+  Budget: string;
+  Balance: string;
 }
 
-const EXAMPLE_DATA: BudgetViewData[] = [
-  {
-    Period: "2025LH",
-    FileResource: "ENG",
-    DeptID: "200",
-    CostCenter: "200",
-    Nature: "803052000",
-    Description: "CONSUMABLE TOOL AND FIXTURE (PROD)",
-    Budget: {
-      January: 2,
-      February: 0,
-      March: 897441.79,
-      April: 0,
-      May: 0,
-      June: 0,
-      July: 0,
-      August: 0,
-      September: 0,
-      October: 171,
-      November: 91,
-      December: 16,
-    },
-    Usage: {
-      January: 7.6,
-      February: 0,
-      March: -167512.09,
-      April: 0,
-      May: 0,
-      June: 0,
-      July: 0,
-      August: 0,
-      September: 0,
-      October: 121,
-      November: 0,
-      December: 0,
-    },
-    Balance: {
-      January: -5.6,
-      February: 0,
-      March: 1064953.88,
-      April: 0,
-      May: 0,
-      June: 0,
-      July: 0,
-      August: 0,
-      September: 0,
-      October: 50,
-      November: 91,
-      December: 16,
-    },
-  },
+const MONTHS = [
+  "01",
+  "02",
+  "03",
+  "04",
+  "05",
+  "06",
+  "07",
+  "08",
+  "09",
+  "10",
+  "11",
+  "12",
 ];
 
 const THREE_COLSPAN_COLUMNS = [
@@ -104,26 +59,89 @@ const TWO_ROWSPAN_COLUMNS = [
 
 const SUB_COLUMNS = ["Budget", "Usage", "Balance"];
 
-const BudgetView = () => {
-  const monthKeys: (keyof MonthlyQuantifier)[] = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
-  ];
+const BudgetView = ({ periode, fileResource }: BudgetViewProps) => {
+  const [budgetViewData, setBudgetViewData] = useState<
+    BudgetViewResponse[] | null
+  >(null);
+  const [isBudgetViewDataLoading, setIsBudgetViewDataLoading] = useState(false);
+  const [isBudgetViewDataError, setIsBudgetViewDataError] =
+    useState<Error | null>(null);
 
-  const categories: (keyof Pick<
-    BudgetViewData,
-    "Budget" | "Usage" | "Balance"
-  >)[] = ["Budget", "Usage", "Balance"];
+  const applyParams = (url: URL) => {
+    if (periode !== "Show All" && periode !== "") {
+      url.searchParams.set("periode", periode);
+    }
+    if (fileResource !== "Show All" && fileResource !== "") {
+      url.searchParams.set("fileresource", fileResource);
+    }
+  };
+
+  useEffect(() => {
+    const requestUrl = new URL(BUDGET_VIEW_URL);
+    const abortController = new AbortController();
+    setIsBudgetViewDataLoading(true);
+
+    applyParams(requestUrl);
+
+    const fetchData = async () => {
+      try {
+        const budgetViewResponse = await fetch(requestUrl.toString(), {
+          signal: abortController.signal,
+        });
+        if (!budgetViewResponse.ok)
+          throw new Error(`HTTP error! status: ${budgetViewResponse.status}`);
+
+        const budgetViewResponseJson: BudgetViewResponse[] =
+          await budgetViewResponse.json();
+
+        setBudgetViewData(budgetViewResponseJson);
+      } catch (err) {
+        if (err instanceof Error && err.name === "AbortError") {
+          return;
+        }
+        const error: Error = new Error(
+          `Encountered an error when fetching API. Please ensure your connection is stable.\n(${err}).`,
+        );
+        setIsBudgetViewDataError(error);
+      } finally {
+        setIsBudgetViewDataLoading(false);
+      }
+    };
+
+    fetchData();
+
+    return () => {
+      abortController.abort();
+    };
+  }, [periode, fileResource]);
+
+  if (isBudgetViewDataLoading) {
+    return <LoadingFallback />;
+  }
+
+  if (isBudgetViewDataError) {
+    return (
+      <div className="m-4">
+        <div>Something unexpected happened.</div>
+        {isBudgetViewDataError ? isBudgetViewDataError.message : ""}
+      </div>
+    );
+  }
+
+  const uniqueNatures =
+    budgetViewData &&
+    budgetViewData
+      .map((budgetView) => budgetView.Nature)
+      .filter((value, index, self) => self.indexOf(value) === index);
+
+  const getBudgetViewsByNature = (
+    nature: string,
+    budgetViewsInput: BudgetViewResponse[],
+  ): BudgetViewResponse[] => {
+    return budgetViewsInput.filter(
+      (budgetViewInput) => budgetViewInput.Nature === nature,
+    );
+  };
 
   return (
     <div className="overflow-x-auto min-h-50 max-h-160 mt-4">
@@ -173,40 +191,101 @@ const BudgetView = () => {
           </tr>
         </thead>
         <tbody>
-          <tr>
-            {EXAMPLE_DATA.map((item, index) => {
-              return (
-                <React.Fragment key={index}>
-                  <td className="text-xs lg:text-sm xl:text-base | border p-2 whitespace-nowrap text-center">
-                    {item.FileResource} ({item.DeptID})
-                  </td>
-                  <td className="text-xs lg:text-sm xl:text-base | border p-2 whitespace-nowrap text-center">
-                    {item.CostCenter}
-                  </td>
-                  <td className="text-xs lg:text-sm xl:text-base | border p-2 whitespace-nowrap text-center">
-                    {item.Nature}
-                  </td>
-                  <td className="text-xs lg:text-sm xl:text-base | border p-2 min-w-50 max-w-50 text-center">
-                    {item.Description}
-                  </td>
-                  {monthKeys.map((month) => (
-                    <React.Fragment key={month}>
-                      {categories.map((category) => (
-                        <td
-                          key={`${month}-${category}`}
-                          className="text-xs lg:text-sm xl:text-base | border p-2 whitespace-nowrap text-center"
-                        >
-                          {item[category][month].toLocaleString()}
-                        </td>
-                      ))}
+          {uniqueNatures?.map((nature, index) => {
+            return (
+              <tr key={index}>
+                <td className="text-xs lg:text-sm xl:text-base | border p-2 whitespace-nowrap text-center">
+                  {budgetViewData &&
+                    getBudgetViewsByNature(nature, budgetViewData)[0]
+                      .FileResource}{" "}
+                  (
+                  {budgetViewData &&
+                    getBudgetViewsByNature(nature, budgetViewData)[0]
+                      .Department}
+                  )
+                </td>
+                <td className="text-xs lg:text-sm xl:text-base | border p-2 whitespace-nowrap text-center">
+                  {budgetViewData &&
+                    getBudgetViewsByNature(nature, budgetViewData)[0]
+                      .CostCenter}
+                </td>
+                <td className="text-xs lg:text-sm xl:text-base | border p-2 whitespace-nowrap text-center">
+                  {nature}
+                </td>
+                <td className="text-xs lg:text-sm xl:text-base | border p-2 min-w-50 max-w-50 text-center">
+                  {budgetViewData &&
+                    getBudgetViewsByNature(nature, budgetViewData)[0]
+                      .Description}
+                </td>
+                {MONTHS.map((month, index) => {
+                  return (
+                    <React.Fragment key={index}>
+                      <td className="text-xs lg:text-sm xl:text-base | border p-2 text-center">
+                        {budgetViewData &&
+                          formatNumberToString(
+                            Number(
+                              getBudgetViewsByNature(
+                                nature,
+                                budgetViewData,
+                              ).find((viewData) =>
+                                viewData.Periode.endsWith(month),
+                              )?.Budget || 0,
+                            ),
+                          )}
+                      </td>
+                      <td className="text-xs lg:text-sm xl:text-base | border p-2 text-center">
+                        {budgetViewData &&
+                          formatNumberToString(
+                            Number(
+                              getBudgetViewsByNature(
+                                nature,
+                                budgetViewData,
+                              ).find((viewData) =>
+                                viewData.Periode.endsWith(month),
+                              )?.Budget || 0,
+                            ) -
+                              Number(
+                                getBudgetViewsByNature(
+                                  nature,
+                                  budgetViewData,
+                                ).find((viewData) =>
+                                  viewData.Periode.endsWith(month),
+                                )?.Balance || 0,
+                              ),
+                          )}
+                      </td>
+                      <td className="text-xs lg:text-sm xl:text-base | border p-2 text-center">
+                        {budgetViewData &&
+                          formatNumberToString(
+                            Number(
+                              getBudgetViewsByNature(
+                                nature,
+                                budgetViewData,
+                              ).find((viewData) =>
+                                viewData.Periode.endsWith(month),
+                              )?.Balance || 0,
+                            ),
+                          )}
+                      </td>
                     </React.Fragment>
-                  ))}
-                </React.Fragment>
-              );
-            })}
-          </tr>
+                  );
+                })}
+              </tr>
+            );
+          })}
         </tbody>
       </table>
+      {/* <React.Fragment key={index}>
+        <td className="text-xs lg:text-sm xl:text-base | border p-2 min-w-50 max-w-50 text-center">
+          {budgetView.Balance}
+        </td>
+        <td className="text-xs lg:text-sm xl:text-base | border p-2 min-w-50 max-w-50 text-center">
+          {budgetView.budget - budgetView.balance}
+        </td>
+        <td className="text-xs lg:text-sm xl:text-base | border p-2 min-w-50 max-w-50 text-center">
+          {budgetView.balance}
+        </td>
+      </React.Fragment> */}
     </div>
   );
 };

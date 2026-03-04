@@ -6,6 +6,7 @@ import {
   getAllPeriods,
   getApproverPath,
   getBudgetsPaginated,
+  getBudgetViewInformation,
   getFileResourcesPaginated,
   getFlowsPaginated,
   getFormsPaginated,
@@ -52,6 +53,7 @@ oakRouter.get("/budget/fileresources", getAllFileResources);
 oakRouter.get("/budget/periods", getAllPeriods);
 oakRouter.get("/budget/nature/:costcenter", getNaturesOfCostCenter);
 oakRouter.get("/budget/nature/:costcenter/:periode/:nature", getSingleBalance);
+oakRouter.get("/budget", getBudgetViewInformation);
 oakRouter.get("/frmprnopr/departments", getAllDepartments);
 oakRouter.get("/trace/requests", getRequests);
 oakRouter.get("/trace/requests/count", getRequestsCount);

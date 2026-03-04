@@ -4,6 +4,7 @@ import {
   basicGet as BudgetGet,
   natureByCostCenter,
   singleBalance,
+  viewInformation,
 } from "./controllers/Budget.ts";
 import { basicGet as FileResourceGet } from "./controllers/FileResource.ts";
 import { basicGet as FlowGet } from "./controllers/Flow.ts";
@@ -98,6 +99,21 @@ export const getSingleBalance = async (
     costcenter,
     periode,
     nature,
+  );
+  ctx.response.status = 200;
+  ctx.response.body = rows;
+};
+
+export const getBudgetViewInformation = async (
+  ctx: RouterContext<"/budget">,
+) => {
+  const params = ctx.request.url.searchParams;
+  const periode = params.get("periode") || null;
+  const fileResource = params.get("fileresource") || null;
+  const [rows, _metadata] = await viewInformation(
+    databasePool,
+    periode,
+    fileResource,
   );
   ctx.response.status = 200;
   ctx.response.body = rows;
