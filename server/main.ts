@@ -22,6 +22,7 @@ import {
   getSectionUsers,
   getSingleBalance,
   getSpecificRequest,
+  getSpecificRequestItems,
   getSupervisorNames,
   getTitlesPaginated,
   getTraceDsPaginated,
@@ -53,6 +54,7 @@ oakRouter.get("/frmprnopr/departments", getAllDepartments);
 oakRouter.get("/trace/requests", getRequests);
 oakRouter.get("/trace/requests/count", getRequestsCount);
 oakRouter.get("/trace/request/:traceId", getSpecificRequest);
+oakRouter.get("/frmprd/request/:traceId", getSpecificRequestItems);
 
 // Basic GET
 oakRouter.get("/budget/:pagination/:page", getBudgetsPaginated);

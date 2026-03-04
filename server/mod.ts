@@ -8,3 +8,4 @@ export type { BudgetBalance as Balance } from "./models/Budget.d.ts";
 export type { FrmPRNoPRDepartment as Department } from "./models/FrmPRNoPR.d.ts";
 export type { TraceRequests as FormRequest } from "./models/Trace.d.ts";
 export type { TraceRequestOverview as RequestOverview } from "./models/Trace.d.ts";
+export type { FrmPRDRequestItem as RequestItem } from "./models/FrmPRD.d.ts";

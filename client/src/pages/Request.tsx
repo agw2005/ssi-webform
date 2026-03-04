@@ -1,18 +1,18 @@
 import { useParams } from "react-router-dom";
 import Primitive from "../components/reusable/Primitive.tsx";
 import useFetch from "../hooks/useFetch.tsx";
-import type { RequestOverview } from "@scope/server";
+import type { RequestOverview, RequestItem } from "@scope/server";
 import LoadingFallback from "../components/reusable/LoadingFallback.tsx";
 import capitalize from "../helper/capitalize.ts";
+import formatNumberToString from "../helper/formatNumberToString.ts";
 
-const REQUEST_URL = "http://localhost:8000/trace/request";
+const REQUEST_OVERVIEW_URL = "http://localhost:8000/trace/request";
+const REQUEST_ITEMS_URL = "http://localhost:8000/frmprd/request";
 
 const ITEMS_COLUMNS = [
   "Description",
   "Quantity",
-  "Measure",
-  "Unit Price",
-  "Currency",
+  "Price Per Unit",
   "Estimated Delivery",
   "Vendor",
   "Reason",
@@ -38,42 +38,55 @@ const ITEMS_COLUMNS = [
 //   InQueue: "bg-white hover:bg-black/10 active:bg-black/5",
 // } as const;
 
+const stringIsEmpty = (str: string) => {
+  return str === "" || str === "null" ? "-" : str;
+};
+
 const Request = () => {
   const reactRouterParams = useParams();
 
   const {
-    data: requestData,
-    isLoading: isRequestDataLoading,
-    isError: isRequestDataError,
-  } = useFetch<RequestOverview>(REQUEST_URL, reactRouterParams.requestId);
+    data: requestOverviewData,
+    isLoading: isRequestOverviewDataLoading,
+    isError: isRequestOverviewDataError,
+  } = useFetch<RequestOverview>(
+    REQUEST_OVERVIEW_URL,
+    reactRouterParams.requestId,
+  );
 
-  if (isRequestDataLoading) {
+  const {
+    data: requestItemsData,
+    isLoading: isRequestItemsDataLoading,
+    isError: isRequestItemsDataError,
+  } = useFetch<RequestItem>(REQUEST_ITEMS_URL, reactRouterParams.requestId);
+
+  if (isRequestOverviewDataLoading || isRequestItemsDataLoading) {
     return <LoadingFallback />;
   }
 
-  if (isRequestDataError) {
+  if (isRequestOverviewDataError || isRequestItemsDataError) {
     return (
       <div className="m-4">
         <div>Something unexpected happened.</div>
-        {isRequestDataError ? isRequestDataError.message : ""}
+        {isRequestOverviewDataError ? isRequestOverviewDataError.message : ""}
       </div>
     );
   }
 
-  if (requestData === null) return;
+  if (requestOverviewData === null) return;
   const overview = {
-    ID: requestData[0].FormID,
-    "Form Number": requestData[0].NoForm,
-    Requestor: `${capitalize(requestData[0].Requestor)} (${requestData[0].RequestorNRP}) - ${requestData[0].RequestorSection}`,
-    "PR Number": requestData[0].NoPR,
-    Subject: requestData[0].Subject,
-    Amount: requestData[0].Amount,
-    "Return On Outgoing": requestData[0].ReturnOnOutgoing,
-    Remarks: requestData[0].Remarks,
-    "Cost Center": requestData[0].CostCenter,
-    Nature: requestData[0].Nature,
-    "ID Budget": requestData[0].IDBudget,
-    "Rate (1 USD)": requestData[0].Rate,
+    ID: requestOverviewData[0].FormID,
+    "Form Number": requestOverviewData[0].NoForm,
+    Requestor: `${capitalize(requestOverviewData[0].Requestor)} (${requestOverviewData[0].RequestorNRP}) - ${requestOverviewData[0].RequestorSection}`,
+    "PR Number": requestOverviewData[0].NoPR,
+    Subject: requestOverviewData[0].Subject,
+    Amount: requestOverviewData[0].Amount,
+    "Return On Outgoing": requestOverviewData[0].ReturnOnOutgoing,
+    Remarks: requestOverviewData[0].Remarks,
+    "Cost Center": requestOverviewData[0].CostCenter,
+    Nature: requestOverviewData[0].Nature,
+    "ID Budget": requestOverviewData[0].IDBudget,
+    "Rate (1 USD)": formatNumberToString(requestOverviewData[0].Rate),
   };
 
   return (
@@ -96,7 +109,7 @@ const Request = () => {
             </div>
           ))}
         </div>
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2 overflow-x-auto">
           <h2 className="font-bold text-2xl">Request Items</h2>
           <table className="table-auto border-collapse w-full">
             <thead>
@@ -105,7 +118,7 @@ const Request = () => {
                   return (
                     <th
                       key={index}
-                      className="bg-blue-900 hover:bg-blue-800 active:bg-blue-800/80 | text-white border border-black py-2 select-none"
+                      className="bg-blue-900 hover:bg-blue-800 active:bg-blue-800/80 | text-white border border-black px-4 py-2 select-none"
                     >
                       {column}
                     </th>
@@ -114,45 +127,40 @@ const Request = () => {
               </tr>
             </thead>
             <tbody>
-              {requestData &&
-                requestData.map((request, index) => {
+              {requestItemsData &&
+                requestItemsData.map((item, index) => {
                   return (
                     <tr key={index}>
-                      <td className="bg-white hover:bg-black/10 active:bg-black/5 | w-32 break-normal border text-center px-4 py-2">
-                        {request.description}
+                      <td className="bg-white hover:bg-black/10 active:bg-black/5 | max-w-32 break-normal border text-center px-4 py-2">
+                        {item.Description}
                       </td>
                       <td className="bg-white hover:bg-black/10 active:bg-black/5 | border text-center px-4 py-2">
-                        {request.quantity}
+                        {formatNumberToString(item.Qty)}{" "}
+                        {capitalize(item.Measure)}
                       </td>
                       <td className="bg-white hover:bg-black/10 active:bg-black/5 | border text-center px-4 py-2">
-                        {request.measure}
+                        {formatNumberToString(item.UnitPrice)} {item.Currency}
                       </td>
                       <td className="bg-white hover:bg-black/10 active:bg-black/5 | border text-center px-4 py-2">
-                        {request.unitPrice}
+                        {item.EstimatedDelivery}
                       </td>
                       <td className="bg-white hover:bg-black/10 active:bg-black/5 | border text-center px-4 py-2">
-                        {request.currency}
+                        {item.Vendor}
+                      </td>
+                      <td className="bg-white hover:bg-black/10 active:bg-black/5 | max-w-64 border text-center px-4 py-2">
+                        {item.Reason}
                       </td>
                       <td className="bg-white hover:bg-black/10 active:bg-black/5 | border text-center px-4 py-2">
-                        {request.estimatedDeliveryDate}
+                        {item.Rejected === "True" ? "Yes" : "No"}
                       </td>
                       <td className="bg-white hover:bg-black/10 active:bg-black/5 | border text-center px-4 py-2">
-                        {request.vendor}
-                      </td>
-                      <td className="bg-white hover:bg-black/10 active:bg-black/5 | w-64 border text-center px-4 py-2">
-                        {request.reason}
+                        {stringIsEmpty(item.Supplier)}
                       </td>
                       <td className="bg-white hover:bg-black/10 active:bg-black/5 | border text-center px-4 py-2">
-                        {request.rejected ? "Yes" : "No"}
+                        {formatNumberToString(item.UnitPrice * item.Qty)}
                       </td>
                       <td className="bg-white hover:bg-black/10 active:bg-black/5 | border text-center px-4 py-2">
-                        {request.supplier}
-                      </td>
-                      <td className="bg-white hover:bg-black/10 active:bg-black/5 | border text-center px-4 py-2">
-                        {request.netPrice}
-                      </td>
-                      <td className="bg-white hover:bg-black/10 active:bg-black/5 | border text-center px-4 py-2">
-                        {request.deliveryDate}
+                        {stringIsEmpty(String(item.DeliveryDate))}
                       </td>
                     </tr>
                   );

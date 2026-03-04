@@ -23,3 +23,18 @@ export interface FrmPRDTable extends RowDataPacket {
   Rate: number;
   IDBudget: string;
 }
+
+export interface FrmPRDRequestItem extends RowDataPacket {
+  Description: string;
+  Qty: number;
+  Measure: string;
+  UnitPrice: number;
+  Currency: string;
+  EstimatedDelivery: string;
+  Vendor: string;
+  Reason: string;
+  StatusItem: string;
+  RejectedBy: string;
+  Supplier: string;
+  DeliveryDate: string;
+}

@@ -8,7 +8,10 @@ import {
 import { basicGet as FileResourceGet } from "./controllers/FileResource.ts";
 import { basicGet as FlowGet } from "./controllers/Flow.ts";
 import { basicGet as FormGet } from "./controllers/Form.ts";
-import { basicGet as FrmPRDGet } from "./controllers/FrmPRD.ts";
+import {
+  basicGet as FrmPRDGet,
+  getAllRequestItems,
+} from "./controllers/FrmPRD.ts";
 import { basicGet as FrmPRHGet } from "./controllers/FrmPRH.ts";
 import {
   allDepartments,
@@ -134,6 +137,15 @@ export const getFrmPRDsPaginated = async (
   const pagination = Number(ctx.params.pagination);
   const page = Number(ctx.params.page);
   const [rows, _metadata] = await FrmPRDGet(databasePool, page, pagination);
+  ctx.response.status = 200;
+  ctx.response.body = rows;
+};
+
+export const getSpecificRequestItems = async (
+  ctx: RouterContext<"/frmprd/request/:traceId">,
+) => {
+  const traceId = Number(ctx.params.traceId);
+  const [rows, _metadata] = await getAllRequestItems(databasePool, traceId);
   ctx.response.status = 200;
   ctx.response.body = rows;
 };
