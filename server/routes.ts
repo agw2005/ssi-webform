@@ -34,7 +34,10 @@ import {
 } from "./controllers/Trace.ts";
 import { basicGet as TraceDGet } from "./controllers/TraceD.ts";
 import { basicGet as TypeGet } from "./controllers/Type.ts";
-import { basicGet as UploadFileGet } from "./controllers/UploadFile.ts";
+import {
+  getMinimumFileInformation,
+  basicGet as UploadFileGet,
+} from "./controllers/UploadFile.ts";
 import {
   authInformation,
   supervisorNames,
@@ -358,6 +361,18 @@ export const getUploadFilesPaginated = async (
   const pagination = Number(ctx.params.pagination);
   const page = Number(ctx.params.page);
   const [rows, _metadata] = await UploadFileGet(databasePool, page, pagination);
+  ctx.response.status = 200;
+  ctx.response.body = rows;
+};
+
+export const getUploadFiles = async (
+  ctx: RouterContext<"/uploadfile/:traceId">,
+) => {
+  const traceId = ctx.params.traceId;
+  const [rows, _metadata] = await getMinimumFileInformation(
+    databasePool,
+    traceId,
+  );
   ctx.response.status = 200;
   ctx.response.body = rows;
 };

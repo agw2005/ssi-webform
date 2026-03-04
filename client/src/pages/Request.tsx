@@ -1,13 +1,14 @@
 import { useParams } from "react-router-dom";
 import Primitive from "../components/reusable/Primitive.tsx";
 import useFetch from "../hooks/useFetch.tsx";
-import type { RequestOverview, RequestItem } from "@scope/server";
+import type { RequestOverview, RequestItem, UploadedFile } from "@scope/server";
 import LoadingFallback from "../components/reusable/LoadingFallback.tsx";
 import capitalize from "../helper/capitalize.ts";
 import formatNumberToString from "../helper/formatNumberToString.ts";
 
 const REQUEST_OVERVIEW_URL = "http://localhost:8000/trace/request";
 const REQUEST_ITEMS_URL = "http://localhost:8000/frmprd/request";
+const REQUEST_FILES_URL = "http://localhost:8000/uploadfile";
 
 const ITEMS_COLUMNS = [
   "Description",
@@ -60,11 +61,25 @@ const Request = () => {
     isError: isRequestItemsDataError,
   } = useFetch<RequestItem>(REQUEST_ITEMS_URL, reactRouterParams.requestId);
 
-  if (isRequestOverviewDataLoading || isRequestItemsDataLoading) {
+  const {
+    data: requestFilesData,
+    isLoading: isRequestFilesDataLoading,
+    isError: isRequestFilesDataError,
+  } = useFetch<UploadedFile>(REQUEST_FILES_URL, reactRouterParams.requestId);
+
+  if (
+    isRequestOverviewDataLoading ||
+    isRequestItemsDataLoading ||
+    isRequestFilesDataLoading
+  ) {
     return <LoadingFallback />;
   }
 
-  if (isRequestOverviewDataError || isRequestItemsDataError) {
+  if (
+    isRequestOverviewDataError ||
+    isRequestItemsDataError ||
+    isRequestFilesDataError
+  ) {
     return (
       <div className="m-4">
         <div>Something unexpected happened.</div>
@@ -87,27 +102,54 @@ const Request = () => {
     Nature: requestOverviewData[0].Nature,
     "ID Budget": requestOverviewData[0].IDBudget,
     "Rate (1 USD)": formatNumberToString(requestOverviewData[0].Rate),
+    Attachment: "",
   };
 
   return (
     <Primitive>
       <div className="flex flex-col gap-8">
         <div className="border">
-          {Object.entries(overview).map(([key, value], index) => (
-            <div
-              key={key}
-              className={`flex border-b border-black/50 ${
-                index % 2 === 0
-                  ? "bg-black/10 hover:bg-black/15 active:bg-black/12.5"
-                  : "bg-black/0 hover:bg-black/5 active:bg-black/2.5"
-              }`}
-            >
-              <div className="flex-1 px-4 py-2">{key}</div>
-              <div className="flex-9 px-4 py-2">
-                {value === "" ? "-" : value}
-              </div>
-            </div>
-          ))}
+          {Object.entries(overview).map(([key, value], index) => {
+            const blackAndWhite = `flex items-center border-b border-black/50 ${
+              index % 2 === 0
+                ? "bg-black/10 hover:bg-black/15 active:bg-black/12.5"
+                : "bg-black/0 hover:bg-black/5 active:bg-black/2.5"
+            }`;
+
+            if (key !== "Attachment") {
+              return (
+                <div key={key} className={blackAndWhite}>
+                  <div className="flex-1 px-4 py-2">{key}</div>
+                  <div className="flex-9 px-4 py-2">
+                    {value === "" ? "-" : value}
+                  </div>
+                </div>
+              );
+            } else {
+              return (
+                <div key={key} className={blackAndWhite}>
+                  <div className="flex-1 px-4 py-2">{key}</div>
+                  <div className="flex-9 px-4 py-2">
+                    {requestFilesData && requestFilesData.length === 0
+                      ? "-"
+                      : requestFilesData &&
+                        requestFilesData.map((attachment, index) => {
+                          return (
+                            <div
+                              key={index}
+                              title={`Date Uploaded: ${attachment.DateUpload}>`}
+                            >
+                              <a href="#" target="_blank">
+                                {attachment.Filename}
+                              </a>
+                            </div>
+                          );
+                        })}
+                  </div>
+                </div>
+              );
+            }
+          })}
         </div>
         <div className="flex flex-col gap-2 overflow-x-auto">
           <h2 className="font-bold text-2xl">Request Items</h2>

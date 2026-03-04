@@ -8,3 +8,8 @@ export interface UploadFileTable extends RowDataPacket {
   Filename: string;
   DateUpload: string;
 }
+
+export interface UploadFileMinimalInformation extends RowDataPacket {
+  Filename: string;
+  DateUpload: string;
+}

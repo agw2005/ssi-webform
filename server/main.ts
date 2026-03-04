@@ -28,6 +28,7 @@ import {
   getTraceDsPaginated,
   getTracesPaginated,
   getTypesPaginated,
+  getUploadFiles,
   getUploadFilesPaginated,
   getUserAuthInfo,
   getUserMastersPaginated,
@@ -55,6 +56,7 @@ oakRouter.get("/trace/requests", getRequests);
 oakRouter.get("/trace/requests/count", getRequestsCount);
 oakRouter.get("/trace/request/:traceId", getSpecificRequest);
 oakRouter.get("/frmprd/request/:traceId", getSpecificRequestItems);
+oakRouter.get("/uploadfile/:traceId", getUploadFiles);
 
 // Basic GET
 oakRouter.get("/budget/:pagination/:page", getBudgetsPaginated);
