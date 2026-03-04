@@ -1,7 +1,12 @@
 import { useParams } from "react-router-dom";
 import Primitive from "../components/reusable/Primitive.tsx";
 import useFetch from "../hooks/useFetch.tsx";
-import type { RequestOverview, RequestItem, UploadedFile } from "@scope/server";
+import type {
+  RequestOverview,
+  RequestItem,
+  UploadedFile,
+  ApproverPath,
+} from "@scope/server";
 import LoadingFallback from "../components/reusable/LoadingFallback.tsx";
 import capitalize from "../helper/capitalize.ts";
 import formatNumberToString from "../helper/formatNumberToString.ts";
@@ -9,6 +14,7 @@ import formatNumberToString from "../helper/formatNumberToString.ts";
 const REQUEST_OVERVIEW_URL = "http://localhost:8000/trace/request";
 const REQUEST_ITEMS_URL = "http://localhost:8000/frmprd/request";
 const REQUEST_FILES_URL = "http://localhost:8000/uploadfile";
+const REQUEST_APPROVER_PATH_URL = "http://localhost:8000/traced";
 
 const ITEMS_COLUMNS = [
   "Description",
@@ -23,21 +29,19 @@ const ITEMS_COLUMNS = [
   "Delivery Date",
 ];
 
-// const PROGRESS_COLUMNS = [
-//   "Status",
-//   "Type",
-//   "NRP",
-//   "Name",
-//   "Result",
-//   "Verdict Date",
-// ];
+const PROGRESS_COLUMNS = ["Type", "NRP", "Name", "Result", "Verdict Date"];
 
-// const ProgressColors = {
-//   Approved: "bg-green-500/20 hover:bg-green-500/35 active:bg-green-500/25",
-//   Rejected: "bg-red-500/10 hover:bg-red-500/35 active:bg-red-500/25",
-//   InProgress: "bg-blue-500/25 hover:bg-blue-500/35 active:bg-blue-500/50",
-//   InQueue: "bg-white hover:bg-black/10 active:bg-black/5",
-// } as const;
+const handleProgressColors = (progress: string) => {
+  if (progress === "Approved") {
+    return "bg-green-500/20 hover:bg-green-500/35 active:bg-green-500/25";
+  } else if (progress === "Rejected") {
+    return "bg-red-500/10 hover:bg-red-500/35 active:bg-red-500/25";
+  } else if (progress === "In Progress") {
+    return "bg-blue-500/25 hover:bg-blue-500/35 active:bg-blue-500/50";
+  } else {
+    return "bg-white hover:bg-black/10 active:bg-black/5";
+  }
+};
 
 const stringIsEmpty = (str: string) => {
   return str === "" || str === "null" ? "-" : str;
@@ -67,10 +71,20 @@ const Request = () => {
     isError: isRequestFilesDataError,
   } = useFetch<UploadedFile>(REQUEST_FILES_URL, reactRouterParams.requestId);
 
+  const {
+    data: requestApproverPathData,
+    isLoading: isRequestApproverPathDataLoading,
+    isError: isRequestApproverPathDataError,
+  } = useFetch<ApproverPath>(
+    REQUEST_APPROVER_PATH_URL,
+    reactRouterParams.requestId,
+  );
+
   if (
     isRequestOverviewDataLoading ||
     isRequestItemsDataLoading ||
-    isRequestFilesDataLoading
+    isRequestFilesDataLoading ||
+    isRequestApproverPathDataLoading
   ) {
     return <LoadingFallback />;
   }
@@ -78,7 +92,8 @@ const Request = () => {
   if (
     isRequestOverviewDataError ||
     isRequestItemsDataError ||
-    isRequestFilesDataError
+    isRequestFilesDataError ||
+    isRequestApproverPathDataError
   ) {
     return (
       <div className="m-4">
@@ -199,7 +214,8 @@ const Request = () => {
                         {stringIsEmpty(item.Supplier)}
                       </td>
                       <td className="bg-white hover:bg-black/10 active:bg-black/5 | border text-center px-4 py-2">
-                        {formatNumberToString(item.UnitPrice * item.Qty)}
+                        {formatNumberToString(item.UnitPrice * item.Qty)}{" "}
+                        {item.Currency}
                       </td>
                       <td className="bg-white hover:bg-black/10 active:bg-black/5 | border text-center px-4 py-2">
                         {stringIsEmpty(String(item.DeliveryDate))}
@@ -210,7 +226,7 @@ const Request = () => {
             </tbody>
           </table>
         </div>
-        {/* <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2">
           <h2 className="font-bold text-2xl">Request Progress</h2>
           <table className="table-auto border-collapse w-full">
             <thead>
@@ -228,45 +244,49 @@ const Request = () => {
               </tr>
             </thead>
             <tbody>
-              {PLACEHOLDER_PROGRESS.map((row, index) => {
-                return (
-                  <tr key={index}>
-                    <td
-                      className={`${progressColor(row.status)} active:bg-black/5 | border text-center px-4 py-2`}
-                    >
-                      {row.status}
-                    </td>
-                    <td
-                      className={`${progressColor(row.status)} active:bg-black/5 | border text-center px-4 py-2`}
-                    >
-                      {row.type}
-                    </td>
-                    <td
-                      className={`${progressColor(row.status)} active:bg-black/5 | border text-center px-4 py-2`}
-                    >
-                      {row.nrp}
-                    </td>
-                    <td
-                      className={`${progressColor(row.status)} active:bg-black/5 | border text-center px-4 py-2`}
-                    >
-                      {row.name}
-                    </td>
-                    <td
-                      className={`${progressColor(row.status)} active:bg-black/5 | border text-center px-4 py-2`}
-                    >
-                      {row.result}
-                    </td>
-                    <td
-                      className={`${progressColor(row.status)} active:bg-black/5 | border text-center px-4 py-2`}
-                    >
-                      {row.verdictDate}
-                    </td>
-                  </tr>
-                );
-              })}
+              {requestApproverPathData &&
+                requestApproverPathData.map((supervisor, index) => {
+                  return (
+                    <tr key={index}>
+                      <td
+                        className={`hover:bg-black/10 active:bg-black/5 | border text-center px-4 py-2`}
+                      >
+                        {supervisor.ApproverType === "A"
+                          ? "Approver"
+                          : supervisor.ApproverType === "R"
+                            ? "Releaser"
+                            : "Administrator"}
+                      </td>
+                      <td
+                        className={`hover:bg-black/10 active:bg-black/5 | border text-center px-4 py-2`}
+                      >
+                        {supervisor.NRP}
+                      </td>
+                      <td
+                        className={`hover:bg-black/10 active:bg-black/5 | border text-center px-4 py-2`}
+                      >
+                        {capitalize(supervisor.NameUser)}
+                      </td>
+                      <td
+                        className={`${handleProgressColors(supervisor.Result)} hover:bg-black/10 active:bg-black/5 | border text-center px-4 py-2`}
+                      >
+                        {supervisor.Result !== ""
+                          ? supervisor.Result
+                          : "In Queue"}
+                      </td>
+                      <td
+                        className={`hover:bg-black/10 active:bg-black/5 | border text-center px-4 py-2`}
+                      >
+                        {supervisor.Result !== "Approved"
+                          ? "-"
+                          : supervisor.DateApprove}
+                      </td>
+                    </tr>
+                  );
+                })}
             </tbody>
           </table>
-        </div> */}
+        </div>
       </div>
     </Primitive>
   );

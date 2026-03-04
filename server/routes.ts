@@ -32,7 +32,10 @@ import {
   specificRequest,
   basicGet as TraceGet,
 } from "./controllers/Trace.ts";
-import { basicGet as TraceDGet } from "./controllers/TraceD.ts";
+import {
+  getApproverPathInformation,
+  basicGet as TraceDGet,
+} from "./controllers/TraceD.ts";
 import { basicGet as TypeGet } from "./controllers/Type.ts";
 import {
   getMinimumFileInformation,
@@ -341,6 +344,19 @@ export const getTraceDsPaginated = async (
   const pagination = Number(ctx.params.pagination);
   const page = Number(ctx.params.page);
   const [rows, _metadata] = await TraceDGet(databasePool, page, pagination);
+  ctx.response.status = 200;
+  ctx.response.body = rows;
+};
+
+export const getApproverPath = async (
+  ctx: RouterContext<"/traced/:traceId">,
+) => {
+  const traceId = Number(ctx.params.traceId);
+
+  const [rows, _metadata] = await getApproverPathInformation(
+    databasePool,
+    traceId,
+  );
   ctx.response.status = 200;
   ctx.response.body = rows;
 };

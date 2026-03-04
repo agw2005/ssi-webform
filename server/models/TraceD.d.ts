@@ -8,3 +8,11 @@ export interface TraceDTable extends RowDataPacket {
   ApproverType: string;
   ApproverLevel: number;
 }
+
+export interface TraceApproverPath extends RowDataPacket {
+  Result: string;
+  ApproverType: string;
+  DateApprove: string;
+  NRP: string;
+  NameUser: string;
+}

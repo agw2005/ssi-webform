@@ -4,6 +4,7 @@ import {
   getAllDepartments,
   getAllFileResources,
   getAllPeriods,
+  getApproverPath,
   getBudgetsPaginated,
   getFileResourcesPaginated,
   getFlowsPaginated,
@@ -57,6 +58,7 @@ oakRouter.get("/trace/requests/count", getRequestsCount);
 oakRouter.get("/trace/request/:traceId", getSpecificRequest);
 oakRouter.get("/frmprd/request/:traceId", getSpecificRequestItems);
 oakRouter.get("/uploadfile/:traceId", getUploadFiles);
+oakRouter.get("/traced/:traceId", getApproverPath);
 
 // Basic GET
 oakRouter.get("/budget/:pagination/:page", getBudgetsPaginated);

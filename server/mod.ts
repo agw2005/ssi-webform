@@ -10,3 +10,4 @@ export type { TraceRequests as FormRequest } from "./models/Trace.d.ts";
 export type { TraceRequestOverview as RequestOverview } from "./models/Trace.d.ts";
 export type { FrmPRDRequestItem as RequestItem } from "./models/FrmPRD.d.ts";
 export type { UploadFileMinimalInformation as UploadedFile } from "./models/UploadFile.d.ts";
+export type { TraceApproverPath as ApproverPath } from "./models/TraceD.d.ts";
