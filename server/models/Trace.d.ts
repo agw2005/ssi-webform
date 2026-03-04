@@ -35,3 +35,20 @@ export interface TraceRequests extends RowDataPacket {
 export interface TraceRequestsCount extends RowDataPacket {
   Count: number;
 }
+
+export interface TraceRequestOverview extends RowDataPacket {
+  FormID: string;
+  NoForm: string;
+  Requestor: string;
+  RequestorNRP: string;
+  RequestorSection: string;
+  NoPR: string;
+  Subject: string;
+  Amount: number;
+  ReturnOnOutgoing: string;
+  Remarks: string;
+  CostCenter: string;
+  Nature: string;
+  IDBudget: string;
+  Rate: number;
+}

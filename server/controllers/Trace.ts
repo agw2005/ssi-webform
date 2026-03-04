@@ -1,5 +1,6 @@
 import type mysql from "mysql2/promise";
 import type {
+  TraceRequestOverview,
   TraceRequests,
   TraceRequestsCount,
   TraceTable,
@@ -126,6 +127,36 @@ export const homeRequestsCount = async (
       endDate,
       endDate,
     ],
+  );
+  return [rows, metadata];
+};
+
+export const specificRequest = async (pool: mysql.Pool, traceId: number) => {
+  const [rows, metadata] = await pool.query<TraceRequestOverview[]>(
+    `SELECT DISTINCT
+      frm_PR_H.ID AS FormID,
+      frm_PR_H.NoForm,
+      frm_PR_H.Requestor,
+      frm_PR_H.NRP AS RequestorNRP,
+      frm_PR_H.Section AS RequestorSection,
+      frm_PR_H.NoPR,
+      frm_PR_H.Subject,
+      frm_PR_H.Amount,
+      frm_PR_H.ReturnOnOutgoing,
+      frm_PR_H.Remarks,
+      frm_PR_D.CostCenter,
+      frm_PR_D.Nature,
+      frm_PR_D.IDBudget,
+      frm_PR_D.Rate
+    FROM Trace
+    INNER JOIN frm_PR_H
+	    ON frm_PR_H.NoForm = Trace.NoForm
+    INNER JOIN UserMaster
+	    ON UserMaster.IDUser = Trace.ProcessedBy
+    INNER JOIN frm_PR_D
+	    ON frm_PR_D.NoPR = frm_PR_H.NoPR
+    WHERE Trace.IDTrace = ?;`,
+    [traceId],
   );
   return [rows, metadata];
 };

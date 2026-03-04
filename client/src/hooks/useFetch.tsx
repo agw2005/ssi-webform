@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-const useFetch = <T,>(url: string) => {
+const useFetch = <T,>(url: string, param: string = "") => {
   const [data, setData] = useState<T[] | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState<Error | null>(null);
@@ -11,7 +11,9 @@ const useFetch = <T,>(url: string) => {
 
     const fetchData = async () => {
       try {
-        const response = await fetch(url, { signal: abortController.signal });
+        const response = await fetch(`${url}/${param}`, {
+          signal: abortController.signal,
+        });
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -35,7 +37,7 @@ const useFetch = <T,>(url: string) => {
     return () => {
       abortController.abort();
     };
-  }, [url]);
+  }, [url, param]);
 
   return { data, isLoading, isError };
 };

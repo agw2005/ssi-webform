@@ -26,6 +26,7 @@ import { basicGet as TitleGet } from "./controllers/Title.ts";
 import {
   homeRequests,
   homeRequestsCount,
+  specificRequest,
   basicGet as TraceGet,
 } from "./controllers/Trace.ts";
 import { basicGet as TraceDGet } from "./controllers/TraceD.ts";
@@ -301,6 +302,19 @@ export const getRequestsCount = async (
     currentSupervisorId,
     startDate,
     endDate,
+  );
+  ctx.response.status = 200;
+  ctx.response.body = rows;
+};
+
+export const getSpecificRequest = async (
+  ctx: RouterContext<"/trace/request/:traceId">,
+) => {
+  const traceId = ctx.params.traceId;
+
+  const [rows, _metadata] = await specificRequest(
+    databasePool,
+    Number(traceId),
   );
   ctx.response.status = 200;
   ctx.response.body = rows;
