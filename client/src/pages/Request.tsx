@@ -175,6 +175,12 @@ const Request = () => {
     (request) => request.ID === Number(params.requestId),
   );
 
+  //   const {
+  //   data: formData,
+  //   isLoading: isFormDataLoading,
+  //   isError: isFormDataError,
+  // } = useFetch<SupervisorNames>(SUPERVISOR_NAMES_URL);
+
   const displayedInformation: Request = {
     ID: rawRequest?.ID,
     "Form Number": "123456789",

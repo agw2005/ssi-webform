@@ -5,7 +5,7 @@ import SelectionInputBetweenLabel from "../../reusable/inputs/SelectionInputBetw
 import type { FirstStepInputs } from "../../../pages/Submit.tsx";
 import { createGenericChangeHandler } from "../../../helper/genericInputHandler.ts";
 import useFetch from "../../../hooks/useFetch.tsx";
-import type { Department, FileResource, SectionNames } from "@scope/server";
+import type { Department, FileResource, SectionName } from "@scope/server";
 import LoadingFallback from "../../reusable/LoadingFallback.tsx";
 import fileResourceFetchHandler from "../../../helper/fileResourceFetchHandler.ts";
 
@@ -60,7 +60,7 @@ const FirstStep = ({
     data: sectionNames,
     isLoading: isSectionLoading,
     isError: isSectionError,
-  } = useFetch<SectionNames>(SECTION_NAMES_URL);
+  } = useFetch<SectionName>(SECTION_NAMES_URL);
 
   const {
     data: fileResources,
