@@ -11,6 +11,7 @@ import useFetch from "../hooks/useFetch.tsx";
 import capitalize from "../helper/capitalize.ts";
 import PagingButton from "../components/reusable/PagingButton.tsx";
 import Button from "../components/reusable/Button.tsx";
+import stringContainsRedLight from "../helper/stringContainsRedLight.ts";
 
 interface SectionPayload {
   IDSection: number;
@@ -438,13 +439,14 @@ const Home = () => {
                       >
                         {request.Subject}
                       </Link>{" "}
-                      {/* {"True" === "True" ? (
-                      <span className="text-red-500 font-bold drop-shadow">
-                        Red Light
-                      </span>
-                    ) : (
-                      ""
-                    )} */}
+                      {stringContainsRedLight(request.Subject) ||
+                      stringContainsRedLight(request.Remarks) ? (
+                        <span className="text-red-500 font-bold drop-shadow">
+                          Red Light
+                        </span>
+                      ) : (
+                        ""
+                      )}
                     </td>
                     <td className="text-xs lg:text-sm xl:text-base | whitespace-nowrap border break-all p-2">
                       {request.Amount}
