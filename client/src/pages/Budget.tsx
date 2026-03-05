@@ -8,6 +8,7 @@ import LoadingFallback from "../components/reusable/LoadingFallback.tsx";
 import type { FileResource, Period } from "@scope/server";
 import useFetch from "../hooks/useFetch.tsx";
 import fileResourceFetchHandler from "../helper/fileResourceFetchHandler.ts";
+import getCurrentPeriod from "../helper/getCurrentPeriod.ts";
 
 const FILE_RESOURCES_URL = "http://localhost:8000/budget/fileresources";
 const PERIODS_URL = "http://localhost:8000/budget/periods";
@@ -15,7 +16,7 @@ const PERIODS_URL = "http://localhost:8000/budget/periods";
 const Budget = () => {
   const [viewMode, setViewMode] = useState<"Budget" | "Report">("Budget");
   const [fileResource, setFileResource] = useState("");
-  const [period, setPeriod] = useState("");
+  const [period, setPeriod] = useState(getCurrentPeriod().substring(0, 6));
 
   const {
     data: fileResources,

@@ -1,4 +1,7 @@
-import type { ColorVariant } from "../../../helper/tailwindColorResolver.ts";
+import {
+  resolveColorMappings,
+  type ColorVariant,
+} from "../../../helper/tailwindColorResolver.ts";
 import SelectionInput from "../../reusable/inputs/SelectionInput.tsx";
 
 interface BudgetViewFiltersProps {
@@ -34,17 +37,28 @@ const BudgetViewFilters = ({
           value={fileResourceValue}
           onChangeHandler={fileResourceOnChange}
         />
-        <SelectionInput
-          label="Period"
-          name="budget-view-period"
-          id="budget-view-period"
-          variant={variants}
-          requiredInput={false}
-          defaultDisabledValue="Show All"
-          options={["Show All", ...periods]}
-          value={periodValue}
-          onChangeHandler={periodOnChange}
-        />
+        <div className="h-8 lg:h-9 xl:h-10 | flex">
+          <div
+            className={`text-xs lg:text-sm xl:text-base | font-bold rounded-l-xl h-full justify-self-center border flex items-center px-2 border-r-0 ${resolveColorMappings(variants, "label")} text-white select-none`}
+          >
+            Period
+          </div>
+          <select
+            name="budget-view-period"
+            id="budget-view-period"
+            className={`text-xs lg:text-sm xl:text-base | flex-1 h-full px-4 rounded-r-xl border ${resolveColorMappings(variants, "input")} outline-none`}
+            value={periodValue}
+            onChange={periodOnChange}
+          >
+            {periods.map((period: string, index: number) => {
+              return (
+                <option key={index} value={period}>
+                  {period}
+                </option>
+              );
+            })}
+          </select>
+        </div>
       </div>
     </>
   );
