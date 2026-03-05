@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import LoadingFallback from "../../reusable/LoadingFallback.tsx";
 import formatNumberToString from "../../../helper/formatNumberToString.ts";
+import { Link } from "react-router-dom";
 
 const BUDGET_VIEW_URL = "http://localhost:8000/budget";
 
@@ -218,7 +219,12 @@ const BudgetView = ({ periode, fileResource }: BudgetViewProps) => {
                         {formatNumberToString(monthBudget)}
                       </td>
                       <td className="text-xs lg:text-sm xl:text-base | border p-2 text-center">
-                        {formatNumberToString(monthUsage)}
+                        <Link
+                          className="text-blue-700 underline"
+                          to={`/usage?periode=${monthData?.Periode}&costcenter=${rowData.CostCenter}&nature=${rowNature}`}
+                        >
+                          {formatNumberToString(monthUsage)}
+                        </Link>
                       </td>
                       <td className="text-xs lg:text-sm xl:text-base | border p-2 text-center">
                         {formatNumberToString(monthBalance)}

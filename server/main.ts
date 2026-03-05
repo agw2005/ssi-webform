@@ -18,6 +18,7 @@ import {
   getRateDollarsPaginated,
   getRateDollarTempsPaginated,
   getRequests,
+  getRequestsAtBudgetView,
   getRequestsCount,
   getSectionNames,
   getSectionsPaginated,
@@ -61,6 +62,7 @@ oakRouter.get("/trace/request/:traceId", getSpecificRequest);
 oakRouter.get("/frmprd/request/:traceId", getSpecificRequestItems);
 oakRouter.get("/uploadfile/:traceId", getUploadFiles);
 oakRouter.get("/traced/:traceId", getApproverPath);
+oakRouter.get("/frmprh", getRequestsAtBudgetView);
 
 // Basic GET
 oakRouter.get("/budget/:pagination/:page", getBudgetsPaginated);

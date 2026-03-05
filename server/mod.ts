@@ -11,3 +11,4 @@ export type { TraceRequestOverview as RequestOverview } from "./models/Trace.d.t
 export type { FrmPRDRequestItem as RequestItem } from "./models/FrmPRD.d.ts";
 export type { UploadFileMinimalInformation as UploadedFile } from "./models/UploadFile.d.ts";
 export type { TraceApproverPath as ApproverPath } from "./models/TraceD.d.ts";
+export type { RequestItemsAtBudgetView as RequestItemBudget } from "./models/FrmPRH.d.ts";

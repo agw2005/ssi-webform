@@ -151,8 +151,6 @@ export const specificRequest = async (pool: mysql.Pool, traceId: number) => {
     FROM Trace
     INNER JOIN frm_PR_H
 	    ON frm_PR_H.NoForm = Trace.NoForm
-    INNER JOIN UserMaster
-	    ON UserMaster.IDUser = Trace.ProcessedBy
     INNER JOIN frm_PR_D
 	    ON frm_PR_D.NoPR = frm_PR_H.NoPR
     WHERE Trace.IDTrace = ?;`,

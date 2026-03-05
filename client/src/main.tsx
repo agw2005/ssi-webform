@@ -11,6 +11,7 @@ import Approve from "./pages/Approve.tsx";
 import { verifyIsNotAuthorized } from "./helper/verifyIsNotAuthorized.ts";
 import { verifyIsAuthorized } from "./helper/verifyIsAuthorized.ts";
 import LoadingFallback from "./components/reusable/LoadingFallback.tsx";
+import Usage from "./pages/Usage.tsx";
 
 const router = createBrowserRouter([
   { path: "/", element: <Home /> },
@@ -30,6 +31,7 @@ const router = createBrowserRouter([
     hydrateFallbackElement: <LoadingFallback />,
   },
   { path: "/request/:requestId", element: <Request /> },
+  { path: "/usage", element: <Usage /> },
 ]);
 
 createRoot(document.getElementById("root")!).render(

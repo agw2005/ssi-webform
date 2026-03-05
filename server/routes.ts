@@ -13,7 +13,10 @@ import {
   basicGet as FrmPRDGet,
   getAllRequestItems,
 } from "./controllers/FrmPRD.ts";
-import { basicGet as FrmPRHGet } from "./controllers/FrmPRH.ts";
+import {
+  basicGet as FrmPRHGet,
+  getRequestItemForBudgetView,
+} from "./controllers/FrmPRH.ts";
 import {
   allDepartments,
   basicGet as FrmPRNoPRGet,
@@ -178,6 +181,26 @@ export const getFrmPRHsPaginated = async (
   const pagination = Number(ctx.params.pagination);
   const page = Number(ctx.params.page);
   const [rows, _metadata] = await FrmPRHGet(databasePool, page, pagination);
+  ctx.response.status = 200;
+  ctx.response.body = rows;
+};
+
+export const getRequestsAtBudgetView = async (
+  ctx: RouterContext<"/frmprh">,
+) => {
+  const params = ctx.request.url.searchParams;
+  const nature = params.get("nature") || null;
+  const costCenter = params.get("costcenter") || null;
+  const startDate = params.get("startdate") || null;
+  const endDate = params.get("enddate") || null;
+
+  const [rows, _metadata] = await getRequestItemForBudgetView(
+    databasePool,
+    nature,
+    costCenter,
+    startDate,
+    endDate,
+  );
   ctx.response.status = 200;
   ctx.response.body = rows;
 };
