@@ -357,19 +357,21 @@ const Home = () => {
             setEndingDate(e.currentTarget.value);
           }}
         />
-        <NumberInput
-          label="Items"
-          name="paging-range"
-          id="paging-range"
-          requiredInput={false}
-          variant="black"
-          minimumValue={0}
-          value={String(pagingRange)}
-          onChangeHandler={(e) => {
-            setCurrentPage(1);
-            setPagingRange(Number(e.currentTarget.value));
-          }}
-        />
+        <div className="flex w-32">
+          <NumberInput
+            label="Items"
+            name="paging-range"
+            id="paging-range"
+            requiredInput={false}
+            variant="black"
+            minimumValue={0}
+            value={String(pagingRange)}
+            onChangeHandler={(e) => {
+              setCurrentPage(1);
+              setPagingRange(Number(e.currentTarget.value));
+            }}
+          />
+        </div>
         <PagingButton
           name="paging-button"
           id="paging-button"
