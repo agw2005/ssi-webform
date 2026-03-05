@@ -44,6 +44,11 @@ import { handleCors } from "./handleCors.ts";
 const oakApp = new Application();
 const oakRouter = new Router();
 
+oakApp.use(async (ctx, next) => {
+  handleCors(ctx);
+  await next();
+});
+
 oakRouter.get("/", healthCheck);
 
 // Specific GET
@@ -87,11 +92,6 @@ oakRouter.get("/usermaster/:pagination/:page", getUserMastersPaginated);
 oakRouter.get("/auth", isAuthenticated, authenticate);
 oakRouter.get("/authInfo/:page", getUserAuthInfo);
 oakRouter.post("/login", login);
-
-oakApp.use(async (ctx, next) => {
-  handleCors(ctx);
-  await next();
-});
 
 oakApp.use(oakRouter.routes());
 oakApp.use(oakRouter.allowedMethods());
