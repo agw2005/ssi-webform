@@ -22,9 +22,9 @@ The front-end lives inside the `/client` directory.
 
 It is created using `deno run -A npm:create-vite@latest` using TypeScript, React Compiler, and Rolldown Vite.
 
-After cloning the project, you should `cd` into `/client` and run `deno install --node-modules-dir`.
+After cloning the project, you should `cd` into `/client` and run `deno install`.
 
-After that, you can run `npm run dev` to start the development server of the front-end.
+After that, you can run `deno task dev` to start the development server of the front-end.
 
 # Back-end
 

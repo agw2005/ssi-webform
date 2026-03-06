@@ -7,7 +7,7 @@ import type { Context } from "@oak/oak/context";
 export const handleCors = (ctx: Context) => {
   ctx.response.headers.set(
     "Access-Control-Allow-Origin",
-    "http://localhost:5173",
+    "http://127.0.0.1:5173",
   );
   ctx.response.headers.set(
     "Access-Control-Allow-Methods",
