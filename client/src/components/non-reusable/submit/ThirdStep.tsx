@@ -153,7 +153,7 @@ const ThirdStep = ({
       if (balance.length === 0) {
         setUsageField((prev) => ({
           ...prev,
-          balance: formatNumberToString(Number(NO_BALANCE_VALUE)),
+          balance: NO_BALANCE_VALUE,
         }));
       } else {
         setUsageField((prev) => ({
