@@ -6,23 +6,36 @@ interface MultifileInputProps {
 }
 
 const MultifileInput = ({ uploads, onUploadsChange }: MultifileInputProps) => {
-  const handleFileUpload = (
-    elementInput: React.ChangeEvent<HTMLInputElement>,
-  ) => {
-    const inputFiles = elementInput.target.files;
-    if (!inputFiles) return;
-    const fileArray = Array.from(inputFiles);
-
+  const processFiles = (fileList: FileList) => {
+    const fileArray = Array.from(fileList);
     const MAX_SIZE_BYTES = 5 * 1024 * 1024; // 5 Mb
     const invalid = fileArray.filter((file) => file.size > MAX_SIZE_BYTES);
 
     if (invalid.length > 0) {
-      elementInput.target.value = "";
-      alert(`One or more files exceeded the 5Mb limit.`);
+      alert("One or more files exceeded the 5Mb limit.");
       return;
     }
 
-    onUploadsChange([...uploads, ...inputFiles]);
+    onUploadsChange([...uploads, ...fileArray]);
+  };
+
+  const handleFileUpload = (
+    elementInput: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    if (!elementInput.target.files) return;
+    processFiles(elementInput.target.files);
+    elementInput.target.value = "";
+  };
+
+  const handleDragOver = (e: React.DragEvent<HTMLLabelElement>) => {
+    e.preventDefault();
+  };
+
+  const handleDrop = (e: React.DragEvent<HTMLLabelElement>) => {
+    e.preventDefault();
+    if (e.dataTransfer.files) {
+      processFiles(e.dataTransfer.files);
+    }
   };
 
   return (
@@ -36,6 +49,8 @@ const MultifileInput = ({ uploads, onUploadsChange }: MultifileInputProps) => {
         </div>
         <label
           htmlFor="attachment"
+          onDragOver={handleDragOver}
+          onDrop={handleDrop}
           className="text-xs lg:text-sm xl:text-base | bg-white/50 hover:bg-purple-600/20 active:bg-purple-600/30 | text-purple-600 hover:text-black active:text-black | flex-1 rounded-tr-xl h-full justify-self-center flex items-center px-2 border border-purple-600 select-none"
         >
           <input
