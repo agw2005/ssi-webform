@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import type { FifthStepInputs } from "../../../pages/Submit.tsx";
 import MultifileInput from "../../reusable/inputs/MultifileInput.tsx";
 
@@ -14,6 +15,8 @@ const FifthStep = ({
   fifthStepInputsDefaultValue,
   evaluateSubmission,
 }: FifthStepProps) => {
+  const navigate = useNavigate();
+
   const onChangeHandler =
     (field: keyof FifthStepInputs) => (newFiles: File[]) => {
       fifthStepInputsSetter((prev) => ({
@@ -49,7 +52,12 @@ const FifthStep = ({
                 "One or more fields from across the steps may be empty. Feel them out before you can submit your PR.",
               );
             } else {
-              console.log(fifthStepInputsGetter);
+              const isSubmit = globalThis.confirm(
+                "Are you sure you want to submit?",
+              );
+              if (isSubmit) {
+                navigate("/#");
+              }
             }
           }}
         >

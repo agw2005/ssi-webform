@@ -159,13 +159,6 @@ const Submit = () => {
       fourthStepInputs.releaser.length === 0 ||
       fourthStepInputs.administrator.length === 0;
 
-    console.log({
-      firstStepInputs,
-      secondStepInputs,
-      thirdStepInputs,
-      fourthStepInputs,
-      fifthStepInputs,
-    });
     return someRequiredFieldsAreEmpty;
   };
 
