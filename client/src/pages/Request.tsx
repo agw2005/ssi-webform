@@ -110,7 +110,7 @@ const Request = () => {
     Requestor: `${capitalize(requestOverviewData[0].Requestor)} (${requestOverviewData[0].RequestorNRP}) - ${requestOverviewData[0].RequestorSection}`,
     "PR Number": requestOverviewData[0].NoPR,
     Subject: requestOverviewData[0].Subject,
-    Amount: requestOverviewData[0].Amount,
+    Amount: formatNumberToString(requestOverviewData[0].Amount),
     "Return On Outgoing": requestOverviewData[0].ReturnOnOutgoing,
     Remarks: requestOverviewData[0].Remarks,
     "Cost Center": requestOverviewData[0].CostCenter,

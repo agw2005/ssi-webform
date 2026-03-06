@@ -1,9 +1,5 @@
+import formatNumberToString from "../../../helper/formatNumberToString.ts";
 import useForex from "../../../hooks/useForex.tsx";
-
-const FOREX_RATES_STRING_FORMAT = {
-  minimumFractionDigits: 2,
-  maximumFractionDigits: 2,
-};
 
 const LOADING_MESSAGE = "(Loading)";
 const ERROR_MESSAGE = "(Error)";
@@ -28,7 +24,7 @@ const ForexInformation = () => {
             ? LOADING_MESSAGE
             : error
               ? ERROR_MESSAGE
-              : `${forexInformation?.rates.SGD.toLocaleString("en-US", FOREX_RATES_STRING_FORMAT)} `}
+              : `${forexInformation?.rates.SGD && formatNumberToString(forexInformation.rates.SGD)} `}
           <strong>SGD</strong>
         </p>
       </div>
@@ -43,7 +39,7 @@ const ForexInformation = () => {
             ? LOADING_MESSAGE
             : error
               ? ERROR_MESSAGE
-              : `${forexInformation?.rates.JPY.toLocaleString("en-US", FOREX_RATES_STRING_FORMAT)} `}
+              : `${forexInformation?.rates.JPY && formatNumberToString(forexInformation.rates.JPY)} `}
           <strong>JPY</strong>
         </p>
       </div>
@@ -58,7 +54,7 @@ const ForexInformation = () => {
             ? LOADING_MESSAGE
             : error
               ? ERROR_MESSAGE
-              : `${forexInformation?.rates.IDR.toLocaleString("en-US", FOREX_RATES_STRING_FORMAT)} `}
+              : `${forexInformation?.rates.IDR && formatNumberToString(forexInformation.rates.IDR)} `}
           <strong>IDR</strong>
         </p>
       </div>
@@ -73,7 +69,7 @@ const ForexInformation = () => {
             ? LOADING_MESSAGE
             : error
               ? ERROR_MESSAGE
-              : `${forexInformation?.amount.toLocaleString("en-US", FOREX_RATES_STRING_FORMAT)} `}
+              : `${forexInformation?.amount && formatNumberToString(forexInformation.amount)} `}
           <strong>USD</strong>
         </p>
       </div>

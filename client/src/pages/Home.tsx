@@ -12,6 +12,7 @@ import capitalize from "../helper/capitalize.ts";
 import PagingButton from "../components/reusable/PagingButton.tsx";
 import Button from "../components/reusable/Button.tsx";
 import stringContainsRedLight from "../helper/stringContainsRedLight.ts";
+import formatNumberToString from "../helper/formatNumberToString.ts";
 
 interface SectionPayload {
   IDSection: number;
@@ -451,7 +452,7 @@ const Home = () => {
                       )}
                     </td>
                     <td className="text-xs lg:text-sm xl:text-base | whitespace-nowrap border break-all p-2">
-                      {request.Amount}
+                      {formatNumberToString(request.Amount)}
                     </td>
                     <td className="text-xs lg:text-sm xl:text-base | whitespace-nowrap border break-all p-2">
                       {capitalize(request.Requestor)}

@@ -14,6 +14,7 @@ import useFetch from "../../../hooks/useFetch.tsx";
 import LoadingFallback from "../../reusable/LoadingFallback.tsx";
 import getCurrentPeriod from "../../../helper/getCurrentPeriod.ts";
 import useForex, { type ForexRates } from "../../../hooks/useForex.tsx";
+import formatNumberToString from "../../../helper/formatNumberToString.ts";
 
 const DEPARTMENTS_URL = "http://localhost:8000/frmprnopr/departments";
 const NATURES_URL = "http://localhost:8000/budget/nature";
@@ -152,12 +153,12 @@ const ThirdStep = ({
       if (balance.length === 0) {
         setUsageField((prev) => ({
           ...prev,
-          balance: NO_BALANCE_VALUE,
+          balance: formatNumberToString(Number(NO_BALANCE_VALUE)),
         }));
       } else {
         setUsageField((prev) => ({
           ...prev,
-          balance: balance[0].Balance,
+          balance: formatNumberToString(Number(balance[0].Balance)),
         }));
       }
     } catch (err) {
@@ -541,10 +542,10 @@ const ThirdStep = ({
                     {summary.periode}
                   </td>
                   <td className="text-xs lg:text-sm xl:text-base | border p-2 whitespace-nowrap text-center">
-                    {summary.balance.toFixed(2)}
+                    {formatNumberToString(summary.balance)}
                   </td>
                   <td className="text-xs lg:text-sm xl:text-base | border p-2 whitespace-nowrap text-center">
-                    {summary.totalUsageUSD.toFixed(2)}
+                    {formatNumberToString(summary.totalUsageUSD)}
                   </td>
                   <td
                     className={`text-xs lg:text-sm xl:text-base |  | border p-2 whitespace-nowrap text-center`}
@@ -554,7 +555,7 @@ const ThirdStep = ({
                         remainingBalance < 0 ? "font-bold text-red-500" : ""
                       }
                     >
-                      {remainingBalance.toFixed(2)}{" "}
+                      {formatNumberToString(remainingBalance)}{" "}
                       {remainingBalance < 0 ? "[RL]" : ""}
                     </span>
                   </td>
