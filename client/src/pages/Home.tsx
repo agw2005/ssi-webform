@@ -4,7 +4,7 @@ import NumberInput from "../components/reusable/inputs/NumberInput.tsx";
 import DateRangeInput from "../components/reusable/inputs/DateRangeInput.tsx";
 import TextInput from "../components/reusable/inputs/TextInput.tsx";
 import { Link } from "react-router-dom";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useReducer } from "react";
 import type { SectionName, SupervisorNames, FormRequest } from "@scope/server";
 import LoadingFallback from "../components/reusable/LoadingFallback.tsx";
 import useFetch from "../hooks/useFetch.tsx";
@@ -15,20 +15,36 @@ import stringContainsRedLight from "../helper/stringContainsRedLight.ts";
 import formatNumberToString from "../helper/formatNumberToString.ts";
 import { useDebounce } from "../hooks/useDebounce.tsx";
 
-interface SectionPayload {
+interface CountResponsePayload {
+  COUNT: number;
+}
+
+interface SectionInfo {
   IDSection: number;
   SectionName: string;
 }
 
-interface SupervisorPayload {
+interface SupervisorInfo {
   NameUser: string;
   IDUser: number;
   DisplayLabel: string;
 }
 
-interface CountResponsePayload {
-  COUNT: number;
+interface Filters {
+  section: SectionInfo;
+  supervisor: SupervisorInfo;
+  status: string;
+  pagingRange: number;
+  startingDate: string;
+  endingDate: string;
+  search: string;
+  currentPage: number;
 }
+
+type FilterAction =
+  | { type: "SET_FIELD"; field: keyof Filters; value: unknown }
+  | { type: "RESET_FILTERS" }
+  | { type: "SET_PAGE"; page: number };
 
 const COLUMNS = [
   "ID Trace",
@@ -67,48 +83,59 @@ const formatDate = (dateString: string) => {
   }
 };
 
-const DEFAULT_FILTERS = {
+const statusStyling = (status: string) => {
+  if (status === "Final Approved") {
+    return "bg-green-300";
+  } else if (status === "In Progress") {
+    return "bg-yellow-300";
+  } else if (status === "Rejected") {
+    return "bg-red-700 font-bold text-white border-black";
+  } else if (status === "Cancelled") {
+    return "bg-red-950 font-bold text-white border-black";
+  } else if (status === "Expired") {
+    return "bg-gray-400 font-bold text-gray-900 border-black";
+  } else {
+    return "bg-black text-black";
+  }
+};
+
+const DEFAULT_FILTERS: Filters = {
   section: { IDSection: SELECT_ALL_INDEX, SectionName: "" },
   supervisor: { NameUser: "", IDUser: SELECT_ALL_INDEX, DisplayLabel: "" },
   status: "",
   pagingRange: 20,
-  date: "",
+  startingDate: "",
+  endingDate: "",
   search: "",
+  currentPage: 1,
+};
+
+const FilterReducer = (state: Filters, action: FilterAction) => {
+  switch (action.type) {
+    case "SET_FIELD":
+      return {
+        ...state,
+        [action.field]: action.value,
+        currentPage: 1,
+      };
+    case "SET_PAGE":
+      return { ...state, currentPage: action.page };
+    case "RESET_FILTERS":
+      return DEFAULT_FILTERS;
+    default:
+      return state;
+  }
 };
 
 const Home = () => {
-  const [sectionFilter, setSectionFilter] = useState<SectionPayload>(
-    DEFAULT_FILTERS.section,
-  );
-  const [statusFilter, setStatusFilter] = useState(DEFAULT_FILTERS.status);
-  const [supervisorFilter, setSupervisorFilter] = useState<SupervisorPayload>(
-    DEFAULT_FILTERS.supervisor,
-  );
-  const [pagingRange, setPagingRange] = useState(DEFAULT_FILTERS.pagingRange);
-  const [startingDate, setStartingDate] = useState(DEFAULT_FILTERS.date);
-  const [endingDate, setEndingDate] = useState(DEFAULT_FILTERS.date);
-  const [searchField, setSearchField] = useState(DEFAULT_FILTERS.search);
-
-  const debouncedSearch = useDebounce(searchField, 1000);
-
+  const [filters, setFilters] = useReducer(FilterReducer, DEFAULT_FILTERS);
+  const debouncedSearch = useDebounce(filters.search, 750);
   const [totalRequestInstances, setTotalRequestInstances] = useState(0);
-  const [currentPage, setCurrentPage] = useState(1);
-
-  const statusStyling = (status: string) => {
-    if (status === "Final Approved") {
-      return "bg-green-300";
-    } else if (status === "In Progress") {
-      return "bg-yellow-300";
-    } else if (status === "Rejected") {
-      return "bg-red-700 font-bold text-white border-black";
-    } else if (status === "Cancelled") {
-      return "bg-red-950 font-bold text-white border-black";
-    } else if (status === "Expired") {
-      return "bg-gray-400 font-bold text-gray-900 border-black";
-    } else {
-      return "bg-black text-black";
-    }
-  };
+  const [requestData, setRequestData] = useState<FormRequest[] | null>(null);
+  const [isRequestDataLoading, setIsRequestDataLoading] = useState(false);
+  const [isRequestDataError, setIsRequestDataError] = useState<Error | null>(
+    null,
+  );
 
   const {
     data: sectionNames,
@@ -148,45 +175,42 @@ const Home = () => {
     });
   }, [supervisorNames]);
 
-  const [requestData, setRequestData] = useState<FormRequest[] | null>(null);
-  const [isRequestDataLoading, setIsRequestDataLoading] = useState(false);
-  const [isRequestDataError, setIsRequestDataError] = useState<Error | null>(
-    null,
-  );
-
   const applyParams = (url: URL) => {
-    if (sectionFilter.IDSection !== SELECT_ALL_INDEX) {
+    if (filters.section.IDSection !== SELECT_ALL_INDEX) {
       url.searchParams.set(
         "requestorsectionid",
-        sectionFilter.IDSection.toString(),
+        filters.section.IDSection.toString(),
       );
     }
-    if (statusFilter !== "All Status" && statusFilter !== "") {
-      url.searchParams.set("status", statusFilter);
+    if (filters.status !== "All Status" && filters.status !== "") {
+      url.searchParams.set("status", filters.status);
     }
-    if (supervisorFilter.IDUser !== SELECT_ALL_INDEX) {
+    if (filters.supervisor.IDUser !== SELECT_ALL_INDEX) {
       url.searchParams.set(
         "currentsupervisorid",
-        String(supervisorFilter.IDUser),
+        String(filters.supervisor.IDUser),
       );
     }
-    if (startingDate) url.searchParams.set("startdate", startingDate);
-    if (endingDate) url.searchParams.set("enddate", endingDate);
+    if (filters.startingDate)
+      url.searchParams.set("startdate", filters.startingDate);
+    if (filters.endingDate) url.searchParams.set("enddate", filters.endingDate);
   };
 
   useEffect(() => {
-    const requestUrl = new URL(REQUESTS_URL);
-    const countUrl = new URL(REQUESTS_COUNT_URL);
     const abortController = new AbortController();
-    setIsRequestDataLoading(true);
-
-    applyParams(requestUrl);
-    applyParams(countUrl);
-
-    requestUrl.searchParams.set("pagination", String(pagingRange));
-    requestUrl.searchParams.set("page", String(currentPage));
 
     const fetchData = async () => {
+      const requestUrl = new URL(REQUESTS_URL);
+      const countUrl = new URL(REQUESTS_COUNT_URL);
+
+      applyParams(requestUrl);
+      applyParams(countUrl);
+
+      requestUrl.searchParams.set("pagination", String(filters.pagingRange));
+      requestUrl.searchParams.set("page", String(filters.currentPage));
+
+      setIsRequestDataLoading(true);
+
       try {
         const [requestResponse, countResponse] = await Promise.all([
           fetch(requestUrl.toString(), { signal: abortController.signal }),
@@ -220,22 +244,21 @@ const Home = () => {
 
     fetchData();
 
-    return () => {
-      abortController.abort();
-    };
+    return () => abortController.abort();
   }, [
-    sectionFilter,
-    statusFilter,
-    supervisorFilter,
-    pagingRange,
-    currentPage,
-    startingDate,
-    endingDate,
+    filters.section,
+    filters.status,
+    filters.supervisor,
+    filters.pagingRange,
+    filters.currentPage,
+    filters.startingDate,
+    filters.endingDate,
+    debouncedSearch,
   ]);
 
   const totalPages = Math.max(
     1,
-    Math.ceil(totalRequestInstances / pagingRange),
+    Math.ceil(totalRequestInstances / filters.pagingRange),
   );
 
   if (isSectionLoading || isSupervisorLoading) {
@@ -269,27 +292,17 @@ const Home = () => {
               ? []
               : sectionNames.map((section) => section.SectionName)),
           ]}
-          value={sectionFilter.SectionName}
+          value={filters.section.SectionName}
           onChangeHandler={(e) => {
-            setCurrentPage(1);
             const selectedSectionName = e.target.value;
-
-            if (
-              selectedSectionName === "All Section" ||
-              selectedSectionName === ""
-            ) {
-              setSectionFilter(DEFAULT_FILTERS.section);
-            } else {
-              const matchedSection = sectionNames?.find(
-                (section) => section.SectionName === selectedSectionName,
-              );
-              if (matchedSection) {
-                setSectionFilter({
-                  IDSection: matchedSection.IDSection,
-                  SectionName: matchedSection.SectionName,
-                });
-              }
-            }
+            const matchedSection = sectionNames?.find(
+              (section) => section.SectionName === selectedSectionName,
+            );
+            setFilters({
+              type: "SET_FIELD",
+              field: "section",
+              value: matchedSection || DEFAULT_FILTERS.section,
+            });
           }}
         />
         <SelectionInput
@@ -300,10 +313,14 @@ const Home = () => {
           requiredInput={false}
           defaultDisabledValue="All Status"
           options={STATUSES}
-          value={statusFilter}
+          value={filters.status}
           onChangeHandler={(e) => {
-            setCurrentPage(1);
-            setStatusFilter(e.currentTarget.value);
+            const newStatus = e.target.value;
+            setFilters({
+              type: "SET_FIELD",
+              field: "status",
+              value: newStatus,
+            });
           }}
         />
         <SelectionInput
@@ -319,29 +336,24 @@ const Home = () => {
               (supervisor) => supervisor.displayedName,
             ),
           ]}
-          value={
-            supervisorFilter.DisplayLabel === ""
-              ? ""
-              : supervisorFilter.DisplayLabel
-          }
+          value={filters.supervisor.DisplayLabel}
           onChangeHandler={(e) => {
-            setCurrentPage(1);
-            const selectedLabel = e.target.value;
+            const newSupervisor = e.target.value;
+            const matchedSupervisor = handleDuplicateNameSupervisors.find(
+              (supervisor) => supervisor.displayedName === newSupervisor,
+            );
 
-            if (selectedLabel === "All Supervisor" || selectedLabel === "") {
-              setSupervisorFilter(DEFAULT_FILTERS.supervisor);
-            } else {
-              const matchedSupervisor = handleDuplicateNameSupervisors.find(
-                (supervisor) => supervisor.displayedName === selectedLabel,
-              );
-              if (matchedSupervisor) {
-                setSupervisorFilter({
-                  NameUser: matchedSupervisor.NameUser,
-                  IDUser: matchedSupervisor.IDUser,
-                  DisplayLabel: matchedSupervisor.displayedName,
-                });
-              }
-            }
+            setFilters({
+              type: "SET_FIELD",
+              field: "supervisor",
+              value: matchedSupervisor
+                ? {
+                    NameUser: matchedSupervisor.NameUser,
+                    IDUser: matchedSupervisor.IDUser,
+                    DisplayLabel: matchedSupervisor.displayedName,
+                  }
+                : DEFAULT_FILTERS.supervisor,
+            });
           }}
         />
         <DateRangeInput
@@ -350,15 +362,21 @@ const Home = () => {
           variant="black"
           firstDateRequiredInput={false}
           secondDateRequiredInput={false}
-          startingDateValue={startingDate}
-          endingDateValue={endingDate}
+          startingDateValue={filters.startingDate}
+          endingDateValue={filters.endingDate}
           startingDateOnChangeHandler={(e) => {
-            setCurrentPage(1);
-            setStartingDate(e.currentTarget.value);
+            setFilters({
+              type: "SET_FIELD",
+              field: "startingDate",
+              value: e.target.value,
+            });
           }}
           endingOnDateChangeHandler={(e) => {
-            setCurrentPage(1);
-            setEndingDate(e.currentTarget.value);
+            setFilters({
+              type: "SET_FIELD",
+              field: "endingDate",
+              value: e.target.value,
+            });
           }}
         />
         <div className="flex w-32">
@@ -369,10 +387,13 @@ const Home = () => {
             requiredInput={false}
             variant="black"
             minimumValue={0}
-            value={String(pagingRange)}
+            value={String(filters.pagingRange)}
             onChangeHandler={(e) => {
-              setCurrentPage(1);
-              setPagingRange(Number(e.currentTarget.value));
+              setFilters({
+                type: "SET_FIELD",
+                field: "pagingRange",
+                value: Number(e.target.value),
+              });
             }}
           />
         </div>
@@ -380,9 +401,11 @@ const Home = () => {
           name="paging-button"
           id="paging-button"
           variant="black"
-          currentPage={currentPage}
+          currentPage={filters.currentPage}
           totalPages={totalPages}
-          onInputChangeHandler={(e) => setCurrentPage(Number(e.target.value))}
+          onInputChangeHandler={(e) =>
+            setFilters({ type: "SET_PAGE", page: Number(e.target.value) })
+          }
         />
         <TextInput
           label="Search"
@@ -390,22 +413,18 @@ const Home = () => {
           id="search"
           variant="black"
           requiredInput={false}
-          value={searchField}
+          value={filters.search}
           onChangeHandler={(e) => {
-            setCurrentPage(1);
-            setSearchField(e.currentTarget.value);
+            setFilters({
+              type: "SET_FIELD",
+              field: "search",
+              value: e.target.value,
+            });
           }}
         />
         <div
           onClick={() => {
-            setCurrentPage(1);
-            setSectionFilter(DEFAULT_FILTERS.section);
-            setStatusFilter(DEFAULT_FILTERS.status);
-            setSupervisorFilter(DEFAULT_FILTERS.supervisor);
-            setPagingRange(DEFAULT_FILTERS.pagingRange);
-            setStartingDate(DEFAULT_FILTERS.date);
-            setEndingDate(DEFAULT_FILTERS.date);
-            setSearchField(DEFAULT_FILTERS.search);
+            setFilters({ type: "RESET_FILTERS" });
           }}
         >
           <Button id="reset-filters" variant="black" label="Reset" />
