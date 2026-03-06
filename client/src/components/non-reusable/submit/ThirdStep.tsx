@@ -478,7 +478,7 @@ const ThirdStep = ({
                       {usage.currency}
                     </td>
                     <td className="text-xs border p-2 whitespace-nowrap text-center">
-                      {`${usage.currency === "USD" ? `${(Number(usage.quantity) * Number(usage.unitPrice)).toFixed(2)}` : ((Number(usage.unitPrice) * Number(usage.quantity)) / Number((forexInformation?.rates[usage.currency as keyof ForexRates] || 1).toFixed(2))).toFixed(2)} USD`}
+                      {`${usage.currency === "USD" ? `${formatNumberToString(Number(usage.quantity) * Number(usage.unitPrice))}` : formatNumberToString((Number(usage.unitPrice) * Number(usage.quantity)) / Number(forexInformation?.rates[usage.currency as keyof ForexRates] || 1))} USD`}
                     </td>
                     <td className="text-xs border p-2 whitespace-nowrap text-center">
                       {formatDate(usage.estimatedDeliveryDate)}
