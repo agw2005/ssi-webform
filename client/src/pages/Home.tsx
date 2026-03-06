@@ -13,6 +13,7 @@ import PagingButton from "../components/reusable/PagingButton.tsx";
 import Button from "../components/reusable/Button.tsx";
 import stringContainsRedLight from "../helper/stringContainsRedLight.ts";
 import formatNumberToString from "../helper/formatNumberToString.ts";
+import { useDebounce } from "../hooks/useDebounce.tsx";
 
 interface SectionPayload {
   IDSection: number;
@@ -87,6 +88,8 @@ const Home = () => {
   const [startingDate, setStartingDate] = useState(DEFAULT_FILTERS.date);
   const [endingDate, setEndingDate] = useState(DEFAULT_FILTERS.date);
   const [searchField, setSearchField] = useState(DEFAULT_FILTERS.search);
+
+  const debouncedSearch = useDebounce(searchField, 1000);
 
   const [totalRequestInstances, setTotalRequestInstances] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
