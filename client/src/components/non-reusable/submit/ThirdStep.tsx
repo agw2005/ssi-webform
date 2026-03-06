@@ -15,6 +15,7 @@ import LoadingFallback from "../../reusable/LoadingFallback.tsx";
 import getCurrentPeriod from "../../../helper/getCurrentPeriod.ts";
 import useForex, { type ForexRates } from "../../../hooks/useForex.tsx";
 import formatNumberToString from "../../../helper/formatNumberToString.ts";
+import formatStringToNumber from "../../../helper/formatStringToNumber.ts";
 
 const DEPARTMENTS_URL = "http://localhost:8000/frmprnopr/departments";
 const NATURES_URL = "http://localhost:8000/budget/nature";
@@ -175,12 +176,14 @@ const ThirdStep = ({
     const summaryMap = thirdStepInputsGetter.usages.reduce(
       (accumulator, usage) => {
         const costCenterAndNatureCombination = `${usage.costCenter}-${usage.budgetOrNature}`;
-        const rawValue = Number(usage.quantity) * Number(usage.unitPrice);
+        const qty = formatStringToNumber(usage.quantity);
+        const price = formatStringToNumber(usage.unitPrice);
+        const rawValue = qty * price;
 
         const forexRate =
           usage.currency === "USD"
             ? 1
-            : Number(
+            : formatStringToNumber(
                 (
                   forexInformation?.rates[usage.currency as keyof ForexRates] ||
                   1
@@ -194,7 +197,7 @@ const ThirdStep = ({
             costCenter: usage.costCenter,
             budgetOrNature: usage.budgetOrNature,
             periode: usage.periode,
-            balance: Number(usage.balance || 0),
+            balance: formatStringToNumber(usage.balance),
             totalUsageUSD: 0,
           };
         }
@@ -487,7 +490,7 @@ const ThirdStep = ({
                       {usage.reason}
                     </td>
                     <td className="text-xs border p-2 whitespace-nowrap text-center">
-                      [ID] {/* Placeholder of ID Budget for the time being */}
+                      {`${usage.periode}-[DeptID]-[DeptName]`}
                     </td>
                     <td
                       className="bg-red-400 hover:bg-red-500 active:bg-red-600 | text-xs border p-2 whitespace-nowrap text-center select-none"
