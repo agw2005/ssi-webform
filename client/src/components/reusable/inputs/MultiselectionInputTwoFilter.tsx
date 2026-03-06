@@ -95,7 +95,8 @@ const MultiselectionInputTwoFilter = ({
           </option>
           {mappings
             .find((mapping) => mapping.filter === defaultFilter)
-            ?.subfilters.map((member, index) => {
+            ?.subfilters.filter((member) => !selections.includes(member))
+            .map((member, index) => {
               return (
                 <option key={index} value={member}>
                   {member}
