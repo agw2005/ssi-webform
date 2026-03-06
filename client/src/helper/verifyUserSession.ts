@@ -1,7 +1,5 @@
-interface AuthResponse {
-  message: string;
-  verdict: boolean;
-}
+import type { AuthResponse } from "@scope/server";
+
 const verifyUserSession = async () => {
   const storedToken = sessionStorage.getItem("session_token");
 
@@ -15,20 +13,22 @@ const verifyUserSession = async () => {
       method: "GET",
       headers: {
         Authorization: `Bearer ${storedToken}`,
-        "Content-Type": "applications/json",
+        "Content-Type": "application/json",
       },
     });
     const responseJson: AuthResponse = await response.json();
 
     if (response.ok) {
       // console.log(responseJson.message);
-      return responseJson.verdict;
+      return responseJson.message || "Session expired";
     } else {
       // console.error(responseJson.message);
-      return responseJson.verdict;
+      sessionStorage.removeItem("session_token");
+      return responseJson.message;
     }
   } catch (err) {
     console.error("Network error during verification:", err);
+    sessionStorage.removeItem("session_token");
     return false;
   }
 };

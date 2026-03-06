@@ -10,15 +10,19 @@ const serverJwtKey = await rebuildKey();
 const isAuthenticated = async (ctx: Context, next: Next) => {
   const headers: Headers = ctx.request.headers;
   const authorizationHeader = headers.get("Authorization");
+
   if (!authorizationHeader) {
     ctx.response.status = UNAUTHORIZED_RESPONSE_CODE;
     return;
   }
+
   const clientJwtToken = authorizationHeader.split(" ")[1];
+
   if (!clientJwtToken) {
     ctx.response.status = UNAUTHORIZED_RESPONSE_CODE;
     return;
   }
+
   if (await verify(clientJwtToken, serverJwtKey)) {
     await next();
     return;

@@ -6,32 +6,16 @@ import { createGenericChangeHandler } from "../helper/genericInputHandler.ts";
 import PasswordInput from "../components/reusable/inputs/PasswordInput.tsx";
 import TipBox from "../components/reusable/TipBox.tsx";
 import Button from "../components/reusable/Button.tsx";
+import type { AuthRequestPayload, AuthResponse } from "@scope/server";
+import { authRequest } from "@scope/server";
 
-interface LoginInformation {
-  nrp: string;
-  password: string;
-}
-
-interface LoginRequest {
-  value: {
-    NRP: string;
-    Password: string;
-  };
-}
-
-interface LoginResponse {
-  message: string;
-  NRP: string;
-  jwt: string;
-}
-
-const LOGIN_INFORMATION_DEFAULT_VALUE: LoginInformation = {
+const LOGIN_INFORMATION_DEFAULT_VALUE: AuthRequestPayload = {
   nrp: "",
   password: "",
 };
 
 const Login = () => {
-  const [loginInformation, setLoginInformation] = useState<LoginInformation>(
+  const [loginInformation, setLoginInformation] = useState<AuthRequestPayload>(
     LOGIN_INFORMATION_DEFAULT_VALUE,
   );
   const [showInvalidCredentialsWarning, setShowInvalidCredentialsWarning] =
@@ -41,25 +25,14 @@ const Login = () => {
 
   const navigate = useNavigate();
 
-  const handleLoginSubmit = async (data: LoginInformation) => {
-    const payload: LoginRequest = {
-      value: {
-        NRP: data.nrp,
-        Password: data.password,
-      },
-    };
-
+  const handleLoginSubmit = async (data: AuthRequestPayload) => {
     try {
-      const response = await fetch("http://localhost:8000/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "applications/json",
-        },
-        body: JSON.stringify(payload),
-      });
-      const responseBody: LoginResponse = await response.json();
+      const response = await fetch(
+        "http://localhost:8000/login",
+        authRequest(data),
+      );
+      const responseBody: AuthResponse = await response.json();
       if (response.ok) {
-        // console.log(responseBody.message);
         sessionStorage.setItem("session_token", responseBody.jwt);
         navigate("/approve");
       } else {
