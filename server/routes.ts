@@ -316,6 +316,8 @@ export const getRequests = async (ctx: RouterContext<"/trace/requests">) => {
 
   const endDate = params.get("enddate") || null;
 
+  const search = params.get("search") || null;
+
   const pagination = Number(params.get("pagination")) || 50;
   const page = Number(params.get("page")) || 1;
 
@@ -328,6 +330,7 @@ export const getRequests = async (ctx: RouterContext<"/trace/requests">) => {
     currentSupervisorId,
     startDate,
     endDate,
+    search
   );
   ctx.response.status = 200;
   ctx.response.body = rows;
@@ -352,6 +355,8 @@ export const getRequestsCount = async (
 
   const endDate = params.get("enddate") || null;
 
+  const search = params.get("search") || null;
+
   const [rows, _metadata] = await homeRequestsCount(
     databasePool,
     requestorSectionId,
@@ -359,6 +364,7 @@ export const getRequestsCount = async (
     currentSupervisorId,
     startDate,
     endDate,
+    search
   );
   ctx.response.status = 200;
   ctx.response.body = rows;

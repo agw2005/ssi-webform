@@ -37,8 +37,10 @@ export const homeRequests = async (
   currentSupervisorId: number | null,
   startDate: string | null,
   endDate: string | null,
+  search: string | null,
 ) => {
   const numRows = pagination;
+  const searchPattern = search ? `%${search}%` : null;
   const [rows, metadata] = await pool.query<TraceRequests[]>(
     `SELECT 
       Trace.IDTrace,
@@ -67,6 +69,12 @@ export const homeRequests = async (
       (? IS NULL OR Trace.SubmitDate >= ?)
     AND
       (? IS NULL OR Trace.SubmitDate <= ?)
+    AND 
+      (? IS NULL OR (
+        frm_PR_H.Subject LIKE ? OR 
+        Trace.IDTrace LIKE ? OR 
+        frm_PR_H.Requestor LIKE ?
+      ))
     AND
       Trace.Status IN ('Final Approved', 'In Progress', 'Rejected', 'Cancelled', 'Expired')
     ORDER BY SubmitDate DESC
@@ -82,6 +90,10 @@ export const homeRequests = async (
       startDate,
       endDate,
       endDate,
+      searchPattern,
+      searchPattern,
+      searchPattern,
+      searchPattern,
       (page - 1) * numRows,
       numRows,
     ],
@@ -96,7 +108,9 @@ export const homeRequestsCount = async (
   currentSupervisorId: number | null,
   startDate: string | null,
   endDate: string | null,
+  search: string | null,
 ) => {
+  const searchPattern = search ? `%${search}%` : null;
   const [rows, metadata] = await pool.query<TraceRequestsCount[]>(
     `SELECT 
       COUNT(*) AS COUNT
@@ -114,7 +128,13 @@ export const homeRequestsCount = async (
     AND
       (? IS NULL OR Trace.SubmitDate >= ?)
     AND
-      (? IS NULL OR Trace.SubmitDate <= ?)`,
+      (? IS NULL OR Trace.SubmitDate <= ?)
+    AND 
+      (? IS NULL OR (
+        frm_PR_H.Subject LIKE ? OR 
+        Trace.IDTrace LIKE ? OR 
+        frm_PR_H.Requestor LIKE ?
+      ))`,
     [
       requestorSectionId,
       requestorSectionId,
@@ -126,6 +146,10 @@ export const homeRequestsCount = async (
       startDate,
       endDate,
       endDate,
+      searchPattern,
+      searchPattern,
+      searchPattern,
+      searchPattern,
     ],
   );
   return [rows, metadata];

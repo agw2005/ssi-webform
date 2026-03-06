@@ -129,13 +129,13 @@ const FilterReducer = (state: Filters, action: FilterAction) => {
 
 const Home = () => {
   const [filters, setFilters] = useReducer(FilterReducer, DEFAULT_FILTERS);
-  const debouncedSearch = useDebounce(filters.search, 750);
   const [totalRequestInstances, setTotalRequestInstances] = useState(0);
   const [requestData, setRequestData] = useState<FormRequest[] | null>(null);
   const [isRequestDataLoading, setIsRequestDataLoading] = useState(false);
   const [isRequestDataError, setIsRequestDataError] = useState<Error | null>(
     null,
   );
+  const debouncedSearch = useDebounce(filters.search, 750);
 
   const {
     data: sectionNames,
@@ -194,6 +194,10 @@ const Home = () => {
     if (filters.startingDate)
       url.searchParams.set("startdate", filters.startingDate);
     if (filters.endingDate) url.searchParams.set("enddate", filters.endingDate);
+
+    if (debouncedSearch) {
+      url.searchParams.set("search", debouncedSearch);
+    }
   };
 
   useEffect(() => {
