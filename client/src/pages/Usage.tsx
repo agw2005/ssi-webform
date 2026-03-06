@@ -1,4 +1,4 @@
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import Primitive from "../components/reusable/Primitive.tsx";
 import Button from "../components/reusable/Button.tsx";
 import { useEffect, useState } from "react";
@@ -184,7 +184,12 @@ const Usage = () => {
                         {requestData.Nature}
                       </td>
                       <td className="text-xs lg:text-sm xl:text-base | border p-2 min-w-48 text-center">
-                        {requestData.Description}
+                        <Link
+                          className="text-blue-700 underline"
+                          to={`/request/${requestData.IDTrace}`}
+                        >
+                          {requestData.Description}
+                        </Link>
                       </td>
                       <td className="text-xs lg:text-sm xl:text-base | border p-2 whitespace-nowrap text-center">
                         {formatNumberToString(requestData.Qty)}{" "}
