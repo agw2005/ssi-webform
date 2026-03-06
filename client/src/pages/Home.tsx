@@ -411,6 +411,10 @@ const Home = () => {
 
       {isRequestDataLoading ? (
         <LoadingFallback />
+      ) : requestData && requestData.length === 0 ? (
+        <div className="mt-4 font-bold text-2xl">
+          There is no requests with the selected filters
+        </div>
       ) : (
         <table className="table-auto border-collapse min-w-full max-w-full mt-4">
           <thead>
