@@ -24,10 +24,10 @@ const login = async (ctx: RouterContext<"/login">) => {
       const correctNrp = request.nrp === userMaster.NRP;
       const correctPassword = request.password === userMaster.Password;
       if (correctNrp && correctPassword) {
-        const oneHourExpiration = getNumericDate(60);
+        const nineHourExpiration = getNumericDate(60 * 60 * 9);
         const jwtPayload: Payload = {
           iss: userMaster.NRP,
-          exp: oneHourExpiration,
+          exp: nineHourExpiration,
         };
         const jwt = await create(jwtHeader, jwtPayload, jwtKey);
         if (jwt) {
