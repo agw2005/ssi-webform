@@ -7,7 +7,6 @@ import type {
   UploadedFile,
   ApproverPath,
 } from "@scope/server";
-import LoadingFallback from "../components/reusable/LoadingFallback.tsx";
 import capitalize from "../helper/capitalize.ts";
 import formatNumberToString from "../helper/formatNumberToString.ts";
 
@@ -80,29 +79,6 @@ const Request = () => {
     reactRouterParams.requestId,
   );
 
-  if (
-    isRequestOverviewDataLoading ||
-    isRequestItemsDataLoading ||
-    isRequestFilesDataLoading ||
-    isRequestApproverPathDataLoading
-  ) {
-    return <LoadingFallback />;
-  }
-
-  if (
-    isRequestOverviewDataError ||
-    isRequestItemsDataError ||
-    isRequestFilesDataError ||
-    isRequestApproverPathDataError
-  ) {
-    return (
-      <div className="m-4">
-        <div>Something unexpected happened.</div>
-        {isRequestOverviewDataError ? isRequestOverviewDataError.message : ""}
-      </div>
-    );
-  }
-
   if (requestOverviewData === null) return;
   const overview = {
     ID: requestOverviewData[0].FormID,
@@ -121,7 +97,21 @@ const Request = () => {
   };
 
   return (
-    <Primitive>
+    <Primitive
+      isLoading={[
+        isRequestOverviewDataLoading,
+        isRequestItemsDataLoading,
+        isRequestFilesDataLoading,
+        isRequestApproverPathDataLoading,
+      ]}
+      isErr={[
+        isRequestOverviewDataError,
+        isRequestItemsDataError,
+        isRequestFilesDataError,
+        isRequestApproverPathDataError,
+      ]}
+      componentName="Request.tsx"
+    >
       <div className="flex flex-col gap-8">
         <div className="border">
           {Object.entries(overview).map(([key, value], index) => {

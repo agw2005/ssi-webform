@@ -1,11 +1,11 @@
 import type { AuthResponse } from "@scope/server";
 
-const verifyUserSession = async () => {
+const verifyUserSession = async (): Promise<boolean> => {
   const storedToken = sessionStorage.getItem("session_token");
 
   if (!storedToken) {
     // console.error("No token found");
-    return;
+    return false;
   }
 
   try {
@@ -20,11 +20,12 @@ const verifyUserSession = async () => {
 
     if (response.ok) {
       // console.log(responseJson.message);
-      return responseJson.message || "Session expired";
+      console.log(responseJson.message || "Session expired");
+      return true;
     } else {
-      // console.error(responseJson.message);
+      console.error(responseJson.message);
       sessionStorage.removeItem("session_token");
-      return responseJson.message;
+      return false;
     }
   } catch (err) {
     console.error("Network error during verification:", err);
