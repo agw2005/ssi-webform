@@ -4,7 +4,6 @@ import Button from "../components/reusable/Button.tsx";
 import { useEffect, useState } from "react";
 import getDateRangeAtPeriode from "../helper/getDateRangeAtPeriode.ts";
 import dateToMySQLDateInput from "../helper/dateToMySQLDateInput.ts";
-import LoadingFallback from "../components/reusable/LoadingFallback.tsx";
 import formatNumberToString from "../helper/formatNumberToString.ts";
 import capitalize from "../helper/capitalize.ts";
 
@@ -121,21 +120,12 @@ const Usage = () => {
     };
   }, []);
 
-  if (isRequestsDataLoading) {
-    return <LoadingFallback />;
-  }
-
-  if (isRequestsDataError) {
-    return (
-      <div className="m-4">
-        <div>Something unexpected happened.</div>
-        {isRequestsDataError ? isRequestsDataError.message : ""}
-      </div>
-    );
-  }
-
   return (
-    <Primitive>
+    <Primitive
+      isLoading={[isRequestsDataLoading]}
+      isErr={[isRequestsDataError]}
+      componentName="Usage.tsx"
+    >
       <div className="flex" onClick={() => history.back()}>
         <Button id="go-back" variant="black" label="Back" />
       </div>
