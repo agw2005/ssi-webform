@@ -1,14 +1,10 @@
 import TipBox from "../../reusable/TipBox.tsx";
 import MultiselectionInputTwoFilter from "../../reusable/inputs/MultiselectionInputTwoFilter.tsx";
 import type { FourthStepInputs } from "../../../pages/Submit.tsx";
-import type { UserSection } from "../../../../../server/models/Section.d.ts";
-import useFetch from "../../../hooks/useFetch.tsx";
-import LoadingFallback from "../../reusable/LoadingFallback.tsx";
 import userSectionReducer from "../../../helper/userSectionReducer.ts";
+import type { UserSection } from "@scope/server";
 
 const STEP = 4;
-
-const USER_SECTION_MAPPINGS_URL = "http://localhost:8000/section/users";
 
 const EMPTY_FIELDS_WARNING =
   "One or more required fields are empty. Please fill them out before proceeding.";
@@ -20,6 +16,7 @@ interface FifthStepProps {
     React.SetStateAction<FourthStepInputs>
   >;
   fourthStepInputsDefaultValue: FourthStepInputs;
+  userSectionMappings: UserSection[] | null;
 }
 
 const FourthStep = ({
@@ -27,6 +24,7 @@ const FourthStep = ({
   fourthStepInputsGetter,
   fourthStepInputsSetter,
   fourthStepInputsDefaultValue,
+  userSectionMappings,
 }: FifthStepProps) => {
   const onChangeHandler =
     (field: keyof FourthStepInputs) => (newSelections: string[]) => {
@@ -42,25 +40,6 @@ const FourthStep = ({
     const hasNoAdmin = fourthStepInputsGetter.administrator.length === 0;
     return hasNoApprover || hasNoReleaser || hasNoAdmin;
   };
-
-  const {
-    data: userSectionMappings,
-    isLoading: isUserSectionMappingsLoading,
-    isError: isUserSectionMappingsError,
-  } = useFetch<UserSection>(USER_SECTION_MAPPINGS_URL);
-
-  if (isUserSectionMappingsLoading) {
-    return <LoadingFallback />;
-  }
-
-  if (isUserSectionMappingsError) {
-    return (
-      <div className="m-4">
-        <div>Something unexpected happened.</div>
-        {isUserSectionMappingsError ? isUserSectionMappingsError.message : ""}
-      </div>
-    );
-  }
 
   return (
     <div className="rounded-2xl bg-green-100 p-8 flex flex-col gap-4 flex-1 w-full">

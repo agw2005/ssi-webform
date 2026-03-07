@@ -6,7 +6,7 @@ export interface ForexRates {
   SGD: number;
 }
 
-interface ForexAPIResponse {
+export interface ForexAPIResponse {
   amount: number;
   base: string;
   date: string;

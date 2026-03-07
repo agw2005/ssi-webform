@@ -265,23 +265,12 @@ const Home = () => {
     Math.ceil(totalRequestInstances / filters.pagingRange),
   );
 
-  if (isSectionLoading || isSupervisorLoading) {
-    return <LoadingFallback />;
-  }
-
-  if (sectionError || supervisorError) {
-    return (
-      <div className="m-4">
-        <div>Something unexpected happened.</div>
-        {sectionError ? sectionError.message : ""}
-        {supervisorError ? supervisorError.message : ""}
-        {isRequestDataError ? isRequestDataError.message : ""}
-      </div>
-    );
-  }
-
   return (
-    <Primitive>
+    <Primitive
+      isLoading={[isSectionLoading, isSupervisorLoading]}
+      isErr={[sectionError, supervisorError, isRequestDataError]}
+      componentName="Home.tsx"
+    >
       <div className="flex gap-2 flex-wrap">
         <SelectionInput
           label="Section"

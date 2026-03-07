@@ -4,14 +4,8 @@ import SelectionInput from "../../reusable/inputs/SelectionInput.tsx";
 import SelectionInputBetweenLabel from "../../reusable/inputs/SelectionInputBetweenLabel.tsx";
 import type { FirstStepInputs } from "../../../pages/Submit.tsx";
 import { createGenericChangeHandler } from "../../../helper/genericInputHandler.ts";
-import useFetch from "../../../hooks/useFetch.tsx";
-import type { Department, FileResource, SectionName } from "@scope/server";
-import LoadingFallback from "../../reusable/LoadingFallback.tsx";
 import fileResourceFetchHandler from "../../../helper/fileResourceFetchHandler.ts";
-
-const SECTION_NAMES_URL = "http://localhost:8000/section/names";
-const FILE_RESOURCES_URL = "http://localhost:8000/budget/fileresources";
-const DEPARTMENTS_URL = "http://localhost:8000/frmprnopr/departments";
+import type { Department, FileResource, SectionName } from "@scope/server";
 
 const FORMS = ["PR", "Cash Advance", "Fixed Asset"];
 const STEP = 1;
@@ -26,6 +20,9 @@ interface FirstStepProps {
     React.SetStateAction<FirstStepInputs>
   >;
   firstStepInputsDefaultValue: FirstStepInputs;
+  sectionNames: SectionName[] | null;
+  fileResources: FileResource[] | null;
+  departments: Department[] | null;
 }
 
 const FirstStep = ({
@@ -33,6 +30,9 @@ const FirstStep = ({
   firstStepInputsGetter,
   firstStepInputsInputsSetter,
   firstStepInputsDefaultValue,
+  sectionNames,
+  fileResources,
+  departments,
 }: FirstStepProps) => {
   const genericChangeHandler = createGenericChangeHandler(
     firstStepInputsInputsSetter,
@@ -55,39 +55,6 @@ const FirstStep = ({
       return false;
     }
   };
-
-  const {
-    data: sectionNames,
-    isLoading: isSectionLoading,
-    isError: isSectionError,
-  } = useFetch<SectionName>(SECTION_NAMES_URL);
-
-  const {
-    data: fileResources,
-    isLoading: isFileResourcesLoading,
-    isError: isFileResourcesError,
-  } = useFetch<FileResource>(FILE_RESOURCES_URL);
-
-  const {
-    data: departments,
-    isLoading: isDepartmentsLoading,
-    isError: isDepartmentsError,
-  } = useFetch<Department>(DEPARTMENTS_URL);
-
-  if (isSectionLoading || isFileResourcesLoading || isDepartmentsLoading) {
-    return <LoadingFallback />;
-  }
-
-  if (isSectionError || isFileResourcesError || isDepartmentsError) {
-    return (
-      <div className="m-4">
-        <div>Something unexpected happened.</div>
-        {isSectionError ? isSectionError.message : ""}
-        {isFileResourcesError ? isFileResourcesError.message : ""}
-        {isDepartmentsError ? isDepartmentsError.message : ""}
-      </div>
-    );
-  }
 
   return (
     <div className="rounded-2xl bg-red-100 p-8 flex flex-col gap-4 flex-1">

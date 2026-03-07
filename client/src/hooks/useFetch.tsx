@@ -24,7 +24,7 @@ const useFetch = <T,>(url: string, param: string = "") => {
           return;
         }
         const error: Error = new Error(
-          `Encountered an error when fetching API. Please ensure your connection is stable.\n(${err}).`,
+          `Encountered an error when fetching data from the database. Please ensure your connection is stable.\n(${err}).`,
         );
         setIsError(error);
       } finally {

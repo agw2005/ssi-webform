@@ -4,7 +4,6 @@ import BudgetViewFilters from "../components/non-reusable/budget/BudgetViewFilte
 import Switch from "../components/reusable/Switch.tsx";
 import BudgetView from "../components/non-reusable/budget/BudgetView.tsx";
 import ReportView from "../components/non-reusable/budget/ReportView.tsx";
-import LoadingFallback from "../components/reusable/LoadingFallback.tsx";
 import type { FileResource, Period } from "@scope/server";
 import useFetch from "../hooks/useFetch.tsx";
 import fileResourceFetchHandler from "../helper/fileResourceFetchHandler.ts";
@@ -30,22 +29,12 @@ const Budget = () => {
     isError: isPeriodsError,
   } = useFetch<Period>(PERIODS_URL);
 
-  if (isFileResourcesLoading && isPeriodsLoading) {
-    return <LoadingFallback />;
-  }
-
-  if (isFileResourcesError && isPeriodsError) {
-    return (
-      <div className="m-4">
-        <div>Something unexpected happened.</div>
-        {isFileResourcesError ? isFileResourcesError.message : ""}
-        {isPeriodsError ? isPeriodsError.message : ""}
-      </div>
-    );
-  }
-
   return (
-    <Primitive>
+    <Primitive
+      isLoading={[isFileResourcesLoading, isPeriodsLoading]}
+      isErr={[isFileResourcesError, isPeriodsError]}
+      componentName="Budget.tsx"
+    >
       <div className="flex gap-2 w-max">
         <Switch
           id="budget-report-view-switch"

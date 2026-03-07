@@ -5,6 +5,16 @@ import ThirdStep from "../components/non-reusable/submit/ThirdStep.tsx";
 import FourthStep from "../components/non-reusable/submit/FourthStep.tsx";
 import FifthStep from "../components/non-reusable/submit/FifthStep.tsx";
 import { useState } from "react";
+import type {
+  Balance,
+  Department,
+  FileResource,
+  Nature,
+  SectionName,
+  UserSection,
+} from "@scope/server";
+import useFetch from "../hooks/useFetch.tsx";
+import useForex from "../hooks/useForex.tsx";
 
 export interface FirstStepInputs {
   name: string;
@@ -52,6 +62,14 @@ export interface FourthStepInputs {
 export interface FifthStepInputs {
   files: File[];
 }
+
+const SECTION_NAMES_URL = "http://localhost:8000/section/names";
+const FILE_RESOURCES_URL = "http://localhost:8000/budget/fileresources";
+const DEPARTMENTS_URL = "http://localhost:8000/frmprnopr/departments";
+const NATURES_URL = "http://localhost:8000/budget/nature";
+const BALANCE_URL = (costCenter: string, period: string, nature: string) =>
+  `http://localhost:8000/budget/nature/${costCenter}/${period}/${nature}`;
+const USER_SECTION_MAPPINGS_URL = "http://localhost:8000/section/users";
 
 const PROGRESS_CONSTRAINT = {
   FIRST_STEP: [1],
@@ -117,13 +135,78 @@ const Submit = () => {
     DEFAULT_VALUES.fifthStep,
   );
 
+  const [activeCostCenter, setActiveCostCenter] = useState<string>("");
+  const [isBalanceLoading, setIsBalanceLoading] = useState<boolean>(false);
+  const [balanceError, setBalanceError] = useState<Error | null>(null);
+
+  const {
+    data: sectionNames,
+    isLoading: isSectionLoading,
+    isError: isSectionError,
+  } = useFetch<SectionName>(SECTION_NAMES_URL);
+
+  const {
+    data: fileResources,
+    isLoading: isFileResourcesLoading,
+    isError: isFileResourcesError,
+  } = useFetch<FileResource>(FILE_RESOURCES_URL);
+
+  const {
+    data: departments,
+    isLoading: isDepartmentsLoading,
+    isError: isDepartmentsError,
+  } = useFetch<Department>(DEPARTMENTS_URL);
+
+  const {
+    data: natures,
+    isLoading: isNaturesLoading,
+    isError: isNaturesError,
+  } = useFetch<Nature>(`${NATURES_URL}/${activeCostCenter || "103"}`);
+
+  const {
+    data: userSectionMappings,
+    isLoading: isUserSectionMappingsLoading,
+    isError: isUserSectionMappingsError,
+  } = useFetch<UserSection>(USER_SECTION_MAPPINGS_URL);
+
+  const {
+    forexInformation,
+    isLoading: _forexIsLoading,
+    error: _forexIsError,
+  } = useForex();
+
+  const fetchBalanceHelper = async (
+    costCenter: string,
+    period: string,
+    nature: string,
+  ) => {
+    setIsBalanceLoading(true);
+    setBalanceError(null);
+    try {
+      const balanceResponse = await fetch(
+        BALANCE_URL(costCenter, period, nature),
+      );
+      if (!balanceResponse.ok)
+        throw new Error(`HTTP error! status: ${balanceResponse.status}`);
+      const balance: Balance[] = await balanceResponse.json();
+      return balance;
+    } catch (err) {
+      setBalanceError(
+        err instanceof Error ? err : new Error("Failed to fetch balance."),
+      );
+      return null;
+    } finally {
+      setIsBalanceLoading(false);
+    }
+  };
+
   const allRequiredFieldsAreFilled = () => {
     const { ext, ...filteredFirstStep } = firstStepInputs;
     const { ext: _d1, ...defaultFirstStep } = DEFAULT_VALUES.firstStep;
     const { formNumber, prNumber, ...filteredSecondStep } = secondStepInputs;
     const {
-      formNumber: _d2,
-      prNumber: _d3,
+      formNumber: _,
+      prNumber: __,
       ...defaultSecondStep
     } = DEFAULT_VALUES.secondStep;
 
@@ -163,7 +246,25 @@ const Submit = () => {
   };
 
   return (
-    <Primitive>
+    <Primitive
+      isLoading={[
+        isSectionLoading,
+        isFileResourcesLoading,
+        isDepartmentsLoading,
+        isNaturesLoading,
+        isBalanceLoading,
+        isUserSectionMappingsLoading,
+      ]}
+      isErr={[
+        isSectionError,
+        isFileResourcesError,
+        isDepartmentsError,
+        isNaturesError,
+        balanceError,
+        isUserSectionMappingsError,
+      ]}
+      componentName="Submit.tsx"
+    >
       <div className="flex flex-col gap-8">
         <div className="flex flex-wrap gap-8">
           <FirstStep
@@ -171,6 +272,9 @@ const Submit = () => {
             firstStepInputsGetter={firstStepInputs}
             firstStepInputsInputsSetter={setFirstStepInputs}
             firstStepInputsDefaultValue={DEFAULT_VALUES.firstStep}
+            sectionNames={sectionNames}
+            fileResources={fileResources}
+            departments={departments}
           />
           {evaluateConstraint(progress, PROGRESS_CONSTRAINT.FIRST_STEP) ? (
             <SecondStep
@@ -189,6 +293,11 @@ const Submit = () => {
             thirdStepInputsGetter={thirdStepInputs}
             thirdStepInputsInputsSetter={setThirdStepInputs}
             thirdStepInputsDefaultValue={DEFAULT_VALUES.thirdStep}
+            forexInformation={forexInformation}
+            departments={departments}
+            natures={natures}
+            setActiveCostCenter={setActiveCostCenter}
+            fetchBalanceHelper={fetchBalanceHelper}
           />
         ) : (
           ""
@@ -200,6 +309,7 @@ const Submit = () => {
               fourthStepInputsGetter={fourthStepInputs}
               fourthStepInputsSetter={setFourthStepInputs}
               fourthStepInputsDefaultValue={DEFAULT_VALUES.fourthStep}
+              userSectionMappings={userSectionMappings}
             />
           ) : (
             ""

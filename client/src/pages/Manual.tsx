@@ -1,7 +1,11 @@
 import Primitive from "../components/reusable/Primitive.tsx";
 
 const Manual = () => {
-  return <Primitive>Manual</Primitive>;
+  return (
+    <Primitive isLoading={[]} isErr={[]} componentName="Manual.tsx">
+      Manual
+    </Primitive>
+  );
 };
 
 export default Manual;

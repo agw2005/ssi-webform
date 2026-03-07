@@ -23,9 +23,13 @@ const Login = () => {
   const loginInformationOnChangeHandler =
     createGenericChangeHandler(setLoginInformation);
 
+  const [isLoginLoading, setIsLoginLoading] = useState(false);
+  const [isLoginError, setIsLoginError] = useState<Error | null>(null);
+
   const navigate = useNavigate();
 
   const handleLoginSubmit = async (data: AuthRequestPayload) => {
+    setIsLoginLoading(true);
     try {
       const response = await fetch(
         "http://localhost:8000/login",
@@ -39,12 +43,24 @@ const Login = () => {
         setShowInvalidCredentialsWarning(true);
       }
     } catch (err) {
-      console.error(err);
+      if (err instanceof Error && err.name === "AbortError") {
+        return;
+      }
+      const error: Error = new Error(
+        `Encountered an error. The database connection or your connection might be having issues.\n(${err}).`,
+      );
+      setIsLoginError(error);
+    } finally {
+      setIsLoginLoading(false);
     }
   };
 
   return (
-    <Primitive>
+    <Primitive
+      isLoading={[isLoginLoading]}
+      isErr={[isLoginError]}
+      componentName="Budget.tsx"
+    >
       <div className="flex flex-col gap-2">
         {showInvalidCredentialsWarning ? (
           <TipBox label="Invalid Credentials" variant="red" />

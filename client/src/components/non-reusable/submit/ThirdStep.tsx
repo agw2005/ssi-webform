@@ -10,17 +10,10 @@ import { useMemo, useState } from "react";
 import Button from "../../reusable/Button.tsx";
 import { dateSplitter } from "../../../helper/dateSplitter.ts";
 import type { Balance, Department, Nature } from "@scope/server";
-import useFetch from "../../../hooks/useFetch.tsx";
-import LoadingFallback from "../../reusable/LoadingFallback.tsx";
 import getCurrentPeriod from "../../../helper/getCurrentPeriod.ts";
-import useForex, { type ForexRates } from "../../../hooks/useForex.tsx";
+import type { ForexRates, ForexAPIResponse } from "../../../hooks/useForex.tsx";
 import formatNumberToString from "../../../helper/formatNumberToString.ts";
 import formatStringToNumber from "../../../helper/formatStringToNumber.ts";
-
-const DEPARTMENTS_URL = "http://localhost:8000/frmprnopr/departments";
-const NATURES_URL = "http://localhost:8000/budget/nature";
-const BALANCE_URL = (costCenter: string, period: string, nature: string) =>
-  `http://localhost:8000/budget/nature/${costCenter}/${period}/${nature}`;
 
 const NO_BALANCE_VALUE = "No balance detected";
 
@@ -56,9 +49,6 @@ const EMPTY_FIELDS_WARNING =
 
 const EMPTY_USAGE_FIELDS_WARNING =
   "One or more required usage fields are empty.\nPlease fill them out before adding a usage.";
-
-const FETCHING_BALANCE_ERROR =
-  "Failed to fetch balance. Please try again or contact the administrator.\n";
 
 export interface Usage {
   costCenter: string;
@@ -105,6 +95,15 @@ interface ThirdStepProps {
     React.SetStateAction<ThirdStepInputs>
   >;
   thirdStepInputsDefaultValue: ThirdStepInputs;
+  forexInformation: ForexAPIResponse | null;
+  departments: Department[] | null;
+  natures: Nature[] | null;
+  setActiveCostCenter: React.Dispatch<React.SetStateAction<string>>;
+  fetchBalanceHelper: (
+    costCenter: string,
+    period: string,
+    nature: string,
+  ) => Promise<Balance[] | null>;
 }
 
 const ThirdStep = ({
@@ -112,18 +111,18 @@ const ThirdStep = ({
   thirdStepInputsGetter,
   thirdStepInputsInputsSetter,
   thirdStepInputsDefaultValue,
+  forexInformation,
+  departments,
+  natures,
+  setActiveCostCenter,
+  fetchBalanceHelper,
 }: ThirdStepProps) => {
   const [usageField, setUsageField] = useState<Usage>(DEFAULT_USAGE);
-
-  const {
-    forexInformation,
-    isLoading: _forexIsLoading,
-    error: _forexIsError,
-  } = useForex();
 
   const genericChangeHandler = createGenericChangeHandler(setUsageField);
 
   const handleCostCenterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setActiveCostCenter(e.target.value);
     setUsageField((prev) => ({
       ...prev,
       costCenter: e.target.value,
@@ -140,30 +139,19 @@ const ThirdStep = ({
       budgetOrNature: e.target.value,
     }));
 
-    try {
-      const balanceResponse = await fetch(
-        BALANCE_URL(usageField.costCenter, usageField.periode, e.target.value),
-      );
+    const balanceData = await fetchBalanceHelper(
+      usageField.costCenter,
+      usageField.periode,
+      e.target.value,
+    );
 
-      if (!balanceResponse.ok) {
-        throw new Error(`HTTP error! status: ${balanceResponse.status}`);
-      }
-
-      const balance: Balance[] = await balanceResponse.json();
-
-      if (balance.length === 0) {
-        setUsageField((prev) => ({
-          ...prev,
-          balance: NO_BALANCE_VALUE,
-        }));
-      } else {
-        setUsageField((prev) => ({
-          ...prev,
-          balance: formatNumberToString(Number(balance[0].Balance)),
-        }));
-      }
-    } catch (err) {
-      console.error(FETCHING_BALANCE_ERROR, err);
+    if (!balanceData || balanceData.length === 0) {
+      setUsageField((prev) => ({ ...prev, balance: NO_BALANCE_VALUE }));
+    } else {
+      setUsageField((prev) => ({
+        ...prev,
+        balance: formatNumberToString(Number(balanceData[0].Balance)),
+      }));
     }
   };
 
@@ -245,31 +233,6 @@ const ThirdStep = ({
     }
   };
 
-  const {
-    data: departments,
-    isLoading: isDepartmentsLoading,
-    isError: isDepartmentsError,
-  } = useFetch<Department>(DEPARTMENTS_URL);
-
-  const {
-    data: natures,
-    isLoading: isNaturesLoading,
-    isError: isNaturesError,
-  } = useFetch<Nature>(`${NATURES_URL}/${usageField.costCenter || "103"}`);
-
-  if (isDepartmentsLoading || isNaturesLoading) {
-    return <LoadingFallback />;
-  }
-
-  if (isDepartmentsError) {
-    return (
-      <div className="m-4">
-        <div>Something unexpected happened.</div>
-        {isDepartmentsError ? isDepartmentsError.message : ""}
-      </div>
-    );
-  }
-
   return (
     <div className="rounded-2xl bg-yellow-100 p-8 flex flex-col gap-4">
       <h1 className="text-3xl font-bold text-yellow-600">Step 3</h1>
@@ -305,11 +268,7 @@ const ThirdStep = ({
             variant="yellow"
             isDisabled={usageField.costCenter === ""}
             defaultDisabledValue="Select Budget/Nature"
-            options={
-              !natures || isNaturesError
-                ? []
-                : natures.map((nature) => nature.Nature)
-            }
+            options={!natures ? [] : natures.map((nature) => nature.Nature)}
             value={usageField.budgetOrNature}
             onChangeHandler={handleBudgetOrNatureChange}
           />

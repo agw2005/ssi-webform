@@ -1,9 +1,13 @@
 import { useAuth } from "../../hooks/useAuth.tsx";
 import ForexInformation from "../non-reusable/navbar/ForexInformation.tsx";
 import { Link } from "react-router-dom";
+import LoadingFallback from "./LoadingFallback.tsx";
 
 interface PrimitiveProps {
   children: React.ReactNode;
+  isLoading: boolean[];
+  isErr: (Error | null)[] | null;
+  componentName: string;
 }
 
 const LINKS = {
@@ -14,8 +18,26 @@ const LINKS = {
   manual: "/manual",
   login: "/login",
 };
-const Primitive = ({ children }: PrimitiveProps) => {
-  const { isAuthorized, isLoading } = useAuth();
+const Primitive = ({
+  children,
+  isLoading,
+  isErr,
+  componentName,
+}: PrimitiveProps) => {
+  const { isAuthorized, isLoading: authIsLoading } = useAuth();
+
+  // for pages that has a react-router loader (they flood the props with undefined for some reason)
+  const loadingsAreNotUndefined = Array.isArray(isLoading) ? isLoading : [];
+  const errorsAreNotUndefined = Array.isArray(isErr) ? isErr : [];
+
+  const isCurrentlyLoading = loadingsAreNotUndefined.some(
+    (loadingsAreNotUndefined) => loadingsAreNotUndefined === true,
+  );
+
+  const activeErrors =
+    errorsAreNotUndefined?.filter(
+      (err): err is Error => err instanceof Error,
+    ) || [];
 
   return (
     <div className="bg-yellow-600/25 min-h-screen pb-16">
@@ -52,7 +74,7 @@ const Primitive = ({ children }: PrimitiveProps) => {
           >
             User Manual
           </Link>
-          {isLoading ? (
+          {authIsLoading ? (
             "Logout"
           ) : !isAuthorized ? (
             ""
@@ -77,13 +99,30 @@ const Primitive = ({ children }: PrimitiveProps) => {
           <ForexInformation />
           <div className="text-xs lg:text-base | px-2 lg:px-4 xl:px-6 2xl:px-8 | bg-black hover:bg-white hover:text-black active:bg-gray-800 active:text-white | flex items-center">
             <p className="select-none">
-              {isLoading ? "Loading" : isAuthorized ? "Approver" : "Requestor"}
+              {authIsLoading
+                ? "Loading"
+                : isAuthorized
+                  ? "Approver"
+                  : "Requestor"}
             </p>
           </div>
         </div>
       </nav>
       <main className="mx-4 lg:mx-8 xl:mx-12 2xl:mx-16 | mt-4 lg:mt-8 xl:mt-12 2xl:mt-16 | bg-white p-4">
-        {children}
+        {isCurrentlyLoading ? (
+          <LoadingFallback />
+        ) : activeErrors.length !== 0 ? (
+          <div className="m-4">
+            <div>
+              Something unexpected happened. ({componentName})<br />
+            </div>
+            {activeErrors.map((error, index) => (
+              <div key={index}>{error.message}</div>
+            ))}
+          </div>
+        ) : (
+          children
+        )}
       </main>
     </div>
   );
