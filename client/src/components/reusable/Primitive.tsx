@@ -102,7 +102,9 @@ const Primitive = ({
           </div>
         </div>
       </nav>
-      <main className="mx-4 lg:mx-8 xl:mx-12 2xl:mx-16 | mt-4 lg:mt-8 xl:mt-12 2xl:mt-16 | bg-white p-4">
+      <main
+        className={`mx-4 lg:mx-8 xl:mx-12 2xl:mx-16 | mt-4 lg:mt-8 xl:mt-12 2xl:mt-16 | bg-white p-4 ${isCurrentlyLoading || activeErrors.length !== 0 ? "w-max pr-16 justify-self-center" : ""}`}
+      >
         {isCurrentlyLoading ? (
           <LoadingFallback />
         ) : activeErrors.length !== 0 ? (
