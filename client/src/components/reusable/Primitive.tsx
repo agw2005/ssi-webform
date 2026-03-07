@@ -2,6 +2,7 @@ import { useAuth } from "../../hooks/useAuth.tsx";
 import ForexInformation from "../non-reusable/navbar/ForexInformation.tsx";
 import { Link } from "react-router-dom";
 import LoadingFallback from "./LoadingFallback.tsx";
+import ErrorFallback from "./ErrorFallback.tsx";
 
 interface PrimitiveProps {
   children: React.ReactNode;
@@ -26,18 +27,11 @@ const Primitive = ({
 }: PrimitiveProps) => {
   const { isAuthorized, isLoading: authIsLoading } = useAuth();
 
-  // for pages that has a react-router loader (they flood the props with undefined for some reason)
-  const loadingsAreNotUndefined = Array.isArray(isLoading) ? isLoading : [];
-  const errorsAreNotUndefined = Array.isArray(isErr) ? isErr : [];
-
-  const isCurrentlyLoading = loadingsAreNotUndefined.some(
-    (loadingsAreNotUndefined) => loadingsAreNotUndefined === true,
-  );
+  const isCurrentlyLoading =
+    isLoading && isLoading.length > 0 && isLoading.every((val) => val === true);
 
   const activeErrors =
-    errorsAreNotUndefined?.filter(
-      (err): err is Error => err instanceof Error,
-    ) || [];
+    isErr?.filter((err): err is Error => err instanceof Error) || [];
 
   return (
     <div className="bg-yellow-600/25 min-h-screen pb-16">
@@ -112,14 +106,7 @@ const Primitive = ({
         {isCurrentlyLoading ? (
           <LoadingFallback />
         ) : activeErrors.length !== 0 ? (
-          <div className="m-4">
-            <div>
-              Something unexpected happened. ({componentName})<br />
-            </div>
-            {activeErrors.map((error, index) => (
-              <div key={index}>{error.message}</div>
-            ))}
-          </div>
+          <ErrorFallback componentName={componentName} errors={activeErrors} />
         ) : (
           children
         )}
