@@ -5,8 +5,9 @@ import getCurrentPeriod from "../helper/getCurrentPeriod.ts";
 import serverDomain from "../helper/serverDomain.ts";
 import { useEffect, useState } from "react";
 import LoadingFallback from "../components/reusable/LoadingFallback.tsx";
+import GeneralReport from "../components/non-reusable/report/GeneralReport.tsx";
 
-interface ReportResponse {
+export interface ReportResponse {
   Periode: string;
   FileResource: string;
   ResourceName: string;
@@ -36,8 +37,24 @@ const MONTHS = [
   "NOVEMBER",
   "DECEMBER",
 ];
+const MONTHS_INDEX = [
+  "01",
+  "02",
+  "03",
+  "04",
+  "05",
+  "06",
+  "07",
+  "08",
+  "09",
+  "10",
+  "11",
+  "12",
+];
 const FH_MONTHS = MONTHS.slice(3, 9);
+const FH_MONTHS_INDEX = MONTHS_INDEX.slice(3, 9);
 const LH_MONTHS = [...MONTHS.slice(9), ...MONTHS.slice(0, 3)];
+const LH_MONTHS_INDEX = [...MONTHS_INDEX.slice(9), ...MONTHS_INDEX.slice(0, 3)];
 const MONTH_SUBCOLS = ["BUD", "USA", "BAL"];
 const extractMonth = (month: string) => month.substring(5, 7);
 const extractYear = (month: string) => month.substring(0, 4);
@@ -181,7 +198,7 @@ const Report = () => {
           Download PDF
         </div>
       </div>
-      <div className="border font-sans flex flex-col gap-4 p-4">
+      <div className="border font-sans flex flex-col gap-4 p-4 overflow-x-auto">
         <div className="flex flex-col items-center">
           {reportType === "general"
             ? TITLES.general(reportPeriod)
@@ -213,58 +230,18 @@ const Report = () => {
                   : ""}
         </div>
 
-        <table className="table-auto border-collapse w-full text-xs">
-          <thead className="sticky top-0 z-10 border">
-            <tr>
-              <th rowSpan={2} className="border p-1">
-                DEPT
-              </th>
-              <th rowSpan={2} className="border p-1">
-                SEC
-                <br />
-                REQ
-              </th>
-              <th rowSpan={2} className="border p-1">
-                NATURE
-              </th>
-              {(getCurrentPeriod(
-                Number(extractYear(reportMonth)),
-                Number(extractMonth(reportMonth)),
-              ).substring(4, 6) === "FH"
-                ? FH_MONTHS
-                : LH_MONTHS
-              ).map((month, index) => {
-                return (
-                  <th key={index} colSpan={3} className="border p-1">
-                    {month}
-                  </th>
-                );
-              })}
-              <th colSpan={3} className="border p-1">
-                TOTAL
-              </th>
-            </tr>
-            <tr>
-              {[...Array(6)].map((_, index) => {
-                return MONTH_SUBCOLS.map((subcolumn, subindex) => {
-                  return (
-                    <th key={`${index}-${subindex}`} className="border p-1">
-                      {subcolumn}
-                    </th>
-                  );
-                });
-              })}
-              <th className="border p-1">USA</th>
-              <th className="border p-1">BAL</th>
-              <th className="border p-1">%</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td></td>
-            </tr>
-          </tbody>
-        </table>
+        <GeneralReport
+          subMonthIndex={
+            reportPeriod.substring(4, 6) === "FH"
+              ? FH_MONTHS_INDEX
+              : LH_MONTHS_INDEX
+          }
+          subMonth={
+            reportPeriod.substring(4, 6) === "FH" ? FH_MONTHS : LH_MONTHS
+          }
+          monthSubColumn={MONTH_SUBCOLS}
+          reportData={reportData || []}
+        />
       </div>
     </>
   );
