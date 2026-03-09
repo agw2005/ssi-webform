@@ -65,7 +65,7 @@ const Login = () => {
         ) : (
           ""
         )}
-        <div className="flex flex-col gap-2 max-w-1/4">
+        <div className="flex flex-col gap-2 lg:max-w-1/4">
           <TextInput
             label="NRP"
             name="user-nrp"
