@@ -12,6 +12,7 @@ import { verifyIsNotAuthorized } from "./helper/verifyIsNotAuthorized.ts";
 import { verifyIsAuthorized } from "./helper/verifyIsAuthorized.ts";
 import LoadingFallback from "./components/reusable/LoadingFallback.tsx";
 import Usage from "./pages/Usage.tsx";
+import Report from "./pages/Report.tsx";
 
 const router = createBrowserRouter([
   { path: "/", element: <Home /> },
@@ -32,6 +33,7 @@ const router = createBrowserRouter([
   },
   { path: "/request/:requestId", element: <Request /> },
   { path: "/usage", element: <Usage /> },
+  { path: "/report", element: <Report /> },
 ]);
 
 createRoot(document.getElementById("root")!).render(

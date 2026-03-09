@@ -13,9 +13,9 @@ const Months = {
   December: 12,
 } as const;
 
-const getCurrentPeriod = () => {
-  const year = new Date().getFullYear();
-  const month = new Date().getMonth() + 1;
+const getCurrentPeriod = (inputYear?: number, inputMonth?: number) => {
+  const year = inputYear || new Date().getFullYear();
+  const month = inputMonth || new Date().getMonth() + 1;
   const formattedYear = month < Months.April ? year - 1 : year;
   const formattedMonth = month < Months.October ? `0${month}` : String(month);
   const type = month > Months.September || month < Months.April ? "LH" : "FH";
