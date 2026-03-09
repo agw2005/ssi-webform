@@ -35,15 +35,8 @@ const MONTHS = [
   "NOVEMBER",
   "DECEMBER",
 ];
-const FH_MONTHS = ["APRIL", "MAY", "JUNE", "JULY", "AUGUST", "SEPTEMBER"];
-const LH_MONTHS = [
-  "OCTOBER",
-  "NOVEMBER",
-  "DECEMBER",
-  "JANUARY",
-  "FEBRUARY",
-  "MARCH",
-];
+const FH_MONTHS = MONTHS.slice(3, 9);
+const LH_MONTHS = [...MONTHS.slice(9), ...MONTHS.slice(0, 3)];
 const MONTH_SUBCOLS = ["BUD", "USA", "BAL"];
 const extractMonth = (month: string) => month.substring(5, 7);
 const extractYear = (month: string) => month.substring(0, 4);
