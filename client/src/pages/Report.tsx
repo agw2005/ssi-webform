@@ -9,6 +9,7 @@ import LoadingFallback from "../components/reusable/LoadingFallback.tsx";
 interface ReportResponse {
   Periode: string;
   FileResource: string;
+  ResourceName: string;
   Department: number;
   DepartmentGroup: number;
   CostCenter: string;
@@ -185,7 +186,12 @@ const Report = () => {
           {reportType === "general"
             ? TITLES.general(reportPeriod)
             : reportType === "byquarter"
-              ? TITLES.byQuarter("[desc]", reportMonth)
+              ? TITLES.byQuarter(
+                  reportData && reportData.length !== 0
+                    ? reportData[0].ResourceName.toUpperCase()
+                    : "...",
+                  reportMonth,
+                )
               : reportType === "bysection"
                 ? TITLES.bySection(reportPeriod)
                 : reportType === "bynature"

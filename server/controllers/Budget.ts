@@ -153,6 +153,7 @@ export const reportInformation = async (
     `SELECT
       Budget.Periode,
       Budget.FileResource,
+      FileResource.Description AS ResourceName,
       Budget.IDSection AS Department,
       Nature.DeptGroup AS DepartmentGroup,
       Budget.CostCenter,
@@ -163,6 +164,8 @@ export const reportInformation = async (
     From Budget
     INNER JOIN Nature
       ON Nature.Nature = Budget.Nature
+	  INNER JOIN FileResource
+      ON FileResource.FileResource = Budget.FileResource
     WHERE (? IS NULL OR Budget.Periode LIKE CONCAT( ? , '%' ))
     AND (? IS NULL OR Budget.FileResource = ?);`,
     [periode, periode, fileResource, fileResource],

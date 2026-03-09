@@ -61,6 +61,7 @@ export interface BudgetViewInformation extends RowDataPacket {
 export interface ReportViewInformation extends RowDataPacket {
   Periode: string;
   FileResource: string;
+  ResourceName: string;
   Department: number;
   DepartmentGroup: string;
   CostCenter: string;
