@@ -54,3 +54,18 @@ export interface BudgetViewInformation extends RowDataPacket {
   Budget: number;
   Balance: number;
 }
+
+/**
+ * Interface for the `Budget` table used for the report view of the Budget page.
+ */
+export interface ReportViewInformation extends RowDataPacket {
+  Periode: string;
+  FileResource: string;
+  Department: number;
+  DepartmentGroup: string;
+  CostCenter: string;
+  Nature: string;
+  Description: string;
+  Budget: number;
+  Balance: number;
+}

@@ -2,6 +2,23 @@ import { useSearchParams } from "react-router-dom";
 import sharp_logo from "../assets/svg/sharp_logo.svg";
 import capitalize from "../helper/capitalize.ts";
 import getCurrentPeriod from "../helper/getCurrentPeriod.ts";
+import serverDomain from "../helper/serverDomain.ts";
+import { useEffect, useState } from "react";
+import LoadingFallback from "../components/reusable/LoadingFallback.tsx";
+
+interface ReportResponse {
+  Periode: string;
+  FileResource: string;
+  Department: number;
+  DepartmentGroup: number;
+  CostCenter: string;
+  Nature: string;
+  Description: string;
+  Budget: string;
+  Balance: string;
+}
+
+const REPORT_URL = `${serverDomain}/budget/report`;
 
 const COMPANY_NAME = "PT SHARP SEMICONDUCTOR INDONESIA";
 const MONTHS = [
@@ -87,11 +104,81 @@ const SUBHEADERS = {
 
 const Report = () => {
   const [searchParams] = useSearchParams();
-
   const reportType = searchParams.get("type") || "";
   const reportFileResource = searchParams.get("fileresource") || "";
   const reportPeriod = searchParams.get("period") || "";
   const reportMonth = searchParams.get("month") || "";
+
+  const [reportData, setReportData] = useState<ReportResponse[] | null>(null);
+  const [isReportDataLoading, setIsReportDataLoading] = useState(false);
+  const [isReportDataError, setIsReportDataError] = useState<Error | null>(
+    null,
+  );
+
+  const applyParams = (url: URL) => {
+    if (reportType === "byquarter") {
+      url.searchParams.set(
+        "periode",
+        `${extractYear(reportMonth)}${FH_MONTHS.includes(MONTHS[Number(extractMonth(reportMonth)) - 1]) ? "FH" : "LH"}`,
+      );
+    } else {
+      url.searchParams.set("periode", reportPeriod);
+    }
+    if (reportFileResource !== "Show All" && reportFileResource !== "") {
+      url.searchParams.set("fileresource", reportFileResource);
+    }
+  };
+
+  useEffect(() => {
+    const requestUrl = new URL(REPORT_URL);
+    const abortController = new AbortController();
+    setIsReportDataLoading(true);
+    applyParams(requestUrl);
+
+    const fetchData = async () => {
+      try {
+        const reportResponse = await fetch(requestUrl.toString(), {
+          signal: abortController.signal,
+        });
+        if (!reportResponse.ok)
+          throw new Error(`HTTP error! status: ${reportResponse.status}`);
+
+        const reportResponseJson: ReportResponse[] =
+          await reportResponse.json();
+
+        setReportData(reportResponseJson);
+      } catch (err) {
+        if (err instanceof Error && err.name === "AbortError") {
+          return;
+        }
+        const error: Error = new Error(
+          `Encountered an error when fetching API. Please ensure your connection is stable.\n(${err}).`,
+        );
+        setIsReportDataError(error);
+      } finally {
+        setIsReportDataLoading(false);
+      }
+    };
+
+    fetchData();
+
+    return () => {
+      abortController.abort();
+    };
+  }, [reportFileResource, reportPeriod]);
+
+  if (isReportDataLoading) {
+    return <LoadingFallback />;
+  }
+
+  if (isReportDataError) {
+    return (
+      <div className="m-4">
+        <div>Something unexpected happened.</div>
+        {isReportDataError ? isReportDataError.message : ""}
+      </div>
+    );
+  }
 
   return (
     <>
