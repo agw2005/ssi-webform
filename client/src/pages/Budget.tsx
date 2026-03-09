@@ -8,9 +8,10 @@ import type { FileResource, Period } from "@scope/server";
 import useFetch from "../hooks/useFetch.tsx";
 import fileResourceFetchHandler from "../helper/fileResourceFetchHandler.ts";
 import getCurrentPeriod from "../helper/getCurrentPeriod.ts";
+import serverDomain from "../helper/serverDomain.ts";
 
-const FILE_RESOURCES_URL = "http://localhost:8000/budget/fileresources";
-const PERIODS_URL = "http://localhost:8000/budget/periods";
+const FILE_RESOURCES_URL = `${serverDomain}/budget/fileresources`;
+const PERIODS_URL = `${serverDomain}/budget/periods`;
 
 const Budget = () => {
   const [viewMode, setViewMode] = useState<"Budget" | "Report">("Budget");

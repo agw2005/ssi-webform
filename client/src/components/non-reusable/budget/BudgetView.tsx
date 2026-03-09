@@ -2,8 +2,9 @@ import React, { useEffect, useState } from "react";
 import LoadingFallback from "../../reusable/LoadingFallback.tsx";
 import formatNumberToString from "../../../helper/formatNumberToString.ts";
 import { Link } from "react-router-dom";
+import serverDomain from "../../../helper/serverDomain.ts";
 
-const BUDGET_VIEW_URL = "http://localhost:8000/budget";
+const BUDGET_VIEW_URL = `${serverDomain}/budget`;
 
 interface BudgetViewProps {
   periode: string;

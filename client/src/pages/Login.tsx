@@ -8,6 +8,7 @@ import TipBox from "../components/reusable/TipBox.tsx";
 import Button from "../components/reusable/Button.tsx";
 import type { AuthRequestPayload, AuthResponse } from "@scope/server";
 import { authRequest } from "@scope/server";
+import serverDomain from "../helper/serverDomain.ts";
 
 const LOGIN_INFORMATION_DEFAULT_VALUE: AuthRequestPayload = {
   nrp: "",
@@ -31,10 +32,7 @@ const Login = () => {
   const handleLoginSubmit = async (data: AuthRequestPayload) => {
     setIsLoginLoading(true);
     try {
-      const response = await fetch(
-        "http://localhost:8000/login",
-        authRequest(data),
-      );
+      const response = await fetch(`${serverDomain}/login`, authRequest(data));
       const responseBody: AuthResponse = await response.json();
       if (response.ok) {
         sessionStorage.setItem("session_token", responseBody.jwt);

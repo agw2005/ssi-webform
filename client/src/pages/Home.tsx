@@ -14,6 +14,7 @@ import Button from "../components/reusable/Button.tsx";
 import stringContainsRedLight from "../helper/stringContainsRedLight.ts";
 import formatNumberToString from "../helper/formatNumberToString.ts";
 import { useDebounce } from "../hooks/useDebounce.tsx";
+import serverDomain from "../helper/serverDomain.ts";
 
 interface CountResponsePayload {
   COUNT: number;
@@ -66,10 +67,10 @@ const STATUSES = [
   "Expired",
 ];
 const SELECT_ALL_INDEX = -99;
-const SECTION_NAMES_URL = "http://localhost:8000/section/names";
-const SUPERVISOR_NAMES_URL = "http://localhost:8000/usermaster/names";
-const REQUESTS_URL = "http://localhost:8000/trace/requests";
-const REQUESTS_COUNT_URL = "http://localhost:8000/trace/requests/count";
+const SECTION_NAMES_URL = `${serverDomain}/section/names`;
+const SUPERVISOR_NAMES_URL = `${serverDomain}/usermaster/names`;
+const REQUESTS_URL = `${serverDomain}/trace/requests`;
+const REQUESTS_COUNT_URL = `${serverDomain}/trace/requests/count`;
 
 const formatDate = (dateString: string) => {
   try {

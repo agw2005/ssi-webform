@@ -9,11 +9,12 @@ import type {
 } from "@scope/server";
 import capitalize from "../helper/capitalize.ts";
 import formatNumberToString from "../helper/formatNumberToString.ts";
+import serverDomain from "../helper/serverDomain.ts";
 
-const REQUEST_OVERVIEW_URL = "http://localhost:8000/trace/request";
-const REQUEST_ITEMS_URL = "http://localhost:8000/frmprd/request";
-const REQUEST_FILES_URL = "http://localhost:8000/uploadfile";
-const REQUEST_APPROVER_PATH_URL = "http://localhost:8000/traced";
+const REQUEST_OVERVIEW_URL = `${serverDomain}/trace/request`;
+const REQUEST_ITEMS_URL = `${serverDomain}/frmprd/request`;
+const REQUEST_FILES_URL = `${serverDomain}/uploadfile`;
+const REQUEST_APPROVER_PATH_URL = `${serverDomain}/traced`;
 
 const ITEMS_COLUMNS = [
   "Description",

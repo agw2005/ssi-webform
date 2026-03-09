@@ -15,6 +15,7 @@ import type {
 } from "@scope/server";
 import useFetch from "../hooks/useFetch.tsx";
 import useForex from "../hooks/useForex.tsx";
+import serverDomain from "../helper/serverDomain.ts";
 
 export interface FirstStepInputs {
   name: string;
@@ -63,13 +64,13 @@ export interface FifthStepInputs {
   files: File[];
 }
 
-const SECTION_NAMES_URL = "http://localhost:8000/section/names";
-const FILE_RESOURCES_URL = "http://localhost:8000/budget/fileresources";
-const DEPARTMENTS_URL = "http://localhost:8000/frmprnopr/departments";
-const NATURES_URL = "http://localhost:8000/budget/nature";
+const SECTION_NAMES_URL = `${serverDomain}/section/names`;
+const FILE_RESOURCES_URL = `${serverDomain}/budget/fileresources`;
+const DEPARTMENTS_URL = `${serverDomain}/frmprnopr/departments`;
+const NATURES_URL = `${serverDomain}/budget/nature`;
 const BALANCE_URL = (costCenter: string, period: string, nature: string) =>
-  `http://localhost:8000/budget/nature/${costCenter}/${period}/${nature}`;
-const USER_SECTION_MAPPINGS_URL = "http://localhost:8000/section/users";
+  `${serverDomain}/budget/nature/${costCenter}/${period}/${nature}`;
+const USER_SECTION_MAPPINGS_URL = `${serverDomain}/section/users`;
 
 const PROGRESS_CONSTRAINT = {
   FIRST_STEP: [1],

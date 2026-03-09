@@ -6,8 +6,9 @@ import getDateRangeAtPeriode from "../helper/getDateRangeAtPeriode.ts";
 import dateToMySQLDateInput from "../helper/dateToMySQLDateInput.ts";
 import formatNumberToString from "../helper/formatNumberToString.ts";
 import capitalize from "../helper/capitalize.ts";
+import serverDomain from "../helper/serverDomain.ts";
 
-const REQUEST_SPECIFIC_URL = "http://localhost:8000/frmprh";
+const REQUEST_SPECIFIC_URL = `${serverDomain}/frmprh`;
 
 interface BudgetViewRequestResponse {
   IDTrace: string;
