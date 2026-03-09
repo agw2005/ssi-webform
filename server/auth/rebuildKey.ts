@@ -1,11 +1,7 @@
 import { decodeBase64 } from "@std/encoding";
-import dotenv from "dotenv";
-import process from "node:process";
-
-dotenv.config();
 
 const rebuildKey = async () => {
-  const jwtKeyString = process.env.JWT_KEY;
+  const jwtKeyString = Deno.env.get("JWT_KEY");
   if (!jwtKeyString) {
     throw new Error("JWT_KEY environment variable is missing");
   }

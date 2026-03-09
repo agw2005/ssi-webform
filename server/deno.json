@@ -3,14 +3,13 @@
   "version": "0.0.0",
   "exports": "./mod.ts",
   "tasks": {
-    "dev": "deno run --watch --allow-net --allow-env --allow-read main.ts",
+    "dev": "deno run --watch --allow-env --env-file=.env --allow-net --allow-read main.ts",
     "keygen": "deno run --allow-read --allow-write ./auth/generateKey.ts"
   },
   "imports": {
     "@oak/oak": "jsr:@oak/oak@^17.2.0",
     "@std/encoding": "jsr:@std/encoding@^1.0.10",
     "@zaubrik/djwt": "jsr:@zaubrik/djwt@^3.0.2",
-    "dotenv": "npm:dotenv@^17.3.1",
     "mysql2": "npm:mysql2@^3.17.2"
   }
 }

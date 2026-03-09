@@ -22,7 +22,6 @@
     "npm:@types/react@^19.2.5": "19.2.7",
     "npm:@vitejs/plugin-react@^5.1.1": "5.1.2_vite@7.3.0__@types+node@24.10.4__picomatch@4.0.3_@babel+core@7.28.5_@types+node@24.10.4",
     "npm:babel-plugin-react-compiler@1": "1.0.0",
-    "npm:dotenv@^17.3.1": "17.3.1",
     "npm:eslint-plugin-react-hooks@^7.0.1": "7.0.1_eslint@9.39.2_zod@4.2.1",
     "npm:eslint-plugin-react-refresh@~0.4.24": "0.4.26_eslint@9.39.2",
     "npm:eslint@^9.39.1": "9.39.2",
@@ -1088,9 +1087,6 @@
     "detect-libc@2.1.2": {
       "integrity": "sha512-Btj2BOOO83o3WyH59e8MgXsxEQVcarkUOpEYrubB0urwnN10yQ364rsiByU11nZlqWYZm05i/of7io4mzihBtQ=="
     },
-    "dotenv@17.3.1": {
-      "integrity": "sha512-IO8C/dzEb6O3F9/twg6ZLXz164a2fhTnEWb95H23Dm4OuN+92NmEAlTrupP9VW6Jm3sO26tQlqyvyi4CsnY9GA=="
-    },
     "electron-to-chromium@1.5.267": {
       "integrity": "sha512-0Drusm6MVRXSOJpGbaSVgcQsuB4hEkMpHXaVstcPmhu5LIedxs1xNK/nIxmQIU/RPC0+1/o0AVZfBTkTNJOdUw=="
     },
@@ -1898,7 +1894,6 @@
           "jsr:@oak/oak@^17.2.0",
           "jsr:@std/encoding@^1.0.10",
           "jsr:@zaubrik/djwt@^3.0.2",
-          "npm:dotenv@^17.3.1",
           "npm:mysql2@^3.17.2"
         ]
       }

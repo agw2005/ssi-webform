@@ -97,6 +97,11 @@ oakApp.use(oakRouter.routes());
 oakApp.use(oakRouter.allowedMethods());
 
 if (import.meta.main) {
-  console.log(`Server is running on http://localhost:8000`);
-  await oakApp.listen({ port: 8000 });
+  console.log(
+    `Server is running on http://${Deno.env.get("SERVER_HOST")}:${Deno.env.get("SERVER_PORT")}`,
+  );
+  console.log(
+    `CORS available for client http://${Deno.env.get("CLIENT_HOST")}:${Deno.env.get("CLIENT_PORT")}`,
+  );
+  await oakApp.listen({ port: Number(Deno.env.get("SERVER_PORT")) });
 }
