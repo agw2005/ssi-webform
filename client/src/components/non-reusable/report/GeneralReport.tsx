@@ -1,5 +1,5 @@
-import React, { useMemo } from "react";
-import type { ReportResponse } from "../../../pages/Report.tsx";
+import React from "react";
+import type { ReportResponse, Row } from "../../../pages/Report.tsx";
 import formatNegativeNumber from "../../../helper/formatNegativeNumber.ts";
 import formatNumberToString from "../../../helper/formatNumberToString.ts";
 
@@ -8,21 +8,7 @@ interface GeneralReportProps {
   subMonth: string[];
   monthSubColumn: string[];
   reportData: ReportResponse[];
-}
-
-interface MonthlyData {
-  budget: number;
-  balance: number;
-  usage: number;
-}
-
-interface Row {
-  Department: number;
-  CostCenter: string;
-  Nature: string;
-  months: Record<string, MonthlyData>;
-  totalBudget: number;
-  totalBalance: number;
+  rowData: Row[];
 }
 
 const GeneralReport = ({
@@ -30,42 +16,8 @@ const GeneralReport = ({
   subMonth,
   monthSubColumn,
   reportData,
+  rowData,
 }: GeneralReportProps) => {
-  const groupedRows = useMemo(() => {
-    const map = new Map<string, Row>();
-
-    reportData.forEach((data) => {
-      const key = `${data.CostCenter}-${data.Nature}`;
-      let row = map.get(key);
-      if (!row) {
-        row = {
-          Department: data.Department,
-          CostCenter: data.CostCenter,
-          Nature: data.Nature,
-          months: {},
-          totalBudget: 0,
-          totalBalance: 0,
-        };
-        map.set(key, row);
-      }
-
-      const monthKey = data.Periode.substring(6, 8);
-      const budget = Number(data.Budget || 0);
-      const balance = Number(data.Balance || 0);
-
-      row.months[monthKey] = {
-        budget,
-        balance,
-        usage: budget - balance,
-      };
-
-      row.totalBudget += budget;
-      row.totalBalance += balance;
-    });
-
-    return Array.from(map.values());
-  }, [reportData]);
-
   if (reportData.length === 0) {
     return <div></div>;
   }
@@ -110,7 +62,7 @@ const GeneralReport = ({
         </tr>
       </thead>
       <tbody>
-        {groupedRows.map((row, index) => {
+        {rowData.map((row, index) => {
           const totalUsage = row.totalBudget - row.totalBalance;
           const percentage =
             row.totalBudget > 0

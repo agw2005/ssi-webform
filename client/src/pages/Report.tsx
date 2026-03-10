@@ -1,7 +1,7 @@
 import { Link, useSearchParams } from "react-router-dom";
 import sharp_logo from "../assets/svg/sharp_logo.svg";
 import serverDomain from "../helper/serverDomain.ts";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import LoadingFallback from "../components/reusable/LoadingFallback.tsx";
 import GeneralReport from "../components/non-reusable/report/GeneralReport.tsx";
 import extractMonthFromFullPeriode from "../helper/extractMonthFromFullPeriode.ts";
@@ -10,6 +10,7 @@ import Titles from "../components/non-reusable/report/Titles.tsx";
 import Description from "../components/non-reusable/report/Description.tsx";
 import getPeriodHalves from "../helper/getPeriodHalves.ts";
 import Button from "../components/reusable/Button.tsx";
+import QuarterlyReport from "../components/non-reusable/report/QuarterlyReport.tsx";
 
 export interface ReportResponse {
   Periode: string;
@@ -22,6 +23,21 @@ export interface ReportResponse {
   Description: string;
   Budget: string;
   Balance: string;
+}
+
+interface MonthlyData {
+  budget: number;
+  balance: number;
+  usage: number;
+}
+
+export interface Row {
+  Department: number;
+  CostCenter: string;
+  Nature: string;
+  months: Record<string, MonthlyData>;
+  totalBudget: number;
+  totalBalance: number;
 }
 
 const REPORT_URL = `${serverDomain}/budget/report`;
@@ -122,18 +138,17 @@ const Report = () => {
               subMonth={comparePeriodHalves(FH_MONTHS, LH_MONTHS)}
               monthSubColumn={MONTH_SUBCOLS}
               reportData={reportData || []}
+              rowData={groupedRows}
             />
           );
         case "byquarter":
           return (
-            <GeneralReport
-              subMonthIndex={comparePeriodHalves(
-                FH_MONTHS_INDEX,
-                LH_MONTHS_INDEX,
-              )}
-              subMonth={comparePeriodHalves(FH_MONTHS, LH_MONTHS)}
-              monthSubColumn={MONTH_SUBCOLS}
+            <QuarterlyReport
+              months={MONTHS}
+              monthSubColumn={[...MONTH_SUBCOLS, "%"]}
               reportData={reportData || []}
+              month={reportMonth}
+              rowData={groupedRows}
             />
           );
         case "bysection":
@@ -144,8 +159,9 @@ const Report = () => {
                 LH_MONTHS_INDEX,
               )}
               subMonth={comparePeriodHalves(FH_MONTHS, LH_MONTHS)}
-              monthSubColumn={MONTH_SUBCOLS}
+              monthSubColumn={[...MONTH_SUBCOLS, "%"]}
               reportData={reportData || []}
+              rowData={groupedRows}
             />
           );
         case "bynature":
@@ -156,8 +172,9 @@ const Report = () => {
                 LH_MONTHS_INDEX,
               )}
               subMonth={comparePeriodHalves(FH_MONTHS, LH_MONTHS)}
-              monthSubColumn={MONTH_SUBCOLS}
+              monthSubColumn={[...MONTH_SUBCOLS, "%"]}
               reportData={reportData || []}
+              rowData={groupedRows}
             />
           );
         default:
@@ -224,6 +241,41 @@ const Report = () => {
     };
   }, [reportFileResource, reportPeriod]);
 
+  const groupedRows = useMemo(() => {
+    const map = new Map<string, Row>();
+
+    reportData?.forEach((data) => {
+      const key = `${data.CostCenter}-${data.Nature}`;
+      let row = map.get(key);
+      if (!row) {
+        row = {
+          Department: data.Department,
+          CostCenter: data.CostCenter,
+          Nature: data.Nature,
+          months: {},
+          totalBudget: 0,
+          totalBalance: 0,
+        };
+        map.set(key, row);
+      }
+
+      const monthKey = data.Periode.substring(6, 8);
+      const budget = Number(data.Budget || 0);
+      const balance = Number(data.Balance || 0);
+
+      row.months[monthKey] = {
+        budget,
+        balance,
+        usage: budget - balance,
+      };
+
+      row.totalBudget += budget;
+      row.totalBalance += balance;
+    });
+
+    return Array.from(map.values());
+  }, [reportData]);
+
   if (isReportDataLoading) {
     return <LoadingFallback />;
   }
@@ -274,13 +326,7 @@ const Report = () => {
           )}
         </div>
 
-        {}
-        <GeneralReport
-          subMonthIndex={comparePeriodHalves(FH_MONTHS_INDEX, LH_MONTHS_INDEX)}
-          subMonth={comparePeriodHalves(FH_MONTHS, LH_MONTHS)}
-          monthSubColumn={MONTH_SUBCOLS}
-          reportData={reportData || []}
-        />
+        {render.table(reportType)}
       </div>
     </>
   );

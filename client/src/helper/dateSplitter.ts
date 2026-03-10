@@ -10,3 +10,5 @@ export const dateSplitter = (
   const [year, month, day] = dateString.split("-");
   return [year, month, day];
 };
+
+export default dateSplitter;
