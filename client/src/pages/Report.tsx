@@ -12,6 +12,7 @@ import getPeriodHalves from "../helper/getPeriodHalves.ts";
 import Button from "../components/reusable/Button.tsx";
 import QuarterlyReport from "../components/non-reusable/report/QuarterlyReport.tsx";
 import SectionReport from "client/src/components/non-reusable/report/SectionReport.tsx";
+import NatureReport from "../components/non-reusable/report/NatureReport.tsx";
 
 export interface ReportResponse {
   Periode: string;
@@ -170,7 +171,7 @@ const Report = () => {
           );
         case "bynature":
           return (
-            <GeneralReport
+            <NatureReport
               subMonthIndex={comparePeriodHalves(
                 FH_MONTHS_INDEX,
                 LH_MONTHS_INDEX,
@@ -178,7 +179,8 @@ const Report = () => {
               subMonth={comparePeriodHalves(FH_MONTHS, LH_MONTHS)}
               monthSubColumn={[...MONTH_SUBCOLS, "%"]}
               reportData={reportData || []}
-              rowData={byDeptAndNatureRows}
+              rowData={byNatureAndAdmOrProdRows}
+              period={reportPeriod}
             />
           );
         default:
@@ -343,6 +345,69 @@ const Report = () => {
         return descriptionSorting;
       }
       return rowA.Nature.localeCompare(rowB.Nature);
+    });
+  }, [reportData]);
+
+  const byNatureAndAdmOrProdRows = useMemo(() => {
+    const map = new Map<string, Row>();
+
+    reportData?.forEach((data) => {
+      const key = `${data.Nature}`;
+      let row = map.get(key);
+
+      if (!row) {
+        row = {
+          Department: data.Department,
+          CostCenter: data.CostCenter,
+          Nature: data.Nature,
+          DepartmentGroup: data.DepartmentGroup,
+          Description: data.Description,
+          months: {},
+          totalBudget: 0,
+          totalBalance: 0,
+        };
+        map.set(key, row);
+      }
+
+      const monthKey = data.Periode.substring(6, 8);
+      const budget = Number(data.Budget || 0);
+      const balance = Number(data.Balance || 0);
+      const usage = budget - balance;
+
+      if (!row.months[monthKey]) {
+        row.months[monthKey] = { budget: 0, balance: 0, usage: 0 };
+      }
+
+      row.months[monthKey].budget += budget;
+      row.months[monthKey].balance += balance;
+      row.months[monthKey].usage += usage;
+
+      row.totalBudget += budget;
+      row.totalBalance += balance;
+    });
+
+    return Array.from(map.values()).sort((rowA, rowB) => {
+      const categoryA = rowA.Description.includes("(ADM)")
+        ? "Administration"
+        : "Production";
+      const categoryB = rowB.Description.includes("(ADM)")
+        ? "Administration"
+        : "Production";
+
+      if (categoryA !== categoryB) {
+        return categoryA.localeCompare(categoryB);
+      }
+
+      const natureSorting = rowA.Nature.localeCompare(rowB.Nature);
+      if (natureSorting !== 0) {
+        return natureSorting;
+      }
+
+      if (rowA.Department !== rowB.Department) {
+        return Number(rowA.Department) - Number(rowB.Department);
+      }
+
+      return rowA.Description.localeCompare(rowB.Description);
     });
   }, [reportData]);
 
