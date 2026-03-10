@@ -141,7 +141,7 @@ const Report = () => {
               subMonth={comparePeriodHalves(FH_MONTHS, LH_MONTHS)}
               monthSubColumn={MONTH_SUBCOLS}
               reportData={reportData || []}
-              rowData={groupedRows}
+              rowData={byCostCenterAndNatureRows}
             />
           );
         case "byquarter":
@@ -151,7 +151,7 @@ const Report = () => {
               monthSubColumn={[...MONTH_SUBCOLS, "%"]}
               reportData={reportData || []}
               month={reportMonth}
-              rowData={groupedRows}
+              rowData={byCostCenterAndNatureRows}
             />
           );
         case "bysection":
@@ -164,7 +164,7 @@ const Report = () => {
               subMonth={comparePeriodHalves(FH_MONTHS, LH_MONTHS)}
               monthSubColumn={[...MONTH_SUBCOLS, "%"]}
               reportData={reportData || []}
-              rowData={groupedRows}
+              rowData={byDeptAndNatureRows}
               period={reportPeriod}
             />
           );
@@ -178,7 +178,7 @@ const Report = () => {
               subMonth={comparePeriodHalves(FH_MONTHS, LH_MONTHS)}
               monthSubColumn={[...MONTH_SUBCOLS, "%"]}
               reportData={reportData || []}
-              rowData={groupedRows}
+              rowData={byDeptAndNatureRows}
             />
           );
         default:
@@ -245,7 +245,7 @@ const Report = () => {
     };
   }, [reportFileResource, reportPeriod]);
 
-  const groupedRows = useMemo(() => {
+  const byCostCenterAndNatureRows = useMemo(() => {
     const map = new Map<string, Row>();
 
     reportData?.forEach((data) => {
@@ -280,6 +280,58 @@ const Report = () => {
     });
 
     //this will sort the array by Department, Description, and Nature! DO NOT CHANGE!!!
+    return Array.from(map.values()).sort((rowA, rowB) => {
+      if (rowA.Department !== rowB.Department) {
+        return rowA.Department - rowB.Department;
+      }
+      const descriptionSorting = rowA.Description.localeCompare(
+        rowB.Description,
+      );
+      if (descriptionSorting !== 0) {
+        return descriptionSorting;
+      }
+      return rowA.Nature.localeCompare(rowB.Nature);
+    });
+  }, [reportData]);
+
+  const byDeptAndNatureRows = useMemo(() => {
+    const map = new Map<string, Row>();
+
+    reportData?.forEach((data) => {
+      const key = `${data.Department}-${data.Nature}`;
+      let row = map.get(key);
+
+      if (!row) {
+        row = {
+          Department: data.Department,
+          CostCenter: data.CostCenter,
+          Nature: data.Nature,
+          DepartmentGroup: data.DepartmentGroup,
+          Description: data.Description,
+          months: {},
+          totalBudget: 0,
+          totalBalance: 0,
+        };
+        map.set(key, row);
+      }
+
+      const monthKey = data.Periode.substring(6, 8);
+      const budget = Number(data.Budget || 0);
+      const balance = Number(data.Balance || 0);
+      const usage = budget - balance;
+
+      if (!row.months[monthKey]) {
+        row.months[monthKey] = { budget: 0, balance: 0, usage: 0 };
+      }
+
+      row.months[monthKey].budget += budget;
+      row.months[monthKey].balance += balance;
+      row.months[monthKey].usage += usage;
+
+      row.totalBudget += budget;
+      row.totalBalance += balance;
+    });
+
     return Array.from(map.values()).sort((rowA, rowB) => {
       if (rowA.Department !== rowB.Department) {
         return rowA.Department - rowB.Department;

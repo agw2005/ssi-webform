@@ -19,6 +19,7 @@ const SectionReport = ({
   rowData,
   period,
 }: SectionReportProps) => {
+  console.log(rowData);
   if (reportData.length === 0) {
     return <div></div>;
   }
@@ -82,6 +83,10 @@ const SectionReport = ({
                   usage: 0,
                   balance: 0,
                 };
+                const percentage =
+                  monthData.budget > 0
+                    ? (monthData.balance / monthData.budget) * 100
+                    : 0;
 
                 return (
                   <React.Fragment key={subIndex}>
@@ -95,10 +100,7 @@ const SectionReport = ({
                       {formatNegativeNumber(monthData.balance)}
                     </td>
                     <td className="text-[0.75rem] border p-2 text-center">
-                      {formatNegativeNumber(
-                        (monthData.balance / monthData.budget) * 100,
-                        "%",
-                      )}
+                      {formatNegativeNumber(percentage, "%")}
                     </td>
                   </React.Fragment>
                 );
