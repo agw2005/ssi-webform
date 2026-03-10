@@ -66,6 +66,10 @@ const GeneralReport = ({
     return Array.from(map.values());
   }, [reportData]);
 
+  if (reportData.length === 0) {
+    return <div></div>;
+  }
+
   return (
     <table className="table-auto border border-collapse w-full text-[0.6rem]">
       <thead className="border">

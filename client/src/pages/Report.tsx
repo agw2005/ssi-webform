@@ -1,11 +1,15 @@
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import sharp_logo from "../assets/svg/sharp_logo.svg";
-import capitalize from "../helper/capitalize.ts";
-import getCurrentPeriod from "../helper/getCurrentPeriod.ts";
 import serverDomain from "../helper/serverDomain.ts";
 import { useEffect, useState } from "react";
 import LoadingFallback from "../components/reusable/LoadingFallback.tsx";
 import GeneralReport from "../components/non-reusable/report/GeneralReport.tsx";
+import extractMonthFromFullPeriode from "../helper/extractMonthFromFullPeriode.ts";
+import extractYearFromFullPeriode from "../helper/extractYearFromFullPeriode.ts";
+import Titles from "../components/non-reusable/report/Titles.tsx";
+import Description from "../components/non-reusable/report/Description.tsx";
+import getPeriodHalves from "../helper/getPeriodHalves.ts";
+import Button from "../components/reusable/Button.tsx";
 
 export interface ReportResponse {
   Periode: string;
@@ -56,62 +60,6 @@ const FH_MONTHS_INDEX = MONTHS_INDEX.slice(3, 9);
 const LH_MONTHS = [...MONTHS.slice(9), ...MONTHS.slice(0, 3)];
 const LH_MONTHS_INDEX = [...MONTHS_INDEX.slice(9), ...MONTHS_INDEX.slice(0, 3)];
 const MONTH_SUBCOLS = ["BUD", "USA", "BAL"];
-const extractMonth = (month: string) => month.substring(5, 7);
-const extractYear = (month: string) => month.substring(0, 4);
-
-const TITLES = {
-  general: (periode: string) => (
-    <>
-      <h1 className="text-xl font-bold">
-        BUDGET USAGE SUPPLIES, FIX AND REPAIR
-      </h1>
-      <h2 className="text-xl font-bold">{periode}</h2>
-    </>
-  ),
-  byQuarter: (desc: string, month: string) => (
-    <>
-      <h1 className="text-xl font-bold">{`REPORT BUDGET ${desc}`}</h1>
-      <h2 className="text-xl font-bold">
-        {getCurrentPeriod(
-          Number(extractYear(month)),
-          Number(extractMonth(month)),
-        ).substring(0, 5)}
-      </h2>
-    </>
-  ),
-  bySection: (periode: string) => (
-    <>
-      <h1 className="text-xl font-bold">EXPENSES BUDGET REPORT</h1>
-      <h2 className="text-xl font-bold">{periode}</h2>
-    </>
-  ),
-  byNature: (periode: string) => (
-    <>
-      <h1 className="text-xl font-bold">EXPENSES BUDGET REPORT</h1>
-      <h2 className="text-xl font-bold">{periode}</h2>
-    </>
-  ),
-};
-
-const SUBHEADERS = {
-  general: (fileResource: string) => (
-    <>
-      <h3 className="text-sm font-medium">
-        File Resource : {fileResource === "Show All" ? "%" : fileResource}
-      </h3>
-    </>
-  ),
-  byQuarter: (fileResource: string, month: string) => (
-    <>
-      <h3 className="text-sm font-medium">File Resource : {fileResource}</h3>
-      <h3 className="text-sm font-medium">
-        Month : {capitalize(MONTHS[Number(extractMonth(month)) - 1])}
-      </h3>
-    </>
-  ),
-  bySection: <div></div>,
-  byNature: <div></div>,
-};
 
 const Report = () => {
   const [searchParams] = useSearchParams();
@@ -126,11 +74,109 @@ const Report = () => {
     null,
   );
 
+  const render = {
+    title: (typeOfReport: string) => {
+      switch (typeOfReport) {
+        case "general":
+          return Titles.general(reportPeriod);
+        case "byquarter":
+          return Titles.byQuarter(
+            reportData && reportData.length !== 0
+              ? reportData[0].ResourceName.toUpperCase()
+              : "...",
+            reportMonth,
+          );
+        case "bysection":
+          return Titles.bySection(reportPeriod);
+        case "bynature":
+          return Titles.byNature(reportPeriod);
+        default:
+          return "";
+      }
+    },
+    description: (typeOfReport: string) => {
+      switch (typeOfReport) {
+        case "general":
+          return Description.general(reportFileResource);
+        case "byquarter":
+          return Description.byQuarter(reportFileResource, reportMonth);
+        case "bysection":
+          return Description.empty();
+        case "bynature":
+          return Description.empty();
+        case "empty":
+          return Description.empty();
+        default:
+          return "";
+      }
+    },
+    table: (typeOfReport: string) => {
+      switch (typeOfReport) {
+        case "general":
+          return (
+            <GeneralReport
+              subMonthIndex={comparePeriodHalves(
+                FH_MONTHS_INDEX,
+                LH_MONTHS_INDEX,
+              )}
+              subMonth={comparePeriodHalves(FH_MONTHS, LH_MONTHS)}
+              monthSubColumn={MONTH_SUBCOLS}
+              reportData={reportData || []}
+            />
+          );
+        case "byquarter":
+          return (
+            <GeneralReport
+              subMonthIndex={comparePeriodHalves(
+                FH_MONTHS_INDEX,
+                LH_MONTHS_INDEX,
+              )}
+              subMonth={comparePeriodHalves(FH_MONTHS, LH_MONTHS)}
+              monthSubColumn={MONTH_SUBCOLS}
+              reportData={reportData || []}
+            />
+          );
+        case "bysection":
+          return (
+            <GeneralReport
+              subMonthIndex={comparePeriodHalves(
+                FH_MONTHS_INDEX,
+                LH_MONTHS_INDEX,
+              )}
+              subMonth={comparePeriodHalves(FH_MONTHS, LH_MONTHS)}
+              monthSubColumn={MONTH_SUBCOLS}
+              reportData={reportData || []}
+            />
+          );
+        case "bynature":
+          return (
+            <GeneralReport
+              subMonthIndex={comparePeriodHalves(
+                FH_MONTHS_INDEX,
+                LH_MONTHS_INDEX,
+              )}
+              subMonth={comparePeriodHalves(FH_MONTHS, LH_MONTHS)}
+              monthSubColumn={MONTH_SUBCOLS}
+              reportData={reportData || []}
+            />
+          );
+        default:
+          return "";
+      }
+    },
+  };
+
+  const dataExist = reportData !== null && reportData.length !== 0;
+
+  const comparePeriodHalves = <T, U>(fhValue: T[], lhValue: U[]) => {
+    return getPeriodHalves(reportPeriod) === "FH" ? fhValue : lhValue;
+  };
+
   const applyParams = (url: URL) => {
     if (reportType === "byquarter") {
       url.searchParams.set(
         "periode",
-        `${extractYear(reportMonth)}${FH_MONTHS.includes(MONTHS[Number(extractMonth(reportMonth)) - 1]) ? "FH" : "LH"}`,
+        `${extractYearFromFullPeriode(reportMonth)}${FH_MONTHS.includes(MONTHS[Number(extractMonthFromFullPeriode(reportMonth)) - 1]) ? "FH" : "LH"}`,
       );
     } else {
       url.searchParams.set("periode", reportPeriod);
@@ -191,7 +237,20 @@ const Report = () => {
     );
   }
 
-  return (
+  return !dataExist ? (
+    <div className="m-8 flex flex-col items-center gap-4">
+      <h1 className="text-3xl font-bold">NO DATA FOUND</h1>
+      <h2 className="text-xl font-bold">
+        No data exist for this combination of{" "}
+        <span className="text-red-700">File Resource</span>,{" "}
+        <span className="text-green-700">Month</span>, or{" "}
+        <span className="text-blue-700">Period</span>
+      </h2>
+      <Link to="/budget">
+        <Button id="go-back" variant="black" label="Go Back" />
+      </Link>
+    </div>
+  ) : (
     <>
       <div className="border bg-black flex p-1">
         <div className="bg-white hover:bg-white/85 active:bg-white/70 | flex border p-1 select-none">
@@ -200,45 +259,25 @@ const Report = () => {
       </div>
       <div className="border font-sans flex flex-col gap-4 p-4 overflow-x-auto">
         <div className="flex flex-col items-center">
-          {reportType === "general"
-            ? TITLES.general(reportPeriod)
-            : reportType === "byquarter"
-              ? TITLES.byQuarter(
-                  reportData && reportData.length !== 0
-                    ? reportData[0].ResourceName.toUpperCase()
-                    : "...",
-                  reportMonth,
-                )
-              : reportType === "bysection"
-                ? TITLES.bySection(reportPeriod)
-                : reportType === "bynature"
-                  ? TITLES.byNature(reportPeriod)
-                  : ""}
+          {!dataExist ? "" : render.title(reportType)}
         </div>
 
         <div className="flex flex-col items-start">
-          <img src={sharp_logo} alt="Sharp Logo" className="h-4" />
-          <h3 className="text-sm font-medium">{COMPANY_NAME}</h3>
-          {reportType === "general"
-            ? SUBHEADERS.general(reportFileResource)
-            : reportType === "byquarter"
-              ? SUBHEADERS.byQuarter(reportFileResource, reportMonth)
-              : reportType === "bysection"
-                ? SUBHEADERS.bySection
-                : reportType === "bynature"
-                  ? SUBHEADERS.byNature
-                  : ""}
+          {!dataExist ? (
+            ""
+          ) : (
+            <>
+              <img src={sharp_logo} alt="Sharp Logo" className="h-4" />
+              <h3 className="text-sm font-medium">{COMPANY_NAME}</h3>
+              {render.description(reportType)}
+            </>
+          )}
         </div>
 
+        {}
         <GeneralReport
-          subMonthIndex={
-            reportPeriod.substring(4, 6) === "FH"
-              ? FH_MONTHS_INDEX
-              : LH_MONTHS_INDEX
-          }
-          subMonth={
-            reportPeriod.substring(4, 6) === "FH" ? FH_MONTHS : LH_MONTHS
-          }
+          subMonthIndex={comparePeriodHalves(FH_MONTHS_INDEX, LH_MONTHS_INDEX)}
+          subMonth={comparePeriodHalves(FH_MONTHS, LH_MONTHS)}
           monthSubColumn={MONTH_SUBCOLS}
           reportData={reportData || []}
         />
