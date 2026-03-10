@@ -11,6 +11,7 @@ import Description from "../components/non-reusable/report/Description.tsx";
 import getPeriodHalves from "../helper/getPeriodHalves.ts";
 import Button from "../components/reusable/Button.tsx";
 import QuarterlyReport from "../components/non-reusable/report/QuarterlyReport.tsx";
+import SectionReport from "client/src/components/non-reusable/report/SectionReport.tsx";
 
 export interface ReportResponse {
   Periode: string;
@@ -35,6 +36,8 @@ export interface Row {
   Department: number;
   CostCenter: string;
   Nature: string;
+  DepartmentGroup: number;
+  Description: string;
   months: Record<string, MonthlyData>;
   totalBudget: number;
   totalBalance: number;
@@ -153,7 +156,7 @@ const Report = () => {
           );
         case "bysection":
           return (
-            <GeneralReport
+            <SectionReport
               subMonthIndex={comparePeriodHalves(
                 FH_MONTHS_INDEX,
                 LH_MONTHS_INDEX,
@@ -162,6 +165,7 @@ const Report = () => {
               monthSubColumn={[...MONTH_SUBCOLS, "%"]}
               reportData={reportData || []}
               rowData={groupedRows}
+              period={reportPeriod}
             />
           );
         case "bynature":
@@ -252,6 +256,8 @@ const Report = () => {
           Department: data.Department,
           CostCenter: data.CostCenter,
           Nature: data.Nature,
+          DepartmentGroup: data.DepartmentGroup,
+          Description: data.Description,
           months: {},
           totalBudget: 0,
           totalBalance: 0,
@@ -273,7 +279,19 @@ const Report = () => {
       row.totalBalance += balance;
     });
 
-    return Array.from(map.values());
+    //this will sort the array by Department, Description, and Nature! DO NOT CHANGE!!!
+    return Array.from(map.values()).sort((rowA, rowB) => {
+      if (rowA.Department !== rowB.Department) {
+        return rowA.Department - rowB.Department;
+      }
+      const descriptionSorting = rowA.Description.localeCompare(
+        rowB.Description,
+      );
+      if (descriptionSorting !== 0) {
+        return descriptionSorting;
+      }
+      return rowA.Nature.localeCompare(rowB.Nature);
+    });
   }, [reportData]);
 
   if (isReportDataLoading) {
