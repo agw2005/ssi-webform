@@ -11,8 +11,8 @@ import Description from "../components/non-reusable/report/Description.tsx";
 import getPeriodHalves from "../helper/getPeriodHalves.ts";
 import Button from "../components/reusable/Button.tsx";
 import QuarterlyReport from "../components/non-reusable/report/QuarterlyReport.tsx";
-import SectionReport from "client/src/components/non-reusable/report/SectionReport.tsx";
 import NatureReport from "../components/non-reusable/report/NatureReport.tsx";
+import SectionReport from "../components/non-reusable/report/SectionReport.tsx";
 
 export interface ReportResponse {
   Periode: string;
