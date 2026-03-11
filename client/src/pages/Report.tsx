@@ -79,7 +79,7 @@ const FH_MONTHS = MONTHS.slice(3, 9);
 const FH_MONTHS_INDEX = MONTHS_INDEX.slice(3, 9);
 const LH_MONTHS = [...MONTHS.slice(9), ...MONTHS.slice(0, 3)];
 const LH_MONTHS_INDEX = [...MONTHS_INDEX.slice(9), ...MONTHS_INDEX.slice(0, 3)];
-const MONTH_SUBCOLS = ["BUD", "USA", "BAL"];
+const MONTH_SUBCOLS = ["BUDGET", "USAGE", "BALANCE"];
 
 const Report = () => {
   const [searchParams] = useSearchParams();

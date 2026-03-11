@@ -1,6 +1,7 @@
 import React from "react";
 import type { ReportResponse, Row } from "../../../pages/Report.tsx";
 import formatNegativeNumber from "../../../helper/formatNegativeNumber.ts";
+import capitalize from "../../../helper/capitalize.ts";
 
 interface NatureReportProps {
   subMonthIndex: string[];
@@ -9,6 +10,13 @@ interface NatureReportProps {
   reportData: ReportResponse[];
   rowData: Row[];
   period: string;
+}
+
+interface NatureReportFooter {
+  month: string;
+  totalBudget: number;
+  totalUsage: number;
+  totalBalance: number;
 }
 
 const NatureReport = ({
@@ -35,16 +43,57 @@ const NatureReport = ({
     {} as Record<string, number>,
   );
 
+  const tableFooter: NatureReportFooter[] = subMonthIndex.map((monthIndex) => {
+    const totals = rowData.reduce(
+      (acc, row) => {
+        const monthData = row.months?.[monthIndex];
+
+        if (monthData) {
+          acc.totalBudget += monthData.budget || 0;
+          acc.totalUsage += monthData.usage || 0;
+          acc.totalBalance += monthData.balance || 0;
+        }
+
+        return acc;
+      },
+      {
+        totalBudget: 0,
+        totalUsage: 0,
+        totalBalance: 0,
+      },
+    );
+
+    return {
+      month: monthIndex,
+      ...totals,
+    };
+  });
+
+  const grandTotal: NatureReportFooter = tableFooter.reduce(
+    (current, next) => {
+      current.totalBudget += next.totalBudget;
+      current.totalUsage += next.totalUsage;
+      current.totalBalance += next.totalBalance;
+      return current;
+    },
+    {
+      month: "AGGREGATED",
+      totalBudget: 0,
+      totalUsage: 0,
+      totalBalance: 0,
+    },
+  );
+
   return (
     <table className="table-auto border border-collapse w-full text-[0.6rem]">
       <thead className="border">
         <tr>
           <th rowSpan={2} className="border p-1"></th>
           <th rowSpan={2} className="border p-1">
-            SECTION
+            NATURE
           </th>
           <th rowSpan={2} className="border p-1">
-            NATURE
+            DESCRIPTION
           </th>
           {subMonth.map((month, index) => (
             <th key={index} colSpan={4} className="border p-1">
@@ -99,10 +148,10 @@ const NatureReport = ({
                 </td>
               )}
               <td className="text-[0.75rem] border p-2 whitespace-nowrap text-center">
-                {row.Description}
+                {row.Nature}
               </td>
               <td className="text-[0.75rem] border p-2 whitespace-nowrap text-center">
-                {row.Nature}
+                {row.Description}
               </td>
               {subMonthIndex.map((subMonthKey, subIndex) => {
                 const monthData = row.months[subMonthKey] || {
@@ -148,6 +197,69 @@ const NatureReport = ({
           );
         })}
       </tbody>
+      <tfoot>
+        <tr>
+          <td
+            colSpan={3}
+            className="text-[0.75rem] border p-2 whitespace-nowrap text-center"
+          >
+            Total
+          </td>
+          {subMonthIndex.map((monthIndex, index) => {
+            const currentMonthData = tableFooter.find(
+              (tableFooterData) => tableFooterData.month === monthIndex,
+            );
+            const currentMonthTotalBudget = currentMonthData?.totalBudget || 0;
+            const currentMonthTotalUsage = currentMonthData?.totalUsage || 0;
+            const currentMonthTotalBalance =
+              currentMonthData?.totalBalance || 0;
+            const currentMonthTotalPercentage =
+              (currentMonthTotalBalance / currentMonthTotalBudget) * 100;
+
+            return (
+              <React.Fragment key={index}>
+                <td className="text-[0.75rem] border p-2 whitespace-nowrap text-center">
+                  {formatNegativeNumber(currentMonthTotalBudget)}
+                </td>
+                <td className="text-[0.75rem] border p-2 whitespace-nowrap text-center">
+                  {formatNegativeNumber(currentMonthTotalUsage)}
+                </td>
+                <td className="text-[0.75rem] border p-2 whitespace-nowrap text-center">
+                  {formatNegativeNumber(currentMonthTotalBalance)}
+                </td>
+                <td className="text-[0.75rem] border p-2 whitespace-nowrap text-center">
+                  {formatNegativeNumber(currentMonthTotalPercentage, "%")}
+                </td>
+              </React.Fragment>
+            );
+          })}
+          {monthSubColumn.map((subColumn, index) => {
+            const percentage =
+              (grandTotal.totalBalance / grandTotal.totalBudget) * 100;
+            return subColumn === "%" ? (
+              <td
+                key={index}
+                className="text-[0.75rem] border p-2 whitespace-nowrap text-center"
+              >
+                {formatNegativeNumber(percentage, "%")}
+              </td>
+            ) : (
+              <td
+                key={index}
+                className="text-[0.75rem] border p-2 whitespace-nowrap text-center"
+              >
+                {formatNegativeNumber(
+                  Number(
+                    grandTotal[
+                      `total${capitalize(subColumn)}` as keyof NatureReportFooter
+                    ],
+                  ),
+                )}
+              </td>
+            );
+          })}
+        </tr>
+      </tfoot>
     </table>
   );
 };
