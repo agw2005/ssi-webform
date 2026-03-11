@@ -96,10 +96,14 @@ const SectionReport = ({
                     <td className="text-[0.75rem] border p-2 text-center">
                       {formatNegativeNumber(monthData.usage)}
                     </td>
-                    <td className="text-[0.75rem] border p-2 text-center">
+                    <td
+                      className={`text-[0.75rem] border p-2 text-center ${monthData.balance < 0 ? "bg-red-700 text-white border-black" : "bg-white"}`}
+                    >
                       {formatNegativeNumber(monthData.balance)}
                     </td>
-                    <td className="text-[0.75rem] border p-2 text-center">
+                    <td
+                      className={`text-[0.75rem] border p-2 text-center ${percentage < 0 ? "bg-red-700 text-white border-black" : "bg-white"}`}
+                    >
                       {formatNegativeNumber(percentage, "%")}
                     </td>
                   </React.Fragment>
@@ -111,10 +115,14 @@ const SectionReport = ({
               <td className="text-[0.75rem] border p-2 text-center">
                 {formatNegativeNumber(totalUsage)}
               </td>
-              <td className="text-[0.75rem] border p-2 text-center">
+              <td
+                className={`text-[0.75rem] border p-2 text-center ${row.totalBalance < 0 ? "bg-red-700 text-white border-black" : "bg-white"}`}
+              >
                 {formatNegativeNumber(row.totalBalance)}
               </td>
-              <td className="text-[0.75rem] border p-2 text-center">
+              <td
+                className={`text-[0.75rem] border p-2 text-center ${percentage < 0 ? "bg-red-700 text-white border-black" : "bg-white"}`}
+              >
                 {formatNegativeNumber(percentage, "%")}
               </td>
             </tr>

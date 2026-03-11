@@ -100,13 +100,15 @@ const QuarterlyReport = ({
                     <td className="text-[0.75rem] border-x p-2 text-center">
                       {formatNumberToString(monthUsage)}
                     </td>
-                    <td className="text-[0.75rem] border-x p-2 text-center">
+                    <td
+                      className={`text-[0.75rem] border-x p-2 text-center ${monthBalance < 0 ? "bg-red-700 text-white border-black" : "bg-white"}`}
+                    >
                       {formatNegativeNumber(monthBalance)}
                     </td>
-                    <td className="text-[0.75rem] border-x p-2 text-center">
-                      {usagePercentage < 0
-                        ? formatNegativeNumber(-monthBalance)
-                        : formatNumberToString(monthBalance)}
+                    <td
+                      className={`text-[0.75rem] border-x p-2 text-center ${usagePercentage < 0 ? "bg-red-700 text-white border-black" : "bg-white"}`}
+                    >
+                      {formatNegativeNumber(monthBalance, "%")}
                     </td>
                   </React.Fragment>
                 );

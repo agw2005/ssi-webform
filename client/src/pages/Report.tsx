@@ -439,11 +439,11 @@ const Report = () => {
     </div>
   ) : (
     <>
-      <div className="border bg-black flex p-1">
+      {/* <div className="border bg-black flex p-1">
         <div className="bg-white hover:bg-white/85 active:bg-white/70 | flex border p-1 select-none">
           Download PDF
         </div>
-      </div>
+      </div> */}
       <div className="border font-sans flex flex-col gap-4 p-4 overflow-x-auto">
         <div className="flex flex-col items-center">
           {!dataExist ? "" : render.title(reportType)}

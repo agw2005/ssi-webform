@@ -172,10 +172,14 @@ const NatureReport = ({
                     <td className="text-[0.75rem] border p-2 text-center">
                       {formatNegativeNumber(monthData.usage)}
                     </td>
-                    <td className="text-[0.75rem] border p-2 text-center">
+                    <td
+                      className={`text-[0.75rem] border p-2 text-center ${monthData.balance < 0 ? "bg-red-700 text-white border-black" : "bg-white"}`}
+                    >
                       {formatNegativeNumber(monthData.balance)}
                     </td>
-                    <td className="text-[0.75rem] border p-2 text-center">
+                    <td
+                      className={`text-[0.75rem] border p-2 text-center ${percentage < 0 ? "bg-red-700 text-white border-black" : "bg-white"}`}
+                    >
                       {formatNegativeNumber(percentage, "%")}
                     </td>
                   </React.Fragment>
@@ -187,10 +191,14 @@ const NatureReport = ({
               <td className="text-[0.75rem] border p-2 text-center">
                 {formatNegativeNumber(totalUsage)}
               </td>
-              <td className="text-[0.75rem] border p-2 text-center">
+              <td
+                className={`text-[0.75rem] border p-2 text-center ${row.totalBalance < 0 ? "bg-red-700 text-white border-black" : "bg-white"}`}
+              >
                 {formatNegativeNumber(row.totalBalance)}
               </td>
-              <td className="text-[0.75rem] border p-2 text-center">
+              <td
+                className={`text-[0.75rem] border p-2 text-center ${percentage < 0 ? "bg-red-700 text-white border-black" : "bg-white"}`}
+              >
                 {formatNegativeNumber(percentage, "%")}
               </td>
             </tr>
@@ -224,37 +232,40 @@ const NatureReport = ({
                 <td className="text-[0.75rem] border p-2 whitespace-nowrap text-center">
                   {formatNegativeNumber(currentMonthTotalUsage)}
                 </td>
-                <td className="text-[0.75rem] border p-2 whitespace-nowrap text-center">
+                <td
+                  className={`text-[0.75rem] border p-2 whitespace-nowrap text-center ${currentMonthTotalBalance < 0 ? "bg-red-700 text-white border-black" : "bg-white"}`}
+                >
                   {formatNegativeNumber(currentMonthTotalBalance)}
                 </td>
-                <td className="text-[0.75rem] border p-2 whitespace-nowrap text-center">
+                <td
+                  className={`text-[0.75rem] border p-2 whitespace-nowrap text-center ${currentMonthTotalPercentage < 0 ? "bg-red-700 text-white border-black" : "bg-white"}`}
+                >
                   {formatNegativeNumber(currentMonthTotalPercentage, "%")}
                 </td>
               </React.Fragment>
             );
           })}
           {monthSubColumn.map((subColumn, index) => {
+            const currentTotal = Number(
+              grandTotal[
+                `total${capitalize(subColumn)}` as keyof NatureReportFooter
+              ],
+            );
             const percentage =
               (grandTotal.totalBalance / grandTotal.totalBudget) * 100;
             return subColumn === "%" ? (
               <td
                 key={index}
-                className="text-[0.75rem] border p-2 whitespace-nowrap text-center"
+                className={`text-[0.75rem] border p-2 whitespace-nowrap text-center ${percentage < 0 ? "bg-red-700 text-white border-black" : "bg-white"}`}
               >
                 {formatNegativeNumber(percentage, "%")}
               </td>
             ) : (
               <td
                 key={index}
-                className="text-[0.75rem] border p-2 whitespace-nowrap text-center"
+                className={`text-[0.75rem] border p-2 whitespace-nowrap text-center ${currentTotal < 0 ? "bg-red-700 text-white border-black" : "bg-white"}`}
               >
-                {formatNegativeNumber(
-                  Number(
-                    grandTotal[
-                      `total${capitalize(subColumn)}` as keyof NatureReportFooter
-                    ],
-                  ),
-                )}
+                {formatNegativeNumber(currentTotal)}
               </td>
             );
           })}
