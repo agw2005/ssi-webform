@@ -17,6 +17,7 @@ import {
 import {
   basicGet as FrmPRHGet,
   getRequestItemForBudgetView,
+  provisionPRNumber,
 } from "./controllers/FrmPRH.ts";
 import {
   allDepartments,
@@ -53,7 +54,9 @@ import {
 } from "./controllers/UserMaster.ts";
 import type { RouterContext } from "@oak/oak";
 import databasePool from "./dbpool.ts";
-import type { SubmitPayload } from "@scope/server";
+import type { ForexAPIResponse, SubmitPayload } from "@scope/server";
+import provisionFormNumber from "./helper/provisionFormNumber.ts";
+import { ForexRates } from "./models/FrmPRH.d.ts";
 
 export const healthCheck = (ctx: RouterContext<"/">) => {
   ctx.response.status = 200;
@@ -496,6 +499,9 @@ export const authenticate = (ctx: RouterContext<"/auth">) => {
 };
 
 export const submitRequest = async (ctx: RouterContext<"/submit">) => {
+  const FOREX_API_URL =
+    "https://api.frankfurter.dev/v1/latest?symbols=IDR,JPY,SGD&base=USD";
+
   const formDataRequest: FormData = await ctx.request.body.formData();
   const files: File[] = formDataRequest.getAll("files") as File[];
   const rawPayload = formDataRequest.get("payload");
@@ -518,32 +524,108 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
     },
   };
 
-  console.log(`Requestor Name : ${payload.firstStep.name}`);
-  console.log(`Requestor Section : ${payload.firstStep.section}`);
-  console.log(`Requestor NRP : ${payload.firstStep.nrp}`);
-  console.log(`Requestor Extension Number : ${payload.firstStep.ext}`);
-  console.log(`Requestor Email : ${payload.firstStep.email}`);
-  console.log(`Requestor Department : ${payload.firstStep.department}`);
+  const forexResponse = await fetch(FOREX_API_URL);
+  const forexData: ForexAPIResponse = await forexResponse.json();
+
+  // POST to frm_PR_D
+  //
+  // FOR EVERY USAGES ITEM
+  // IDItem = Automatically inceremented, no need to set it
+  // NoPR = {noPR}
+  // AcctAssgCategory = '', always
+  // CostCenter = {usage.costCenter}
+  // Nature = {usage.budgetOrNature}
+  // Description = {usage.description}
+  // Qty = {usage.quantity}
+  // Measure = {usage.measure}
+  // UnitPrice = {usage.unitPrice}
+  // Currency = {usage.currency}
+  // EstimationDeliveryDate = {usage.estimatedDeliveryDate}
+  // Vendor = {usage.vendor}
+  // Reason = {usage.reason}
+  // StatusItem = if the item is rejected 'False' / 'True', 'False' at the start
+  // RejectedBy = User Name of who rejected the item, '' at the start
+  // Supplier = Always ''
+  // NetPrice = {usage.unitPrice * usage.quantity}
+  // DeliveryDate = null at the start
+  // NoPO = '' at the start
+  // Rate = (PLEASE HANDLE EXCEPTION FOR CURRENCY=USD) {forexData.rates[payload.thirdStep.usage.currency as keyof ForexRates]}
+  // IDBudget = {usage.periode}-{usage.costCenter}-{payload.firstStep.section}
+
+  // POST to frm_PR_H
+  //
+  // ID = Automatically inceremented, no need to set it
+  // NoForm = See Trace
+  // Requestor = {payload.firstStep.name}
+  // NRP = {payload.firstStep.nrp}
+  // Section = {payload.firstStep.section}
+  // NoPR = See frm_PR_D
+  // Subject = {payload.secondStep.subject}
+  // Amount = ... (Declare frm_PR_D first)
+  // ReturnOnOutgoing = {payload.secondStep.returnOnOutgoing}
+  // Remarks = ''
+
+  // POST to Trace
+  //
+  // IDTrace = IDTrace is inceremented, no need to set it
+  // IDForm = IDForm will always be '8'
+  // FormTable = FormTable will always be 'frm_PR_H'
+  // NoForm = {DD}{MM}{YYYY}{HH}{MM}{SS}
+  // Requestor = {payload.firstStep.name}
+  // IDSection = (not a real query) Trace.IDSection = SELECT IDSection FROM Section WHERE SectionName LIKE {payload.firstStep.section};
+  // NRP = {payload.firstStep.nrp}
+  // Ext = {payload.firstStep.ext}
+  // EmailReq = {payload.firstStep.email}'@ssi.sharp-world.com'
+  // Status = 'In Progress'
+  // SubmitDate = {submissionDate}
+  // ProcessedBy = The User ID of the supervisor that last approved the form, 0 at the start
+  // ProcessedLevel = Sum of `ApproverLevel` from Trace_D of that IDTrace where `Trace_D.Result` is `In Progress` or `Approved`, 0 at the start
+  // LevelProgress = Which step of the supervisor the form is on, 1 at the start
+  // Remarks = '' at the start
+
+  // POST to Trace_D
+  //
+  // IDTrace = See Trace
+  // IDUser =
+  // Result = '' at the start
+  // DateApprove = null at the start
+  // ApproverType = Based on usage field, either 'A', 'R', or 'ADM'
+  // ApproverLevel = 1-based index of all the supervisor from approver to administrator
+
+  const now = new Date();
+  const submissionDate = now.toISOString().slice(0, 19).replace("T", " ");
+  const noForm = provisionFormNumber();
+  const noPR = await provisionPRNumber(
+    databasePool,
+    payload.firstStep.department,
+  );
+
+  console.log(`Requestor Name : ${payload.firstStep.name}`); //used
+  console.log(`Requestor Section : ${payload.firstStep.section}`); //used
+  console.log(`Requestor NRP : ${payload.firstStep.nrp}`); //used
+  console.log(`Requestor Extension Number : ${payload.firstStep.ext}`); //used
+  console.log(`Requestor Email : ${payload.firstStep.email}`); //used
+  console.log(`Requestor Department : ${payload.firstStep.department}`); //used
   console.log(`Request File Resource : ${payload.firstStep.fileResource}`);
   console.log(`Request Form Type : ${payload.firstStep.form}`);
-  console.log(`Request Subject : ${payload.secondStep.subject}`);
+  console.log(`Request Subject : ${payload.secondStep.subject}`); //used
   console.log(
-    `Request Return On Outgoing : ${payload.secondStep.returnOnOutgoing}`,
+    `Request Return On Outgoing : ${payload.secondStep.returnOnOutgoing}`, //used
   );
   payload.thirdStep.usages.map((usage, index) => {
-    console.log(`Usage ${index + 1} Cost Center : ${usage.costCenter}`);
-    console.log(`Usage ${index + 1} Nature : ${usage.budgetOrNature}`);
+    console.log(`Usage ${index + 1} Cost Center : ${usage.costCenter}`); //used
+    console.log(`Usage ${index + 1} Nature : ${usage.budgetOrNature}`); //used
     console.log(`Usage ${index + 1} Period : ${usage.periode}`);
     console.log(`Usage ${index + 1} Balance : ${usage.balance}`);
-    console.log(`Usage ${index + 1} Description : ${usage.description}`);
-    console.log(`Usage ${index + 1} Quantity : ${usage.quantity}`);
-    console.log(`Usage ${index + 1} Unit Price : ${usage.unitPrice}`);
-    console.log(`Usage ${index + 1} Measure : ${usage.measure}`);
-    console.log(`Usage ${index + 1} Currency : ${usage.currency}`);
-    console.log(`Usage ${index + 1} Vendor : ${usage.vendor}`);
-    console.log(`Usage ${index + 1} Reason : ${usage.reason}`);
+    console.log(`Usage ${index + 1} Description : ${usage.description}`); //used
+    console.log(`Usage ${index + 1} Quantity : ${usage.quantity}`); //used
+    console.log(`Usage ${index + 1} Unit Price : ${usage.unitPrice}`); //used
+    console.log(`Usage ${index + 1} Measure : ${usage.measure}`); //used
+    console.log(`Usage ${index + 1} Currency : ${usage.currency}`); //used
+    console.log(`Usage ${index + 1} Vendor : ${usage.vendor}`); //used
+    console.log(`Usage ${index + 1} Reason : ${usage.reason}`); //used
     console.log(
-      `Usage ${index + 1} Estimated Delivery Date : ${usage.estimatedDeliveryDate}`,
+      `Usage ${index + 1} Estimated Delivery Date : ${usage.estimatedDeliveryDate}`, //used
     );
   });
   payload.fourthStep.approver.map((approverName, index) => {

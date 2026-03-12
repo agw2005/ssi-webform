@@ -38,3 +38,20 @@ export interface RequestItemsAtBudgetView extends RowDataPacket {
   IDBudget: string;
   SubmitDate: string;
 }
+
+export interface PRNumberIncrement extends RowDataPacket {
+  Increment: number;
+}
+
+export interface ForexRates {
+  IDR: number;
+  JPY: number;
+  SGD: number;
+}
+
+export interface ForexAPIResponse {
+  amount: number;
+  base: string;
+  date: string;
+  rates: ForexRates;
+}

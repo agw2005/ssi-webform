@@ -93,7 +93,7 @@ const Request = () => {
     "Cost Center": requestOverviewData[0].CostCenter,
     Nature: requestOverviewData[0].Nature,
     "ID Budget": requestOverviewData[0].IDBudget,
-    "Rate (1 USD)": formatNumberToString(requestOverviewData[0].Rate),
+    // "Rate (1 USD)": formatNumberToString(requestOverviewData[0].Rate),
     Attachment: "",
   };
 

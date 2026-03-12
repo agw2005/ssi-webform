@@ -2,6 +2,7 @@ import type mysql from "mysql2/promise";
 import type {
   FrmPRHTable,
   RequestItemsAtBudgetView,
+  PRNumberIncrement,
 } from "../models/FrmPRH.d.ts";
 
 export const basicGet = async (
@@ -63,4 +64,36 @@ export const getRequestItemForBudgetView = async (
     [nature, costCenter, startDate, endDate],
   );
   return [rows, metadata];
+};
+
+export const provisionPRNumber = async (
+  pool: mysql.Pool,
+  dept: string,
+): Promise<string> => {
+  const now = new Date();
+
+  const monthLetter = String.fromCharCode(65 + now.getMonth());
+  // January = A
+  // February = B
+  // ...
+  // December = L
+
+  const year = now.getFullYear().toString().slice(-2);
+
+  const [rows] = await pool.query<PRNumberIncrement[]>(
+    `SELECT
+      MAX(
+        CAST(
+          SUBSTRING(NoPR, 7)
+        AS UNSIGNED)
+      ) AS Increment
+      FROM frm_PR_H
+      WHERE SUBSTRING(NoPR, 4, 1) = ?
+      AND SUBSTRING(NoPR, 5, 2) = ?;`,
+    [monthLetter, year],
+  );
+
+  const nextIncrement = (rows[0]?.Increment || 0) + 1;
+
+  return `${dept}${monthLetter}${year}${nextIncrement}`;
 };

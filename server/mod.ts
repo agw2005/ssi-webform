@@ -16,6 +16,7 @@ export type { RequestItemsAtBudgetView as RequestItemBudget } from "./models/Frm
 export type { RequestPayload as AuthRequestPayload } from "./auth/types.ts";
 export type { Response as AuthResponse } from "./auth/types.ts";
 export { request as authRequest } from "./auth/types.ts";
+export type { ForexAPIResponse } from "./models/FrmPRH.d.ts";
 
 export interface FirstStepInputs {
   name: string;
