@@ -4,12 +4,16 @@ import TextInput from "../../reusable/inputs/TextInput.tsx";
 import NumberInput from "../../reusable/inputs/NumberInput.tsx";
 import DateInput from "../../reusable/inputs/DateInput.tsx";
 import TipBox from "../../reusable/TipBox.tsx";
-import type { ThirdStepInputs } from "../../../pages/Submit.tsx";
 import { createGenericChangeHandler } from "../../../helper/genericInputHandler.ts";
 import { useMemo, useState } from "react";
 import Button from "../../reusable/Button.tsx";
 import { dateSplitter } from "../../../helper/dateSplitter.ts";
-import type { Balance, Department, Nature } from "@scope/server";
+import type {
+  Balance,
+  Department,
+  Nature,
+  ThirdStepInputs,
+} from "@scope/server";
 import getCurrentPeriod from "../../../helper/getCurrentPeriod.ts";
 import type { ForexRates, ForexAPIResponse } from "../../../hooks/useForex.tsx";
 import formatNumberToString from "../../../helper/formatNumberToString.ts";
@@ -530,7 +534,7 @@ const ThirdStep = ({
 
       <div className="flex gap-2">
         <div className="px-4 py-2 border rounded-lg bg-yellow-800 border-yellow-800 text-white font-bold select-none">
-          Total Usage ($) : {totalUsage.toFixed(2)}
+          Total Usage ($) : {formatNumberToString(totalUsage)}
         </div>
         <div className="flex gap-2 whitespace-nowrap">
           <div
@@ -539,7 +543,6 @@ const ThirdStep = ({
               setUsageField(DEFAULT_USAGE);
               progressSetter((prev) => prev.filter((num) => num !== STEP));
               thirdStepInputsInputsSetter(thirdStepInputsDefaultValue);
-              console.log(thirdStepInputsGetter);
             }}
           >
             Clear
@@ -549,7 +552,6 @@ const ThirdStep = ({
             onClick={() => {
               if (!requiredFieldsAreEmpty()) {
                 progressSetter((prev) => [...prev, STEP]);
-                console.log(thirdStepInputsGetter);
               } else {
                 globalThis.confirm(EMPTY_FIELDS_WARNING);
               }

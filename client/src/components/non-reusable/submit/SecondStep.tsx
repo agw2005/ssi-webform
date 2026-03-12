@@ -1,5 +1,5 @@
+import type { SecondStepInputs } from "@scope/server";
 import { createGenericChangeHandler } from "../../../helper/genericInputHandler.ts";
-import type { SecondStepInputs } from "../../../pages/Submit.tsx";
 import TextAreaInput from "../../reusable/inputs/TextAreaInput.tsx";
 import TextInput from "../../reusable/inputs/TextInput.tsx";
 
@@ -86,7 +86,6 @@ const SecondStep = ({
           onClick={() => {
             progressSetter((prev) => prev.filter((num) => num !== STEP));
             secondStepInputsInputsSetter(secondStepInputsDefaultValue);
-            console.log(secondStepInputsGetter);
           }}
         >
           Clear
@@ -96,7 +95,6 @@ const SecondStep = ({
           onClick={() => {
             if (!requiredFieldsAreEmpty()) {
               progressSetter((prev) => [...prev, STEP]);
-              console.log(secondStepInputsGetter);
             } else {
               globalThis.confirm(EMPTY_FIELDS_WARNING);
             }

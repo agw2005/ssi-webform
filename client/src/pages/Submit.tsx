@@ -5,64 +5,25 @@ import ThirdStep from "../components/non-reusable/submit/ThirdStep.tsx";
 import FourthStep from "../components/non-reusable/submit/FourthStep.tsx";
 import FifthStep from "../components/non-reusable/submit/FifthStep.tsx";
 import { useState } from "react";
-import type {
-  Balance,
-  Department,
-  FileResource,
-  Nature,
-  SectionName,
-  UserSection,
+import {
+  type Balance,
+  type Department,
+  type FileResource,
+  type Nature,
+  type SectionName,
+  type UserSection,
+  type SubmitPayload,
+  type FirstStepInputs,
+  type SecondStepInputs,
+  type ThirdStepInputs,
+  type FourthStepInputs,
+  type FifthStepInputs,
+  submitRequest,
 } from "@scope/server";
 import useFetch from "../hooks/useFetch.tsx";
 import useForex from "../hooks/useForex.tsx";
 import serverDomain from "../helper/serverDomain.ts";
-
-export interface FirstStepInputs {
-  name: string;
-  section: string;
-  nrp: string;
-  ext: string;
-  email: string;
-  fileResource: string;
-  department: string;
-  form: string;
-}
-
-export interface SecondStepInputs {
-  formNumber: string;
-  prNumber: string;
-  subject: string;
-  returnOnOutgoing: string;
-}
-
-export interface Usage {
-  costCenter: string;
-  budgetOrNature: string;
-  periode: string;
-  balance: string;
-  description: string;
-  quantity: string;
-  unitPrice: string;
-  measure: string;
-  currency: string;
-  vendor: string;
-  reason: string;
-  estimatedDeliveryDate: string;
-}
-
-export interface ThirdStepInputs {
-  usages: Usage[];
-}
-
-export interface FourthStepInputs {
-  approver: string[];
-  releaser: string[];
-  administrator: string[];
-}
-
-export interface FifthStepInputs {
-  files: File[];
-}
+import { useNavigate } from "react-router-dom";
 
 const SECTION_NAMES_URL = `${serverDomain}/section/names`;
 const FILE_RESOURCES_URL = `${serverDomain}/budget/fileresources`;
@@ -71,6 +32,7 @@ const NATURES_URL = `${serverDomain}/budget/nature`;
 const BALANCE_URL = (costCenter: string, period: string, nature: string) =>
   `${serverDomain}/budget/nature/${costCenter}/${period}/${nature}`;
 const USER_SECTION_MAPPINGS_URL = `${serverDomain}/section/users`;
+const SUBMIT_URL = `${serverDomain}/submit`;
 
 const PROGRESS_CONSTRAINT = {
   FIRST_STEP: [1],
@@ -83,7 +45,7 @@ const evaluateConstraint = (totalProgress: number[], constraint: number[]) => {
   return constraint.every((step) => totalProgress.includes(step));
 };
 
-const DEFAULT_VALUES = {
+const DEFAULT_VALUES: SubmitPayload = {
   firstStep: {
     name: "",
     section: "",
@@ -95,8 +57,8 @@ const DEFAULT_VALUES = {
     form: "",
   },
   secondStep: {
-    formNumber: "123456789",
-    prNumber: "1010101010101",
+    formNumber: "0",
+    prNumber: "0",
     subject: "",
     returnOnOutgoing: "",
   },
@@ -114,6 +76,7 @@ const DEFAULT_VALUES = {
 };
 
 const Submit = () => {
+  const navigate = useNavigate();
   const [progress, setProgress] = useState<number[]>([]);
 
   const [firstStepInputs, setFirstStepInputs] = useState<FirstStepInputs>(
@@ -202,24 +165,24 @@ const Submit = () => {
   };
 
   const allRequiredFieldsAreFilled = () => {
-    const { ext, ...filteredFirstStep } = firstStepInputs;
-    const { ext: _d1, ...defaultFirstStep } = DEFAULT_VALUES.firstStep;
-    const { formNumber, prNumber, ...filteredSecondStep } = secondStepInputs;
     const {
-      formNumber: _,
-      prNumber: __,
+      formNumber: _formNumber,
+      prNumber: _prNumber,
+      ...filteredSecondStep
+    } = secondStepInputs;
+    const {
+      formNumber: __formNumber,
+      prNumber: __prNumber,
       ...defaultSecondStep
     } = DEFAULT_VALUES.secondStep;
 
-    console.log(`Ignoring fields : ${ext}, ${formNumber}, ${prNumber}}`);
-
     const currentValues = {
-      firstStep: filteredFirstStep,
+      firstStep: firstStepInputs,
       secondStep: filteredSecondStep,
     };
 
     const comparisonDefaults = {
-      firstStep: defaultFirstStep,
+      firstStep: DEFAULT_VALUES.firstStep,
       secondStep: defaultSecondStep,
     };
 
@@ -228,6 +191,7 @@ const Submit = () => {
       currentValues.firstStep.section ===
         comparisonDefaults.firstStep.section ||
       currentValues.firstStep.nrp === comparisonDefaults.firstStep.nrp ||
+      currentValues.firstStep.ext === comparisonDefaults.firstStep.ext ||
       currentValues.firstStep.email === comparisonDefaults.firstStep.email ||
       currentValues.firstStep.fileResource ===
         comparisonDefaults.firstStep.fileResource ||
@@ -244,6 +208,33 @@ const Submit = () => {
       fourthStepInputs.administrator.length === 0;
 
     return someRequiredFieldsAreEmpty;
+  };
+
+  const handleSubmit = async () => {
+    const payload: SubmitPayload = {
+      firstStep: firstStepInputs,
+      secondStep: secondStepInputs,
+      thirdStep: thirdStepInputs,
+      fourthStep: fourthStepInputs,
+      fifthStep: fifthStepInputs,
+    };
+    try {
+      const submitResponse = await fetch(SUBMIT_URL, submitRequest(payload));
+      const submitResponseBody: string = await submitResponse.text();
+      if (submitResponse.ok) {
+        globalThis.alert(
+          "Your purchasing request has been filed successfully!\nRedirecting to the homepage...",
+        );
+        console.log(submitResponseBody);
+        navigate("/#");
+      } else {
+        globalThis.alert(
+          "There was a problem in parsing your purchasing request. Please make sure there are no empty required fields!",
+        );
+      }
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   return (
@@ -321,6 +312,7 @@ const Submit = () => {
               fifthStepInputsSetter={setFifthStepInputs}
               fifthStepInputsDefaultValue={DEFAULT_VALUES.fifthStep}
               evaluateSubmission={allRequiredFieldsAreFilled}
+              handleSubmit={handleSubmit}
             />
           ) : (
             ""

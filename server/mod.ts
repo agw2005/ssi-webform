@@ -16,3 +16,73 @@ export type { RequestItemsAtBudgetView as RequestItemBudget } from "./models/Frm
 export type { RequestPayload as AuthRequestPayload } from "./auth/types.ts";
 export type { Response as AuthResponse } from "./auth/types.ts";
 export { request as authRequest } from "./auth/types.ts";
+
+export interface FirstStepInputs {
+  name: string;
+  section: string;
+  nrp: string;
+  ext: string;
+  email: string;
+  fileResource: string;
+  department: string;
+  form: string;
+}
+
+export interface SecondStepInputs {
+  formNumber: string;
+  prNumber: string;
+  subject: string;
+  returnOnOutgoing: string;
+}
+
+export interface Usage {
+  costCenter: string;
+  budgetOrNature: string;
+  periode: string;
+  balance: string;
+  description: string;
+  quantity: string;
+  unitPrice: string;
+  measure: string;
+  currency: string;
+  vendor: string;
+  reason: string;
+  estimatedDeliveryDate: string;
+}
+
+export interface ThirdStepInputs {
+  usages: Usage[];
+}
+
+export interface FourthStepInputs {
+  approver: string[];
+  releaser: string[];
+  administrator: string[];
+}
+
+export interface FifthStepInputs {
+  files: File[];
+}
+
+export interface SubmitPayload {
+  firstStep: FirstStepInputs;
+  secondStep: SecondStepInputs;
+  thirdStep: ThirdStepInputs;
+  fourthStep: FourthStepInputs;
+  fifthStep: FifthStepInputs;
+}
+
+export const submitRequest = (requestPayload: SubmitPayload) => {
+  const formData = new FormData();
+  const { fifthStep, ...otherSteps } = requestPayload;
+  formData.append("payload", JSON.stringify(otherSteps));
+  fifthStep.files.forEach((file) => {
+    formData.append("files", file);
+  });
+
+  const Request = {
+    method: "POST",
+    body: formData,
+  };
+  return Request;
+};

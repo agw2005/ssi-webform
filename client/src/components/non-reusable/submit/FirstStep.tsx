@@ -2,10 +2,14 @@ import TextInput from "../../reusable/inputs/TextInput.tsx";
 import TextInputBetweenLabel from "../../reusable/inputs/TextInputBetweenLabel.tsx";
 import SelectionInput from "../../reusable/inputs/SelectionInput.tsx";
 import SelectionInputBetweenLabel from "../../reusable/inputs/SelectionInputBetweenLabel.tsx";
-import type { FirstStepInputs } from "../../../pages/Submit.tsx";
 import { createGenericChangeHandler } from "../../../helper/genericInputHandler.ts";
 import fileResourceFetchHandler from "../../../helper/fileResourceFetchHandler.ts";
-import type { Department, FileResource, SectionName } from "@scope/server";
+import type {
+  Department,
+  FileResource,
+  FirstStepInputs,
+  SectionName,
+} from "@scope/server";
 
 const FORMS = ["PR", "Cash Advance", "Fixed Asset"];
 const STEP = 1;
@@ -43,6 +47,7 @@ const FirstStep = ({
       firstStepInputsGetter.name === firstStepInputsDefaultValue.name ||
       firstStepInputsGetter.section === firstStepInputsDefaultValue.section ||
       firstStepInputsGetter.nrp === firstStepInputsDefaultValue.nrp ||
+      firstStepInputsGetter.ext === firstStepInputsDefaultValue.ext ||
       firstStepInputsGetter.email === firstStepInputsDefaultValue.email ||
       firstStepInputsGetter.fileResource ===
         firstStepInputsDefaultValue.fileResource ||
@@ -97,7 +102,7 @@ const FirstStep = ({
         name="your-extension-number"
         id="your-extension-number"
         variant="red"
-        requiredInput={false}
+        requiredInput
         value={firstStepInputsGetter.ext}
         onChangeHandler={genericChangeHandler("ext")}
       />
@@ -157,7 +162,6 @@ const FirstStep = ({
           onClick={() => {
             progressSetter((prev) => prev.filter((num) => num !== STEP));
             firstStepInputsInputsSetter(firstStepInputsDefaultValue);
-            console.log(firstStepInputsGetter);
           }}
         >
           Clear
@@ -167,7 +171,6 @@ const FirstStep = ({
           onClick={() => {
             if (!requiredFieldsAreEmpty()) {
               progressSetter((prev) => [...prev, STEP]);
-              console.log(firstStepInputsGetter);
             } else {
               globalThis.confirm(EMPTY_FIELDS_WARNING);
             }

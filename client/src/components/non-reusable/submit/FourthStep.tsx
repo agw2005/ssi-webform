@@ -1,8 +1,7 @@
 import TipBox from "../../reusable/TipBox.tsx";
 import MultiselectionInputTwoFilter from "../../reusable/inputs/MultiselectionInputTwoFilter.tsx";
-import type { FourthStepInputs } from "../../../pages/Submit.tsx";
 import userSectionReducer from "../../../helper/userSectionReducer.ts";
-import type { UserSection } from "@scope/server";
+import type { FourthStepInputs, UserSection } from "@scope/server";
 
 const STEP = 4;
 
@@ -124,7 +123,6 @@ const FourthStep = ({
           onClick={() => {
             progressSetter((prev) => prev.filter((num) => num !== STEP));
             fourthStepInputsSetter(fourthStepInputsDefaultValue);
-            console.log(fourthStepInputsGetter);
           }}
         >
           Clear
@@ -134,7 +132,6 @@ const FourthStep = ({
           onClick={() => {
             if (!requiredFieldsAreEmpty()) {
               progressSetter((prev) => [...prev, STEP]);
-              console.log(fourthStepInputsGetter);
             } else {
               globalThis.confirm(EMPTY_FIELDS_WARNING);
             }

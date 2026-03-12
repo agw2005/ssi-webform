@@ -37,6 +37,7 @@ import {
   getUserAuthInfo,
   getUserMastersPaginated,
   healthCheck,
+  submitRequest,
 } from "./routes.ts";
 import login from "./auth/main.ts";
 import isAuthenticated from "./auth/authMiddleware.ts";
@@ -70,6 +71,9 @@ oakRouter.get("/frmprd/request/:traceId", getSpecificRequestItems);
 oakRouter.get("/uploadfile/:traceId", getUploadFiles);
 oakRouter.get("/traced/:traceId", getApproverPath);
 oakRouter.get("/frmprh", getRequestsAtBudgetView);
+
+// Submit request
+oakRouter.post("/submit", submitRequest);
 
 // Basic GET
 oakRouter.get("/budget/:pagination/:page", getBudgetsPaginated);

@@ -53,6 +53,7 @@ import {
 } from "./controllers/UserMaster.ts";
 import type { RouterContext } from "@oak/oak";
 import databasePool from "./dbpool.ts";
+import type { SubmitPayload } from "@scope/server";
 
 export const healthCheck = (ctx: RouterContext<"/">) => {
   ctx.response.status = 200;
@@ -492,4 +493,72 @@ export const authenticate = (ctx: RouterContext<"/auth">) => {
     message: "Authentication success",
     verdict: true,
   };
+};
+
+export const submitRequest = async (ctx: RouterContext<"/submit">) => {
+  const formDataRequest: FormData = await ctx.request.body.formData();
+  const files: File[] = formDataRequest.getAll("files") as File[];
+  const rawPayload = formDataRequest.get("payload");
+
+  if (typeof rawPayload !== "string") {
+    ctx.response.status = 400;
+    ctx.response.body = "Invalid payload";
+    return;
+  }
+
+  const parsedPayload = JSON.parse(rawPayload) as Omit<
+    SubmitPayload,
+    "fifthStep"
+  >;
+
+  const payload: SubmitPayload = {
+    ...parsedPayload,
+    fifthStep: {
+      files: files,
+    },
+  };
+
+  console.log(`Requestor Name : ${payload.firstStep.name}`);
+  console.log(`Requestor Section : ${payload.firstStep.section}`);
+  console.log(`Requestor NRP : ${payload.firstStep.nrp}`);
+  console.log(`Requestor Extension Number : ${payload.firstStep.ext}`);
+  console.log(`Requestor Email : ${payload.firstStep.email}`);
+  console.log(`Requestor Department : ${payload.firstStep.department}`);
+  console.log(`Request File Resource : ${payload.firstStep.fileResource}`);
+  console.log(`Request Form Type : ${payload.firstStep.form}`);
+  console.log(`Request Subject : ${payload.secondStep.subject}`);
+  console.log(
+    `Request Return On Outgoing : ${payload.secondStep.returnOnOutgoing}`,
+  );
+  payload.thirdStep.usages.map((usage, index) => {
+    console.log(`Usage ${index + 1} Cost Center : ${usage.costCenter}`);
+    console.log(`Usage ${index + 1} Nature : ${usage.budgetOrNature}`);
+    console.log(`Usage ${index + 1} Period : ${usage.periode}`);
+    console.log(`Usage ${index + 1} Balance : ${usage.balance}`);
+    console.log(`Usage ${index + 1} Description : ${usage.description}`);
+    console.log(`Usage ${index + 1} Quantity : ${usage.quantity}`);
+    console.log(`Usage ${index + 1} Unit Price : ${usage.unitPrice}`);
+    console.log(`Usage ${index + 1} Measure : ${usage.measure}`);
+    console.log(`Usage ${index + 1} Currency : ${usage.currency}`);
+    console.log(`Usage ${index + 1} Vendor : ${usage.vendor}`);
+    console.log(`Usage ${index + 1} Reason : ${usage.reason}`);
+    console.log(
+      `Usage ${index + 1} Estimated Delivery Date : ${usage.estimatedDeliveryDate}`,
+    );
+  });
+  payload.fourthStep.approver.map((approverName, index) => {
+    console.log(`Approver ${index + 1} : ${approverName}`);
+  });
+  payload.fourthStep.releaser.map((releaserName, index) => {
+    console.log(`Releaser ${index + 1} : ${releaserName}`);
+  });
+  payload.fourthStep.administrator.map((administratorName, index) => {
+    console.log(`Administrator ${index + 1} : ${administratorName}`);
+  });
+  payload.fifthStep.files.map((file, index) => {
+    console.log(`File ${index + 1} : ${file.name}`);
+  });
+
+  ctx.response.status = 200;
+  ctx.response.body = "Success";
 };
