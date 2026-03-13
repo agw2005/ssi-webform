@@ -3,6 +3,7 @@ import type {
   SectionName,
   SectionTable,
   UserSection,
+  SectionId,
 } from "../models/Section.d.ts";
 
 /**
@@ -53,4 +54,15 @@ export const userSectionMappings = async (pool: mysql.Pool) => {
     ON Section.IDSection = UserMaster.IDSection;`,
   );
   return [rows, metadata];
+};
+
+export const getSectionIdByName = async (
+  pool: mysql.Pool,
+  sectionName: string,
+): Promise<number> => {
+  const [rows, _metadata] = await pool.query<SectionId[]>(
+    `SELECT IDSection FROM Section WHERE SectionName LIKE ?;`,
+    [sectionName],
+  );
+  return rows[0].IDSection;
 };

@@ -5,6 +5,7 @@ import type {
   TraceRequestsCount,
   TraceTable,
 } from "../models/Trace.d.ts";
+import type { ResultSetHeader } from "mysql2/promise.js";
 
 /**
  * A basic GET, affecting all attributes with pagination support.
@@ -181,4 +182,34 @@ export const specificRequest = async (pool: mysql.Pool, traceId: number) => {
     [traceId],
   );
   return [rows, metadata];
+};
+
+export const postRequestTrace = async (
+  pool: mysql.Pool,
+  noForm: string,
+  requestorName: string,
+  requestorSectionId: string,
+  requestorNrp: string,
+  requestorExtensionNumber: string,
+  requestorEmail: string,
+  requestSubmissionDate: string,
+): Promise<number> => {
+  const [rows, _metadata] = await pool.query<ResultSetHeader>(
+    `INSERT INTO Trace
+	    (IDForm, FormTable, NoForm, Requestor, IDSection, NRP, Ext, EmailReq, Status, SubmitDate, ProcessedBy, ProcessedLevel, LevelProgress, Remarks)
+    VALUES
+	    ('8', 'frm_PR_H', ? , ? , ? , ? , ? , ? , 'In Progress', ? , 0 , 0 , 1 , '');`,
+    [
+      noForm,
+      requestorName,
+      requestorSectionId,
+      requestorNrp,
+      requestorExtensionNumber,
+      requestorEmail,
+      requestSubmissionDate,
+    ],
+  );
+
+  const newIDTrace = rows.insertId;
+  return newIDTrace;
 };

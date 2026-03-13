@@ -25,3 +25,7 @@ export interface UserSection extends RowDataPacket {
   SectionName: string;
   NameUser: string;
 }
+
+export interface SectionId extends RowDataPacket {
+  IDSection: number;
+}

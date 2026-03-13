@@ -29,6 +29,7 @@ import { basicGet as NatureGet } from "./controllers/Nature.ts";
 import { basicGet as RateDollarGet } from "./controllers/RateDollar.ts";
 import { basicGet as RateDollarTempGet } from "./controllers/RateDollarTemp.ts";
 import {
+  getSectionIdByName,
   basicGet as SectionGet,
   sectionNames,
   userSectionMappings,
@@ -37,6 +38,7 @@ import { basicGet as TitleGet } from "./controllers/Title.ts";
 import {
   homeRequests,
   homeRequestsCount,
+  postRequestTrace,
   specificRequest,
   basicGet as TraceGet,
 } from "./controllers/Trace.ts";
@@ -568,7 +570,7 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
   // ReturnOnOutgoing = {payload.secondStep.returnOnOutgoing}
   // Remarks = ''
 
-  // POST to Trace
+  // POST to Trace - Done
   //
   // IDTrace = IDTrace is inceremented, no need to set it
   // IDForm = IDForm will always be '8'
@@ -622,10 +624,15 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
 
   const now = new Date();
   const submissionDate = now.toISOString().slice(0, 19).replace("T", " ");
+  const emailDomain = "ssi.sharp-world.com";
   const noForm = provisionFormNumber();
   const noPR = await provisionPRNumber(
     databasePool,
     payload.firstStep.department,
+  );
+  const requestorSectionId = await getSectionIdByName(
+    databasePool,
+    payload.firstStep.section,
   );
   let requestAmount = 0;
 
@@ -682,6 +689,7 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
       `Usage ${index + 1} Estimated Delivery Date : ${usage.estimatedDeliveryDate}`,
     );
   });
+
   postRequestInformation(
     databasePool,
     noForm,
@@ -692,6 +700,16 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
     payload.secondStep.subject,
     requestAmount,
     payload.secondStep.returnOnOutgoing,
+  );
+  postRequestTrace(
+    databasePool,
+    noForm,
+    payload.firstStep.name,
+    String(requestorSectionId),
+    payload.firstStep.nrp,
+    payload.firstStep.ext,
+    `${payload.firstStep.email}@${emailDomain}`,
+    submissionDate,
   );
 
   payload.fourthStep.approver.map((approverName, index) => {
