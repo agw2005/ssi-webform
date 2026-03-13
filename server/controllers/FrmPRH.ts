@@ -4,6 +4,7 @@ import type {
   RequestItemsAtBudgetView,
   PRNumberIncrement,
 } from "../models/FrmPRH.d.ts";
+import type { ResultSetHeader } from "mysql2/promise.js";
 
 export const basicGet = async (
   pool: mysql.Pool,
@@ -96,4 +97,35 @@ export const provisionPRNumber = async (
   const nextIncrement = (rows[0].Increment || 0) + 1;
 
   return `${dept}${monthLetter}${year}${nextIncrement}`;
+};
+
+export const postRequestInformation = async (
+  pool: mysql.Pool,
+  noForm: string,
+  requestorName: string,
+  requestorNrp: string,
+  requestorSection: string,
+  noPR: string,
+  requestSubject: string,
+  requestAmount: number,
+  requestReturnOnOutgoing: string,
+): Promise<number> => {
+  const [rows, _metadata] = await pool.query<ResultSetHeader>(
+    `INSERT INTO 
+      frm_PR_H (NoForm, Requestor, NRP, Section, NoPR, Subject, Amount, ReturnOnOutgoing, Remarks) 
+      VALUES (? , ? , ? , ? , ? , ? , ROUND( ? , 2 ) , ? , '');`,
+    [
+      noForm,
+      requestorName,
+      requestorNrp,
+      requestorSection,
+      noPR,
+      requestSubject,
+      requestAmount,
+      requestReturnOnOutgoing,
+    ],
+  );
+
+  const newId = rows.insertId;
+  return newId;
 };

@@ -43,7 +43,7 @@ export const getAllRequestItems = async (pool: mysql.Pool, traceId: number) => {
   return [rows, metadata];
 };
 
-export const postRequestSubmission = async (
+export const postUsage = async (
   pool: mysql.Pool,
   noPR: string,
   costCenter: string,

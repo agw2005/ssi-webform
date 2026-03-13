@@ -13,11 +13,12 @@ import { basicGet as FormGet } from "./controllers/Form.ts";
 import {
   basicGet as FrmPRDGet,
   getAllRequestItems,
-  postRequestSubmission,
+  postUsage,
 } from "./controllers/FrmPRD.ts";
 import {
   basicGet as FrmPRHGet,
   getRequestItemForBudgetView,
+  postRequestInformation,
   provisionPRNumber,
 } from "./controllers/FrmPRH.ts";
 import {
@@ -554,7 +555,7 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
   // Rate = (PLEASE HANDLE EXCEPTION FOR CURRENCY=USD) {forexData.rates[payload.thirdStep.usage.currency as keyof ForexRates]}
   // IDBudget = {usage.periode}-{usage.costCenter}-{payload.firstStep.section}
 
-  // POST to frm_PR_H
+  // POST to frm_PR_H - Done
   //
   // ID = Automatically inceremented, no need to set it
   // NoForm = {noForm}
@@ -626,6 +627,7 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
     databasePool,
     payload.firstStep.department,
   );
+  let requestAmount = 0;
 
   console.log(`Requestor Name : ${payload.firstStep.name}`);
   console.log(`Requestor Section : ${payload.firstStep.section}`);
@@ -645,7 +647,11 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
         ? forexData.amount
         : forexData.rates[usage.currency as keyof ForexRates];
     const currentBudgetId = `${usage.periode}-${usage.costCenter}-${payload.firstStep.section}`;
-    postRequestSubmission(
+    const requestQuantity = Number(usage.quantity);
+    const requestPricePerUnit = Number(usage.unitPrice);
+    const netPrice = (requestQuantity * requestPricePerUnit) / currencyRate;
+    requestAmount += netPrice;
+    postUsage(
       databasePool,
       noPR,
       usage.costCenter,
@@ -676,6 +682,18 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
       `Usage ${index + 1} Estimated Delivery Date : ${usage.estimatedDeliveryDate}`,
     );
   });
+  postRequestInformation(
+    databasePool,
+    noForm,
+    payload.firstStep.name,
+    payload.firstStep.nrp,
+    payload.firstStep.section,
+    noPR,
+    payload.secondStep.subject,
+    requestAmount,
+    payload.secondStep.returnOnOutgoing,
+  );
+
   payload.fourthStep.approver.map((approverName, index) => {
     console.log(`Approver ${index + 1} : ${approverName}`);
   });
