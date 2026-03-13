@@ -716,11 +716,12 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
   );
 
   let supervisorStep = 1;
-  payload.fourthStep.approver.map(async (approverName, index) => {
+  let i = 0;
+  for (const approverName of payload.fourthStep.approver) {
     const supervisorType = "A";
     const supervisorId = await getUserIdByName(databasePool, approverName);
-    console.log(`Approver ${index + 1} : ${approverName}`);
-    postRequestApproverPath(
+    console.log(`Approver ${i + 1} : ${approverName}`);
+    await postRequestApproverPath(
       databasePool,
       newTraceId,
       supervisorId,
@@ -728,12 +729,14 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
       supervisorStep,
     );
     supervisorStep += 1;
-  });
-  payload.fourthStep.releaser.map(async (releaserName, index) => {
+    i += 1;
+  }
+
+  for (const releaserName of payload.fourthStep.releaser) {
     const supervisorType = "R";
     const supervisorId = await getUserIdByName(databasePool, releaserName);
-    console.log(`Releaser ${index + 1} : ${releaserName}`);
-    postRequestApproverPath(
+    console.log(`Releaser ${i + 1} : ${releaserName}`);
+    await postRequestApproverPath(
       databasePool,
       newTraceId,
       supervisorId,
@@ -741,12 +744,14 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
       supervisorStep,
     );
     supervisorStep += 1;
-  });
-  payload.fourthStep.administrator.map(async (administratorName, index) => {
+    i += 1;
+  }
+
+  for (const administratorName of payload.fourthStep.administrator) {
     const supervisorType = "ADM";
     const supervisorId = await getUserIdByName(databasePool, administratorName);
-    console.log(`Administrator ${index + 1} : ${administratorName}`);
-    postRequestApproverPath(
+    console.log(`Administrator ${i + 1} : ${administratorName}`);
+    await postRequestApproverPath(
       databasePool,
       newTraceId,
       supervisorId,
@@ -754,10 +759,14 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
       supervisorStep,
     );
     supervisorStep += 1;
-  });
-  payload.fifthStep.files.map((file, index) => {
-    console.log(`File ${index + 1} : ${file.name}`);
-  });
+    i += 1;
+  }
+
+  let fileIndex = 1;
+  for (const file of payload.fifthStep.files) {
+    console.log(`File ${fileIndex + 1} : ${file.name}`);
+    fileIndex += 1;
+  }
 
   ctx.response.status = 200;
   ctx.response.body = "Success";
