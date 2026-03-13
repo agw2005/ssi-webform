@@ -50,6 +50,7 @@ import {
 import { basicGet as TypeGet } from "./controllers/Type.ts";
 import {
   getMinimumFileInformation,
+  postRequestFiles,
   basicGet as UploadFileGet,
 } from "./controllers/UploadFile.ts";
 import {
@@ -774,6 +775,14 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
   let fileIndex = 1;
   for (const file of payload.fifthStep.files) {
     console.log(`File ${fileIndex + 1} : ${file.name}`);
+    await postRequestFiles(
+      databasePool,
+      noForm,
+      payload.secondStep.subject,
+      payload.firstStep.name,
+      file.name,
+      submissionDate,
+    );
     fileIndex += 1;
   }
 
