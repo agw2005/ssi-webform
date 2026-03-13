@@ -1,5 +1,6 @@
 import type mysql from "mysql2/promise";
 import type { FrmPRDRequestItem, FrmPRDTable } from "../models/FrmPRD.d.ts";
+import type { ResultSetHeader } from "mysql2/promise.js";
 
 export const basicGet = async (
   pool: mysql.Pool,
@@ -40,4 +41,49 @@ export const getAllRequestItems = async (pool: mysql.Pool, traceId: number) => {
     [traceId],
   );
   return [rows, metadata];
+};
+
+export const postRequestSubmission = async (
+  pool: mysql.Pool,
+  noPR: string,
+  costCenter: string,
+  nature: string,
+  description: string,
+  quantity: number,
+  measure: string,
+  unitPrice: number,
+  currency: string,
+  estimatedDeliveryDate: string,
+  vendor: string,
+  reason: string,
+  rateByCurrency: number,
+  budgetId: string,
+): Promise<number> => {
+  const NetPrice = (quantity * unitPrice) / rateByCurrency;
+
+  const [rows, _metadata] = await pool.execute<ResultSetHeader>(
+    `INSERT INTO frm_PR_D 
+      (NoPR, AcctAssgCategory, CostCenter, Nature, Description, Qty, Measure, UnitPrice, Currency, EstimationDeliveryDate, Vendor, Reason, StatusItem, RejectedBy, Supplier, NetPrice, DeliveryDate, NoPO, Rate, IDBudget)
+      VALUES (? , '' , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , 'False' , '' , '' , ROUND( ? , 2 ) , NULL , '' , ? , ?);
+    `,
+    [
+      noPR,
+      costCenter,
+      nature,
+      description,
+      quantity,
+      measure,
+      unitPrice,
+      currency,
+      estimatedDeliveryDate,
+      vendor,
+      reason,
+      NetPrice,
+      rateByCurrency,
+      budgetId,
+    ],
+  );
+
+  const newIdItem = rows.insertId;
+  return newIdItem;
 };

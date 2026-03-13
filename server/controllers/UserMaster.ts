@@ -3,6 +3,7 @@ import type {
   UserMasterAuthInformation,
   UserMasterName,
   UserMasterTable,
+  UserIdByName,
 } from "../models/UserMaster.d.ts";
 
 /**
@@ -59,4 +60,21 @@ export const supervisorNames = async (pool: mysql.Pool) => {
     ORDER BY NameUser ASC`,
   );
   return [rows, metadata];
+};
+
+export const getUserIdByName = async (
+  pool: mysql.Pool,
+  nameUser: string,
+): Promise<number> => {
+  const [rows] = await pool.query<UserIdByName[]>(
+    `SELECT IDUser
+    FROM UserMaster
+    WHERE NameUser LIKE ?
+    ORDER BY LENGTH(NRP) DESC
+    LIMIT 1;`,
+    [`%${nameUser}%`],
+  );
+  const userId = rows[0].IDUser || 0;
+
+  return userId;
 };

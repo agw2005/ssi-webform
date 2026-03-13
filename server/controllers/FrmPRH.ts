@@ -93,7 +93,7 @@ export const provisionPRNumber = async (
     [monthLetter, year],
   );
 
-  const nextIncrement = (rows[0]?.Increment || 0) + 1;
+  const nextIncrement = (rows[0].Increment || 0) + 1;
 
   return `${dept}${monthLetter}${year}${nextIncrement}`;
 };

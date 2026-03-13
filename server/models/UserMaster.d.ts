@@ -30,3 +30,7 @@ export interface UserMasterName extends RowDataPacket {
   NameUser: string;
   IDUser: number;
 }
+
+export interface UserIdByName extends RowDataPacket {
+  IDUser: number;
+}

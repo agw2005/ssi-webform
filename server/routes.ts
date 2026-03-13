@@ -13,6 +13,7 @@ import { basicGet as FormGet } from "./controllers/Form.ts";
 import {
   basicGet as FrmPRDGet,
   getAllRequestItems,
+  postRequestSubmission,
 } from "./controllers/FrmPRD.ts";
 import {
   basicGet as FrmPRHGet,
@@ -56,7 +57,7 @@ import type { RouterContext } from "@oak/oak";
 import databasePool from "./dbpool.ts";
 import type { ForexAPIResponse, SubmitPayload } from "@scope/server";
 import provisionFormNumber from "./helper/provisionFormNumber.ts";
-import { ForexRates } from "./models/FrmPRH.d.ts";
+import type { ForexRates } from "./models/FrmPRH.d.ts";
 
 export const healthCheck = (ctx: RouterContext<"/">) => {
   ctx.response.status = 200;
@@ -527,9 +528,10 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
   const forexResponse = await fetch(FOREX_API_URL);
   const forexData: ForexAPIResponse = await forexResponse.json();
 
-  // POST to frm_PR_D
+  // POST to frm_PR_D - DONE
   //
   // FOR EVERY USAGES ITEM
+  //
   // IDItem = Automatically inceremented, no need to set it
   // NoPR = {noPR}
   // AcctAssgCategory = '', always
@@ -546,7 +548,7 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
   // StatusItem = if the item is rejected 'False' / 'True', 'False' at the start
   // RejectedBy = User Name of who rejected the item, '' at the start
   // Supplier = Always ''
-  // NetPrice = {usage.unitPrice * usage.quantity}
+  // NetPrice = {usage.unitPrice * usage.quantity, converted to USD}
   // DeliveryDate = null at the start
   // NoPO = '' at the start
   // Rate = (PLEASE HANDLE EXCEPTION FOR CURRENCY=USD) {forexData.rates[payload.thirdStep.usage.currency as keyof ForexRates]}
@@ -555,13 +557,13 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
   // POST to frm_PR_H
   //
   // ID = Automatically inceremented, no need to set it
-  // NoForm = See Trace
+  // NoForm = {noForm}
   // Requestor = {payload.firstStep.name}
   // NRP = {payload.firstStep.nrp}
   // Section = {payload.firstStep.section}
   // NoPR = See frm_PR_D
   // Subject = {payload.secondStep.subject}
-  // Amount = ... (Declare frm_PR_D first)
+  // Amount = Sum of frm_PR_D.NetPrice of the previous declaration converted to USD
   // ReturnOnOutgoing = {payload.secondStep.returnOnOutgoing}
   // Remarks = ''
 
@@ -570,7 +572,7 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
   // IDTrace = IDTrace is inceremented, no need to set it
   // IDForm = IDForm will always be '8'
   // FormTable = FormTable will always be 'frm_PR_H'
-  // NoForm = {DD}{MM}{YYYY}{HH}{MM}{SS}
+  // NoForm = {noForm}
   // Requestor = {payload.firstStep.name}
   // IDSection = (not a real query) Trace.IDSection = SELECT IDSection FROM Section WHERE SectionName LIKE {payload.firstStep.section};
   // NRP = {payload.firstStep.nrp}
@@ -585,12 +587,37 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
 
   // POST to Trace_D
   //
+  // FOR EVERY SUPERVISOR
+  //
   // IDTrace = See Trace
-  // IDUser =
+  // IDUser = {getUserIdByName(databasePool, supervisorName)}
   // Result = '' at the start
   // DateApprove = null at the start
   // ApproverType = Based on usage field, either 'A', 'R', or 'ADM'
   // ApproverLevel = 1-based index of all the supervisor from approver to administrator
+
+  // POST to UploadFile
+  //
+  // FOR EVERY FILE
+  //
+  // IDUpload = auto inceremented, no need to set it
+  // NoForm = {noForm}
+  // FormName = {payload.secondStep.subject}
+  // Requestor = {payload.firstStep.name}
+  // Filename = {file.name}
+  // DateUpload = {now}
+
+  // PATCH to Budget
+  //
+  // FOR EVERY USAGES ITEM
+  //
+  // CostCenter = Unchanged
+  // Nature = Unchanged
+  // Periode = Unchanged
+  // Budget = Unchanged
+  // Balance = Change => UPDATE Budget SET Balance = Balance -{usage.unitPrice * usage.quantity, converted to USD} WHERE CostCenter = {usage.costCenter} AND Nature = {usage.budgetOrNature} AND Periode = {usage.periode};
+  // IDSection = Unchanged
+  // FileResource = Unchanged
 
   const now = new Date();
   const submissionDate = now.toISOString().slice(0, 19).replace("T", " ");
@@ -600,32 +627,53 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
     payload.firstStep.department,
   );
 
-  console.log(`Requestor Name : ${payload.firstStep.name}`); //used
-  console.log(`Requestor Section : ${payload.firstStep.section}`); //used
-  console.log(`Requestor NRP : ${payload.firstStep.nrp}`); //used
-  console.log(`Requestor Extension Number : ${payload.firstStep.ext}`); //used
-  console.log(`Requestor Email : ${payload.firstStep.email}`); //used
-  console.log(`Requestor Department : ${payload.firstStep.department}`); //used
+  console.log(`Requestor Name : ${payload.firstStep.name}`);
+  console.log(`Requestor Section : ${payload.firstStep.section}`);
+  console.log(`Requestor NRP : ${payload.firstStep.nrp}`);
+  console.log(`Requestor Extension Number : ${payload.firstStep.ext}`);
+  console.log(`Requestor Email : ${payload.firstStep.email}`);
+  console.log(`Requestor Department : ${payload.firstStep.department}`);
   console.log(`Request File Resource : ${payload.firstStep.fileResource}`);
   console.log(`Request Form Type : ${payload.firstStep.form}`);
-  console.log(`Request Subject : ${payload.secondStep.subject}`); //used
+  console.log(`Request Subject : ${payload.secondStep.subject}`);
   console.log(
-    `Request Return On Outgoing : ${payload.secondStep.returnOnOutgoing}`, //used
+    `Request Return On Outgoing : ${payload.secondStep.returnOnOutgoing}`,
   );
   payload.thirdStep.usages.map((usage, index) => {
-    console.log(`Usage ${index + 1} Cost Center : ${usage.costCenter}`); //used
-    console.log(`Usage ${index + 1} Nature : ${usage.budgetOrNature}`); //used
+    const currencyRate =
+      usage.currency === "USD"
+        ? forexData.amount
+        : forexData.rates[usage.currency as keyof ForexRates];
+    const currentBudgetId = `${usage.periode}-${usage.costCenter}-${payload.firstStep.section}`;
+    postRequestSubmission(
+      databasePool,
+      noPR,
+      usage.costCenter,
+      usage.budgetOrNature,
+      usage.description,
+      Number(usage.quantity),
+      usage.measure,
+      Number(usage.unitPrice),
+      usage.currency,
+      usage.estimatedDeliveryDate,
+      usage.vendor,
+      usage.reason,
+      currencyRate,
+      currentBudgetId,
+    );
+    console.log(`Usage ${index + 1} Cost Center : ${usage.costCenter}`);
+    console.log(`Usage ${index + 1} Nature : ${usage.budgetOrNature}`);
     console.log(`Usage ${index + 1} Period : ${usage.periode}`);
     console.log(`Usage ${index + 1} Balance : ${usage.balance}`);
-    console.log(`Usage ${index + 1} Description : ${usage.description}`); //used
-    console.log(`Usage ${index + 1} Quantity : ${usage.quantity}`); //used
-    console.log(`Usage ${index + 1} Unit Price : ${usage.unitPrice}`); //used
-    console.log(`Usage ${index + 1} Measure : ${usage.measure}`); //used
-    console.log(`Usage ${index + 1} Currency : ${usage.currency}`); //used
-    console.log(`Usage ${index + 1} Vendor : ${usage.vendor}`); //used
-    console.log(`Usage ${index + 1} Reason : ${usage.reason}`); //used
+    console.log(`Usage ${index + 1} Description : ${usage.description}`);
+    console.log(`Usage ${index + 1} Quantity : ${Number(usage.quantity)}`);
+    console.log(`Usage ${index + 1} Unit Price : ${Number(usage.unitPrice)}`);
+    console.log(`Usage ${index + 1} Measure : ${usage.measure}`);
+    console.log(`Usage ${index + 1} Currency : ${usage.currency}`);
+    console.log(`Usage ${index + 1} Vendor : ${usage.vendor}`);
+    console.log(`Usage ${index + 1} Reason : ${usage.reason}`);
     console.log(
-      `Usage ${index + 1} Estimated Delivery Date : ${usage.estimatedDeliveryDate}`, //used
+      `Usage ${index + 1} Estimated Delivery Date : ${usage.estimatedDeliveryDate}`,
     );
   });
   payload.fourthStep.approver.map((approverName, index) => {

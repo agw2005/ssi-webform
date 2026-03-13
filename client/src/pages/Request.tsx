@@ -10,6 +10,7 @@ import type {
 import capitalize from "../helper/capitalize.ts";
 import formatNumberToString from "../helper/formatNumberToString.ts";
 import serverDomain from "../helper/serverDomain.ts";
+import mysqlDateIsoStringToJSString from "../helper/mysqlDateIsoStringToJSString.ts";
 
 const REQUEST_OVERVIEW_URL = `${serverDomain}/trace/request`;
 const REQUEST_ITEMS_URL = `${serverDomain}/frmprd/request`;
@@ -143,7 +144,7 @@ const Request = () => {
                           return (
                             <div
                               key={index}
-                              title={`Date Uploaded: ${attachment.DateUpload}>`}
+                              title={`Date Uploaded: ${new Date(attachment.DateUpload).toISOString()}`}
                             >
                               <a href="#" target="_blank">
                                 {attachment.Filename}
@@ -182,33 +183,33 @@ const Request = () => {
                       <td className="bg-white hover:bg-black/10 active:bg-black/5 | max-w-32 break-normal border text-center px-4 py-2">
                         {item.Description}
                       </td>
-                      <td className="bg-white hover:bg-black/10 active:bg-black/5 | border text-center px-4 py-2">
+                      <td className="bg-white hover:bg-black/10 active:bg-black/5 | whitespace-nowrap border text-center px-4 py-2">
                         {formatNumberToString(item.Qty)}{" "}
                         {capitalize(item.Measure)}
                       </td>
-                      <td className="bg-white hover:bg-black/10 active:bg-black/5 | border text-center px-4 py-2">
+                      <td className="bg-white hover:bg-black/10 active:bg-black/5 | whitespace-nowrap border text-center px-4 py-2">
                         {formatNumberToString(item.UnitPrice)} {item.Currency}
                       </td>
-                      <td className="bg-white hover:bg-black/10 active:bg-black/5 | border text-center px-4 py-2">
+                      <td className="bg-white hover:bg-black/10 active:bg-black/5 | whitespace-nowrap border text-center px-4 py-2">
                         {item.EstimatedDelivery}
                       </td>
-                      <td className="bg-white hover:bg-black/10 active:bg-black/5 | border text-center px-4 py-2">
+                      <td className="bg-white hover:bg-black/10 active:bg-black/5 | whitespace-nowrap border text-center px-4 py-2">
                         {item.Vendor}
                       </td>
                       <td className="bg-white hover:bg-black/10 active:bg-black/5 | max-w-64 border text-center px-4 py-2">
                         {item.Reason}
                       </td>
-                      <td className="bg-white hover:bg-black/10 active:bg-black/5 | border text-center px-4 py-2">
+                      <td className="bg-white hover:bg-black/10 active:bg-black/5 | whitespace-nowrap border text-center px-4 py-2">
                         {item.Rejected === "True" ? "Yes" : "No"}
                       </td>
-                      <td className="bg-white hover:bg-black/10 active:bg-black/5 | border text-center px-4 py-2">
+                      <td className="bg-white hover:bg-black/10 active:bg-black/5 | whitespace-nowrap border text-center px-4 py-2">
                         {stringIsEmpty(item.Supplier)}
                       </td>
-                      <td className="bg-white hover:bg-black/10 active:bg-black/5 | border text-center px-4 py-2">
+                      <td className="bg-white hover:bg-black/10 active:bg-black/5 | whitespace-nowrap border text-center px-4 py-2">
                         {formatNumberToString(item.UnitPrice * item.Qty)}{" "}
                         {item.Currency}
                       </td>
-                      <td className="bg-white hover:bg-black/10 active:bg-black/5 | border text-center px-4 py-2">
+                      <td className="bg-white hover:bg-black/10 active:bg-black/5 | whitespace-nowrap border text-center px-4 py-2">
                         {stringIsEmpty(String(item.DeliveryDate))}
                       </td>
                     </tr>
@@ -217,7 +218,7 @@ const Request = () => {
             </tbody>
           </table>
         </div>
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2 overflow-x-auto">
           <h2 className="font-bold text-2xl">Request Progress</h2>
           <table className="table-auto border-collapse w-full">
             <thead>
@@ -240,7 +241,7 @@ const Request = () => {
                   return (
                     <tr key={index}>
                       <td
-                        className={`hover:bg-black/10 active:bg-black/5 | border text-center px-4 py-2`}
+                        className={`hover:bg-black/10 active:bg-black/5 | whitespace-nowrap border text-center px-4 py-2`}
                       >
                         {supervisor.ApproverType === "A"
                           ? "Approver"
@@ -249,7 +250,7 @@ const Request = () => {
                             : "Administrator"}
                       </td>
                       <td
-                        className={`hover:bg-black/10 active:bg-black/5 | border text-center px-4 py-2`}
+                        className={`hover:bg-black/10 active:bg-black/5 | whitespace-nowrap border text-center px-4 py-2`}
                       >
                         {supervisor.NRP}
                       </td>
@@ -259,18 +260,20 @@ const Request = () => {
                         {capitalize(supervisor.NameUser)}
                       </td>
                       <td
-                        className={`${handleProgressColors(supervisor.Result)} hover:bg-black/10 active:bg-black/5 | border text-center px-4 py-2`}
+                        className={`${handleProgressColors(supervisor.Result)} hover:bg-black/10 active:bg-black/5 | whitespace-nowrap border text-center px-4 py-2`}
                       >
                         {supervisor.Result !== ""
                           ? supervisor.Result
                           : "In Queue"}
                       </td>
                       <td
-                        className={`hover:bg-black/10 active:bg-black/5 | border text-center px-4 py-2`}
+                        className={`hover:bg-black/10 active:bg-black/5 | whitespace-nowrap border text-center px-4 py-2`}
                       >
                         {supervisor.Result !== "Approved"
                           ? "-"
-                          : supervisor.DateApprove}
+                          : mysqlDateIsoStringToJSString(
+                              supervisor.DateApprove,
+                            )}
                       </td>
                     </tr>
                   );
