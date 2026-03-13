@@ -64,6 +64,7 @@ import databasePool from "./dbpool.ts";
 import type { ForexAPIResponse, SubmitPayload } from "@scope/server";
 import provisionFormNumber from "./helper/provisionFormNumber.ts";
 import type { ForexRates } from "./models/FrmPRH.d.ts";
+import addHours from "./helper/addHours.ts";
 
 export const healthCheck = (ctx: RouterContext<"/">) => {
   ctx.response.status = 200;
@@ -624,8 +625,8 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
   // Balance = Change => UPDATE Budget SET Balance = Balance -{usage.unitPrice * usage.quantity, converted to USD} WHERE CostCenter = {usage.costCenter} AND Nature = {usage.budgetOrNature} AND Periode = {usage.periode};
   // IDSection = Unchanged
   // FileResource = Unchanged
-
-  const now = new Date();
+  const indonesiaUtc = 7;
+  const now = addHours(new Date(), indonesiaUtc);
   const submissionDate = now.toISOString().slice(0, 19).replace("T", " ");
   const emailDomain = "ssi.sharp-world.com";
   const noForm = provisionFormNumber();
