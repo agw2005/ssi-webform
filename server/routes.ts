@@ -636,7 +636,6 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
     databasePool,
     payload.firstStep.section,
   );
-  let requestAmount = 0;
 
   console.log(`Requestor Name : ${payload.firstStep.name}`);
   console.log(`Requestor Section : ${payload.firstStep.section}`);
@@ -650,7 +649,10 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
   console.log(
     `Request Return On Outgoing : ${payload.secondStep.returnOnOutgoing}`,
   );
-  payload.thirdStep.usages.map((usage, index) => {
+
+  let requestAmount = 0;
+  let usageIndex = 0;
+  for (const usage of payload.thirdStep.usages) {
     const currencyRate =
       usage.currency === "USD"
         ? forexData.amount
@@ -660,7 +662,7 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
     const requestPricePerUnit = Number(usage.unitPrice);
     const netPrice = (requestQuantity * requestPricePerUnit) / currencyRate;
     requestAmount += netPrice;
-    postUsage(
+    await postUsage(
       databasePool,
       noPR,
       usage.costCenter,
@@ -676,21 +678,24 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
       currencyRate,
       currentBudgetId,
     );
-    console.log(`Usage ${index + 1} Cost Center : ${usage.costCenter}`);
-    console.log(`Usage ${index + 1} Nature : ${usage.budgetOrNature}`);
-    console.log(`Usage ${index + 1} Period : ${usage.periode}`);
-    console.log(`Usage ${index + 1} Balance : ${usage.balance}`);
-    console.log(`Usage ${index + 1} Description : ${usage.description}`);
-    console.log(`Usage ${index + 1} Quantity : ${Number(usage.quantity)}`);
-    console.log(`Usage ${index + 1} Unit Price : ${Number(usage.unitPrice)}`);
-    console.log(`Usage ${index + 1} Measure : ${usage.measure}`);
-    console.log(`Usage ${index + 1} Currency : ${usage.currency}`);
-    console.log(`Usage ${index + 1} Vendor : ${usage.vendor}`);
-    console.log(`Usage ${index + 1} Reason : ${usage.reason}`);
+    console.log(`Usage ${usageIndex + 1} Cost Center : ${usage.costCenter}`);
+    console.log(`Usage ${usageIndex + 1} Nature : ${usage.budgetOrNature}`);
+    console.log(`Usage ${usageIndex + 1} Period : ${usage.periode}`);
+    console.log(`Usage ${usageIndex + 1} Balance : ${usage.balance}`);
+    console.log(`Usage ${usageIndex + 1} Description : ${usage.description}`);
+    console.log(`Usage ${usageIndex + 1} Quantity : ${Number(usage.quantity)}`);
     console.log(
-      `Usage ${index + 1} Estimated Delivery Date : ${usage.estimatedDeliveryDate}`,
+      `Usage ${usageIndex + 1} Unit Price : ${Number(usage.unitPrice)}`,
     );
-  });
+    console.log(`Usage ${usageIndex + 1} Measure : ${usage.measure}`);
+    console.log(`Usage ${usageIndex + 1} Currency : ${usage.currency}`);
+    console.log(`Usage ${usageIndex + 1} Vendor : ${usage.vendor}`);
+    console.log(`Usage ${usageIndex + 1} Reason : ${usage.reason}`);
+    console.log(
+      `Usage ${usageIndex + 1} Estimated Delivery Date : ${usage.estimatedDeliveryDate}`,
+    );
+    usageIndex += 1;
+  }
 
   postRequestInformation(
     databasePool,
@@ -716,11 +721,11 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
   );
 
   let supervisorStep = 1;
-  let i = 0;
+  let supervisorIndex = 0;
   for (const approverName of payload.fourthStep.approver) {
     const supervisorType = "A";
     const supervisorId = await getUserIdByName(databasePool, approverName);
-    console.log(`Approver ${i + 1} : ${approverName}`);
+    console.log(`Approver ${supervisorIndex + 1} : ${approverName}`);
     await postRequestApproverPath(
       databasePool,
       newTraceId,
@@ -729,13 +734,15 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
       supervisorStep,
     );
     supervisorStep += 1;
-    i += 1;
+    supervisorIndex += 1;
   }
+
+  supervisorIndex = 0;
 
   for (const releaserName of payload.fourthStep.releaser) {
     const supervisorType = "R";
     const supervisorId = await getUserIdByName(databasePool, releaserName);
-    console.log(`Releaser ${i + 1} : ${releaserName}`);
+    console.log(`Releaser ${supervisorIndex + 1} : ${releaserName}`);
     await postRequestApproverPath(
       databasePool,
       newTraceId,
@@ -744,13 +751,15 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
       supervisorStep,
     );
     supervisorStep += 1;
-    i += 1;
+    supervisorIndex += 1;
   }
+
+  supervisorIndex = 0;
 
   for (const administratorName of payload.fourthStep.administrator) {
     const supervisorType = "ADM";
     const supervisorId = await getUserIdByName(databasePool, administratorName);
-    console.log(`Administrator ${i + 1} : ${administratorName}`);
+    console.log(`Administrator ${supervisorIndex + 1} : ${administratorName}`);
     await postRequestApproverPath(
       databasePool,
       newTraceId,
@@ -759,7 +768,7 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
       supervisorStep,
     );
     supervisorStep += 1;
-    i += 1;
+    supervisorIndex += 1;
   }
 
   let fileIndex = 1;
