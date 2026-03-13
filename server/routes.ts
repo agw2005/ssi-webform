@@ -44,6 +44,7 @@ import {
 } from "./controllers/Trace.ts";
 import {
   getApproverPathInformation,
+  postRequestApproverPath,
   basicGet as TraceDGet,
 } from "./controllers/TraceD.ts";
 import { basicGet as TypeGet } from "./controllers/Type.ts";
@@ -55,6 +56,7 @@ import {
   authInformation,
   supervisorNames,
   basicGet as UserMasterGet,
+  getUserIdByName,
 } from "./controllers/UserMaster.ts";
 import type { RouterContext } from "@oak/oak";
 import databasePool from "./dbpool.ts";
@@ -588,7 +590,7 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
   // LevelProgress = Which step of the supervisor the form is on, 1 at the start
   // Remarks = '' at the start
 
-  // POST to Trace_D
+  // POST to Trace_D - Done
   //
   // FOR EVERY SUPERVISOR
   //
@@ -701,7 +703,8 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
     requestAmount,
     payload.secondStep.returnOnOutgoing,
   );
-  postRequestTrace(
+
+  const newTraceId = await postRequestTrace(
     databasePool,
     noForm,
     payload.firstStep.name,
@@ -712,14 +715,45 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
     submissionDate,
   );
 
-  payload.fourthStep.approver.map((approverName, index) => {
+  let supervisorStep = 1;
+  payload.fourthStep.approver.map(async (approverName, index) => {
+    const supervisorType = "A";
+    const supervisorId = await getUserIdByName(databasePool, approverName);
     console.log(`Approver ${index + 1} : ${approverName}`);
+    postRequestApproverPath(
+      databasePool,
+      newTraceId,
+      supervisorId,
+      supervisorType,
+      supervisorStep,
+    );
+    supervisorStep += 1;
   });
-  payload.fourthStep.releaser.map((releaserName, index) => {
+  payload.fourthStep.releaser.map(async (releaserName, index) => {
+    const supervisorType = "R";
+    const supervisorId = await getUserIdByName(databasePool, releaserName);
     console.log(`Releaser ${index + 1} : ${releaserName}`);
+    postRequestApproverPath(
+      databasePool,
+      newTraceId,
+      supervisorId,
+      supervisorType,
+      supervisorStep,
+    );
+    supervisorStep += 1;
   });
-  payload.fourthStep.administrator.map((administratorName, index) => {
+  payload.fourthStep.administrator.map(async (administratorName, index) => {
+    const supervisorType = "ADM";
+    const supervisorId = await getUserIdByName(databasePool, administratorName);
     console.log(`Administrator ${index + 1} : ${administratorName}`);
+    postRequestApproverPath(
+      databasePool,
+      newTraceId,
+      supervisorId,
+      supervisorType,
+      supervisorStep,
+    );
+    supervisorStep += 1;
   });
   payload.fifthStep.files.map((file, index) => {
     console.log(`File ${index + 1} : ${file.name}`);

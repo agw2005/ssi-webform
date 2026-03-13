@@ -36,3 +36,21 @@ export const getApproverPathInformation = async (
   );
   return [rows, metadata];
 };
+
+export const postRequestApproverPath = async (
+  pool: mysql.Pool,
+  traceId: number,
+  userId: number,
+  approverType: string,
+  approverStep: number,
+) => {
+  const result = approverStep === 1 ? "In Progress" : "";
+  await pool.query(
+    `INSERT INTO Trace_D
+        (IDTrace, IDUser, Result, DateApprove, ApproverType, ApproverLevel)
+      VALUES
+        (? , ? , ? , null , ? , ?);`,
+    [traceId, userId, result, approverType, approverStep],
+  );
+  return void 0;
+};
