@@ -19,6 +19,7 @@ import {
   type FourthStepInputs,
   type FifthStepInputs,
   submitRequest,
+  type SubmitResponse,
 } from "@scope/server";
 import useFetch from "../hooks/useFetch.tsx";
 import useForex from "../hooks/useForex.tsx";
@@ -220,16 +221,20 @@ const Submit = () => {
     };
     try {
       const submitResponse = await fetch(SUBMIT_URL, submitRequest(payload));
-      const submitResponseBody: string = await submitResponse.text();
+      const submitResponseBody: SubmitResponse = await submitResponse.json();
       if (submitResponse.ok) {
         globalThis.alert(
-          "Your purchasing request has been filed successfully!\nRedirecting to the homepage...",
+          `${submitResponseBody.message}\n
+          No. Form : ${submitResponseBody.noForm}\n
+          No. PR : ${submitResponseBody.noPR}\n
+          ID Trace : ${submitResponseBody.traceId}`,
         );
         console.log(submitResponseBody);
-        navigate("/#");
+        navigate(`/request/${submitResponseBody.traceId}`);
       } else {
         globalThis.alert(
-          "There was a problem in parsing your purchasing request. Please make sure there are no empty required fields!",
+          `There was a problem in parsing your purchasing request. Please make sure there are no empty required fields!\n
+          Err ${submitResponse.status} : ${submitResponseBody.message}`,
         );
       }
     } catch (err) {

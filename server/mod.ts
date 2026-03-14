@@ -87,3 +87,10 @@ export const submitRequest = (requestPayload: SubmitPayload) => {
   };
   return Request;
 };
+
+export interface SubmitResponse {
+  message: string;
+  noForm: string;
+  noPR: string;
+  traceId: string;
+}

@@ -62,7 +62,11 @@ import {
 } from "./controllers/UserMaster.ts";
 import type { RouterContext } from "@oak/oak";
 import databasePool from "./dbpool.ts";
-import type { ForexAPIResponse, SubmitPayload } from "@scope/server";
+import type {
+  ForexAPIResponse,
+  SubmitPayload,
+  SubmitResponse,
+} from "@scope/server";
 import provisionFormNumber from "./helper/provisionFormNumber.ts";
 import type { ForexRates } from "./models/FrmPRH.d.ts";
 import addHours from "./helper/addHours.ts";
@@ -507,17 +511,25 @@ export const authenticate = (ctx: RouterContext<"/auth">) => {
   };
 };
 
+// POST to table frm_PR_D
+// PATCH to table Budget
+// POST to table frm_PR_H
+// POST to table Trace
+// POST to table Trace_D
+// POST to table UploadFile
 export const submitRequest = async (ctx: RouterContext<"/submit">) => {
-  const FOREX_API_URL =
-    "https://api.frankfurter.dev/v1/latest?symbols=IDR,JPY,SGD&base=USD";
-
   const formDataRequest: FormData = await ctx.request.body.formData();
   const files: File[] = formDataRequest.getAll("files") as File[];
   const rawPayload = formDataRequest.get("payload");
-
   if (typeof rawPayload !== "string") {
+    const failResponse: SubmitResponse = {
+      message: "Invalid payload. Request submission denied.",
+      noForm: "",
+      noPR: "",
+      traceId: "",
+    };
     ctx.response.status = 400;
-    ctx.response.body = "Invalid payload";
+    ctx.response.body = failResponse;
     return;
   }
 
@@ -525,7 +537,6 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
     SubmitPayload,
     "fifthStep"
   >;
-
   const payload: SubmitPayload = {
     ...parsedPayload,
     fifthStep: {
@@ -533,182 +544,67 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
     },
   };
 
+  const FOREX_API_URL =
+    "https://api.frankfurter.dev/v1/latest?symbols=IDR,JPY,SGD&base=USD";
   const forexResponse = await fetch(FOREX_API_URL);
   const forexData: ForexAPIResponse = await forexResponse.json();
 
-  // POST to frm_PR_D - DONE
-  //
-  // FOR EVERY USAGES ITEM
-  //
-  // IDItem = Automatically inceremented, no need to set it
-  // NoPR = {noPR}
-  // AcctAssgCategory = '', always
-  // CostCenter = {usage.costCenter}
-  // Nature = {usage.budgetOrNature}
-  // Description = {usage.description}
-  // Qty = {usage.quantity}
-  // Measure = {usage.measure}
-  // UnitPrice = {usage.unitPrice}
-  // Currency = {usage.currency}
-  // EstimationDeliveryDate = {usage.estimatedDeliveryDate}
-  // Vendor = {usage.vendor}
-  // Reason = {usage.reason}
-  // StatusItem = if the item is rejected 'False' / 'True', 'False' at the start
-  // RejectedBy = User Name of who rejected the item, '' at the start
-  // Supplier = Always ''
-  // NetPrice = {usage.unitPrice * usage.quantity, converted to USD}
-  // DeliveryDate = null at the start
-  // NoPO = '' at the start
-  // Rate = (PLEASE HANDLE EXCEPTION FOR CURRENCY=USD) {forexData.rates[payload.thirdStep.usage.currency as keyof ForexRates]}
-  // IDBudget = {usage.periode}-{usage.costCenter}-{payload.firstStep.section}
-
-  // POST to frm_PR_H - Done
-  //
-  // ID = Automatically inceremented, no need to set it
-  // NoForm = {noForm}
-  // Requestor = {payload.firstStep.name}
-  // NRP = {payload.firstStep.nrp}
-  // Section = {payload.firstStep.section}
-  // NoPR = See frm_PR_D
-  // Subject = {payload.secondStep.subject}
-  // Amount = Sum of frm_PR_D.NetPrice of the previous declaration converted to USD
-  // ReturnOnOutgoing = {payload.secondStep.returnOnOutgoing}
-  // Remarks = ''
-
-  // POST to Trace - Done
-  //
-  // IDTrace = IDTrace is inceremented, no need to set it
-  // IDForm = IDForm will always be '8'
-  // FormTable = FormTable will always be 'frm_PR_H'
-  // NoForm = {noForm}
-  // Requestor = {payload.firstStep.name}
-  // IDSection = (not a real query) Trace.IDSection = SELECT IDSection FROM Section WHERE SectionName LIKE {payload.firstStep.section};
-  // NRP = {payload.firstStep.nrp}
-  // Ext = {payload.firstStep.ext}
-  // EmailReq = {payload.firstStep.email}'@ssi.sharp-world.com'
-  // Status = 'In Progress'
-  // SubmitDate = {submissionDate}
-  // ProcessedBy = The User ID of the supervisor that last approved the form, 0 at the start
-  // ProcessedLevel = Sum of `ApproverLevel` from Trace_D of that IDTrace where `Trace_D.Result` is `In Progress` or `Approved`, 0 at the start
-  // LevelProgress = Which step of the supervisor the form is on, 1 at the start
-  // Remarks = '' at the start
-
-  // POST to Trace_D - Done
-  //
-  // FOR EVERY SUPERVISOR
-  //
-  // IDTrace = See Trace
-  // IDUser = {getUserIdByName(databasePool, supervisorName)}
-  // Result = '' at the start
-  // DateApprove = null at the start
-  // ApproverType = Based on usage field, either 'A', 'R', or 'ADM'
-  // ApproverLevel = 1-based index of all the supervisor from approver to administrator
-
-  // POST to UploadFile - Done
-  //
-  // FOR EVERY FILE
-  //
-  // IDUpload = auto inceremented, no need to set it
-  // NoForm = {noForm}
-  // FormName = {payload.secondStep.subject}
-  // Requestor = {payload.firstStep.name}
-  // Filename = {file.name}
-  // DateUpload = {now}
-
-  // PATCH to Budget
-  //
-  // FOR EVERY USAGES ITEM
-  //
-  // CostCenter = Unchanged
-  // Nature = Unchanged
-  // Periode = Unchanged
-  // Budget = Unchanged
-  // Balance = Change => UPDATE Budget SET Balance = Balance -{usage.unitPrice * usage.quantity, converted to USD} WHERE CostCenter = {usage.costCenter} AND Nature = {usage.budgetOrNature} AND Periode = {usage.periode};
-  // IDSection = Unchanged
-  // FileResource = Unchanged
   const indonesiaUtc = 7;
   const now = addHours(new Date(), indonesiaUtc);
   const submissionDate = now.toISOString().slice(0, 19).replace("T", " ");
   const emailDomain = "ssi.sharp-world.com";
-  const noForm = provisionFormNumber();
-  const noPR = await provisionPRNumber(
-    databasePool,
-    payload.firstStep.department,
-  );
-  const requestorSectionId = await getSectionIdByName(
-    databasePool,
-    payload.firstStep.section,
-  );
 
-  console.log(`Requestor Name : ${payload.firstStep.name}`);
-  console.log(`Requestor Section : ${payload.firstStep.section}`);
-  console.log(`Requestor NRP : ${payload.firstStep.nrp}`);
-  console.log(`Requestor Extension Number : ${payload.firstStep.ext}`);
-  console.log(`Requestor Email : ${payload.firstStep.email}`);
-  console.log(`Requestor Department : ${payload.firstStep.department}`);
-  console.log(`Request File Resource : ${payload.firstStep.fileResource}`);
-  console.log(`Request Form Type : ${payload.firstStep.form}`);
-  console.log(`Request Subject : ${payload.secondStep.subject}`);
-  console.log(
-    `Request Return On Outgoing : ${payload.secondStep.returnOnOutgoing}`,
-  );
+  const noForm = provisionFormNumber();
+  const [noPR, requestorSectionId] = await Promise.all([
+    provisionPRNumber(databasePool, payload.firstStep.department),
+    getSectionIdByName(databasePool, payload.firstStep.section),
+  ]);
 
   let requestAmount = 0;
-  let usageIndex = 0;
-  for (const usage of payload.thirdStep.usages) {
-    const currencyRate =
-      usage.currency === "USD"
-        ? forexData.amount
-        : forexData.rates[usage.currency as keyof ForexRates];
-    const currentBudgetId = `${usage.periode}-${usage.costCenter}-${payload.firstStep.section}`;
-    const requestQuantity = Number(usage.quantity);
-    const requestPricePerUnit = Number(usage.unitPrice);
-    const netPrice = (requestQuantity * requestPricePerUnit) / currencyRate;
-    requestAmount += netPrice;
-    await postUsage(
-      databasePool,
-      noPR,
-      usage.costCenter,
-      usage.budgetOrNature,
-      usage.description,
-      Number(usage.quantity),
-      usage.measure,
-      Number(usage.unitPrice),
-      usage.currency,
-      usage.estimatedDeliveryDate,
-      usage.vendor,
-      usage.reason,
-      currencyRate,
-      currentBudgetId,
-    );
 
-    patchRequestBudget(
-      databasePool,
-      netPrice,
-      usage.costCenter,
-      usage.budgetOrNature,
-      usage.periode,
-    );
-    console.log(`Usage ${usageIndex + 1} Cost Center : ${usage.costCenter}`);
-    console.log(`Usage ${usageIndex + 1} Nature : ${usage.budgetOrNature}`);
-    console.log(`Usage ${usageIndex + 1} Period : ${usage.periode}`);
-    console.log(`Usage ${usageIndex + 1} Balance : ${usage.balance}`);
-    console.log(`Usage ${usageIndex + 1} Description : ${usage.description}`);
-    console.log(`Usage ${usageIndex + 1} Quantity : ${Number(usage.quantity)}`);
-    console.log(
-      `Usage ${usageIndex + 1} Unit Price : ${Number(usage.unitPrice)}`,
-    );
-    console.log(`Usage ${usageIndex + 1} Measure : ${usage.measure}`);
-    console.log(`Usage ${usageIndex + 1} Currency : ${usage.currency}`);
-    console.log(`Usage ${usageIndex + 1} Vendor : ${usage.vendor}`);
-    console.log(`Usage ${usageIndex + 1} Reason : ${usage.reason}`);
-    console.log(
-      `Usage ${usageIndex + 1} Estimated Delivery Date : ${usage.estimatedDeliveryDate}`,
-    );
-    usageIndex += 1;
-  }
+  await Promise.all(
+    payload.thirdStep.usages.map(async (usage) => {
+      const currencyRate =
+        usage.currency === "USD"
+          ? forexData.amount
+          : forexData.rates[usage.currency as keyof ForexRates];
 
-  postRequestInformation(
+      const budgetId = `${usage.periode}-${usage.costCenter}-${payload.firstStep.section}`;
+      const quantity = Number(usage.quantity);
+      const pricePerUnit = Number(usage.unitPrice);
+      const netPriceByCurrencyRate = (quantity * pricePerUnit) / currencyRate;
+
+      requestAmount += netPriceByCurrencyRate;
+
+      await Promise.all([
+        postUsage(
+          databasePool,
+          noPR,
+          usage.costCenter,
+          usage.budgetOrNature,
+          usage.description,
+          quantity,
+          usage.measure,
+          pricePerUnit,
+          usage.currency,
+          usage.estimatedDeliveryDate,
+          usage.vendor,
+          usage.reason,
+          currencyRate,
+          budgetId,
+        ),
+        patchRequestBudget(
+          databasePool,
+          netPriceByCurrencyRate,
+          usage.costCenter,
+          usage.budgetOrNature,
+          usage.periode,
+        ),
+      ]);
+    }),
+  );
+
+  await postRequestInformation(
     databasePool,
     noForm,
     payload.firstStep.name,
@@ -731,71 +627,48 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
     submissionDate,
   );
 
-  let supervisorStep = 1;
-  let supervisorIndex = 0;
-  for (const approverName of payload.fourthStep.approver) {
-    const supervisorType = "A";
-    const supervisorId = await getUserIdByName(databasePool, approverName);
-    console.log(`Approver ${supervisorIndex + 1} : ${approverName}`);
-    await postRequestApproverPath(
-      databasePool,
-      newTraceId,
-      supervisorId,
-      supervisorType,
-      supervisorStep,
-    );
-    supervisorStep += 1;
-    supervisorIndex += 1;
-  }
+  const supervisorNames = [
+    ...payload.fourthStep.approver.map((name) => ({ name, type: "A" })),
+    ...payload.fourthStep.releaser.map((name) => ({ name, type: "R" })),
+    ...payload.fourthStep.administrator.map((name) => ({ name, type: "ADM" })),
+  ];
 
-  supervisorIndex = 0;
+  await Promise.all(
+    supervisorNames.map(async (supervisorName, index) => {
+      const supervisorId = await getUserIdByName(
+        databasePool,
+        supervisorName.name,
+      );
+      await postRequestApproverPath(
+        databasePool,
+        newTraceId,
+        supervisorId,
+        supervisorName.type,
+        index + 1,
+      );
+    }),
+  );
 
-  for (const releaserName of payload.fourthStep.releaser) {
-    const supervisorType = "R";
-    const supervisorId = await getUserIdByName(databasePool, releaserName);
-    console.log(`Releaser ${supervisorIndex + 1} : ${releaserName}`);
-    await postRequestApproverPath(
-      databasePool,
-      newTraceId,
-      supervisorId,
-      supervisorType,
-      supervisorStep,
-    );
-    supervisorStep += 1;
-    supervisorIndex += 1;
-  }
+  await Promise.all(
+    payload.fifthStep.files.map((file) =>
+      postRequestFiles(
+        databasePool,
+        noForm,
+        payload.secondStep.subject,
+        payload.firstStep.name,
+        file.name,
+        submissionDate,
+      ),
+    ),
+  );
 
-  supervisorIndex = 0;
-
-  for (const administratorName of payload.fourthStep.administrator) {
-    const supervisorType = "ADM";
-    const supervisorId = await getUserIdByName(databasePool, administratorName);
-    console.log(`Administrator ${supervisorIndex + 1} : ${administratorName}`);
-    await postRequestApproverPath(
-      databasePool,
-      newTraceId,
-      supervisorId,
-      supervisorType,
-      supervisorStep,
-    );
-    supervisorStep += 1;
-    supervisorIndex += 1;
-  }
-
-  let fileIndex = 1;
-  for (const file of payload.fifthStep.files) {
-    console.log(`File ${fileIndex + 1} : ${file.name}`);
-    await postRequestFiles(
-      databasePool,
-      noForm,
-      payload.secondStep.subject,
-      payload.firstStep.name,
-      file.name,
-      submissionDate,
-    );
-    fileIndex += 1;
-  }
+  const successResponse: SubmitResponse = {
+    message: "Your purchasing request has been filed successfully!",
+    noForm: noForm,
+    noPR: noPR,
+    traceId: String(newTraceId),
+  };
 
   ctx.response.status = 200;
-  ctx.response.body = "Success";
+  ctx.response.body = successResponse;
 };
