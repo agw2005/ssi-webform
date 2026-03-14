@@ -193,12 +193,13 @@ export const postRequestTrace = async (
   requestorExtensionNumber: string,
   requestorEmail: string,
   requestSubmissionDate: string,
+  initialSupervisorId: number,
 ): Promise<number> => {
   const [rows, _metadata] = await pool.query<ResultSetHeader>(
     `INSERT INTO Trace
 	    (IDForm, FormTable, NoForm, Requestor, IDSection, NRP, Ext, EmailReq, Status, SubmitDate, ProcessedBy, ProcessedLevel, LevelProgress, Remarks)
     VALUES
-	    ('8', 'frm_PR_H', ? , ? , ? , ? , ? , ? , 'In Progress', ? , 0 , 0 , 1 , '');`,
+	    ('8', 'frm_PR_H', ? , ? , ? , ? , ? , ? , 'In Progress', ? , ? , 0 , 1 , '');`,
     [
       noForm,
       requestorName,
@@ -207,6 +208,7 @@ export const postRequestTrace = async (
       requestorExtensionNumber,
       requestorEmail,
       requestSubmissionDate,
+      initialSupervisorId,
     ],
   );
 

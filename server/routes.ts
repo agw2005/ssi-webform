@@ -616,6 +616,17 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
     payload.secondStep.returnOnOutgoing,
   );
 
+  const supervisorNames = [
+    ...payload.fourthStep.approver.map((name) => ({ name, type: "A" })),
+    ...payload.fourthStep.releaser.map((name) => ({ name, type: "R" })),
+    ...payload.fourthStep.administrator.map((name) => ({ name, type: "ADM" })),
+  ];
+
+  const initialSupervisorId = await getUserIdByName(
+    databasePool,
+    payload.fourthStep.approver[0],
+  );
+
   const newTraceId = await postRequestTrace(
     databasePool,
     noForm,
@@ -625,13 +636,8 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
     payload.firstStep.ext,
     `${payload.firstStep.email}@${emailDomain}`,
     submissionDate,
+    initialSupervisorId,
   );
-
-  const supervisorNames = [
-    ...payload.fourthStep.approver.map((name) => ({ name, type: "A" })),
-    ...payload.fourthStep.releaser.map((name) => ({ name, type: "R" })),
-    ...payload.fourthStep.administrator.map((name) => ({ name, type: "ADM" })),
-  ];
 
   await Promise.all(
     supervisorNames.map(async (supervisorName, index) => {
