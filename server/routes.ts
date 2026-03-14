@@ -3,6 +3,7 @@ import {
   allPeriods,
   basicGet as BudgetGet,
   natureByCostCenter,
+  patchRequestBudget,
   reportInformation,
   singleBalance,
   viewInformation,
@@ -603,7 +604,7 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
   // ApproverType = Based on usage field, either 'A', 'R', or 'ADM'
   // ApproverLevel = 1-based index of all the supervisor from approver to administrator
 
-  // POST to UploadFile
+  // POST to UploadFile - Done
   //
   // FOR EVERY FILE
   //
@@ -679,6 +680,14 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
       usage.reason,
       currencyRate,
       currentBudgetId,
+    );
+
+    patchRequestBudget(
+      databasePool,
+      netPrice,
+      usage.costCenter,
+      usage.budgetOrNature,
+      usage.periode,
     );
     console.log(`Usage ${usageIndex + 1} Cost Center : ${usage.costCenter}`);
     console.log(`Usage ${usageIndex + 1} Nature : ${usage.budgetOrNature}`);

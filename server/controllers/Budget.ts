@@ -7,6 +7,7 @@ import type {
   BudgetViewInformation,
   ReportViewInformation,
 } from "../models/Budget.d.ts";
+import type { ResultSetHeader } from "mysql2/promise.js";
 
 /**
  * A basic GET, affecting all attributes with pagination support.
@@ -169,6 +170,25 @@ export const reportInformation = async (
     WHERE (? IS NULL OR Budget.Periode LIKE CONCAT( ? , '%' ))
     AND (? IS NULL OR Budget.FileResource = ?);`,
     [periode, periode, fileResource, fileResource],
+  );
+  return [rows, metadata];
+};
+
+export const patchRequestBudget = async (
+  pool: mysql.Pool,
+  usage: number,
+  costCenter: string,
+  nature: string,
+  period: string,
+) => {
+  const [rows, metadata] = await pool.query<ResultSetHeader>(
+    `UPDATE Budget
+      SET Balance = Balance - ?
+      WHERE
+        CostCenter = ?
+        AND Nature = ? 
+        AND Periode = ?`,
+    [usage, costCenter, nature, period],
   );
   return [rows, metadata];
 };
