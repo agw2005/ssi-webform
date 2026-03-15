@@ -109,11 +109,12 @@ export const postRequestInformation = async (
   requestSubject: string,
   requestAmount: number,
   requestReturnOnOutgoing: string,
+  remarks: string,
 ): Promise<number> => {
   const [rows, _metadata] = await pool.query<ResultSetHeader>(
     `INSERT INTO 
       frm_PR_H (NoForm, Requestor, NRP, Section, NoPR, Subject, Amount, ReturnOnOutgoing, Remarks) 
-      VALUES (? , ? , ? , ? , ? , ? , ROUND( ? , 2 ) , ? , '');`,
+      VALUES (? , ? , ? , ? , ? , ? , ROUND( ? , 2 ) , ? , ?);`,
     [
       noForm,
       requestorName,
@@ -123,6 +124,7 @@ export const postRequestInformation = async (
       requestSubject,
       requestAmount,
       requestReturnOnOutgoing,
+      remarks,
     ],
   );
 

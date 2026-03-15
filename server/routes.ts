@@ -561,6 +561,7 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
   ]);
 
   let requestAmount = 0;
+  let isRedLight = false;
 
   await Promise.all(
     payload.thirdStep.usages.map(async (usage) => {
@@ -601,8 +602,25 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
           usage.periode,
         ),
       ]);
+
+      const [currentNatureInfo] = await singleBalance(
+        databasePool,
+        Number(usage.costCenter),
+        usage.periode,
+        usage.budgetOrNature,
+      );
+      const currentNatureBalance = Number(currentNatureInfo[0].Balance) || 0;
+      if (!isRedLight && currentNatureBalance < netPriceByCurrencyRate) {
+        isRedLight = true;
+      }
     }),
   );
+
+  const requestSubject = !isRedLight
+    ? payload.secondStep.subject
+    : `[RL] ${payload.secondStep.subject}`;
+
+  const initialRemarks = !isRedLight ? "" : "[RL]";
 
   await postRequestInformation(
     databasePool,
@@ -611,9 +629,10 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
     payload.firstStep.nrp,
     payload.firstStep.section,
     noPR,
-    payload.secondStep.subject,
+    requestSubject,
     requestAmount,
     payload.secondStep.returnOnOutgoing,
+    initialRemarks,
   );
 
   const supervisorNames = [
@@ -637,6 +656,7 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
     `${payload.firstStep.email}@${emailDomain}`,
     submissionDate,
     initialSupervisorId,
+    initialRemarks,
   );
 
   await Promise.all(
