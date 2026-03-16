@@ -12,6 +12,7 @@ interface NumberInputProps {
   maximumValue?: number;
   value: string;
   onChangeHandler: (input: React.ChangeEvent<HTMLInputElement>) => void;
+  placeholder?: string;
 }
 
 const NumberInput = ({
@@ -25,6 +26,7 @@ const NumberInput = ({
   maximumValue = Number.MAX_SAFE_INTEGER,
   value,
   onChangeHandler,
+  placeholder = "",
 }: NumberInputProps) => {
   return (
     <div className="h-8 lg:h-9 xl:h-10 | flex">
@@ -35,6 +37,7 @@ const NumberInput = ({
         {requiredInput ? "*" : ""}
       </div>
       <input
+        placeholder={placeholder}
         min={minimumValue}
         max={maximumValue}
         disabled={isDisabled}

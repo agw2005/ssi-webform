@@ -72,6 +72,7 @@ const FirstStep = ({
         requiredInput
         value={firstStepInputsGetter.name}
         onChangeHandler={genericChangeHandler("name")}
+        placeholder="e.g. Makoto Kikuchi"
       />
       <SelectionInput
         label="Your Section"
@@ -96,6 +97,7 @@ const FirstStep = ({
         requiredInput
         value={firstStepInputsGetter.nrp}
         onChangeHandler={genericChangeHandler("nrp")}
+        placeholder="e.g. 002908"
       />
       <TextInput
         label="Ext. No."
@@ -105,6 +107,7 @@ const FirstStep = ({
         requiredInput
         value={firstStepInputsGetter.ext}
         onChangeHandler={genericChangeHandler("ext")}
+        placeholder="e.g. 619"
       />
       <TextInputBetweenLabel
         leftLabel="Your E-Mail"
@@ -115,6 +118,7 @@ const FirstStep = ({
         requiredInput
         value={firstStepInputsGetter.email}
         onChangeHandler={genericChangeHandler("email")}
+        placeholder="makoto17"
       />
       <SelectionInput
         label="File Resource"

@@ -108,6 +108,7 @@ interface ThirdStepProps {
     period: string,
     nature: string,
   ) => Promise<Balance[] | null>;
+  submitterDepartmentName: string;
 }
 
 const ThirdStep = ({
@@ -120,6 +121,7 @@ const ThirdStep = ({
   natures,
   setActiveCostCenter,
   fetchBalanceHelper,
+  submitterDepartmentName,
 }: ThirdStepProps) => {
   const [usageField, setUsageField] = useState<Usage>(DEFAULT_USAGE);
 
@@ -304,6 +306,7 @@ const ThirdStep = ({
             requiredInput
             value={usageField.description}
             onChangeHandler={genericChangeHandler("description")}
+            placeholder="e.g. Seagate HDD"
           />
           <NumberInput
             label="Quantity"
@@ -313,6 +316,7 @@ const ThirdStep = ({
             requiredInput
             value={usageField.quantity}
             onChangeHandler={genericChangeHandler("quantity")}
+            placeholder="e.g. 175"
           />
           <NumberInput
             label="Unit Price"
@@ -322,6 +326,7 @@ const ThirdStep = ({
             requiredInput
             value={usageField.unitPrice}
             onChangeHandler={genericChangeHandler("unitPrice")}
+            placeholder="e.g. 192500"
           />
           <TipBox
             label={`Jangan gunakan koma. Gunakan titik untuk desimal.`}
@@ -335,6 +340,7 @@ const ThirdStep = ({
             requiredInput
             value={usageField.measure}
             onChangeHandler={genericChangeHandler("measure")}
+            placeholder="e.g. kilogram"
           />
           <SelectionInput
             label="Currency"
@@ -355,6 +361,7 @@ const ThirdStep = ({
             requiredInput
             value={usageField.vendor}
             onChangeHandler={genericChangeHandler("vendor")}
+            placeholder="e.g. Seagate Technology LLC"
           />
           <TextInput
             label="Reason"
@@ -364,6 +371,7 @@ const ThirdStep = ({
             requiredInput
             value={usageField.reason}
             onChangeHandler={genericChangeHandler("reason")}
+            placeholder="e.g. Upgrading server"
           />
           <DateInput
             label="Estimated Delivery Date"
@@ -453,7 +461,7 @@ const ThirdStep = ({
                       {usage.reason}
                     </td>
                     <td className="text-xs border p-2 whitespace-nowrap text-center">
-                      {`${usage.periode}-[DeptID]-[DeptName]`}
+                      {`${usage.periode}-${usage.costCenter}-${submitterDepartmentName}`}
                     </td>
                     <td
                       className="bg-red-400 hover:bg-red-500 active:bg-red-600 | text-xs border p-2 whitespace-nowrap text-center select-none"
@@ -476,91 +484,98 @@ const ThirdStep = ({
           </table>
         </div>
       </div>
-      <h2 className="text-xl font-bold text-yellow-600">Budget Summary</h2>
-      <div className="overflow-auto">
-        <table className="border-collapse w-full lg:w-max">
-          <thead>
-            <tr>
-              {BUDGET_SUMMARY_ATTRIBUTES.map((attribute, index) => {
-                return (
-                  <th
-                    key={index}
-                    className="text-xs lg:text-sm xl:text-base | border p-2 bg-yellow-800 text-white border-black whitespace-nowrap text-center"
-                  >
-                    {attribute}
-                  </th>
-                );
-              })}
-            </tr>
-          </thead>
-          <tbody>
-            {summarizedBudgets.map((summary, index) => {
-              const remainingBalance = summary.balance - summary.totalUsageUSD;
-              return (
-                <tr key={index}>
-                  <td className="text-xs lg:text-sm xl:text-base | border p-2 whitespace-nowrap text-center">
-                    {summary.costCenter}
-                  </td>
-                  <td className="text-xs lg:text-sm xl:text-base | border p-2 whitespace-nowrap text-center">
-                    {summary.budgetOrNature}
-                  </td>
-                  <td className="text-xs lg:text-sm xl:text-base | border p-2 whitespace-nowrap text-center">
-                    {summary.periode}
-                  </td>
-                  <td className="text-xs lg:text-sm xl:text-base | border p-2 whitespace-nowrap text-center">
-                    {formatNumberToString(summary.balance)}
-                  </td>
-                  <td className="text-xs lg:text-sm xl:text-base | border p-2 whitespace-nowrap text-center">
-                    {formatNumberToString(summary.totalUsageUSD)}
-                  </td>
-                  <td
-                    className={`text-xs lg:text-sm xl:text-base |  | border p-2 whitespace-nowrap text-center`}
-                  >
-                    <span
-                      className={
-                        remainingBalance < 0 ? "font-bold text-red-500" : ""
-                      }
-                    >
-                      {formatNumberToString(remainingBalance)}{" "}
-                      {remainingBalance < 0 ? "[RL]" : ""}
-                    </span>
-                  </td>
+      {thirdStepInputsGetter.usages.length !== 0 && (
+        <>
+          <h2 className="text-xl font-bold text-yellow-600">Budget Summary</h2>
+          <div className="overflow-auto">
+            <table className="border-collapse w-full lg:w-max">
+              <thead>
+                <tr>
+                  {BUDGET_SUMMARY_ATTRIBUTES.map((attribute, index) => {
+                    return (
+                      <th
+                        key={index}
+                        className="text-xs lg:text-sm xl:text-base | border p-2 bg-yellow-800 text-white border-black whitespace-nowrap text-center"
+                      >
+                        {attribute}
+                      </th>
+                    );
+                  })}
                 </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
+              </thead>
+              <tbody>
+                {summarizedBudgets.map((summary, index) => {
+                  const remainingBalance =
+                    summary.balance - summary.totalUsageUSD;
+                  return (
+                    <tr key={index}>
+                      <td className="text-xs lg:text-sm xl:text-base | border p-2 whitespace-nowrap text-center">
+                        {summary.costCenter}
+                      </td>
+                      <td className="text-xs lg:text-sm xl:text-base | border p-2 whitespace-nowrap text-center">
+                        {summary.budgetOrNature}
+                      </td>
+                      <td className="text-xs lg:text-sm xl:text-base | border p-2 whitespace-nowrap text-center">
+                        {summary.periode}
+                      </td>
+                      <td className="text-xs lg:text-sm xl:text-base | border p-2 whitespace-nowrap text-center">
+                        {formatNumberToString(summary.balance)}
+                      </td>
+                      <td className="text-xs lg:text-sm xl:text-base | border p-2 whitespace-nowrap text-center">
+                        {formatNumberToString(summary.totalUsageUSD)}
+                      </td>
+                      <td
+                        className={`text-xs lg:text-sm xl:text-base |  | border p-2 whitespace-nowrap text-center`}
+                      >
+                        <span
+                          className={
+                            remainingBalance < 0 ? "font-bold text-red-500" : ""
+                          }
+                        >
+                          {formatNumberToString(remainingBalance)}{" "}
+                          {remainingBalance < 0 ? "[RL]" : ""}
+                        </span>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </>
+      )}
 
-      <div className="flex gap-2">
-        <div className="px-4 py-2 border rounded-lg bg-yellow-800 border-yellow-800 text-white font-bold select-none">
-          Total Usage ($) : {formatNumberToString(totalUsage)}
-        </div>
-        <div className="flex gap-2 whitespace-nowrap">
-          <div
-            className="bg-black hover:bg-black/70 active:bg-black/85 | px-4 py-2 border rounded-2xl border-black font-bold tracking-wide text-white select-none"
-            onClick={() => {
-              setUsageField(DEFAULT_USAGE);
-              progressSetter((prev) => prev.filter((num) => num !== STEP));
-              thirdStepInputsInputsSetter(thirdStepInputsDefaultValue);
-            }}
-          >
-            Clear
+      {thirdStepInputsGetter.usages.length !== 0 && (
+        <div className="flex gap-2">
+          <div className="px-4 py-2 border rounded-lg bg-yellow-800 border-yellow-800 text-white font-bold select-none">
+            Total Usage ($) : {formatNumberToString(totalUsage)}
           </div>
-          <div
-            className="bg-black hover:bg-black/70 active:bg-black/85 | px-4 py-2 border rounded-2xl border-black font-bold tracking-wide text-white select-none"
-            onClick={() => {
-              if (!requiredFieldsAreEmpty()) {
-                progressSetter((prev) => [...prev, STEP]);
-              } else {
-                globalThis.confirm(EMPTY_FIELDS_WARNING);
-              }
-            }}
-          >
-            Next
+          <div className="flex gap-2 whitespace-nowrap">
+            <div
+              className="bg-black hover:bg-black/70 active:bg-black/85 | px-4 py-2 border rounded-2xl border-black font-bold tracking-wide text-white select-none"
+              onClick={() => {
+                setUsageField(DEFAULT_USAGE);
+                progressSetter((prev) => prev.filter((num) => num !== STEP));
+                thirdStepInputsInputsSetter(thirdStepInputsDefaultValue);
+              }}
+            >
+              Clear
+            </div>
+            <div
+              className="bg-black hover:bg-black/70 active:bg-black/85 | px-4 py-2 border rounded-2xl border-black font-bold tracking-wide text-white select-none"
+              onClick={() => {
+                if (!requiredFieldsAreEmpty()) {
+                  progressSetter((prev) => [...prev, STEP]);
+                } else {
+                  globalThis.confirm(EMPTY_FIELDS_WARNING);
+                }
+              }}
+            >
+              Next
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

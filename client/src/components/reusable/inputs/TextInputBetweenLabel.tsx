@@ -10,6 +10,7 @@ interface TextInputBetweenLabelProps {
   variant: ColorVariant;
   value: string;
   onChangeHandler: (input: React.ChangeEvent<HTMLInputElement>) => void;
+  placeholder?: string;
 }
 
 const TextInputBetweenLabel = ({
@@ -21,6 +22,7 @@ const TextInputBetweenLabel = ({
   variant,
   value,
   onChangeHandler,
+  placeholder = "",
 }: TextInputBetweenLabelProps) => {
   return (
     <div className="h-8 lg:h-9 xl:h-10 | flex">
@@ -31,6 +33,7 @@ const TextInputBetweenLabel = ({
         {requiredInput ? "*" : ""}
       </div>
       <input
+        placeholder={placeholder}
         type="text"
         name={name}
         id={id}

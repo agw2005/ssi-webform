@@ -203,8 +203,6 @@ const Submit = () => {
       currentValues.firstStep.form === comparisonDefaults.firstStep.form ||
       currentValues.secondStep.subject ===
         comparisonDefaults.secondStep.subject ||
-      currentValues.secondStep.returnOnOutgoing ===
-        comparisonDefaults.secondStep.returnOnOutgoing ||
       thirdStepInputs.usages.length === 0 ||
       fourthStepInputs.approver.length === 0 ||
       fourthStepInputs.releaser.length === 0 ||
@@ -303,6 +301,7 @@ const Submit = () => {
             natures={natures}
             setActiveCostCenter={setActiveCostCenter}
             fetchBalanceHelper={fetchBalanceHelper}
+            submitterDepartmentName={firstStepInputs.section}
           />
         ) : (
           ""

@@ -10,6 +10,7 @@ interface TextAreaInputProps {
   isDisabled?: boolean;
   value: string;
   onChangeHandler: (input: React.ChangeEvent<HTMLTextAreaElement>) => void;
+  placeholder?: string;
 }
 
 const TextAreaInput = ({
@@ -21,6 +22,7 @@ const TextAreaInput = ({
   isDisabled = false,
   value,
   onChangeHandler,
+  placeholder = "",
 }: TextAreaInputProps) => {
   return (
     <div className="flex flex-col">
@@ -31,6 +33,7 @@ const TextAreaInput = ({
         {requiredInput ? "*" : ""}
       </div>
       <textarea
+        placeholder={placeholder}
         disabled={isDisabled}
         name={name}
         id={id}

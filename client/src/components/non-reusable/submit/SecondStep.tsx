@@ -70,15 +70,17 @@ const SecondStep = ({
         requiredInput
         value={secondStepInputsGetter.subject}
         onChangeHandler={genericChangeHandler("subject")}
+        placeholder="e.g. Graphite sheet for SL9.0 BI Box Improvement"
       />
       <TextAreaInput
         label="Return on Outgoing"
         name="return-on-outgoing"
         id="return-on-outgoing"
         variant="blue"
-        requiredInput
+        requiredInput={false}
         value={secondStepInputsGetter.returnOnOutgoing}
         onChangeHandler={genericChangeHandler("returnOnOutgoing")}
+        placeholder="e.g. Used for replacement broken part at BLCT"
       />
       <div className="flex gap-2">
         <div

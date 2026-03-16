@@ -10,6 +10,7 @@ interface TextInputProps {
   isDisabled?: boolean;
   value: string;
   onChangeHandler: (input: React.ChangeEvent<HTMLInputElement>) => void;
+  placeholder?: string;
 }
 
 const TextInput = ({
@@ -21,6 +22,7 @@ const TextInput = ({
   isDisabled = false,
   value,
   onChangeHandler,
+  placeholder = "",
 }: TextInputProps) => {
   return (
     <div className="h-8 lg:h-9 xl:h-10 | flex">
@@ -31,6 +33,7 @@ const TextInput = ({
         {requiredInput ? "*" : ""}
       </div>
       <input
+        placeholder={placeholder}
         disabled={isDisabled}
         type="text"
         name={name}
