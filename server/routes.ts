@@ -567,8 +567,10 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
     payload.thirdStep.usages.map(async (usage) => {
       const currencyRate =
         usage.currency === "USD"
-          ? forexData.amount
-          : forexData.rates[usage.currency as keyof ForexRates];
+          ? Number(forexData.amount.toFixed(2))
+          : Number(
+              forexData.rates[usage.currency as keyof ForexRates].toFixed(2),
+            );
 
       const budgetId = `${usage.periode}-${usage.costCenter}-${payload.firstStep.section}`;
       const quantity = Number(usage.quantity);
