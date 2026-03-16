@@ -51,6 +51,7 @@ const SecondStep = ({
         isDisabled
         value={secondStepInputsGetter.formNumber}
         onChangeHandler={genericChangeHandler("formNumber")}
+        placeholder="Will be generated after submission"
       />
       <TextInput
         label="No. PR"
@@ -61,6 +62,7 @@ const SecondStep = ({
         isDisabled
         value={secondStepInputsGetter.prNumber}
         onChangeHandler={genericChangeHandler("prNumber")}
+        placeholder="Will be generated after submission"
       />
       <TextInput
         label="Subject"

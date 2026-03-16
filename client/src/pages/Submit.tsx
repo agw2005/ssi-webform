@@ -58,8 +58,8 @@ const DEFAULT_VALUES: SubmitPayload = {
     form: "",
   },
   secondStep: {
-    formNumber: "0",
-    prNumber: "0",
+    formNumber: "",
+    prNumber: "",
     subject: "",
     returnOnOutgoing: "",
   },

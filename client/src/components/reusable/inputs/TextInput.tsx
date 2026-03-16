@@ -38,7 +38,7 @@ const TextInput = ({
         type="text"
         name={name}
         id={id}
-        className={`text-xs lg:text-sm xl:text-base | h-full px-4 rounded-r-xl border ${resolveColorMappings(variant, "input")} ${isDisabled ? "bg-black/10" : "bg-white/50"} outline-none flex-1`}
+        className={`text-xs lg:text-sm xl:text-base | h-full px-4 rounded-r-xl border ${resolveColorMappings(variant, "input")} ${isDisabled ? "bg-black/10" : "bg-white/50"} outline-none flex-1 ${isDisabled ? "cursor-not-allowed" : ""}`}
         value={value}
         onChange={onChangeHandler}
       />
