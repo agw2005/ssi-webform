@@ -101,8 +101,10 @@ const Submit = () => {
   );
 
   const [activeCostCenter, setActiveCostCenter] = useState<string>("");
-  const [isBalanceLoading, setIsBalanceLoading] = useState<boolean>(false);
+  const [_isBalanceLoading, setIsBalanceLoading] = useState<boolean>(false);
   const [balanceError, setBalanceError] = useState<Error | null>(null);
+  const [requestIsProcessing, setRequestIsProcessing] = useState(false);
+  const [requestIsError, setRequestIsError] = useState<Error | null>(null);
 
   const {
     data: sectionNames,
@@ -124,7 +126,7 @@ const Submit = () => {
 
   const {
     data: natures,
-    isLoading: isNaturesLoading,
+    isLoading: _isNaturesLoading,
     isError: isNaturesError,
   } = useFetch<Nature>(`${NATURES_URL}/${activeCostCenter || "103"}`);
 
@@ -212,6 +214,7 @@ const Submit = () => {
   };
 
   const handleSubmit = async () => {
+    setRequestIsProcessing(true);
     const payload: SubmitPayload = {
       firstStep: firstStepInputs,
       secondStep: secondStepInputs,
@@ -229,16 +232,21 @@ const Submit = () => {
           No. PR : ${submitResponseBody.noPR}\n
           ID Trace : ${submitResponseBody.traceId}`,
         );
-        console.log(submitResponseBody);
+        // console.log(submitResponseBody);
         navigate(`/request/${submitResponseBody.traceId}`);
       } else {
         globalThis.alert(
-          `There was a problem in parsing your purchasing request. Please make sure there are no empty required fields!\n
+          `Protocol Failure: Your request reeached the server, but the content of your submission was rejected!\n
           Err ${submitResponse.status} : ${submitResponseBody.message}`,
         );
       }
     } catch (err) {
-      console.error(err);
+      const error: Error = new Error(
+        `Transport Failure: Your request did not reached the server. Please contact the administrator of this problem.\n(${err}).`,
+      );
+      setRequestIsError(error);
+    } finally {
+      setRequestIsProcessing(false);
     }
   };
 
@@ -248,9 +256,8 @@ const Submit = () => {
         isSectionLoading,
         isFileResourcesLoading,
         isDepartmentsLoading,
-        isNaturesLoading,
-        isBalanceLoading,
         isUserSectionMappingsLoading,
+        requestIsProcessing,
       ]}
       isErr={[
         isSectionError,
@@ -259,6 +266,7 @@ const Submit = () => {
         isNaturesError,
         balanceError,
         isUserSectionMappingsError,
+        requestIsError,
       ]}
       componentName="Submit.tsx"
     >

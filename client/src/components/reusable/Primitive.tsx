@@ -28,7 +28,7 @@ const Primitive = ({
   const { isAuthorized, isLoading: authIsLoading } = useAuth();
 
   const isCurrentlyLoading =
-    isLoading && isLoading.length > 0 && isLoading.every((val) => val === true);
+    Array.isArray(isLoading) && isLoading.some((val) => val === true);
 
   const activeErrors =
     isErr?.filter((err): err is Error => err instanceof Error) || [];
