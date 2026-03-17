@@ -333,3 +333,17 @@ export const approveRequestsCount = async (
   );
   return [rows, metadata];
 };
+
+export const patchRemarksOfTrace = async (
+  pool: mysql.Pool,
+  newRemarks: string,
+  noForm: string,
+) => {
+  await pool.query(
+    `UPDATE Trace
+      SET Remarks = ?
+      WHERE
+        NoForm = ?;`,
+    [newRemarks, noForm],
+  );
+};

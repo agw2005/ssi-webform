@@ -131,3 +131,17 @@ export const postRequestInformation = async (
   const newId = rows.insertId;
   return newId;
 };
+
+export const patchRemarksOfRequest = async (
+  pool: mysql.Pool,
+  newRemarks: string,
+  noForm: string,
+) => {
+  await pool.query(
+    `UPDATE frm_PR_H
+      SET Remarks = ?
+      WHERE
+        NoForm = ?;`,
+    [newRemarks, noForm],
+  );
+};

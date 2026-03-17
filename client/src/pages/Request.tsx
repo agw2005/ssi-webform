@@ -6,6 +6,7 @@ import type {
   RequestItem,
   UploadedFile,
   ApproverPath,
+  PatchRemarksPayload,
 } from "@scope/server";
 import capitalize from "../helper/capitalize.ts";
 import formatNumberToString from "../helper/formatNumberToString.ts";
@@ -19,6 +20,7 @@ const REQUEST_OVERVIEW_URL = `${serverDomain}/trace/request`;
 const REQUEST_ITEMS_URL = `${serverDomain}/frmprd/request`;
 const REQUEST_FILES_URL = `${serverDomain}/uploadfile`;
 const REQUEST_APPROVER_PATH_URL = `${serverDomain}/traced`;
+const PATCH_REMARKS_URL = `${serverDomain}/approve/remarks`;
 
 const ITEMS_COLUMNS = [
   "Description",
@@ -164,7 +166,27 @@ const Request = () => {
                     />
                     <div
                       className="w-max flex items-center gap-4"
-                      onClick={() => {
+                      onClick={async () => {
+                        const payload: PatchRemarksPayload = {
+                          newRemarks: newRemarks,
+                          noForm: requestOverviewData[0].NoForm,
+                        };
+                        try {
+                          const response = await fetch(PATCH_REMARKS_URL, {
+                            method: "PATCH",
+                            headers: {
+                              "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify(payload),
+                          });
+                          if (!response.ok) {
+                            console.error(
+                              "There was a problem in saving the new remarks",
+                            );
+                          }
+                        } catch (err) {
+                          console.error(err);
+                        }
                         setCurrentRemarks(newRemarks);
                       }}
                     >

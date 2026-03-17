@@ -19,6 +19,7 @@ import {
 import {
   basicGet as FrmPRHGet,
   getRequestItemForBudgetView,
+  patchRemarksOfRequest,
   postRequestInformation,
   provisionPRNumber,
 } from "./controllers/FrmPRH.ts";
@@ -41,6 +42,7 @@ import {
   approveRequestsCount,
   homeRequests,
   homeRequestsCount,
+  patchRemarksOfTrace,
   postRequestTrace,
   specificRequest,
   basicGet as TraceGet,
@@ -69,6 +71,7 @@ import type {
   ForexAPIResponse,
   LoginPayload,
   LoginResponse,
+  PatchRemarksPayload,
   SubmitPayload,
   SubmitResponse,
 } from "@scope/server";
@@ -816,4 +819,11 @@ export const getRequestsBySupervisorNrpCount = async (
   );
   ctx.response.status = 200;
   ctx.response.body = rows;
+};
+
+export const patchRemarks = async (ctx: RouterContext<"/approve/remarks">) => {
+  const request: PatchRemarksPayload = await ctx.request.body.json();
+  await patchRemarksOfTrace(databasePool, request.newRemarks, request.noForm);
+  await patchRemarksOfRequest(databasePool, request.newRemarks, request.noForm);
+  ctx.response.status = 200;
 };

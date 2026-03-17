@@ -38,6 +38,7 @@ import {
   getUploadFilesPaginated,
   getUserMastersPaginated,
   healthCheck,
+  patchRemarks,
   requestJwt,
   submitRequest,
 } from "./routes.ts";
@@ -90,6 +91,9 @@ oakRouter.post("/submit", submitRequest);
 oakRouter.get("/usermaster/auth", getAuthInformation);
 oakRouter.post("/jwt/request", requestJwt);
 oakRouter.get("/jwt/verify", verifyJwt);
+
+// Limited access
+oakRouter.patch("/approve/remarks", patchRemarks);
 
 // Basic GET
 oakRouter.get("/budget/:pagination/:page", getBudgetsPaginated);

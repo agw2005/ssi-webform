@@ -100,3 +100,8 @@ export interface SubmitResponse {
   noPR: string;
   traceId: string;
 }
+
+export interface PatchRemarksPayload {
+  noForm: string;
+  newRemarks: string;
+}
