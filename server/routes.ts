@@ -38,6 +38,7 @@ import {
 import { basicGet as TitleGet } from "./controllers/Title.ts";
 import {
   approveRequests,
+  approveRequestsCount,
   homeRequests,
   homeRequestsCount,
   postRequestTrace,
@@ -763,7 +764,16 @@ export const getRequestsBySupervisorNrp = async (
 ) => {
   const params = ctx.request.url.searchParams;
 
+  const startDate = params.get("startdate") || null;
+
+  const endDate = params.get("enddate") || null;
+
+  const search = params.get("search") || null;
+
+  const status = params.get("status") || null;
+
   const supervisorNrp = params.get("nrp") || null;
+
   const page = Number(params.get("page")) || 1;
   const pagination = Number(params.get("pagination")) || 50;
 
@@ -772,6 +782,37 @@ export const getRequestsBySupervisorNrp = async (
     supervisorNrp,
     page,
     pagination,
+    status,
+    startDate,
+    endDate,
+    search,
+  );
+  ctx.response.status = 200;
+  ctx.response.body = rows;
+};
+
+export const getRequestsBySupervisorNrpCount = async (
+  ctx: RouterContext<"/trace/approve/count">,
+) => {
+  const params = ctx.request.url.searchParams;
+
+  const startDate = params.get("startdate") || null;
+
+  const endDate = params.get("enddate") || null;
+
+  const search = params.get("search") || null;
+
+  const status = params.get("status") || null;
+
+  const supervisorNrp = params.get("nrp") || null;
+
+  const [rows, _metadata] = await approveRequestsCount(
+    databasePool,
+    supervisorNrp,
+    status,
+    startDate,
+    endDate,
+    search,
   );
   ctx.response.status = 200;
   ctx.response.body = rows;

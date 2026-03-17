@@ -80,7 +80,7 @@ export const homeRequests = async (
     AND
       Trace.Status IN ('Final Approved', 'In Progress', 'Rejected', 'Cancelled', 'Expired')
     ORDER BY SubmitDate DESC
-    LIMIT ? , ?`,
+    LIMIT ? , ?;`,
     [
       requestorSectionId,
       requestorSectionId,
@@ -115,7 +115,7 @@ export const homeRequestsCount = async (
   const searchPattern = search ? `%${search}%` : null;
   const [rows, metadata] = await pool.query<TraceRequestsCount[]>(
     `SELECT 
-      COUNT(*) AS COUNT
+      COUNT(*) AS Count
     FROM Trace
     INNER JOIN frm_PR_H
     ON frm_PR_H.NoForm = Trace.NoForm
@@ -136,7 +136,7 @@ export const homeRequestsCount = async (
         frm_PR_H.Subject LIKE ? OR 
         Trace.IDTrace LIKE ? OR 
         frm_PR_H.Requestor LIKE ?
-      ))`,
+      ));`,
     [
       requestorSectionId,
       requestorSectionId,
@@ -224,8 +224,13 @@ export const approveRequests = async (
   supervisorNrp: string | null,
   page: number,
   pagination: number = 50,
+  status: string | null,
+  startDate: string | null,
+  endDate: string | null,
+  search: string | null,
 ) => {
-  const supervisor = `%${supervisorNrp}%`;
+  const supervisorNrpPattern = `%${supervisorNrp}%`;
+  const searchPattern = search ? `%${search}%` : null;
   const numRows = pagination;
   const [rows, metadata] = await pool.query<TraceApproveRequests[]>(
     `SELECT 
@@ -245,9 +250,86 @@ export const approveRequests = async (
     On Trace.ProcessedBy = UserMaster.IDUser
     WHERE
       UserMaster.NRP LIKE ?
-    ORDER BY Trace.SubmitDate DESC
+    AND
+      (? IS NULL OR Trace.Status = ?)
+    AND
+      (? IS NULL OR Trace.SubmitDate >= ?)
+    AND
+      (? IS NULL OR Trace.SubmitDate <= ?)
+    AND 
+      (? IS NULL OR (
+        frm_PR_H.Subject LIKE ? OR 
+        Trace.IDTrace LIKE ? OR 
+        frm_PR_H.Requestor LIKE ?
+      ))
+    AND
+      Trace.Status IN ('Final Approved', 'In Progress', 'Rejected', 'Cancelled', 'Expired')
+    ORDER BY SubmitDate DESC
     LIMIT ? , ?;`,
-    [supervisor, (page - 1) * numRows, numRows],
+    [
+      supervisorNrpPattern,
+      status,
+      status,
+      startDate,
+      startDate,
+      endDate,
+      endDate,
+      searchPattern,
+      searchPattern,
+      searchPattern,
+      searchPattern,
+      (page - 1) * numRows,
+      numRows,
+    ],
+  );
+  return [rows, metadata];
+};
+
+export const approveRequestsCount = async (
+  pool: mysql.Pool,
+  supervisorNrp: string | null,
+  status: string | null,
+  startDate: string | null,
+  endDate: string | null,
+  search: string | null,
+) => {
+  const supervisorNrpPattern = `%${supervisorNrp}%`;
+  const searchPattern = search ? `%${search}%` : null;
+  const [rows, metadata] = await pool.query<TraceRequestsCount[]>(
+    `SELECT 
+      COUNT(*) AS Count
+    FROM Trace
+    INNER JOIN frm_PR_H
+    ON frm_PR_H.NoForm = Trace.NoForm
+    INNER JOIN UserMaster
+    On Trace.ProcessedBy = UserMaster.IDUser
+    WHERE
+      UserMaster.NRP LIKE ?
+    AND
+      (? IS NULL OR Trace.Status = ?)
+    AND
+      (? IS NULL OR Trace.SubmitDate >= ?)
+    AND
+      (? IS NULL OR Trace.SubmitDate <= ?)
+    AND 
+      (? IS NULL OR (
+        frm_PR_H.Subject LIKE ? OR 
+        Trace.IDTrace LIKE ? OR 
+        frm_PR_H.Requestor LIKE ?
+      ));`,
+    [
+      supervisorNrpPattern,
+      status,
+      status,
+      startDate,
+      startDate,
+      endDate,
+      endDate,
+      searchPattern,
+      searchPattern,
+      searchPattern,
+      searchPattern,
+    ],
   );
   return [rows, metadata];
 };

@@ -22,6 +22,7 @@ export type {
 } from "./auth/type.d.ts";
 export { jwtRequestPayload } from "./auth/jwtRequestPayload.ts";
 export { verifyJwtPayload } from "./auth/verifyJwtPayload.ts";
+export type { TraceRequestsCount } from "./models/Trace.d.ts";
 
 export interface FirstStepInputs {
   name: string;

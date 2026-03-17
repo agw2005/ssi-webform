@@ -5,7 +5,12 @@ import DateRangeInput from "../components/reusable/inputs/DateRangeInput.tsx";
 import TextInput from "../components/reusable/inputs/TextInput.tsx";
 import { Link } from "react-router-dom";
 import { useEffect, useState, useMemo, useReducer } from "react";
-import type { SectionName, SupervisorNames, FormRequest } from "@scope/server";
+import type {
+  SectionName,
+  SupervisorNames,
+  FormRequest,
+  TraceRequestsCount,
+} from "@scope/server";
 import LoadingFallback from "../components/reusable/LoadingFallback.tsx";
 import useFetch from "../hooks/useFetch.tsx";
 import capitalize from "../helper/capitalize.ts";
@@ -17,10 +22,6 @@ import { useDebounce } from "../hooks/useDebounce.tsx";
 import serverDomain from "../helper/serverDomain.ts";
 import { formatDate } from "../helper/formatDate.ts";
 import { statusStyling } from "../helper/statusStyling.ts";
-
-interface CountResponsePayload {
-  COUNT: number;
-}
 
 interface SectionInfo {
   IDSection: number;
@@ -201,12 +202,12 @@ const Home = () => {
         }
 
         const requestResponseJson: FormRequest[] = await requestResponse.json();
-        const countResponseJson: CountResponsePayload[] =
+        const countResponseJson: TraceRequestsCount[] =
           await countResponse.json();
 
         setRequestData(requestResponseJson);
         if (countResponseJson && countResponseJson.length > 0) {
-          setTotalRequestInstances(countResponseJson[0].COUNT);
+          setTotalRequestInstances(countResponseJson[0].Count);
         }
       } catch (err) {
         if (err instanceof Error && err.name === "AbortError") {
@@ -354,7 +355,7 @@ const Home = () => {
             id="paging-range"
             requiredInput={false}
             variant="black"
-            minimumValue={0}
+            minimumValue={1}
             value={String(filters.pagingRange)}
             onChangeHandler={(e) => {
               setFilters({

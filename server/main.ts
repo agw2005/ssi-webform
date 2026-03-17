@@ -21,6 +21,7 @@ import {
   getRequests,
   getRequestsAtBudgetView,
   getRequestsBySupervisorNrp,
+  getRequestsBySupervisorNrpCount,
   getRequestsCount,
   getSectionNames,
   getSectionsPaginated,
@@ -72,6 +73,7 @@ oakRouter.get("/trace/requests", getRequests);
 oakRouter.get("/trace/requests/count", getRequestsCount);
 oakRouter.get("/trace/request/:traceId", getSpecificRequest);
 oakRouter.get("/trace/approve", getRequestsBySupervisorNrp);
+oakRouter.get("/trace/approve/count", getRequestsBySupervisorNrpCount);
 
 oakRouter.get("/frmprd/request/:traceId", getSpecificRequestItems);
 
