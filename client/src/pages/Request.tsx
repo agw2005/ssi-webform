@@ -11,6 +11,9 @@ import capitalize from "../helper/capitalize.ts";
 import formatNumberToString from "../helper/formatNumberToString.ts";
 import serverDomain from "../helper/serverDomain.ts";
 import mysqlDateIsoStringToJSString from "../helper/mysqlDateIsoStringToJSString.ts";
+import useAuth from "../hooks/useAuth.tsx";
+import Button from "../components/reusable/Button.tsx";
+import { useState } from "react";
 
 const REQUEST_OVERVIEW_URL = `${serverDomain}/trace/request`;
 const REQUEST_ITEMS_URL = `${serverDomain}/frmprd/request`;
@@ -49,6 +52,7 @@ const stringIsEmpty = (str: string) => {
 };
 
 const Request = () => {
+  const { authInfo, authIsLoading } = useAuth();
   const reactRouterParams = useParams();
 
   const {
@@ -81,6 +85,13 @@ const Request = () => {
     reactRouterParams.requestId,
   );
 
+  const [currentRemarks, setCurrentRemarks] = useState(
+    requestOverviewData?.[0]?.Remarks ?? "",
+  );
+  const [newRemarks, setNewRemarks] = useState(
+    requestOverviewData?.[0]?.Remarks ?? "",
+  );
+
   if (requestOverviewData === null) return;
   const overview = {
     ID: requestOverviewData[0].FormID,
@@ -88,7 +99,7 @@ const Request = () => {
     Requestor: `${capitalize(requestOverviewData[0].Requestor)} (${requestOverviewData[0].RequestorNRP}) - ${requestOverviewData[0].RequestorSection}`,
     "PR Number": requestOverviewData[0].NoPR,
     Subject: requestOverviewData[0].Subject,
-    Amount: formatNumberToString(requestOverviewData[0].Amount),
+    Amount: `${formatNumberToString(requestOverviewData[0].Amount)} USD`,
     "Return On Outgoing": requestOverviewData[0].ReturnOnOutgoing,
     Remarks: requestOverviewData[0].Remarks,
     "Cost Center": requestOverviewData[0].CostCenter,
@@ -105,6 +116,7 @@ const Request = () => {
         isRequestItemsDataLoading,
         isRequestFilesDataLoading,
         isRequestApproverPathDataLoading,
+        authIsLoading,
       ]}
       isErr={[
         isRequestOverviewDataError,
@@ -115,6 +127,19 @@ const Request = () => {
       componentName="Request.tsx"
     >
       <div className="flex flex-col gap-8">
+        {authInfo && (
+          <div className="flex flex-wrap gap-4">
+            <div className="bg-blue-700/70 hover:bg-blue-700 active:bg-blue-700/85 | text-center w-48 border-2 border-black rounded-xl text-2xl px-4 py-2 text-white select-none">
+              Print
+            </div>
+            <div className="bg-red-700/70 hover:bg-red-700 active:bg-red-700/85 | text-center w-48 border-2 border-black rounded-xl text-2xl px-4 py-2 text-white select-none">
+              Reject
+            </div>
+            <div className="bg-green-700/70 hover:bg-green-700 active:bg-green-700/85 | text-center w-48 border-2 border-black rounded-xl text-2xl px-4 py-2 text-white select-none">
+              Approve
+            </div>
+          </div>
+        )}
         <div className="border">
           {Object.entries(overview).map(([key, value], index) => {
             const blackAndWhite = `flex items-center border-b border-black/50 ${
@@ -123,7 +148,46 @@ const Request = () => {
                 : "bg-black/0 hover:bg-black/5 active:bg-black/2.5"
             }`;
 
-            if (key !== "Attachment") {
+            if (key === "Remarks") {
+              return authInfo ? (
+                <div key={key} className={blackAndWhite}>
+                  <div className="flex-1 px-4 py-2">{key}</div>
+                  <div className="flex-9 px-4 py-2 flex flex-col gap-2">
+                    <input
+                      type="text"
+                      className={`px-2 py-1 rounded-xl outline-none ${currentRemarks !== newRemarks ? "bg-red-900/20" : ""}`}
+                      name="new-remarks"
+                      id="new-remarks"
+                      value={newRemarks}
+                      placeholder={currentRemarks || "Remarks is empty"}
+                      onChange={(e) => setNewRemarks(e.currentTarget.value)}
+                    />
+                    <div
+                      className="w-max flex items-center gap-4"
+                      onClick={() => {
+                        setCurrentRemarks(newRemarks);
+                      }}
+                    >
+                      <Button
+                        label="Save remarks"
+                        id="save-new-remarks"
+                        variant="black"
+                      />
+                      {currentRemarks !== newRemarks && (
+                        <p className="text-sm">Changes are not saved</p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div key={key} className={blackAndWhite}>
+                  <div className="flex-1 px-4 py-2">{key}</div>
+                  <div className="flex-9 px-4 py-2">
+                    {value === "" ? "-" : value}
+                  </div>
+                </div>
+              );
+            } else if (key !== "Attachment") {
               return (
                 <div key={key} className={blackAndWhite}>
                   <div className="flex-1 px-4 py-2">{key}</div>
