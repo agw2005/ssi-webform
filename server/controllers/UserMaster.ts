@@ -1,10 +1,11 @@
 import type mysql from "mysql2/promise";
 import type {
-  UserMasterAuthInformation,
   UserMasterName,
   UserMasterTable,
   UserIdByName,
+  AuthInfo,
 } from "../models/UserMaster.d.ts";
+import type { FieldPacket } from "mysql2/promise.js";
 
 /**
  * A basic GET, affecting all attributes with pagination support.
@@ -21,26 +22,6 @@ export const basicGet = async (
   const numRows = pagination;
   const [rows, metadata] = await pool.query<UserMasterTable[]>(
     `SELECT * 
-    FROM UserMaster
-    LIMIT ? , ?`,
-    [(page - 1) * numRows, numRows],
-  );
-  return [rows, metadata];
-};
-
-/**
- * GET all instance NRP and password.
- * @param pool An instance of mysql2 database pool
- * @returns An array of usermaster, containing its NRP and password, and a metadata variable
- */
-export const authInformation = async (
-  pool: mysql.Pool,
-  page: number,
-  pagination: number = 50,
-) => {
-  const numRows = pagination;
-  const [rows, metadata] = await pool.query<UserMasterAuthInformation[]>(
-    `SELECT Password, NRP 
     FROM UserMaster
     LIMIT ? , ?`,
     [(page - 1) * numRows, numRows],
@@ -77,4 +58,21 @@ export const getUserIdByName = async (
   const userId = rows[0].IDUser || 0;
 
   return userId;
+};
+
+export const getAuthInfo = async (
+  pool: mysql.Pool,
+): Promise<[AuthInfo[], FieldPacket[]]> => {
+  const [rows, metadata] = await pool.query<AuthInfo[]>(
+    `SELECT 
+        IDUser,
+        UserName,
+        Password,
+        NameUser,
+        NRP
+      FROM UserMaster;`,
+    [],
+  );
+
+  return [rows, metadata];
 };

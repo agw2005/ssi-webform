@@ -1,10 +1,10 @@
 import { Application, Router } from "@oak/oak";
 import {
-  authenticate,
   getAllDepartments,
   getAllFileResources,
   getAllPeriods,
   getApproverPath,
+  getAuthInformation,
   getBudgetsPaginated,
   getBudgetViewInformation,
   getFileResourcesPaginated,
@@ -34,14 +34,13 @@ import {
   getTypesPaginated,
   getUploadFiles,
   getUploadFilesPaginated,
-  getUserAuthInfo,
   getUserMastersPaginated,
   healthCheck,
   submitRequest,
 } from "./routes.ts";
-import login from "./auth/main.ts";
-import isAuthenticated from "./auth/authMiddleware.ts";
 import { handleCors } from "./handleCors.ts";
+import requestJwt from "./auth/requestJwt.ts";
+import { verifyJwt } from "./auth/verifyJwt.ts";
 
 const oakApp = new Application();
 const oakRouter = new Router();
@@ -75,6 +74,11 @@ oakRouter.get("/frmprh", getRequestsAtBudgetView);
 // Submit request
 oakRouter.post("/submit", submitRequest);
 
+// Auth
+oakRouter.get("/usermaster/auth", getAuthInformation);
+oakRouter.post("/jwt/request", requestJwt);
+oakRouter.get("/jwt/verify", verifyJwt);
+
 // Basic GET
 oakRouter.get("/budget/:pagination/:page", getBudgetsPaginated);
 oakRouter.get("/fileresource/:pagination/:page", getFileResourcesPaginated);
@@ -93,11 +97,6 @@ oakRouter.get("/traced/:pagination/:page", getTraceDsPaginated);
 oakRouter.get("/type/:pagination/:page", getTypesPaginated);
 oakRouter.get("/uploadfile/:pagination/:page", getUploadFilesPaginated);
 oakRouter.get("/usermaster/:pagination/:page", getUserMastersPaginated);
-
-// Auth
-oakRouter.get("/auth", isAuthenticated, authenticate);
-oakRouter.get("/authInfo/:page", getUserAuthInfo);
-oakRouter.post("/login", login);
 
 oakApp.use(oakRouter.routes());
 oakApp.use(oakRouter.allowedMethods());

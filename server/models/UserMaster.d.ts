@@ -16,14 +16,6 @@ export interface UserMasterTable extends RowDataPacket {
 }
 
 /**
- * Interface for the `UserMaster` table used to get the NRP and Password.
- */
-export interface UserMasterAuthInformation extends RowDataPacket {
-  Password: string;
-  NRP: string;
-}
-
-/**
  * Interface for the `UserMaster` table used to get the user names.
  */
 export interface UserMasterName extends RowDataPacket {
@@ -33,4 +25,12 @@ export interface UserMasterName extends RowDataPacket {
 
 export interface UserIdByName extends RowDataPacket {
   IDUser: number;
+}
+
+export interface AuthInfo extends RowDataPacket {
+  IDUser: number;
+  UserName: string;
+  Password: string;
+  NameUser: string;
+  NRP: string;
 }

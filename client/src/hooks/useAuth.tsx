@@ -1,19 +1,24 @@
-import { useState, useEffect } from "react";
-import verifyUserSession from "../helper/verifyUserSession.ts";
+import { useEffect, useState } from "react";
+import { verifySession } from "../helper/verifySession.ts";
+import type { VerifyResponse } from "@scope/server";
 
-export const useAuth = () => {
+const useAuth = () => {
   const [isAuthorized, setIsAuthorized] = useState<boolean>(false);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [authIsLoading, setAuthIsLoading] = useState<boolean>(true);
+  const [authInfo, setAuthInfo] = useState<VerifyResponse | null>(null);
 
   useEffect(() => {
     const checkSession = async () => {
-      const status = await verifyUserSession();
-      setIsAuthorized(status ?? false);
-      setIsLoading(false);
+      const response = await verifySession();
+      setAuthInfo(response);
+      setIsAuthorized(!!response);
+      setAuthIsLoading(false);
     };
 
     checkSession();
   }, []);
 
-  return { isAuthorized, isLoading };
+  return { isAuthorized, authIsLoading, authInfo };
 };
+
+export default useAuth;

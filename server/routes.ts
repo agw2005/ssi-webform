@@ -55,10 +55,10 @@ import {
   basicGet as UploadFileGet,
 } from "./controllers/UploadFile.ts";
 import {
-  authInformation,
   supervisorNames,
   basicGet as UserMasterGet,
   getUserIdByName,
+  getAuthInfo,
 } from "./controllers/UserMaster.ts";
 import type { RouterContext } from "@oak/oak";
 import databasePool from "./dbpool.ts";
@@ -481,34 +481,12 @@ export const getUserMastersPaginated = async (
   ctx.response.body = rows;
 };
 
-export const getUserAuthInfo = async (
-  ctx: RouterContext<"/authInfo/:page">,
-) => {
-  const pagination = 50;
-  const page = Number(ctx.params.page);
-  const [rows, _metadata] = await authInformation(
-    databasePool,
-    page,
-    pagination,
-  );
-  ctx.response.status = 200;
-  ctx.response.body = rows;
-};
-
 export const getSupervisorNames = async (
   ctx: RouterContext<"/usermaster/names">,
 ) => {
   const [rows, _metadata] = await supervisorNames(databasePool);
   ctx.response.status = 200;
   ctx.response.body = rows;
-};
-
-export const authenticate = (ctx: RouterContext<"/auth">) => {
-  ctx.response.status = 200;
-  ctx.response.body = {
-    message: "Authentication success",
-    verdict: true,
-  };
 };
 
 // POST to table frm_PR_D
@@ -699,4 +677,12 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
 
   ctx.response.status = 200;
   ctx.response.body = successResponse;
+};
+
+export const getAuthInformation = async (
+  ctx: RouterContext<"/usermaster/auth">,
+) => {
+  const [rows, _metadata] = await getAuthInfo(databasePool);
+  ctx.response.status = 200;
+  ctx.response.body = rows;
 };

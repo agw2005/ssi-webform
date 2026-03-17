@@ -1,8 +1,8 @@
-import { useAuth } from "../../hooks/useAuth.tsx";
 import ForexInformation from "../non-reusable/navbar/ForexInformation.tsx";
 import { Link } from "react-router-dom";
 import LoadingFallback from "./LoadingFallback.tsx";
 import ErrorFallback from "./ErrorFallback.tsx";
+import useAuth from "../../hooks/useAuth.tsx";
 
 interface PrimitiveProps {
   children: React.ReactNode;
@@ -25,7 +25,7 @@ const Primitive = ({
   isErr,
   componentName,
 }: PrimitiveProps) => {
-  const { isAuthorized, isLoading: authIsLoading } = useAuth();
+  const { isAuthorized, authIsLoading } = useAuth();
 
   const isCurrentlyLoading =
     Array.isArray(isLoading) && isLoading.some((val) => val === true);
@@ -69,7 +69,7 @@ const Primitive = ({
             User Manual
           </Link>
           {authIsLoading ? (
-            "Logout"
+            ""
           ) : !isAuthorized ? (
             ""
           ) : (
@@ -93,6 +93,7 @@ const Primitive = ({
           <ForexInformation />
           <div className="text-xs lg:text-base | px-2 lg:px-4 xl:px-6 2xl:px-8 | bg-black hover:bg-white hover:text-black active:bg-gray-800 active:text-white | flex items-center">
             <p className="select-none">
+              Requestor
               {authIsLoading
                 ? "Loading"
                 : isAuthorized

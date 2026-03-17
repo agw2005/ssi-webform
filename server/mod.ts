@@ -13,10 +13,14 @@ export type { FrmPRDRequestItem as RequestItem } from "./models/FrmPRD.d.ts";
 export type { UploadFileMinimalInformation as UploadedFile } from "./models/UploadFile.d.ts";
 export type { TraceApproverPath as ApproverPath } from "./models/TraceD.d.ts";
 export type { RequestItemsAtBudgetView as RequestItemBudget } from "./models/FrmPRH.d.ts";
-export type { RequestPayload as AuthRequestPayload } from "./auth/types.ts";
-export type { Response as AuthResponse } from "./auth/types.ts";
-export { request as authRequest } from "./auth/types.ts";
 export type { ForexAPIResponse } from "./models/FrmPRH.d.ts";
+export type {
+  LoginPayload,
+  LoginResponse,
+  VerifyResponse,
+} from "./auth/type.d.ts";
+export { jwtRequestPayload } from "./auth/jwtRequestPayload.ts";
+export { verifyJwtPayload } from "./auth/verifyJwtPayload.ts";
 
 export interface FirstStepInputs {
   name: string;

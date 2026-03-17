@@ -1,11 +1,12 @@
-import { decodeBase64 } from "@std/encoding";
+import { decodeBase64 } from "@std/encoding/base64";
 
-const rebuildKey = async () => {
+const getKey = async () => {
   const jwtKeyString = Deno.env.get("JWT_KEY");
-  if (!jwtKeyString) {
-    throw new Error("JWT_KEY environment variable is missing");
-  }
+
+  if (!jwtKeyString) throw new Error("JWT_KEY environment variable is missing");
+
   const jwtKeyBytes = decodeBase64(jwtKeyString);
+
   const jwtKey = await crypto.subtle.importKey(
     "raw",
     jwtKeyBytes,
@@ -13,7 +14,8 @@ const rebuildKey = async () => {
     true,
     ["sign", "verify"],
   );
+
   return jwtKey;
 };
 
-export default rebuildKey;
+export default getKey;
