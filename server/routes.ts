@@ -59,17 +59,24 @@ import {
   basicGet as UserMasterGet,
   getUserIdByName,
   getAuthInfo,
+  patchNewLogin,
 } from "./controllers/UserMaster.ts";
 import type { RouterContext } from "@oak/oak";
 import databasePool from "./dbpool.ts";
 import type {
   ForexAPIResponse,
+  LoginPayload,
+  LoginResponse,
   SubmitPayload,
   SubmitResponse,
 } from "@scope/server";
 import provisionFormNumber from "./helper/provisionFormNumber.ts";
 import type { ForexRates } from "./models/FrmPRH.d.ts";
 import addHours from "./helper/addHours.ts";
+import { create, getNumericDate } from "@zaubrik/djwt";
+import type { Header, Payload } from "@zaubrik/djwt";
+import getKey from "./auth/getKey.ts";
+import type { AuthInfo } from "./models/UserMaster.d.ts";
 
 export const healthCheck = (ctx: RouterContext<"/">) => {
   ctx.response.status = 200;
@@ -686,3 +693,68 @@ export const getAuthInformation = async (
   ctx.response.status = 200;
   ctx.response.body = rows;
 };
+
+const requestJwt = async (ctx: RouterContext<"/jwt/request">) => {
+  const authorizedMessage = "Valid credentials";
+  const unauthorizedMessage = "Invalid credentials";
+  const generationErrMessage = "There was an error in generating the token";
+
+  const jwtKey = await getKey();
+  const jwtHeader: Header = { alg: "HS512", type: "JWT" };
+  const nineHourExpiration = getNumericDate(60 * 60 * 9);
+
+  const request: LoginPayload = await ctx.request.body.json();
+  const response = await fetch(
+    `http://${Deno.env.get("SERVER_HOST")}:${Deno.env.get("SERVER_PORT")}/usermaster/auth`,
+  );
+  const credentials: AuthInfo[] = await response.json();
+
+  for (const credential of credentials) {
+    const validNrp = credential.NRP === request.nrp;
+    const validPassword = credential.Password === request.password;
+
+    if (validNrp && validPassword) {
+      const jwtPayload: Payload = {
+        iss: credential.NRP,
+        exp: nineHourExpiration,
+        userId: credential.IDUser,
+        userName: credential.UserName,
+        nameUser: credential.NameUser,
+        nrp: credential.NRP,
+      };
+
+      const jwt = await create(jwtHeader, jwtPayload, jwtKey);
+
+      if (jwt) {
+        const authorizedResponse: LoginResponse = {
+          message: authorizedMessage,
+          nrp: credential.NRP,
+          jwt: jwt,
+        };
+        patchNewLogin(databasePool, credential.IDUser);
+        ctx.response.status = 200;
+        ctx.response.body = authorizedResponse;
+      } else {
+        const errResponse: LoginResponse = {
+          message: generationErrMessage,
+          nrp: credential.NRP,
+          jwt: "",
+        };
+        ctx.response.status = 500;
+        ctx.response.body = errResponse;
+      }
+      return;
+    }
+  }
+
+  const unauthorizedResponse: LoginResponse = {
+    message: unauthorizedMessage,
+    nrp: "",
+    jwt: "",
+  };
+
+  ctx.response.status = 401;
+  ctx.response.body = unauthorizedResponse;
+};
+
+export default requestJwt;

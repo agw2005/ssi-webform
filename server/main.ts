@@ -1,5 +1,5 @@
 import { Application, Router } from "@oak/oak";
-import {
+import requestJwt, {
   getAllDepartments,
   getAllFileResources,
   getAllPeriods,
@@ -39,7 +39,6 @@ import {
   submitRequest,
 } from "./routes.ts";
 import { handleCors } from "./handleCors.ts";
-import requestJwt from "./auth/requestJwt.ts";
 import { verifyJwt } from "./auth/verifyJwt.ts";
 
 const oakApp = new Application();

@@ -76,3 +76,29 @@ export const getAuthInfo = async (
 
   return [rows, metadata];
 };
+
+export const patchNewLogin = async (
+  pool: mysql.Pool,
+  userId: number,
+): Promise<null> => {
+  const now = new Date();
+  const month = now.getMonth() + 1;
+  const date = now.getDate();
+  const year = now.getFullYear();
+  const hours = now.getHours() % 12 || 12;
+  const minutes = String(now.getMinutes()).padStart(2, "0");
+  const seconds = String(now.getSeconds()).padStart(2, "0");
+  const cycle = now.getHours() >= 12 ? "PM" : "AM";
+
+  const formattedNow = `${month}/${date}/${year} ${hours}:${minutes}:${seconds} ${cycle}`;
+
+  await pool.query(
+    `UPDATE UserMaster
+      SET LastLogin = ?
+      WHERE
+        IDUser = ?;`,
+    [formattedNow, userId],
+  );
+
+  return null;
+};
