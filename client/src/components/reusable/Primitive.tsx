@@ -93,7 +93,6 @@ const Primitive = ({
           <ForexInformation />
           <div className="text-xs lg:text-base | px-2 lg:px-4 xl:px-6 2xl:px-8 | bg-black hover:bg-white hover:text-black active:bg-gray-800 active:text-white | flex items-center">
             <p className="select-none">
-              Requestor
               {authIsLoading
                 ? "Loading"
                 : isAuthorized
