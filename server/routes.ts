@@ -37,6 +37,7 @@ import {
 } from "./controllers/Section.ts";
 import { basicGet as TitleGet } from "./controllers/Title.ts";
 import {
+  approveRequests,
   homeRequests,
   homeRequestsCount,
   postRequestTrace,
@@ -694,7 +695,7 @@ export const getAuthInformation = async (
   ctx.response.body = rows;
 };
 
-const requestJwt = async (ctx: RouterContext<"/jwt/request">) => {
+export const requestJwt = async (ctx: RouterContext<"/jwt/request">) => {
   const authorizedMessage = "Valid credentials";
   const unauthorizedMessage = "Invalid credentials";
   const generationErrMessage = "There was an error in generating the token";
@@ -757,4 +758,21 @@ const requestJwt = async (ctx: RouterContext<"/jwt/request">) => {
   ctx.response.body = unauthorizedResponse;
 };
 
-export default requestJwt;
+export const getRequestsBySupervisorNrp = async (
+  ctx: RouterContext<"/trace/approve">,
+) => {
+  const params = ctx.request.url.searchParams;
+
+  const supervisorNrp = params.get("nrp") || null;
+  const page = Number(params.get("page")) || 1;
+  const pagination = Number(params.get("pagination")) || 50;
+
+  const [rows, _metadata] = await approveRequests(
+    databasePool,
+    supervisorNrp,
+    page,
+    pagination,
+  );
+  ctx.response.status = 200;
+  ctx.response.body = rows;
+};

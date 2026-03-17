@@ -52,3 +52,15 @@ export interface TraceRequestOverview extends RowDataPacket {
   IDBudget: string;
   Rate: number;
 }
+
+export interface TraceApproveRequests extends RowDataPacket {
+  IDTrace: number;
+  Subject: string;
+  Amount: number;
+  Requestor: string;
+  Section: string;
+  IDSection: number;
+  Status: string;
+  SubmitDate: string;
+  Remarks: string;
+}

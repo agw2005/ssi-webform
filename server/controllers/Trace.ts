@@ -1,5 +1,6 @@
 import type mysql from "mysql2/promise";
 import type {
+  TraceApproveRequests,
   TraceRequestOverview,
   TraceRequests,
   TraceRequestsCount,
@@ -216,4 +217,37 @@ export const postRequestTrace = async (
 
   const newIDTrace = rows.insertId;
   return newIDTrace;
+};
+
+export const approveRequests = async (
+  pool: mysql.Pool,
+  supervisorNrp: string | null,
+  page: number,
+  pagination: number = 50,
+) => {
+  const supervisor = `%${supervisorNrp}%`;
+  const numRows = pagination;
+  const [rows, metadata] = await pool.query<TraceApproveRequests[]>(
+    `SELECT 
+      Trace.IDTrace,
+      frm_PR_H.Subject,
+      frm_PR_H.Amount,
+      frm_PR_H.Requestor,
+      frm_PR_H.Section,
+      Trace.IDSection,
+      Trace.Status,
+      Trace.SubmitDate,
+      Trace.Remarks
+    FROM Trace
+    INNER JOIN frm_PR_H
+    ON frm_PR_H.NoForm = Trace.NoForm
+    INNER JOIN UserMaster
+    On Trace.ProcessedBy = UserMaster.IDUser
+    WHERE
+      UserMaster.NRP LIKE ?
+    ORDER BY Trace.SubmitDate DESC
+    LIMIT ? , ?;`,
+    [supervisor, (page - 1) * numRows, numRows],
+  );
+  return [rows, metadata];
 };

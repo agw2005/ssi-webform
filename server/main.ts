@@ -1,5 +1,5 @@
 import { Application, Router } from "@oak/oak";
-import requestJwt, {
+import {
   getAllDepartments,
   getAllFileResources,
   getAllPeriods,
@@ -20,6 +20,7 @@ import requestJwt, {
   getReportViewInformation,
   getRequests,
   getRequestsAtBudgetView,
+  getRequestsBySupervisorNrp,
   getRequestsCount,
   getSectionNames,
   getSectionsPaginated,
@@ -36,6 +37,7 @@ import requestJwt, {
   getUploadFilesPaginated,
   getUserMastersPaginated,
   healthCheck,
+  requestJwt,
   submitRequest,
 } from "./routes.ts";
 import { handleCors } from "./handleCors.ts";
@@ -54,20 +56,29 @@ oakRouter.get("/", healthCheck);
 // Specific GET
 oakRouter.get("/section/names", getSectionNames);
 oakRouter.get("/section/users", getSectionUsers);
+
 oakRouter.get("/usermaster/names", getSupervisorNames);
+
 oakRouter.get("/budget/fileresources", getAllFileResources);
 oakRouter.get("/budget/periods", getAllPeriods);
 oakRouter.get("/budget/nature/:costcenter", getNaturesOfCostCenter);
 oakRouter.get("/budget/nature/:costcenter/:periode/:nature", getSingleBalance);
 oakRouter.get("/budget", getBudgetViewInformation);
 oakRouter.get("/budget/report", getReportViewInformation);
+
 oakRouter.get("/frmprnopr/departments", getAllDepartments);
+
 oakRouter.get("/trace/requests", getRequests);
 oakRouter.get("/trace/requests/count", getRequestsCount);
 oakRouter.get("/trace/request/:traceId", getSpecificRequest);
+oakRouter.get("/trace/approve", getRequestsBySupervisorNrp);
+
 oakRouter.get("/frmprd/request/:traceId", getSpecificRequestItems);
+
 oakRouter.get("/uploadfile/:traceId", getUploadFiles);
+
 oakRouter.get("/traced/:traceId", getApproverPath);
+
 oakRouter.get("/frmprh", getRequestsAtBudgetView);
 
 // Submit request
