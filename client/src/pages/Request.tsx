@@ -14,7 +14,7 @@ import serverDomain from "../helper/serverDomain.ts";
 import mysqlDateIsoStringToJSString from "../helper/mysqlDateIsoStringToJSString.ts";
 import useAuth from "../hooks/useAuth.tsx";
 import Button from "../components/reusable/Button.tsx";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const REQUEST_OVERVIEW_URL = `${serverDomain}/trace/request`;
 const REQUEST_ITEMS_URL = `${serverDomain}/frmprd/request`;
@@ -87,12 +87,15 @@ const Request = () => {
     reactRouterParams.requestId,
   );
 
-  const [currentRemarks, setCurrentRemarks] = useState(
-    requestOverviewData?.[0]?.Remarks ?? "",
-  );
-  const [newRemarks, setNewRemarks] = useState(
-    requestOverviewData?.[0]?.Remarks ?? "",
-  );
+  const [currentRemarks, setCurrentRemarks] = useState("");
+  const [newRemarks, setNewRemarks] = useState("");
+
+  useEffect(() => {
+    if (requestOverviewData?.[0]?.Remarks) {
+      setCurrentRemarks(requestOverviewData[0].Remarks);
+      setNewRemarks(requestOverviewData[0].Remarks);
+    }
+  }, [requestOverviewData]);
 
   if (requestOverviewData === null) return;
   const overview = {
@@ -133,7 +136,7 @@ const Request = () => {
           {authInfo && (
             <div className="flex items-center border-b border-black/50 select-none">
               <div className="bg-green-700/40 hover:bg-green-700/80 active:bg-green-700/60 | flex-1 text-center px-4 py-2">
-                Approve
+                Approve All
               </div>
               <div
                 className="bg-red-700/40 hover:bg-red-700/80 active:bg-red-700/60 | flex-1 text-center px-4 py-2"
@@ -142,10 +145,10 @@ const Request = () => {
                   //
                 }}
               >
-                Reject
+                Reject All
               </div>
               <div className="bg-blue-700/40 hover:bg-blue-700/80 active:bg-blue-700/60 | flex-1 text-center px-4 py-2">
-                Print
+                Print Request
               </div>
             </div>
           )}
