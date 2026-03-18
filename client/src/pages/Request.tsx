@@ -22,7 +22,7 @@ const REQUEST_FILES_URL = `${serverDomain}/uploadfile`;
 const REQUEST_APPROVER_PATH_URL = `${serverDomain}/traced`;
 const PATCH_REMARKS_URL = `${serverDomain}/approve/remarks`;
 
-const ITEMS_COLUMNS = [
+const UNAUTH_ITEMS_COLUMNS = [
   "Description",
   "Quantity",
   "Price Per Unit",
@@ -35,7 +35,19 @@ const ITEMS_COLUMNS = [
   "Delivery Date",
 ];
 
+const authItemsColumns = [
+  ...UNAUTH_ITEMS_COLUMNS.slice(0, 6),
+  ...UNAUTH_ITEMS_COLUMNS.slice(7),
+  "Operation",
+];
+
 const PROGRESS_COLUMNS = ["Type", "NRP", "Name", "Result", "Verdict Date"];
+
+const REJECT_BUTTON_STYLINGS =
+  "bg-red-700/40 hover:bg-red-700/80 active:bg-red-700/60 select-none";
+
+const APPROVE_BUTTON_STYLINGS =
+  "bg-green-700/40 hover:bg-green-700/80 active:bg-green-700/60 select-none";
 
 const handleProgressColors = (progress: string) => {
   if (progress === "Approved") {
@@ -134,12 +146,14 @@ const Request = () => {
       <div className="flex flex-col gap-8">
         <div className="border">
           {authInfo && (
-            <div className="flex items-center border-b border-black/50 select-none">
-              <div className="bg-green-700/40 hover:bg-green-700/80 active:bg-green-700/60 | flex-1 text-center px-4 py-2">
+            <div className="flex items-center border-b border-black/50">
+              <div
+                className={`${APPROVE_BUTTON_STYLINGS} flex-1 text-center px-4 py-2`}
+              >
                 Approve All
               </div>
               <div
-                className="bg-red-700/40 hover:bg-red-700/80 active:bg-red-700/60 | flex-1 text-center px-4 py-2"
+                className={`${REJECT_BUTTON_STYLINGS} flex-1 text-center px-4 py-2`}
                 onClick={() => {
                   //frm_PR_D = StatusItem ('True') , RejectedBy (supervisor NameUser)
                   //
@@ -147,7 +161,7 @@ const Request = () => {
               >
                 Reject All
               </div>
-              <div className="bg-blue-700/40 hover:bg-blue-700/80 active:bg-blue-700/60 | flex-1 text-center px-4 py-2">
+              <div className="bg-blue-700/40 hover:bg-blue-700/80 active:bg-blue-700/60 | flex-1 text-center px-4 py-2 select-none">
                 Print Request
               </div>
             </div>
@@ -258,16 +272,27 @@ const Request = () => {
           <table className="table-auto border-collapse w-full">
             <thead>
               <tr>
-                {ITEMS_COLUMNS.map((column, index) => {
-                  return (
-                    <th
-                      key={index}
-                      className="bg-blue-900 hover:bg-blue-800 active:bg-blue-800/80 | text-white border border-black px-4 py-2 select-none"
-                    >
-                      {column}
-                    </th>
-                  );
-                })}
+                {!authInfo
+                  ? UNAUTH_ITEMS_COLUMNS.map((column, index) => {
+                      return (
+                        <th
+                          key={index}
+                          className="bg-blue-900 hover:bg-blue-800 active:bg-blue-800/80 | text-white border border-black px-4 py-2 select-none"
+                        >
+                          {column}
+                        </th>
+                      );
+                    })
+                  : authItemsColumns.map((column, index) => {
+                      return (
+                        <th
+                          key={index}
+                          className="bg-blue-900 hover:bg-blue-800 active:bg-blue-800/80 | text-white border border-black px-4 py-2 select-none"
+                        >
+                          {column}
+                        </th>
+                      );
+                    })}
               </tr>
             </thead>
             <tbody>
@@ -294,9 +319,11 @@ const Request = () => {
                       <td className="bg-white hover:bg-black/10 active:bg-black/5 | max-w-64 border text-center px-4 py-2">
                         {item.Reason}
                       </td>
-                      <td className="bg-white hover:bg-black/10 active:bg-black/5 | whitespace-nowrap border text-center px-4 py-2">
-                        {item.Rejected === "True" ? "Yes" : "No"}
-                      </td>
+                      {!authInfo && (
+                        <td className="bg-white hover:bg-black/10 active:bg-black/5 | whitespace-nowrap border text-center px-4 py-2">
+                          {item.Rejected === "True" ? "Yes" : "No"}
+                        </td>
+                      )}
                       <td className="bg-white hover:bg-black/10 active:bg-black/5 | whitespace-nowrap border text-center px-4 py-2">
                         {stringIsEmpty(item.Supplier)}
                       </td>
@@ -307,6 +334,22 @@ const Request = () => {
                       <td className="bg-white hover:bg-black/10 active:bg-black/5 | whitespace-nowrap border text-center px-4 py-2">
                         {stringIsEmpty(String(item.DeliveryDate))}
                       </td>
+                      {authInfo && (
+                        <td className="border text-center p-0 h-1">
+                          <div className="flex flex-col h-full w-full">
+                            <div
+                              className={`${APPROVE_BUTTON_STYLINGS} flex-1 flex items-center justify-center px-4 py-2`}
+                            >
+                              Approve
+                            </div>
+                            <div
+                              className={`${REJECT_BUTTON_STYLINGS} flex-1 flex items-center justify-center px-4 py-2`}
+                            >
+                              Reject
+                            </div>
+                          </div>
+                        </td>
+                      )}
                     </tr>
                   );
                 })}
