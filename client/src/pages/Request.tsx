@@ -140,6 +140,10 @@ const Request = () => {
     requestApproverPathData &&
     approverIsAuthorized(requestApproverPathData, authInfo.nrp);
 
+  const requestIsRejected = requestApproverPathData?.some(
+    (approverData) => approverData.Result === "Rejected",
+  );
+
   return (
     <Primitive
       isLoading={[
@@ -416,7 +420,9 @@ const Request = () => {
                       >
                         {supervisor.Result !== ""
                           ? supervisor.Result
-                          : "In Queue"}
+                          : requestIsRejected
+                            ? "-"
+                            : "In Queue"}
                       </td>
                       <td
                         className={`hover:bg-black/10 active:bg-black/5 | whitespace-nowrap border text-center px-4 py-2`}
