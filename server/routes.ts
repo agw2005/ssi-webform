@@ -82,6 +82,7 @@ import { create, getNumericDate } from "@zaubrik/djwt";
 import type { Header, Payload } from "@zaubrik/djwt";
 import getKey from "./auth/getKey.ts";
 import type { AuthInfo } from "./models/UserMaster.d.ts";
+import { onlyNumerics } from "./helper/onlyNumerics.ts";
 
 export const healthCheck = (ctx: RouterContext<"/">) => {
   ctx.response.status = 200;
@@ -776,13 +777,14 @@ export const getRequestsBySupervisorNrp = async (
   const status = params.get("status") || null;
 
   const supervisorNrp = params.get("nrp") || null;
+  const formattedNrp = supervisorNrp ? onlyNumerics(supervisorNrp) : null;
 
   const page = Number(params.get("page")) || 1;
   const pagination = Number(params.get("pagination")) || 50;
 
   const [rows, _metadata] = await approveRequests(
     databasePool,
-    supervisorNrp,
+    formattedNrp,
     page,
     pagination,
     status,
@@ -808,10 +810,11 @@ export const getRequestsBySupervisorNrpCount = async (
   const status = params.get("status") || null;
 
   const supervisorNrp = params.get("nrp") || null;
+  const formattedNrp = supervisorNrp ? onlyNumerics(supervisorNrp) : null;
 
   const [rows, _metadata] = await approveRequestsCount(
     databasePool,
-    supervisorNrp,
+    formattedNrp,
     status,
     startDate,
     endDate,

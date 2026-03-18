@@ -135,7 +135,13 @@ const Request = () => {
               <div className="bg-green-700/40 hover:bg-green-700/80 active:bg-green-700/60 | flex-1 text-center px-4 py-2">
                 Approve
               </div>
-              <div className="bg-red-700/40 hover:bg-red-700/80 active:bg-red-700/60 | flex-1 text-center px-4 py-2">
+              <div
+                className="bg-red-700/40 hover:bg-red-700/80 active:bg-red-700/60 | flex-1 text-center px-4 py-2"
+                onClick={() => {
+                  //frm_PR_D = StatusItem ('True') , RejectedBy (supervisor NameUser)
+                  //
+                }}
+              >
                 Reject
               </div>
               <div className="bg-blue-700/40 hover:bg-blue-700/80 active:bg-blue-700/60 | flex-1 text-center px-4 py-2">
