@@ -20,6 +20,7 @@ export const basicGet = async (
 export const getAllRequestItems = async (pool: mysql.Pool, traceId: number) => {
   const [rows, metadata] = await pool.query<FrmPRDRequestItem[]>(
     `SELECT
+      frm_PR_D.IDItem,
       frm_PR_D.Description,
       frm_PR_D.Qty,
       frm_PR_D.Measure,

@@ -25,6 +25,7 @@ export interface FrmPRDTable extends RowDataPacket {
 }
 
 export interface FrmPRDRequestItem extends RowDataPacket {
+  IDItem: number;
   Description: string;
   Qty: number;
   Measure: string;

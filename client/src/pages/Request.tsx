@@ -15,7 +15,8 @@ import serverDomain from "../helper/serverDomain.ts";
 import mysqlDateIsoStringToJSString from "../helper/mysqlDateIsoStringToJSString.ts";
 import useAuth from "../hooks/useAuth.tsx";
 import Button from "../components/reusable/Button.tsx";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import Dialog from "../components/reusable/Dialog.tsx";
 
 const REQUEST_OVERVIEW_URL = `${serverDomain}/trace/request`;
 const REQUEST_ITEMS_URL = `${serverDomain}/frmprd/request`;
@@ -23,7 +24,8 @@ const REQUEST_FILES_URL = `${serverDomain}/uploadfile`;
 const REQUEST_APPROVER_PATH_URL = `${serverDomain}/traced`;
 const PATCH_REMARKS_URL = `${serverDomain}/approve/remarks`;
 
-const UNAUTH_ITEMS_COLUMNS = [
+const ITEMS_COLUMNS = [
+  "ID",
   "Description",
   "Quantity",
   "Price Per Unit",
@@ -34,12 +36,6 @@ const UNAUTH_ITEMS_COLUMNS = [
   "Supplier",
   "Net Price",
   "Delivery Date",
-];
-
-const authItemsColumns = [
-  ...UNAUTH_ITEMS_COLUMNS.slice(0, 6),
-  ...UNAUTH_ITEMS_COLUMNS.slice(7),
-  "Operation",
 ];
 
 const PROGRESS_COLUMNS = ["Type", "NRP", "Name", "Result", "Verdict Date"];
@@ -68,9 +64,9 @@ const stringIsEmpty = (str: string) => {
 
 const approverIsAuthorized = (data: ApproverPath[], nrp: string) => {
   return data.some(
-    (item) =>
-      onlyNumerics(item.NRP) === onlyNumerics(nrp) &&
-      item.Result === "In Progress",
+    (approver) =>
+      onlyNumerics(approver.NRP) === onlyNumerics(nrp) &&
+      approver.Result === "In Progress",
   );
 };
 
@@ -110,6 +106,18 @@ const Request = () => {
 
   const [currentRemarks, setCurrentRemarks] = useState("");
   const [newRemarks, setNewRemarks] = useState("");
+  const [selectedRejects, setSelectedRejects] = useState<number[]>([]);
+
+  const rejectReference = useRef<HTMLDialogElement>(null);
+
+  const toggleDialog = () => {
+    if (!rejectReference.current) {
+      return;
+    }
+    rejectReference.current.hasAttribute("open")
+      ? rejectReference.current.close()
+      : rejectReference.current.showModal();
+  };
 
   useEffect(() => {
     if (requestOverviewData?.[0]?.Remarks) {
@@ -167,17 +175,29 @@ const Request = () => {
             <div className="flex items-center border-b border-black/50">
               <div
                 className={`${APPROVE_BUTTON_STYLINGS} flex-1 text-center px-4 py-2`}
+                onClick={() => {
+                  /**
+                   * Trace
+                   * - (if last supervisor) `Status` set to 'Final Approved'
+                   * - `ProcessedBy` set to 0
+                   * - `ProcessedLevel` set to the next supervisor ID
+                   * - `LevelProgress` increment by current supervisor ApprovalLevel
+                   *
+                   * Trace_D (for this supervisor)
+                   * - `Result` set to 'Approved'
+                   * - `DateApprove` set to now
+                   */
+                }}
               >
-                Approve All
+                Approve
               </div>
               <div
                 className={`${REJECT_BUTTON_STYLINGS} flex-1 text-center px-4 py-2`}
                 onClick={() => {
-                  //frm_PR_D = StatusItem ('True') , RejectedBy (supervisor NameUser)
-                  //
+                  toggleDialog();
                 }}
               >
-                Reject All
+                Reject
               </div>
               <div className="bg-blue-700/40 hover:bg-blue-700/80 active:bg-blue-700/60 | flex-1 text-center px-4 py-2 select-none">
                 Print Request
@@ -290,34 +310,26 @@ const Request = () => {
           <table className="table-auto border-collapse w-full">
             <thead>
               <tr>
-                {!isAuthorizedApprover
-                  ? UNAUTH_ITEMS_COLUMNS.map((column, index) => {
-                      return (
-                        <th
-                          key={index}
-                          className="bg-blue-900 hover:bg-blue-800 active:bg-blue-800/80 | text-white border border-black px-4 py-2 select-none"
-                        >
-                          {column}
-                        </th>
-                      );
-                    })
-                  : authItemsColumns.map((column, index) => {
-                      return (
-                        <th
-                          key={index}
-                          className="bg-blue-900 hover:bg-blue-800 active:bg-blue-800/80 | text-white border border-black px-4 py-2 select-none"
-                        >
-                          {column}
-                        </th>
-                      );
-                    })}
+                {ITEMS_COLUMNS.map((column, index) => {
+                  return (
+                    <th
+                      key={index}
+                      className="bg-blue-900 hover:bg-blue-800 active:bg-blue-800/80 | text-white border border-black px-4 py-2 select-none"
+                    >
+                      {column}
+                    </th>
+                  );
+                })}
               </tr>
             </thead>
             <tbody>
               {requestItemsData &&
-                requestItemsData.map((item, index) => {
+                requestItemsData.map((item) => {
                   return (
-                    <tr key={index}>
+                    <tr key={item.IDItem}>
+                      <td className="bg-white hover:bg-black/10 active:bg-black/5 | whitespace-nowrap border text-center px-4 py-2">
+                        {item.IDItem}
+                      </td>
                       <td className="bg-white hover:bg-black/10 active:bg-black/5 | max-w-32 break-normal border text-center px-4 py-2">
                         {item.Description}
                       </td>
@@ -337,11 +349,16 @@ const Request = () => {
                       <td className="bg-white hover:bg-black/10 active:bg-black/5 | max-w-64 border text-center px-4 py-2">
                         {item.Reason}
                       </td>
-                      {!isAuthorizedApprover && (
-                        <td className="bg-white hover:bg-black/10 active:bg-black/5 | whitespace-nowrap border text-center px-4 py-2">
-                          {item.Rejected === "True" ? "Yes" : "No"}
-                        </td>
-                      )}
+                      <td
+                        className="bg-white hover:bg-black/10 active:bg-black/5 | whitespace-nowrap border text-center px-4 py-2"
+                        title={
+                          item.RejectedBy
+                            ? `Rejected by : ${item.RejectedBy}`
+                            : ""
+                        }
+                      >
+                        {item.Rejected === "True" ? "Yes" : "No"}
+                      </td>
                       <td className="bg-white hover:bg-black/10 active:bg-black/5 | whitespace-nowrap border text-center px-4 py-2">
                         {stringIsEmpty(item.Supplier)}
                       </td>
@@ -352,22 +369,6 @@ const Request = () => {
                       <td className="bg-white hover:bg-black/10 active:bg-black/5 | whitespace-nowrap border text-center px-4 py-2">
                         {stringIsEmpty(String(item.DeliveryDate))}
                       </td>
-                      {isAuthorizedApprover && (
-                        <td className="border text-center p-0 h-1">
-                          <div className="flex flex-col h-full w-full">
-                            <div
-                              className={`${APPROVE_BUTTON_STYLINGS} flex-1 flex items-center justify-center px-4 py-2`}
-                            >
-                              Approve
-                            </div>
-                            <div
-                              className={`${REJECT_BUTTON_STYLINGS} flex-1 flex items-center justify-center px-4 py-2`}
-                            >
-                              Reject
-                            </div>
-                          </div>
-                        </td>
-                      )}
                     </tr>
                   );
                 })}
@@ -440,6 +441,104 @@ const Request = () => {
           </table>
         </div>
       </div>
+      {isAuthorizedApprover && (
+        <Dialog toggleDialog={toggleDialog} ref={rejectReference}>
+          <div className="flex flex-col px-16 py-16 gap-4">
+            <h2 className="text-xl font-bold">
+              Which item(s) are to be rejected?
+            </h2>
+            <div className="flex flex-col gap-1">
+              {requestItemsData &&
+                requestItemsData.map((item) => {
+                  return (
+                    <div key={item.IDItem} className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        name={String(item.IDItem)}
+                        id={String(item.IDItem)}
+                        checked={selectedRejects.includes(item.IDItem)}
+                        onChange={() => {
+                          const newValue = item.IDItem;
+                          if (!selectedRejects.includes(newValue)) {
+                            setSelectedRejects([...selectedRejects, newValue]);
+                          } else {
+                            setSelectedRejects(
+                              selectedRejects.filter(
+                                (selected) => selected !== newValue,
+                              ),
+                            );
+                          }
+                        }}
+                      />
+                      <label
+                        htmlFor={String(item.IDItem)}
+                        className="select-none flex-1"
+                      >
+                        {item.IDItem}
+                      </label>
+                    </div>
+                  );
+                })}
+            </div>
+            <div
+              className="flex-1"
+              onClick={() => {
+                if (
+                  requestItemsData &&
+                  requestItemsData.length !== selectedRejects.length
+                ) {
+                  const allIds = requestItemsData.map((item) => item.IDItem);
+                  setSelectedRejects(allIds);
+                } else if (
+                  requestItemsData &&
+                  requestItemsData.length === selectedRejects.length
+                ) {
+                  setSelectedRejects([]);
+                }
+              }}
+            >
+              <Button
+                id="reject-submit"
+                variant="black"
+                label={
+                  requestItemsData &&
+                  requestItemsData.length !== selectedRejects.length
+                    ? "Select All"
+                    : "Deselect All"
+                }
+              />
+            </div>
+            <div className="flex gap-2 flex-wrap">
+              <div className="flex-1" onClick={toggleDialog}>
+                <Button id="reject-cancel" variant="red" label="Cancel" />
+              </div>
+              <div
+                className="flex-1"
+                onClick={() => {
+                  toggleDialog();
+                  /**
+                   * frm_PR_D (for each items)
+                   * - `StatusItem` set to 'True'
+                   * - `RejectedBy` set to current supervisor NameUser
+                   *
+                   * Trace
+                   * - `Status` set to 'Rejected'
+                   * - `ProcessedBy` set to 0
+                   * - `ProcessedLevel` set to the biggest Trace_D.ApproverLevel
+                   * - `LevelProgress` set to the sum of all Trace_D.ApproverLevel
+                   *
+                   * Trace_D (for this supervisor)
+                   * - `Result` set to 'Rejected'
+                   * - `DateApprove` set to now
+                   */
+                }}
+              >
+                <Button id="reject-submit" variant="green" label="OK" />
+              </div>
+            </div>
+          </div>
+        </Dialog>
+      )}
     </Primitive>
   );
 };
