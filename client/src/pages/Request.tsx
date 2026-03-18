@@ -8,6 +8,7 @@ import type {
   ApproverPath,
   PatchRemarksPayload,
 } from "@scope/server";
+import { onlyNumerics } from "@scope/server";
 import capitalize from "../helper/capitalize.ts";
 import formatNumberToString from "../helper/formatNumberToString.ts";
 import serverDomain from "../helper/serverDomain.ts";
@@ -63,6 +64,14 @@ const handleProgressColors = (progress: string) => {
 
 const stringIsEmpty = (str: string) => {
   return str === "" || str === "null" ? "-" : str;
+};
+
+const approverIsAuthorized = (data: ApproverPath[], nrp: string) => {
+  return data.some(
+    (item) =>
+      onlyNumerics(item.NRP) === onlyNumerics(nrp) &&
+      item.Result === "In Progress",
+  );
 };
 
 const Request = () => {
@@ -126,6 +135,11 @@ const Request = () => {
     Attachment: "",
   };
 
+  const isAuthorizedApprover =
+    authInfo &&
+    requestApproverPathData &&
+    approverIsAuthorized(requestApproverPathData, authInfo.nrp);
+
   return (
     <Primitive
       isLoading={[
@@ -145,7 +159,7 @@ const Request = () => {
     >
       <div className="flex flex-col gap-8">
         <div className="border">
-          {authInfo && (
+          {isAuthorizedApprover && (
             <div className="flex items-center border-b border-black/50">
               <div
                 className={`${APPROVE_BUTTON_STYLINGS} flex-1 text-center px-4 py-2`}
@@ -174,7 +188,7 @@ const Request = () => {
             }`;
 
             if (key === "Remarks") {
-              return authInfo ? (
+              return isAuthorizedApprover ? (
                 <div key={key} className={blackAndWhite}>
                   <div className="flex-1 px-4 py-2">{key}</div>
                   <div className="flex-9 px-4 py-2 flex flex-col gap-2">
@@ -272,7 +286,7 @@ const Request = () => {
           <table className="table-auto border-collapse w-full">
             <thead>
               <tr>
-                {!authInfo
+                {!isAuthorizedApprover
                   ? UNAUTH_ITEMS_COLUMNS.map((column, index) => {
                       return (
                         <th
@@ -319,7 +333,7 @@ const Request = () => {
                       <td className="bg-white hover:bg-black/10 active:bg-black/5 | max-w-64 border text-center px-4 py-2">
                         {item.Reason}
                       </td>
-                      {!authInfo && (
+                      {!isAuthorizedApprover && (
                         <td className="bg-white hover:bg-black/10 active:bg-black/5 | whitespace-nowrap border text-center px-4 py-2">
                           {item.Rejected === "True" ? "Yes" : "No"}
                         </td>
@@ -334,7 +348,7 @@ const Request = () => {
                       <td className="bg-white hover:bg-black/10 active:bg-black/5 | whitespace-nowrap border text-center px-4 py-2">
                         {stringIsEmpty(String(item.DeliveryDate))}
                       </td>
-                      {authInfo && (
+                      {isAuthorizedApprover && (
                         <td className="border text-center p-0 h-1">
                           <div className="flex flex-col h-full w-full">
                             <div
