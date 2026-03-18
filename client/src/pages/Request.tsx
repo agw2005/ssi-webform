@@ -129,20 +129,20 @@ const Request = () => {
       componentName="Request.tsx"
     >
       <div className="flex flex-col gap-8">
-        {authInfo && (
-          <div className="flex flex-wrap gap-4">
-            <div className="bg-blue-700/70 hover:bg-blue-700 active:bg-blue-700/85 | text-center w-48 border-2 border-black rounded-xl text-2xl px-4 py-2 text-white select-none">
-              Print
-            </div>
-            <div className="bg-red-700/70 hover:bg-red-700 active:bg-red-700/85 | text-center w-48 border-2 border-black rounded-xl text-2xl px-4 py-2 text-white select-none">
-              Reject
-            </div>
-            <div className="bg-green-700/70 hover:bg-green-700 active:bg-green-700/85 | text-center w-48 border-2 border-black rounded-xl text-2xl px-4 py-2 text-white select-none">
-              Approve
-            </div>
-          </div>
-        )}
         <div className="border">
+          {authInfo && (
+            <div className="flex items-center border-b border-black/50 select-none">
+              <div className="bg-green-700/40 hover:bg-green-700/80 active:bg-green-700/60 | flex-1 text-center px-4 py-2">
+                Approve
+              </div>
+              <div className="bg-red-700/40 hover:bg-red-700/80 active:bg-red-700/60 | flex-1 text-center px-4 py-2">
+                Reject
+              </div>
+              <div className="bg-blue-700/40 hover:bg-blue-700/80 active:bg-blue-700/60 | flex-1 text-center px-4 py-2">
+                Print
+              </div>
+            </div>
+          )}
           {Object.entries(overview).map(([key, value], index) => {
             const blackAndWhite = `flex items-center border-b border-black/50 ${
               index % 2 === 0
