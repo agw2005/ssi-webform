@@ -14,6 +14,7 @@ import { basicGet as FormGet } from "./controllers/Form.ts";
 import {
   basicGet as FrmPRDGet,
   getAllRequestItems,
+  patchFrmPRDVerdict,
   postUsage,
 } from "./controllers/FrmPRD.ts";
 import {
@@ -841,12 +842,33 @@ export const patchRejectRequest = async (
   ctx: RouterContext<"/approve/reject">,
 ) => {
   const request: patchApprovalVerdict = await ctx.request.body.json();
+
   await patchTraceDVerdict(
     databasePool,
     "Rejected",
     request.traceId,
     request.supervisorNrp,
   );
+
+  const { nextUserId, nextApproverLevel } = await getNextApprover(
+    databasePool,
+    request.traceId,
+    request.supervisorId,
+  );
+
+  const { Maxxed: MaxApproverLevel, Summed: SumApproverLevel } =
+    await getOtherApproverInfo(databasePool, request.traceId);
+
+  await patchTraceVerdict(
+    databasePool,
+    "Approved",
+    request.traceId,
+    MaxApproverLevel,
+    SumApproverLevel,
+    nextUserId,
+    nextApproverLevel,
+  );
+
   ctx.response.status = 200;
 };
 
@@ -854,6 +876,7 @@ export const patchAcceptRequest = async (
   ctx: RouterContext<"/approve/accept">,
 ) => {
   const request: patchApprovalVerdict = await ctx.request.body.json();
+
   await patchTraceDVerdict(
     databasePool,
     "Approved",
@@ -866,6 +889,7 @@ export const patchAcceptRequest = async (
     request.traceId,
     request.supervisorId,
   );
+
   const { Maxxed: MaxApproverLevel, Summed: SumApproverLevel } =
     await getOtherApproverInfo(databasePool, request.traceId);
 
@@ -877,6 +901,12 @@ export const patchAcceptRequest = async (
     SumApproverLevel,
     nextUserId,
     nextApproverLevel,
+  );
+
+  await Promise.all(
+    request.rejectedItems.map(async (itemId) => {
+      await patchFrmPRDVerdict(databasePool, request.supervisorId, itemId);
+    }),
   );
 
   ctx.response.status = 200;

@@ -88,3 +88,19 @@ export const postUsage = async (
   const newIdItem = rows.insertId;
   return newIdItem;
 };
+
+export const patchFrmPRDVerdict = async (
+  pool: mysql.Pool,
+  supervisorId: number,
+  itemId: number,
+) => {
+  await pool.query(
+    `UPDATE frm_PR_D
+      SET
+        StatusItem = 'True',
+        RejectedBy = ?
+      WHERE IDItem = ?;`,
+    [supervisorId, itemId],
+  );
+  return void 0;
+};
