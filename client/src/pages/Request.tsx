@@ -179,8 +179,9 @@ const Request = () => {
                   /**
                    * Trace
                    * - (if last supervisor) `Status` set to 'Final Approved'
-                   * - `ProcessedBy` set to 0
-                   * - `ProcessedLevel` set to the next supervisor ID
+                   * - (if last supervisor) `ProcessedBy` set to 0
+                   * - (if not last supervisor) `ProcessedBy` set to Trace_D.IDUser of next ApproverLevel
+                   * - `ProcessedLevel` set to the sum of Trace_D.ApproverLevel from 1 to next ApproverLevel
                    * - `LevelProgress` increment by current supervisor ApprovalLevel
                    *
                    * Trace_D (for this supervisor)

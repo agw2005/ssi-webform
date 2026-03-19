@@ -106,3 +106,9 @@ export interface PatchRemarksPayload {
   noForm: string;
   newRemarks: string;
 }
+
+export interface patchApprovalVerdict {
+  traceId: number;
+  rejectedItems: number[];
+  supervisorNrp: string;
+}

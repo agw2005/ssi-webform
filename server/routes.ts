@@ -49,6 +49,7 @@ import {
 } from "./controllers/Trace.ts";
 import {
   getApproverPathInformation,
+  patchTraceDVerdict,
   postRequestApproverPath,
   basicGet as TraceDGet,
 } from "./controllers/TraceD.ts";
@@ -71,6 +72,7 @@ import type {
   ForexAPIResponse,
   LoginPayload,
   LoginResponse,
+  patchApprovalVerdict,
   PatchRemarksPayload,
   SubmitPayload,
   SubmitResponse,
@@ -83,6 +85,7 @@ import type { Header, Payload } from "@zaubrik/djwt";
 import getKey from "./auth/getKey.ts";
 import type { AuthInfo } from "./models/UserMaster.d.ts";
 import { onlyNumerics } from "./helper/onlyNumerics.ts";
+import { jsDateToMySQLDatetime } from "./helper/jsDateToMySQLDatetime.ts";
 
 export const healthCheck = (ctx: RouterContext<"/">) => {
   ctx.response.status = 200;
@@ -542,7 +545,7 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
 
   const indonesiaUtc = 7;
   const now = addHours(new Date(), indonesiaUtc);
-  const submissionDate = now.toISOString().slice(0, 19).replace("T", " ");
+  const submissionDate = jsDateToMySQLDatetime(now);
   const emailDomain = "ssi.sharp-world.com";
 
   const noForm = provisionFormNumber();
@@ -828,5 +831,31 @@ export const patchRemarks = async (ctx: RouterContext<"/approve/remarks">) => {
   const request: PatchRemarksPayload = await ctx.request.body.json();
   await patchRemarksOfTrace(databasePool, request.newRemarks, request.noForm);
   await patchRemarksOfRequest(databasePool, request.newRemarks, request.noForm);
+  ctx.response.status = 200;
+};
+
+export const patchRejectRequest = async (
+  ctx: RouterContext<"/approve/reject">,
+) => {
+  const request: patchApprovalVerdict = await ctx.request.body.json();
+  await patchTraceDVerdict(
+    databasePool,
+    "Rejected",
+    request.traceId,
+    request.supervisorNrp,
+  );
+  ctx.response.status = 200;
+};
+
+export const patchAcceptRequest = async (
+  ctx: RouterContext<"/approve/accept">,
+) => {
+  const request: patchApprovalVerdict = await ctx.request.body.json();
+  await patchTraceDVerdict(
+    databasePool,
+    "Approved",
+    request.traceId,
+    request.supervisorNrp,
+  );
   ctx.response.status = 200;
 };

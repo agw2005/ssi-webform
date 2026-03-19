@@ -1,5 +1,10 @@
 import type mysql from "mysql2/promise";
-import type { TraceApproverPath, TraceDTable } from "../models/TraceD.d.ts";
+import type {
+  TraceApproverPath,
+  TraceDTable,
+} from "../models/TraceD.d.ts";
+import { jsDateToMySQLDatetime } from "../helper/jsDateToMySQLDatetime.ts";
+import { onlyNumerics } from "@scope/server";
 
 export const basicGet = async (
   pool: mysql.Pool,
@@ -51,6 +56,28 @@ export const postRequestApproverPath = async (
       VALUES
         (? , ? , ? , null , ? , ?);`,
     [traceId, userId, result, approverType, approverStep],
+  );
+  return void 0;
+};
+
+export const patchTraceDVerdict = async (
+  pool: mysql.Pool,
+  verdict: "Rejected" | "Approved",
+  traceId: number,
+  nrp: string,
+) => {
+  const now = jsDateToMySQLDatetime(new Date());
+  const approverNrp = `%${onlyNumerics(String(nrp))}%`;
+  await pool.query(
+    `UPDATE
+      Trace_D.Result = ?
+      Trace_D.DateApprove = ?
+    FROM Trace_D
+    INNER JOIN UserMaster
+      ON Trace_D.IDUser = UserMaster.IDUser
+    WHERE Trace_D.IDTrace = ?
+    AND UserMaster.NRP LIKE ?;`,
+    [verdict, now, traceId, approverNrp],
   );
   return void 0;
 };
