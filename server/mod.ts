@@ -111,4 +111,5 @@ export interface patchApprovalVerdict {
   traceId: number;
   rejectedItems: number[];
   supervisorNrp: string;
+  supervisorId: number;
 }

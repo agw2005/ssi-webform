@@ -7,6 +7,7 @@ import type {
   TraceTable,
 } from "../models/Trace.d.ts";
 import type { ResultSetHeader } from "mysql2/promise.js";
+import { sum } from "../helper/sum.ts";
 
 /**
  * A basic GET, affecting all attributes with pagination support.
@@ -346,4 +347,53 @@ export const patchRemarksOfTrace = async (
         NoForm = ?;`,
     [newRemarks, noForm],
   );
+};
+
+export const patchTraceVerdict = async (
+  pool: mysql.Pool,
+  verdict: "Rejected" | "Approved",
+  traceId: number,
+  maxApproverLevel: number,
+  sumApproverLevel: number,
+  nextApproverId: number | null,
+  nextApproverLevel: number | null,
+) => {
+  if (verdict === "Rejected") {
+    await pool.query(
+      `UPDATE Trace
+        SET
+          Trace.Status = 'Rejected',
+          Trace.ProcessedBy = 0,
+          Trace.ProcessedLevel = ?,
+          Trace.LevelProgress = ?,
+        WHERE Trace.IDTrace = ?;`,
+      [maxApproverLevel, sumApproverLevel, traceId],
+    );
+  } else {
+    const isLastSupervisor =
+      nextApproverLevel === null && nextApproverId === null;
+
+    const newStatus = isLastSupervisor ? "Final Approved" : "In Progress";
+    const newProcessedBy = isLastSupervisor ? 0 : nextApproverId;
+    const newProcessedLevel = isLastSupervisor
+      ? sum(maxApproverLevel)
+      : nextApproverLevel !== null
+        ? sum(nextApproverLevel)
+        : sum(maxApproverLevel);
+    const newLevelProgress = isLastSupervisor
+      ? maxApproverLevel
+      : nextApproverLevel;
+
+    await pool.query(
+      `UPDATE Trace
+        SET
+          Trace.Status = ?,
+          Trace.ProcessedBy = ?,
+          Trace.ProcessedLevel = ?,
+          Trace.LevelProgress = ?,
+        WHERE Trace.IDTrace = ?;`,
+      [newStatus, newProcessedBy, newProcessedLevel, newLevelProgress, traceId],
+    );
+  }
+  return void 0;
 };

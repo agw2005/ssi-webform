@@ -1,5 +1,7 @@
 import type mysql from "mysql2/promise";
 import type {
+  NextApproverPath,
+  OtherApproverPathInfo,
   TraceApproverPath,
   TraceDTable,
 } from "../models/TraceD.d.ts";
@@ -69,15 +71,73 @@ export const patchTraceDVerdict = async (
   const now = jsDateToMySQLDatetime(new Date());
   const approverNrp = `%${onlyNumerics(String(nrp))}%`;
   await pool.query(
-    `UPDATE
-      Trace_D.Result = ?
-      Trace_D.DateApprove = ?
-    FROM Trace_D
-    INNER JOIN UserMaster
-      ON Trace_D.IDUser = UserMaster.IDUser
-    WHERE Trace_D.IDTrace = ?
-    AND UserMaster.NRP LIKE ?;`,
+    `UPDATE Trace_D
+      INNER JOIN UserMaster
+        ON Trace_D.IDUser = UserMaster.IDUser
+        SET
+          Trace_D.Result = ?
+          Trace_D.DateApprove = ?
+      WHERE Trace_D.IDTrace = ?
+      AND UserMaster.NRP LIKE ?;`,
     [verdict, now, traceId, approverNrp],
   );
   return void 0;
+};
+
+/**
+ * The IDUser and ApproverLevel of the next supervisor for that TraceID.
+ *
+ * Will return two `null` values if the input UserID is the last supervisor.
+ */
+export const getNextApprover = async (
+  pool: mysql.Pool,
+  traceId: number,
+  idUser: number,
+): Promise<{
+  nextUserId: number | null;
+  nextApproverLevel: number | null;
+}> => {
+  const [rows, _metadata] = await pool.query<NextApproverPath[]>(
+    `WITH SequentialApprovers AS (
+      SELECT 
+        IDTrace,
+        IDUser AS CurrentIDUser,
+        ApproverLevel AS CurrentLevel,
+        LEAD(IDUser) OVER (PARTITION BY IDTrace ORDER BY ApproverLevel ASC) AS NextIDUser,
+        LEAD(ApproverLevel) OVER (PARTITION BY IDTrace ORDER BY ApproverLevel ASC) AS NextApproverLevel
+      FROM 
+        Trace_D
+      )
+      SELECT 
+        NextIDUser, 
+        NextApproverLevel
+      FROM 
+        SequentialApprovers
+      WHERE 
+        IDTrace = ?
+        AND CurrentIDUser = ?;`,
+    [traceId, idUser],
+  );
+
+  const nextUserId = rows[0].NextIDUser;
+  const nextApproverLevel = rows[0].NextApproverLevel;
+  return { nextUserId, nextApproverLevel };
+};
+
+export const getOtherApproverInfo = async (
+  pool: mysql.Pool,
+  traceId: number,
+) => {
+  const [rows, _metadata] = await pool.query<OtherApproverPathInfo[]>(
+    `SELECT
+        SUM(Trace_D.ApproverLevel) AS Summed,
+        MAX(Trace_D.ApproverLevel) AS Maxxed
+      FROM Trace_D
+      WHERE Trace_D.IDTrace = ?;`,
+    [traceId],
+  );
+
+  const Maxxed = rows[0].Maxxed;
+  const Summed = rows[0].Summed;
+  return { Maxxed, Summed };
 };

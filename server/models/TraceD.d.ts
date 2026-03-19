@@ -16,3 +16,13 @@ export interface TraceApproverPath extends RowDataPacket {
   NRP: string;
   NameUser: string;
 }
+
+export interface NextApproverPath extends RowDataPacket {
+  NextIDUser: number | null;
+  NextApproverLevel: number | null;
+}
+
+export interface OtherApproverPathInfo extends RowDataPacket {
+  Summed: number;
+  Maxxed: number;
+}

@@ -43,14 +43,17 @@ import {
   homeRequests,
   homeRequestsCount,
   patchRemarksOfTrace,
+  patchTraceVerdict,
   postRequestTrace,
   specificRequest,
   basicGet as TraceGet,
 } from "./controllers/Trace.ts";
 import {
   getApproverPathInformation,
+  getNextApprover,
   patchTraceDVerdict,
   postRequestApproverPath,
+  getOtherApproverInfo,
   basicGet as TraceDGet,
 } from "./controllers/TraceD.ts";
 import { basicGet as TypeGet } from "./controllers/Type.ts";
@@ -857,5 +860,24 @@ export const patchAcceptRequest = async (
     request.traceId,
     request.supervisorNrp,
   );
+
+  const { nextUserId, nextApproverLevel } = await getNextApprover(
+    databasePool,
+    request.traceId,
+    request.supervisorId,
+  );
+  const { Maxxed: MaxApproverLevel, Summed: SumApproverLevel } =
+    await getOtherApproverInfo(databasePool, request.traceId);
+
+  await patchTraceVerdict(
+    databasePool,
+    "Approved",
+    request.traceId,
+    MaxApproverLevel,
+    SumApproverLevel,
+    nextUserId,
+    nextApproverLevel,
+  );
+
   ctx.response.status = 200;
 };
