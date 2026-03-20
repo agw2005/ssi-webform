@@ -365,7 +365,7 @@ export const patchTraceVerdict = async (
           Trace.Status = 'Rejected',
           Trace.ProcessedBy = 0,
           Trace.ProcessedLevel = ?,
-          Trace.LevelProgress = ?,
+          Trace.LevelProgress = ?
         WHERE Trace.IDTrace = ?;`,
       [maxApproverLevel, sumApproverLevel, traceId],
     );
@@ -390,7 +390,7 @@ export const patchTraceVerdict = async (
           Trace.Status = ?,
           Trace.ProcessedBy = ?,
           Trace.ProcessedLevel = ?,
-          Trace.LevelProgress = ?,
+          Trace.LevelProgress = ?
         WHERE Trace.IDTrace = ?;`,
       [newStatus, newProcessedBy, newProcessedLevel, newLevelProgress, traceId],
     );

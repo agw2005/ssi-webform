@@ -7,6 +7,7 @@ import type {
   UploadedFile,
   ApproverPath,
   PatchRemarksPayload,
+  patchApprovalVerdict,
 } from "@scope/server";
 import { onlyNumerics } from "@scope/server";
 import capitalize from "../helper/capitalize.ts";
@@ -17,12 +18,15 @@ import useAuth from "../hooks/useAuth.tsx";
 import Button from "../components/reusable/Button.tsx";
 import { useEffect, useRef, useState } from "react";
 import Dialog from "../components/reusable/Dialog.tsx";
+import { getCurrentApproverLevel } from "../helper/getCurrentApproverLevel.ts";
 
 const REQUEST_OVERVIEW_URL = `${serverDomain}/trace/request`;
 const REQUEST_ITEMS_URL = `${serverDomain}/frmprd/request`;
 const REQUEST_FILES_URL = `${serverDomain}/uploadfile`;
 const REQUEST_APPROVER_PATH_URL = `${serverDomain}/traced`;
 const PATCH_REMARKS_URL = `${serverDomain}/approve/remarks`;
+const VERDICT_URL = (verdict: "accept" | "reject") =>
+  `${serverDomain}/approve/${verdict}`;
 
 const ITEMS_COLUMNS = [
   "ID",
@@ -99,6 +103,7 @@ const Request = () => {
     data: requestApproverPathData,
     isLoading: isRequestApproverPathDataLoading,
     isError: isRequestApproverPathDataError,
+    refetch: refetchApproverPath,
   } = useFetch<ApproverPath>(
     REQUEST_APPROVER_PATH_URL,
     reactRouterParams.requestId,
@@ -125,6 +130,29 @@ const Request = () => {
       setNewRemarks(requestOverviewData[0].Remarks);
     }
   }, [requestOverviewData]);
+
+  const handleVerdict = async (
+    verdict: "accept" | "reject",
+    payload: patchApprovalVerdict,
+  ) => {
+    try {
+      const response = await fetch(VERDICT_URL(verdict), {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+      if (response.ok) {
+        console.log("Server accepted the verdict");
+        refetchApproverPath();
+      } else {
+        console.log("Server rejected the verdict");
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   if (requestOverviewData === null) return;
   const overview = {
@@ -175,19 +203,17 @@ const Request = () => {
             <div className="flex items-center border-b border-black/50">
               <div
                 className={`${APPROVE_BUTTON_STYLINGS} flex-1 text-center px-4 py-2`}
-                onClick={() => {
-                  /**
-                   * Trace
-                   * - (if last supervisor) `Status` set to 'Final Approved'
-                   * - (if last supervisor) `ProcessedBy` set to 0
-                   * - (if not last supervisor) `ProcessedBy` set to Trace_D.IDUser of next ApproverLevel
-                   * - `ProcessedLevel` set to the sum of Trace_D.ApproverLevel from 1 to next ApproverLevel
-                   * - `LevelProgress` increment by current supervisor ApprovalLevel
-                   *
-                   * Trace_D (for this supervisor)
-                   * - `Result` set to 'Approved'
-                   * - `DateApprove` set to now
-                   */
+                onClick={async () => {
+                  const payload: patchApprovalVerdict = {
+                    traceId: Number(reactRouterParams.requestId),
+                    rejectedItems: selectedRejects,
+                    supervisorNrp: authInfo.nrp,
+                    supervisorId: authInfo.userId,
+                    supervisorLevel: getCurrentApproverLevel(
+                      requestApproverPathData,
+                    ),
+                  };
+                  await handleVerdict("accept", payload);
                 }}
               >
                 Approve
@@ -358,7 +384,7 @@ const Request = () => {
                             : ""
                         }
                       >
-                        {item.Rejected === "True" ? "Yes" : "No"}
+                        {item.StatusItem === "True" ? "Yes" : "No"}
                       </td>
                       <td className="bg-white hover:bg-black/10 active:bg-black/5 | whitespace-nowrap border text-center px-4 py-2">
                         {stringIsEmpty(item.Supplier)}
@@ -429,7 +455,8 @@ const Request = () => {
                       <td
                         className={`hover:bg-black/10 active:bg-black/5 | whitespace-nowrap border text-center px-4 py-2`}
                       >
-                        {supervisor.Result !== "Approved"
+                        {supervisor.Result === "In Progress" ||
+                        supervisor.Result === ""
                           ? "-"
                           : mysqlDateIsoStringToJSString(
                               supervisor.DateApprove,
@@ -515,23 +542,17 @@ const Request = () => {
               </div>
               <div
                 className="flex-1"
-                onClick={() => {
-                  toggleDialog();
-                  /**
-                   * frm_PR_D (for each items)
-                   * - `StatusItem` set to 'True'
-                   * - `RejectedBy` set to current supervisor NameUser
-                   *
-                   * Trace
-                   * - `Status` set to 'Rejected'
-                   * - `ProcessedBy` set to 0
-                   * - `ProcessedLevel` set to the biggest Trace_D.ApproverLevel
-                   * - `LevelProgress` set to the sum of all Trace_D.ApproverLevel
-                   *
-                   * Trace_D (for this supervisor)
-                   * - `Result` set to 'Rejected'
-                   * - `DateApprove` set to now
-                   */
+                onClick={async () => {
+                  const payload: patchApprovalVerdict = {
+                    traceId: Number(reactRouterParams.requestId),
+                    rejectedItems: selectedRejects,
+                    supervisorNrp: authInfo.nrp,
+                    supervisorId: authInfo.userId,
+                    supervisorLevel: getCurrentApproverLevel(
+                      requestApproverPathData,
+                    ),
+                  };
+                  await handleVerdict("reject", payload);
                 }}
               >
                 <Button id="reject-submit" variant="green" label="OK" />

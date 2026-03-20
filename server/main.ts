@@ -38,6 +38,8 @@ import {
   getUploadFilesPaginated,
   getUserMastersPaginated,
   healthCheck,
+  patchRejectRequest,
+  patchAcceptRequest,
   patchRemarks,
   requestJwt,
   submitRequest,
@@ -94,6 +96,8 @@ oakRouter.get("/jwt/verify", verifyJwt);
 
 // Limited access
 oakRouter.patch("/approve/remarks", patchRemarks);
+oakRouter.patch("/approve/reject", patchRejectRequest);
+oakRouter.patch("/approve/accept", patchAcceptRequest);
 
 // Basic GET
 oakRouter.get("/budget/:pagination/:page", getBudgetsPaginated);

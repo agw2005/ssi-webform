@@ -56,6 +56,7 @@ import {
   postRequestApproverPath,
   getOtherApproverInfo,
   basicGet as TraceDGet,
+  patchApproverToActiveApproving,
 } from "./controllers/TraceD.ts";
 import { basicGet as TypeGet } from "./controllers/Type.ts";
 import {
@@ -847,13 +848,14 @@ export const patchRejectRequest = async (
     databasePool,
     "Rejected",
     request.traceId,
-    request.supervisorNrp,
+    request.supervisorLevel,
   );
 
   const { nextUserId, nextApproverLevel } = await getNextApprover(
     databasePool,
     request.traceId,
     request.supervisorId,
+    request.supervisorLevel,
   );
 
   const { Maxxed: MaxApproverLevel, Summed: SumApproverLevel } =
@@ -861,41 +863,7 @@ export const patchRejectRequest = async (
 
   await patchTraceVerdict(
     databasePool,
-    "Approved",
-    request.traceId,
-    MaxApproverLevel,
-    SumApproverLevel,
-    nextUserId,
-    nextApproverLevel,
-  );
-
-  ctx.response.status = 200;
-};
-
-export const patchAcceptRequest = async (
-  ctx: RouterContext<"/approve/accept">,
-) => {
-  const request: patchApprovalVerdict = await ctx.request.body.json();
-
-  await patchTraceDVerdict(
-    databasePool,
-    "Approved",
-    request.traceId,
-    request.supervisorNrp,
-  );
-
-  const { nextUserId, nextApproverLevel } = await getNextApprover(
-    databasePool,
-    request.traceId,
-    request.supervisorId,
-  );
-
-  const { Maxxed: MaxApproverLevel, Summed: SumApproverLevel } =
-    await getOtherApproverInfo(databasePool, request.traceId);
-
-  await patchTraceVerdict(
-    databasePool,
-    "Approved",
+    "Rejected",
     request.traceId,
     MaxApproverLevel,
     SumApproverLevel,
@@ -907,6 +875,48 @@ export const patchAcceptRequest = async (
     request.rejectedItems.map(async (itemId) => {
       await patchFrmPRDVerdict(databasePool, request.supervisorId, itemId);
     }),
+  );
+
+  ctx.response.status = 200;
+};
+
+export const patchAcceptRequest = async (
+  ctx: RouterContext<"/approve/accept">,
+) => {
+  const request: patchApprovalVerdict = await ctx.request.body.json();
+
+  const { nextUserId, nextApproverLevel } = await getNextApprover(
+    databasePool,
+    request.traceId,
+    request.supervisorId,
+    request.supervisorLevel,
+  );
+
+  await patchTraceDVerdict(
+    databasePool,
+    "Approved",
+    request.traceId,
+    request.supervisorLevel,
+  );
+
+  if (nextUserId !== null && nextApproverLevel !== null)
+    await patchApproverToActiveApproving(
+      databasePool,
+      request.traceId,
+      nextApproverLevel,
+    );
+
+  const { Maxxed: MaxApproverLevel, Summed: SumApproverLevel } =
+    await getOtherApproverInfo(databasePool, request.traceId);
+
+  await patchTraceVerdict(
+    databasePool,
+    "Approved",
+    request.traceId,
+    MaxApproverLevel,
+    SumApproverLevel,
+    nextUserId,
+    nextApproverLevel,
   );
 
   ctx.response.status = 200;

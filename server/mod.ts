@@ -112,4 +112,5 @@ export interface patchApprovalVerdict {
   rejectedItems: number[];
   supervisorNrp: string;
   supervisorId: number;
+  supervisorLevel: number;
 }

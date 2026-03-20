@@ -4,6 +4,11 @@ const useFetch = <T,>(url: string, param: string = "") => {
   const [data, setData] = useState<T[] | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState<Error | null>(null);
+  const [trigger, setTrigger] = useState(0);
+
+  const refetch = () => {
+    setTrigger((prev) => prev + 1);
+  };
 
   useEffect(() => {
     const abortController = new AbortController();
@@ -37,9 +42,9 @@ const useFetch = <T,>(url: string, param: string = "") => {
     return () => {
       abortController.abort();
     };
-  }, [url, param]);
+  }, [url, param, trigger]);
 
-  return { data, isLoading, isError };
+  return { data, isLoading, isError, refetch };
 };
 
 export default useFetch;

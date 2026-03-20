@@ -6,7 +6,6 @@ import type {
   TraceDTable,
 } from "../models/TraceD.d.ts";
 import { jsDateToMySQLDatetime } from "../helper/jsDateToMySQLDatetime.ts";
-import { onlyNumerics } from "@scope/server";
 
 export const basicGet = async (
   pool: mysql.Pool,
@@ -66,20 +65,17 @@ export const patchTraceDVerdict = async (
   pool: mysql.Pool,
   verdict: "Rejected" | "Approved",
   traceId: number,
-  nrp: string,
+  currentApproverLevel: number,
 ) => {
   const now = jsDateToMySQLDatetime(new Date());
-  const approverNrp = `%${onlyNumerics(String(nrp))}%`;
   await pool.query(
     `UPDATE Trace_D
-      INNER JOIN UserMaster
-        ON Trace_D.IDUser = UserMaster.IDUser
-        SET
-          Trace_D.Result = ?
-          Trace_D.DateApprove = ?
+      SET
+        Trace_D.Result = ?,
+        Trace_D.DateApprove = ?
       WHERE Trace_D.IDTrace = ?
-      AND UserMaster.NRP LIKE ?;`,
-    [verdict, now, traceId, approverNrp],
+      AND Trace_D.ApproverLevel = ?;`,
+    [verdict, now, traceId, currentApproverLevel],
   );
   return void 0;
 };
@@ -93,21 +89,22 @@ export const getNextApprover = async (
   pool: mysql.Pool,
   traceId: number,
   idUser: number,
+  currentLevel: number,
 ): Promise<{
   nextUserId: number | null;
   nextApproverLevel: number | null;
 }> => {
   const [rows, _metadata] = await pool.query<NextApproverPath[]>(
     `WITH SequentialApprovers AS (
-      SELECT 
-        IDTrace,
-        IDUser AS CurrentIDUser,
-        ApproverLevel AS CurrentLevel,
-        LEAD(IDUser) OVER (PARTITION BY IDTrace ORDER BY ApproverLevel ASC) AS NextIDUser,
-        LEAD(ApproverLevel) OVER (PARTITION BY IDTrace ORDER BY ApproverLevel ASC) AS NextApproverLevel
-      FROM 
-        Trace_D
-      )
+        SELECT 
+          IDTrace,
+          IDUser AS CurrentIDUser,
+          ApproverLevel AS CurrentLevel,
+          LEAD(IDUser) OVER (PARTITION BY IDTrace ORDER BY ApproverLevel ASC) AS NextIDUser,
+          LEAD(ApproverLevel) OVER (PARTITION BY IDTrace ORDER BY ApproverLevel ASC) AS NextApproverLevel
+        FROM 
+          Trace_D
+        )
       SELECT 
         NextIDUser, 
         NextApproverLevel
@@ -115,12 +112,14 @@ export const getNextApprover = async (
         SequentialApprovers
       WHERE 
         IDTrace = ?
-        AND CurrentIDUser = ?;`,
-    [traceId, idUser],
+        AND CurrentIDUser = ?
+        AND CurrentLevel = ?;`,
+    [traceId, idUser, currentLevel],
   );
 
-  const nextUserId = rows[0].NextIDUser;
-  const nextApproverLevel = rows[0].NextApproverLevel;
+  const nextUserId = rows[0]?.NextIDUser ?? null;
+  const nextApproverLevel = rows[0]?.NextApproverLevel ?? null;
+
   return { nextUserId, nextApproverLevel };
 };
 
@@ -140,4 +139,20 @@ export const getOtherApproverInfo = async (
   const Maxxed = rows[0].Maxxed;
   const Summed = rows[0].Summed;
   return { Maxxed, Summed };
+};
+
+export const patchApproverToActiveApproving = async (
+  pool: mysql.Pool,
+  traceId: number,
+  approverLevel: number,
+) => {
+  await pool.query(
+    `UPDATE Trace_D
+      SET
+        Trace_D.Result = 'In Progress'
+      WHERE Trace_D.IDTrace = ?
+      AND Trace_D.ApproverLevel = ?;`,
+    [traceId, approverLevel],
+  );
+  return void 0;
 };
