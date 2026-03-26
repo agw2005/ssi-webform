@@ -9,7 +9,7 @@ import stringContainsRedLight from "../helper/stringContainsRedLight.ts";
 import formatNumberToString from "../helper/formatNumberToString.ts";
 import capitalize from "../helper/capitalize.ts";
 import { formatDate } from "../helper/formatDate.ts";
-import { statusStyling } from "../helper/statusStyling.ts";
+import { resultStyling } from "../helper/resultStyling.ts";
 import Button from "../components/reusable/Button.tsx";
 import TextInput from "../components/reusable/inputs/TextInput.tsx";
 import PagingButton from "../components/reusable/PagingButton.tsx";
@@ -26,22 +26,17 @@ const COLUMNS = [
   "Subject",
   "Amount",
   "Requestor",
+  "Type",
+  "Step",
   "Status",
   "Submit Date",
   "Remarks",
 ];
 
-const STATUSES = [
-  "All Status",
-  "Final Approved",
-  "In Progress",
-  "Rejected",
-  "Cancelled",
-  "Expired",
-];
+const RESULTS = ["All Results", "Approved", "In Progress", "Rejected"];
 
 interface Filters {
-  status: string;
+  result: string;
   pagingRange: number;
   startingDate: string;
   endingDate: string;
@@ -55,12 +50,25 @@ type FilterAction =
   | { type: "SET_PAGE"; page: number };
 
 const DEFAULT_FILTERS: Filters = {
-  status: "",
+  result: "",
   pagingRange: 20,
   startingDate: "",
   endingDate: "",
   search: "",
   currentPage: 1,
+};
+
+const SupervisorType = (type: "A" | "R" | "ADM") => {
+  switch (type) {
+    case "A":
+      return "Approver";
+    case "R":
+      return "Releaser";
+    case "ADM":
+      return "Administrator";
+    default:
+      return "";
+  }
 };
 
 const FilterReducer = (state: Filters, action: FilterAction) => {
@@ -93,8 +101,8 @@ const Approve = () => {
   const debouncedSearch = useDebounce(filters.search, 750);
 
   const applyParams = (url: URL) => {
-    if (filters.status !== "All Status" && filters.status !== "") {
-      url.searchParams.set("status", filters.status);
+    if (filters.result !== "All Results" && filters.result !== "") {
+      url.searchParams.set("status", filters.result);
     }
 
     if (filters.startingDate)
@@ -160,7 +168,7 @@ const Approve = () => {
     return () => abortController.abort();
   }, [
     authInfo,
-    filters.status,
+    filters.result,
     filters.pagingRange,
     filters.currentPage,
     filters.startingDate,
@@ -187,15 +195,15 @@ const Approve = () => {
             id="filter-status"
             variant="black"
             requiredInput={false}
-            defaultDisabledValue="All Status"
-            options={STATUSES}
-            value={filters.status}
+            defaultDisabledValue="All Results"
+            options={RESULTS}
+            value={filters.result}
             onChangeHandler={(e) => {
-              const newStatus = e.target.value;
+              const newResult = e.target.value;
               setFilters({
                 type: "SET_FIELD",
-                field: "status",
-                value: newStatus,
+                field: "result",
+                value: newResult,
               });
             }}
           />
@@ -325,10 +333,20 @@ const Approve = () => {
                       <td className="text-xs lg:text-sm xl:text-base | whitespace-nowrap border break-all p-2">
                         {capitalize(request.Requestor)}
                       </td>
+                      <td className="text-xs lg:text-sm xl:text-base | whitespace-nowrap border text-center break-all p-2">
+                        {SupervisorType(
+                          request.SupervisorType as "A" | "R" | "ADM",
+                        )}
+                      </td>
+                      <td className="text-xs lg:text-sm xl:text-base | whitespace-nowrap border text-center break-all p-2">
+                        {request.SupervisorStep}
+                      </td>
                       <td
-                        className={`text-xs lg:text-sm xl:text-base | whitespace-nowrap border text-center p-2 ${statusStyling(request.Status)}`}
+                        className={`text-xs lg:text-sm xl:text-base | whitespace-nowrap border text-center p-2 ${resultStyling(request.Result)}`}
                       >
-                        {request.Status}
+                        {request.Result === ""
+                          ? "Awaiting Turn"
+                          : request.Result}
                       </td>
                       <td className="text-xs lg:text-sm xl:text-base | whitespace-nowrap border text-center p-2">
                         {formatDate(request.SubmitDate)}

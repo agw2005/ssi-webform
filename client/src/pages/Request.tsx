@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Primitive from "../components/reusable/Primitive.tsx";
 import useFetch from "../hooks/useFetch.tsx";
 import type {
@@ -77,6 +77,7 @@ const approverIsAuthorized = (data: ApproverPath[], nrp: string) => {
 const Request = () => {
   const { authInfo, authIsLoading } = useAuth();
   const reactRouterParams = useParams();
+  const navigate = useNavigate();
 
   const {
     data: requestOverviewData,
@@ -149,6 +150,7 @@ const Request = () => {
       } else {
         console.log("Server rejected the verdict");
       }
+      navigate(`/approve`, { replace: true });
     } catch (err) {
       console.error(err);
     }

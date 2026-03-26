@@ -239,20 +239,30 @@ export const approveRequests = async (
       frm_PR_H.Subject,
       frm_PR_H.Amount,
       frm_PR_H.Requestor,
-      frm_PR_H.Section,
-      Trace.IDSection,
-      Trace.Status,
+      frm_PR_H.Section AS RequestorSection,
+      Trace.IDSection AS RequesterSectionId,
+      Trace_D.Result,
+      ProcessedByUser.NameUser AS CurrentSupervisor,
+      ProcessedByUser.IDUser AS CurrentSupervisorId,
       Trace.SubmitDate,
-      Trace.Remarks
+      Trace.Remarks,
+      Trace_D.ApproverLevel AS SupervisorStep,
+      Trace_D.ApproverType AS SupervisorType
     FROM Trace
     INNER JOIN frm_PR_H
-    ON frm_PR_H.NoForm = Trace.NoForm
-    INNER JOIN UserMaster
-    On Trace.ProcessedBy = UserMaster.IDUser
+      ON frm_PR_H.NoForm = Trace.NoForm
+    LEFT JOIN UserMaster AS ProcessedByUser
+      ON Trace.ProcessedBy = ProcessedByUser.IDUser
+    INNER JOIN Trace_D
+      ON Trace_D.IDTrace = Trace.IDTrace
+    INNER JOIN UserMaster AS Supervisors
+      ON Trace_D.IDUser = Supervisors.IDUser
     WHERE
-      UserMaster.NRP LIKE ?
+      Supervisors.NRP LIKE ?
     AND
-      (? IS NULL OR Trace.Status = ?)
+      Trace_D.Result <> ''
+    AND
+      (? IS NULL OR Trace_D.Result = ?)
     AND
       (? IS NULL OR Trace.SubmitDate >= ?)
     AND
@@ -264,8 +274,8 @@ export const approveRequests = async (
         frm_PR_H.Requestor LIKE ?
       ))
     AND
-      Trace.Status IN ('Final Approved', 'In Progress', 'Rejected', 'Cancelled', 'Expired')
-    ORDER BY SubmitDate DESC
+      Trace_D.Result IN ('Approved', 'In Progress', '', 'Rejected')
+    ORDER BY SubmitDate DESC, Trace_D.ApproverLevel DESC
     LIMIT ? , ?;`,
     [
       supervisorNrpPattern,

@@ -58,9 +58,13 @@ export interface TraceApproveRequests extends RowDataPacket {
   Subject: string;
   Amount: number;
   Requestor: string;
-  Section: string;
-  IDSection: number;
-  Status: string;
+  RequestorSection: string;
+  RequesterSectionId: number;
+  Result: string;
+  CurrentSupervisor: string;
+  CurrentSupervisorId: number;
   SubmitDate: string;
   Remarks: string;
+  SupervisorStep: number;
+  SupervisorType: string;
 }
