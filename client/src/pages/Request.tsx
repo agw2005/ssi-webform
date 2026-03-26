@@ -160,9 +160,9 @@ const Request = () => {
   };
 
   useEffect(() => {
-    if (requestOverviewData?.[0]?.Remarks) {
-      setCurrentRemarks(requestOverviewData[0].Remarks);
-      setNewRemarks(requestOverviewData[0].Remarks);
+    if (requestOverviewData && requestOverviewData.length > 0) {
+      setCurrentRemarks(requestOverviewData[0].Remarks || "");
+      setNewRemarks(requestOverviewData[0].Remarks || "");
       setCurrentOverview({
         ID: requestOverviewData[0].FormID,
         "Form Number": requestOverviewData[0].NoForm,
@@ -171,7 +171,7 @@ const Request = () => {
         Subject: requestOverviewData[0].Subject,
         Amount: `${formatNumberToString(requestOverviewData[0].Amount)} USD`,
         "Return On Outgoing": requestOverviewData[0].ReturnOnOutgoing,
-        Remarks: requestOverviewData[0].Remarks,
+        Remarks: requestOverviewData[0].Remarks || "",
         "Cost Center": requestOverviewData[0].CostCenter,
         Nature: requestOverviewData[0].Nature,
         "ID Budget": requestOverviewData[0].IDBudget,
