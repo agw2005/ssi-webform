@@ -20,6 +20,21 @@ import { useEffect, useRef, useState } from "react";
 import Dialog from "../components/reusable/Dialog.tsx";
 import { getCurrentApproverLevel } from "../helper/getCurrentApproverLevel.ts";
 
+interface Overview {
+  ID: string;
+  "Form Number": string;
+  Requestor: string;
+  "PR Number": string;
+  Subject: string;
+  Amount: string;
+  "Return On Outgoing": string;
+  Remarks: string;
+  "Cost Center": string;
+  Nature: string;
+  "ID Budget": string;
+  Attachment: string;
+}
+
 const REQUEST_OVERVIEW_URL = `${serverDomain}/trace/request`;
 const REQUEST_ITEMS_URL = `${serverDomain}/frmprd/request`;
 const REQUEST_FILES_URL = `${serverDomain}/uploadfile`;
@@ -49,6 +64,21 @@ const REJECT_BUTTON_STYLINGS =
 
 const APPROVE_BUTTON_STYLINGS =
   "bg-green-700/40 hover:bg-green-700/80 active:bg-green-700/60 select-none";
+
+const EMPTY_OVERVIEW: Overview = {
+  ID: "",
+  "Form Number": "",
+  Requestor: "",
+  "PR Number": "",
+  Subject: "",
+  Amount: "",
+  "Return On Outgoing": "",
+  Remarks: "",
+  "Cost Center": "",
+  Nature: "",
+  "ID Budget": "",
+  Attachment: "",
+};
 
 const handleProgressColors = (progress: string) => {
   if (progress === "Approved") {
@@ -116,6 +146,9 @@ const Request = () => {
 
   const rejectReference = useRef<HTMLDialogElement>(null);
 
+  const [currentOverview, setCurrentOverview] =
+    useState<Overview>(EMPTY_OVERVIEW);
+
   const toggleDialog = () => {
     if (!rejectReference.current) {
       return;
@@ -129,6 +162,20 @@ const Request = () => {
     if (requestOverviewData?.[0]?.Remarks) {
       setCurrentRemarks(requestOverviewData[0].Remarks);
       setNewRemarks(requestOverviewData[0].Remarks);
+      setCurrentOverview({
+        ID: requestOverviewData[0].FormID,
+        "Form Number": requestOverviewData[0].NoForm,
+        Requestor: `${capitalize(requestOverviewData[0].Requestor)} (${requestOverviewData[0].RequestorNRP}) - ${requestOverviewData[0].RequestorSection}`,
+        "PR Number": requestOverviewData[0].NoPR,
+        Subject: requestOverviewData[0].Subject,
+        Amount: `${formatNumberToString(requestOverviewData[0].Amount)} USD`,
+        "Return On Outgoing": requestOverviewData[0].ReturnOnOutgoing,
+        Remarks: requestOverviewData[0].Remarks,
+        "Cost Center": requestOverviewData[0].CostCenter,
+        Nature: requestOverviewData[0].Nature,
+        "ID Budget": requestOverviewData[0].IDBudget,
+        Attachment: "",
+      });
     }
   }, [requestOverviewData]);
 
@@ -157,21 +204,6 @@ const Request = () => {
   };
 
   if (requestOverviewData === null) return;
-  const overview = {
-    ID: requestOverviewData[0].FormID,
-    "Form Number": requestOverviewData[0].NoForm,
-    Requestor: `${capitalize(requestOverviewData[0].Requestor)} (${requestOverviewData[0].RequestorNRP}) - ${requestOverviewData[0].RequestorSection}`,
-    "PR Number": requestOverviewData[0].NoPR,
-    Subject: requestOverviewData[0].Subject,
-    Amount: `${formatNumberToString(requestOverviewData[0].Amount)} USD`,
-    "Return On Outgoing": requestOverviewData[0].ReturnOnOutgoing,
-    Remarks: requestOverviewData[0].Remarks,
-    "Cost Center": requestOverviewData[0].CostCenter,
-    Nature: requestOverviewData[0].Nature,
-    "ID Budget": requestOverviewData[0].IDBudget,
-    // "Rate (1 USD)": formatNumberToString(requestOverviewData[0].Rate),
-    Attachment: "",
-  };
 
   const isAuthorizedApprover =
     authInfo &&
@@ -233,7 +265,7 @@ const Request = () => {
               </div>
             </div>
           )}
-          {Object.entries(overview).map(([key, value], index) => {
+          {Object.entries(currentOverview).map(([key, value], index) => {
             const blackAndWhite = `flex items-center border-b border-black/50 ${
               index % 2 === 0
                 ? "bg-black/10 hover:bg-black/15 active:bg-black/12.5"

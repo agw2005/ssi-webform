@@ -318,8 +318,8 @@ const Approve = () => {
                         >
                           {request.Subject}
                         </Link>{" "}
-                        {stringContainsRedLight(request.Subject) ||
-                        stringContainsRedLight(request.Remarks) ? (
+                        {stringContainsRedLight(String(request.Subject)) ||
+                        stringContainsRedLight(String(request.Remarks)) ? (
                           <span className="text-red-500 font-bold drop-shadow">
                             Red Light
                           </span>
