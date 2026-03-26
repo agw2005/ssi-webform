@@ -60,4 +60,6 @@ You might notice that when accessing the routes declared in the back-end, it lea
 
    _Contact Danial to get the sql dump of the testing database._
 
+9. Run the `fix_table.sql` against the database.
+
 After this set-up, you will have a docker container serving MySQL database. Change the value of `DB_PORT`, `DB_HOST`, `DB_USER`, `DB_PASSWORD`, and `DB_NAME` of the `/server/.env` file to match the development database container that you've created.
