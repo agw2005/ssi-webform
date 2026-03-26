@@ -1,13 +1,19 @@
 import Primitive from "../components/reusable/Primitive.tsx";
-import step1 from "../assets/images/manual/step1.png";
-import step2 from "../assets/images/manual/step2.png";
-import step3 from "../assets/images/manual/step3.png";
-import step4 from "../assets/images/manual/step4.png";
-import step5 from "../assets/images/manual/step5.png";
-import step6 from "../assets/images/manual/step6.png";
-import step7 from "../assets/images/manual/step7.png";
-import step8 from "../assets/images/manual/step8.png";
-import step9 from "../assets/images/manual/step9.png";
+import step1Requestor from "../assets/images/manual/step1-requestor.png";
+import step2Requestor from "../assets/images/manual/step2-requestor.png";
+import step3Requestor from "../assets/images/manual/step3-requestor.png";
+import step4Requestor from "../assets/images/manual/step4-requestor.png";
+import step5Requestor from "../assets/images/manual/step5-requestor.png";
+import step6Requestor from "../assets/images/manual/step6-requestor.png";
+import step7Requestor from "../assets/images/manual/step7-requestor.png";
+import step8Requestor from "../assets/images/manual/step8-requestor.png";
+import step9Requestor from "../assets/images/manual/step9-requestor.png";
+import step1Approver from "../assets/images/manual/step1-approver.png";
+import step2Approver from "../assets/images/manual/step2-approver.png";
+import step3Approver from "../assets/images/manual/step3-approver.png";
+import step4Approver from "../assets/images/manual/step4-approver.png";
+import step5Approver from "../assets/images/manual/step5-approver.png";
+import step6Approver from "../assets/images/manual/step6-approver.png";
 
 const Manual = () => {
   return (
@@ -39,7 +45,11 @@ const Manual = () => {
               <p>
                 Click <strong>Submit Form</strong> on the navigation bar.
               </p>
-              <img src={step1} alt="step1.png" className="border-2 w-3xl" />
+              <img
+                src={step1Requestor}
+                alt="step1-requestor.png"
+                className="border-2 w-3xl"
+              />
             </li>
             <li>
               <p>
@@ -51,7 +61,11 @@ const Manual = () => {
                   to specify the email's username.
                 </span>
               </p>
-              <img src={step2} alt="step2.png" className="border-2 w-7xl" />
+              <img
+                src={step2Requestor}
+                alt="step2-requestor.png"
+                className="border-2 w-7xl"
+              />
             </li>
             <li>
               <p>
@@ -63,7 +77,11 @@ const Manual = () => {
                   generated post-submission.
                 </span>
               </p>
-              <img src={step3} alt="step3.png" className="border-2 w-2xl" />
+              <img
+                src={step3Requestor}
+                alt="step3-requestor.png"
+                className="border-2 w-2xl"
+              />
             </li>
             <li>
               <p>
@@ -82,7 +100,11 @@ const Manual = () => {
                   by extension, the <strong>Cost Center</strong>).
                 </span>
               </p>
-              <img src={step4} alt="step4.png" className="border-2 w-7xl" />
+              <img
+                src={step4Requestor}
+                alt="step4-requestor.png"
+                className="border-2 w-7xl"
+              />
             </li>
             <li>
               <p>
@@ -106,7 +128,11 @@ const Manual = () => {
                 Click <strong>Next</strong> once you have done logging all the
                 necessary purchase.
               </p>
-              <img src={step5} alt="step5.png" className="border-2 w-xl" />
+              <img
+                src={step5Requestor}
+                alt="step5-requestor.png"
+                className="border-2 w-xl"
+              />
             </li>
             <li>
               <p>
@@ -119,15 +145,23 @@ const Manual = () => {
                 <br />
                 After that, click <strong>Next</strong>.
               </p>
-              <img src={step6} alt="step6.png" className="border-2 w-7xl" />
+              <img
+                src={step6Requestor}
+                alt="step6-requestor.png"
+                className="border-2 w-7xl"
+              />
             </li>
             <li>
               <p>
-                <span className="text-blue-700">(Optional)</span> If there are
+                <span className="text-red-700">(Optional)</span> If there are
                 any files you want to attach to this request, you can do so in{" "}
                 <strong>Step 5</strong>.
               </p>
-              <img src={step7} alt="step7.png" className="border-2 w-2xl" />
+              <img
+                src={step7Requestor}
+                alt="step7-requestor.png"
+                className="border-2 w-2xl"
+              />
             </li>
             <li>
               <p>
@@ -143,19 +177,141 @@ const Manual = () => {
                 <strong>OK</strong>, concluding the request workflow.
               </p>
               <div className="flex flex-col gap-2">
-                <img src={step8} alt="step8.png" className="border-2 w-2xl" />
-                <img src={step9} alt="step9.png" className="border-2 w-2xl" />
+                <img
+                  src={step8Requestor}
+                  alt="step8-requestor.png"
+                  className="border-2 w-2xl"
+                />
+                <img
+                  src={step9Requestor}
+                  alt="step9-requestor.png"
+                  className="border-2 w-2xl"
+                />
               </div>
             </li>
           </ol>
         </section>
         <section className="flex flex-col gap-2" id="approver">
           <h2 className="font-bold text-4xl underline underline-offset-4">
-            Requesting a Purchase
+            Approving a Purchase
           </h2>
-          <p>
-            The manual for approving requests is not yet available at this time.
-          </p>
+          <ol className="list-decimal list-outside pl-6 space-y-4">
+            <li>
+              <p>
+                Click <strong>Approval Menu</strong> on the navigation bar.
+              </p>
+              <img
+                src={step1Approver}
+                alt="step1-approver.png"
+                className="border-2 w-3xl"
+              />
+            </li>
+            <li>
+              <p>
+                Login using your company-issued NRP and the password associated
+                with that NRP. After that, click <strong>Sign in</strong>.
+              </p>
+              <img
+                src={step2Approver}
+                alt="step2-approver.png"
+                className="border-2 w-3xl"
+              />
+            </li>
+            <li>
+              <p>
+                You will be redirected to the <strong>Approval Menu</strong>.
+                <br />
+                Here, you can view the purchasing request that has you as one of
+                its supervisor.
+                <br />
+                You can view what type of supervisor you are to the purchasing
+                request through the <strong>Type</strong> column.
+                <br />
+                You can filter the contents by the status of your verdict,
+                request submission date, etc.
+                <br />
+                Click on the subject of the purchasing request to access the
+                details of the request, where you can <strong>
+                  Approve
+                </strong>{" "}
+                or <strong>Reject</strong> the request.
+              </p>
+              <img
+                src={step3Approver}
+                alt="step3-approver.png"
+                className="border-2 w-7xl"
+              />
+            </li>
+            <li>
+              <p>
+                Inside the request interface, while logged in as the correct
+                user, you can post a verdict, either <strong>Approve</strong> or{" "}
+                <strong>Reject</strong> the request.
+                <br />
+                Furthermore, you can edit the remarks of the request. Just click
+                on the <strong>Remarks</strong> field as start typing. You will
+                need to save the new remark.
+                <br />
+                <span className="text-red-600">
+                  Do note that once you have <strong>Approve</strong> or{" "}
+                  <strong>Reject</strong> a request, you will no longer be able
+                  to edit the remarks.
+                </span>
+              </p>
+              <br />
+              <p>
+                <span className="font-bold text-green-600">
+                  If the chosen verdict is Approve
+                </span>
+                , your result as the supervisor will be marked as{" "}
+                <strong>Approved</strong> from the status{" "}
+                <strong>In Progress</strong>.
+                <br />
+                The request will either move on to the next supervisor in the
+                path or will be updated to <strong>Final Approved</strong> if
+                there is no more supervisor left.
+                <br />
+                Serving the verdict will redirect you to the{" "}
+                <strong>Approval Menu</strong>
+              </p>
+              <img
+                src={step4Approver}
+                alt="step4-approver.png"
+                className="border-2 w-7xl"
+              />
+            </li>
+            <li>
+              <p>
+                <span className="font-bold text-red-600">
+                  If the chosen verdict is Reject
+                </span>
+                , you will activate a pop-up to select which items of the
+                request you are rejecting (By the Items ID).
+                <br />
+                You must select at least 1 item of the request in order to
+                reject the request.
+                <br />
+                Post-rejection, you will be redirected to the{" "}
+                <strong>Approval Menu</strong> and the request will be labelled
+                as rejected.
+              </p>
+              <img
+                src={step5Approver}
+                alt="step5-approver.png"
+                className="border-2 w-7xl"
+              />
+              <br />
+              <p>
+                The rejected request will not have anyone as its supervisor
+                anymore.
+              </p>
+              <img
+                src={step6Approver}
+                alt="step6-approver.png"
+                className="border-2 w-7xl"
+              />
+            </li>
+          </ol>
         </section>
       </div>
     </Primitive>
