@@ -60,7 +60,7 @@ export const homeRequests = async (
     FROM Trace
     INNER JOIN frm_PR_H
     ON frm_PR_H.NoForm = Trace.NoForm
-    INNER JOIN UserMaster
+    LEFT JOIN UserMaster
     On Trace.ProcessedBy = UserMaster.IDUser
     WHERE 
       (? IS NULL OR Trace.IDSection = ?)
