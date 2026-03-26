@@ -143,6 +143,7 @@ const Request = () => {
   const [currentRemarks, setCurrentRemarks] = useState("");
   const [newRemarks, setNewRemarks] = useState("");
   const [selectedRejects, setSelectedRejects] = useState<number[]>([]);
+  const [rejectEmptyErr, setRejectEmptyErr] = useState(false);
 
   const rejectReference = useRef<HTMLDialogElement>(null);
 
@@ -577,21 +578,31 @@ const Request = () => {
               <div
                 className="flex-1"
                 onClick={async () => {
-                  const payload: patchApprovalVerdict = {
-                    traceId: Number(reactRouterParams.requestId),
-                    rejectedItems: selectedRejects,
-                    supervisorNrp: authInfo.nrp,
-                    supervisorId: authInfo.userId,
-                    supervisorLevel: getCurrentApproverLevel(
-                      requestApproverPathData,
-                    ),
-                  };
-                  await handleVerdict("reject", payload);
+                  if (selectedRejects.length === 0) {
+                    setRejectEmptyErr(true);
+                  } else {
+                    const payload: patchApprovalVerdict = {
+                      traceId: Number(reactRouterParams.requestId),
+                      rejectedItems: selectedRejects,
+                      supervisorNrp: authInfo.nrp,
+                      supervisorId: authInfo.userId,
+                      supervisorLevel: getCurrentApproverLevel(
+                        requestApproverPathData,
+                      ),
+                    };
+                    await handleVerdict("reject", payload);
+                    setRejectEmptyErr(false);
+                  }
                 }}
               >
                 <Button id="reject-submit" variant="green" label="OK" />
               </div>
             </div>
+            {rejectEmptyErr && (
+              <span className="self-center text-red-600">
+                You must atleast select 1 item to reject
+              </span>
+            )}
           </div>
         </Dialog>
       )}
