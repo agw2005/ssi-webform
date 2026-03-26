@@ -51,11 +51,12 @@ You might notice that when accessing the routes declared in the back-end, it lea
    ```
 
 2. Use `docker ps` to list the available containers and take note of the MySQL's container ID.
-3. Run `docker exec -it [CONTAINER_ID] sh` to open the shell inside of the container.
-4. Run `mysql -p` to enter the mysql shell. The password is the same as when you created the container (the user will be `root`).
-5. Run `create database dev;`.
-6. Exit the docker terminal and go back to the normal windows powershell.
-7. Then dump the development database by running `cmd.exe /c 'docker exec -i [CONTAINER_ID] mysql -uroot -p[DB_PASSWORD] dev < [PATH_TO_SQL_DUMP]'`
+3. Copy the SQL dump into the container using `docker cp [PATH_TO_SQL_DUMP] [CONTAINER_ID]:/tmp/[SQL_DUMP_NAME].sql`.
+4. Run `docker exec -it [CONTAINER_ID] sh` to open the shell inside of the container.
+5. Run `mysql -p` to enter the mysql shell. The password is the same as when you created the container (the user will be `root`).
+6. Run `create database dev;`.
+7. Exist the mysql shell with `ctrl`+`D`.
+8. Run the SQL dump using `mysql -uroot -p[DB_PASSWORD] dev < /tmp/[SQL_DUMP_NAME].sql`.
 
    _Contact Danial to get the sql dump of the testing database._
 
