@@ -3,5 +3,8 @@
   "version": "0.0.0",
   "exports": "./mod.ts",
   "workspace": ["./server", "./client"],
-  "nodeModulesDir": "auto"
+  "nodeModulesDir": "auto",
+  "overrides": {
+    "vite": "npm:rolldown-vite@7.2.5"
+  }
 }
