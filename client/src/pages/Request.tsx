@@ -231,6 +231,7 @@ const Request = () => {
         isRequestApproverPathDataError,
       ]}
       componentName="Request.tsx"
+      pageTitle={`Request ${reactRouterParams.requestId}`}
     >
       <div className="flex flex-col gap-8">
         <div className="border">

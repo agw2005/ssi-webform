@@ -17,7 +17,12 @@ import step6Approver from "../assets/images/manual/step6-approver.png";
 
 const Manual = () => {
   return (
-    <Primitive isLoading={[]} isErr={[]} componentName="Manual.tsx">
+    <Primitive
+      isLoading={[]}
+      isErr={[]}
+      componentName="Manual.tsx"
+      pageTitle="Manual"
+    >
       <div className="flex flex-col gap-32">
         <section className="flex flex-col gap-2">
           <h2 className="font-black text-4xl underline underline-offset-4">

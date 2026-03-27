@@ -70,7 +70,8 @@ const Login = () => {
     <Primitive
       isLoading={[loginIsLoading]}
       isErr={[loginIsError]}
-      componentName="Budget.tsx"
+      componentName="Login.tsx"
+      pageTitle="Login"
     >
       <div className="flex flex-col gap-2">
         {credentialIsInvalid && (

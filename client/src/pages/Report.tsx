@@ -44,6 +44,13 @@ export interface Row {
   totalBalance: number;
 }
 
+interface TypeTitle {
+  general: string;
+  byquarter: string;
+  bysection: string;
+  bynature: string;
+}
+
 const REPORT_URL = `${serverDomain}/budget/report`;
 
 const COMPANY_NAME = "PT SHARP SEMICONDUCTOR INDONESIA";
@@ -80,6 +87,13 @@ const FH_MONTHS_INDEX = MONTHS_INDEX.slice(3, 9);
 const LH_MONTHS = [...MONTHS.slice(9), ...MONTHS.slice(0, 3)];
 const LH_MONTHS_INDEX = [...MONTHS_INDEX.slice(9), ...MONTHS_INDEX.slice(0, 3)];
 const MONTH_SUBCOLS = ["BUDGET", "USAGE", "BALANCE"];
+
+const REPORT_TYPE_TITLE: TypeTitle = {
+  general: "General",
+  byquarter: "Quarterly",
+  bysection: "Section",
+  bynature: "Nature",
+};
 
 const Report = () => {
   const [searchParams] = useSearchParams();
@@ -418,6 +432,7 @@ const Report = () => {
   if (isReportDataError) {
     return (
       <div className="m-4">
+        <title>{`${REPORT_TYPE_TITLE[reportType as keyof TypeTitle]} Report`}</title>
         <div>Something unexpected happened.</div>
         {isReportDataError ? isReportDataError.message : ""}
       </div>
@@ -426,6 +441,7 @@ const Report = () => {
 
   return !dataExist ? (
     <div className="m-8 flex flex-col items-center gap-4">
+      <title>{`${REPORT_TYPE_TITLE[reportType as keyof TypeTitle]} Report`}</title>
       <h1 className="text-3xl font-bold">NO DATA FOUND</h1>
       <h2 className="text-xl font-bold">
         No data exist for this combination of{" "}
@@ -439,6 +455,7 @@ const Report = () => {
     </div>
   ) : (
     <>
+      <title>{`${REPORT_TYPE_TITLE[reportType as keyof TypeTitle]} Report`}</title>
       {/* <div className="border bg-black flex p-1">
         <div className="bg-white hover:bg-white/85 active:bg-white/70 | flex border p-1 select-none">
           Download PDF

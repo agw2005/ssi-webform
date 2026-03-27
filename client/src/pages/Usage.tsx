@@ -126,6 +126,7 @@ const Usage = () => {
       isLoading={[isRequestsDataLoading]}
       isErr={[isRequestsDataError]}
       componentName="Usage.tsx"
+      pageTitle="Usage"
     >
       <div className="flex" onClick={() => history.back()}>
         <Button id="go-back" variant="black" label="Back" />

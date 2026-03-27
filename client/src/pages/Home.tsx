@@ -246,6 +246,7 @@ const Home = () => {
       isLoading={[isSectionLoading, isSupervisorLoading]}
       isErr={[sectionError, supervisorError, isRequestDataError]}
       componentName="Home.tsx"
+      pageTitle="PR Online"
     >
       <div className="flex gap-2 flex-wrap">
         <SelectionInput

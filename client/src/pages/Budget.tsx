@@ -34,6 +34,7 @@ const Budget = () => {
       isLoading={[isFileResourcesLoading, isYearsLoading]}
       isErr={[isFileResourcesError, isYearsError]}
       componentName="Budget.tsx"
+      pageTitle="Budget"
     >
       <div className="flex gap-2 w-max">
         <Switch

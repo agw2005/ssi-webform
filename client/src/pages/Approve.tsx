@@ -186,6 +186,7 @@ const Approve = () => {
       isLoading={[authIsLoading]}
       isErr={[isRequestsError]}
       componentName="Approve.tsx"
+      pageTitle="Approval Menu"
     >
       <div className="flex flex-col gap-4">
         <div className="flex gap-2 flex-wrap">

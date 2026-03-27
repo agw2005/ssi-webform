@@ -268,6 +268,7 @@ const Submit = () => {
         requestIsError,
       ]}
       componentName="Submit.tsx"
+      pageTitle="Submit PR"
     >
       <div className="flex flex-col gap-8">
         <div className="flex flex-wrap gap-8">
