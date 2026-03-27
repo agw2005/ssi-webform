@@ -34,7 +34,7 @@ export const userSectionMappings = async (pool: mysql.Pool) => {
 };
 
 export const getSectionIdByName = async (
-  pool: mysql.Pool,
+  pool: mysql.PoolConnection,
   sectionName: string,
 ): Promise<number> => {
   const [rows, _metadata] = await pool.query<SectionId[]>(

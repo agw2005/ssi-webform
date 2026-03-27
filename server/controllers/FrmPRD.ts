@@ -30,7 +30,7 @@ export const getAllRequestItems = async (pool: mysql.Pool, traceId: number) => {
 };
 
 export const postUsage = async (
-  pool: mysql.Pool,
+  pool: mysql.PoolConnection,
   noPR: string,
   costCenter: string,
   nature: string,

@@ -21,13 +21,6 @@ export interface BudgetFileResource extends RowDataPacket {
 }
 
 /**
- * Interface for the `Budget` table used to get the periods.
- */
-export interface BudgetPeriod extends RowDataPacket {
-  Period: string;
-}
-
-/**
  * Interface for the `Budget` table used to get the natures.
  */
 export interface BudgetNature extends RowDataPacket {
@@ -45,7 +38,9 @@ export interface BudgetBalance extends RowDataPacket {
  * Interface for the `Budget` table used to get the balance.
  */
 export interface BudgetViewInformation extends RowDataPacket {
-  Periode: string;
+  DatabasePeriod: string;
+  MonthIndex: number;
+  PeriodYear: number;
   FileResource: string;
   Department: number;
   CostCenter: string;
@@ -69,4 +64,8 @@ export interface ReportViewInformation extends RowDataPacket {
   Description: string;
   Budget: number;
   Balance: number;
+}
+
+export interface BudgetYear extends RowDataPacket {
+  Year: string;
 }

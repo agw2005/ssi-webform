@@ -52,7 +52,7 @@ export const getRequestItemForBudgetView = async (
 };
 
 export const provisionPRNumber = async (
-  pool: mysql.Pool,
+  pool: mysql.PoolConnection,
   dept: string,
 ): Promise<string> => {
   const now = new Date();
@@ -84,7 +84,7 @@ export const provisionPRNumber = async (
 };
 
 export const postRequestInformation = async (
-  pool: mysql.Pool,
+  pool: mysql.PoolConnection,
   noForm: string,
   requestorName: string,
   requestorNrp: string,

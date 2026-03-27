@@ -14,10 +14,10 @@ import type {
   Nature,
   ThirdStepInputs,
 } from "@scope/server";
-import getCurrentPeriod from "../../../helper/getCurrentPeriod.ts";
 import type { ForexRates, ForexAPIResponse } from "../../../hooks/useForex.tsx";
 import formatNumberToString from "../../../helper/formatNumberToString.ts";
 import formatStringToNumber from "../../../helper/formatStringToNumber.ts";
+import getCurrentPeriod from "../../../helper/getCurrentPeriod.ts";
 
 const NO_BALANCE_VALUE = "No balance detected";
 
@@ -80,7 +80,7 @@ interface BudgetSummary {
 const DEFAULT_USAGE = {
   costCenter: "",
   budgetOrNature: "",
-  periode: getCurrentPeriod(),
+  periode: `${String(new Date().toLocaleString("default", { month: "long" }))} ${String(new Date().getFullYear())}`,
   balance: NO_BALANCE_VALUE,
   description: "",
   quantity: "",
@@ -147,7 +147,7 @@ const ThirdStep = ({
 
     const balanceData = await fetchBalanceHelper(
       usageField.costCenter,
-      usageField.periode,
+      getCurrentPeriod(),
       e.target.value,
     );
 
@@ -190,7 +190,7 @@ const ThirdStep = ({
           accumulator[costCenterAndNatureCombination] = {
             costCenter: usage.costCenter,
             budgetOrNature: usage.budgetOrNature,
-            periode: usage.periode,
+            periode: getCurrentPeriod(),
             balance: formatStringToNumber(usage.balance),
             totalUsageUSD: 0,
           };
@@ -392,13 +392,20 @@ const ThirdStep = ({
               }
               if (!requiredUsageFieldsAreEmpty()) {
                 const newThirdStepInputs: ThirdStepInputs = {
-                  usages: [...thirdStepInputsGetter.usages, usageField],
+                  usages: [
+                    ...thirdStepInputsGetter.usages,
+                    {
+                      ...usageField,
+                      periode: getCurrentPeriod(),
+                    },
+                  ],
                 };
                 thirdStepInputsInputsSetter(newThirdStepInputs);
                 setUsageField(DEFAULT_USAGE);
               } else {
                 globalThis.confirm(EMPTY_USAGE_FIELDS_WARNING);
               }
+              console.log(usageField);
             }}
           >
             <Button id="add-usage" variant="yellow" label="Add Usage" />

@@ -2,9 +2,9 @@ import type mysql from "mysql2/promise";
 import type {
   BudgetBalance,
   BudgetNature,
-  BudgetPeriod,
   BudgetTable,
   BudgetViewInformation,
+  BudgetYear,
   ReportViewInformation,
 } from "../models/Budget.d.ts";
 import type { ResultSetHeader } from "mysql2/promise.js";
@@ -29,12 +29,11 @@ export const allFileResources = async (pool: mysql.Pool) => {
  * @param pool An instance of mysql2 database pool
  * @returns An array of budget, containing its periods and a metadata variable
  */
-export const allPeriods = async (pool: mysql.Pool) => {
-  const [rows, metadata] = await pool.query<BudgetPeriod[]>(
-    `SELECT DISTINCT SUBSTRING(Periode, 1, 6) AS Period
+export const availableYears = async (pool: mysql.Pool) => {
+  const [rows, metadata] = await pool.query<BudgetYear[]>(
+    `SELECT DISTINCT SUBSTRING(Periode, 1, 4) AS Year
     FROM Budget
-    WHERE Periode IS NOT NULL AND Periode <> ''
-    ORDER BY Period DESC`,
+    WHERE Periode IS NOT NULL AND Periode <> '';`,
   );
   return [rows, metadata];
 };
@@ -68,7 +67,7 @@ export const natureByCostCenter = async (
  * @returns An array of budget, containing a single balance and a metadata variable
  */
 export const singleBalance = async (
-  pool: mysql.Pool,
+  pool: mysql.PoolConnection | mysql.Pool,
   costCenter: number,
   periode: string,
   nature: string,
@@ -91,14 +90,20 @@ export const singleBalance = async (
  * @param fileResource A valid periode value
  * @returns An array of budget, containing a single balance and a metadata variable
  */
-export const viewInformation = async (
+export const getBudgetsByYear = async (
   pool: mysql.Pool,
-  periode: string | null,
   fileResource: string | null,
+  year: string | null,
 ) => {
   const [rows, metadata] = await pool.query<BudgetViewInformation[]>(
     `SELECT
-      Budget.Periode,
+      Budget.Periode AS DatabasePeriod,
+      CAST(SUBSTRING(Periode, 7, 2) AS UNSIGNED) AS MonthIndex,
+      IF(
+          SUBSTRING(Periode, 5, 2) = 'LH' AND CAST(SUBSTRING(Periode, 7, 2) AS UNSIGNED) < 6,
+          CAST(SUBSTRING(Periode, 1, 4) AS UNSIGNED)+1,
+          CAST(SUBSTRING(Periode, 1, 4) AS UNSIGNED)
+      ) AS PeriodYear,
       Budget.FileResource,
       Budget.IDSection AS Department,
       Budget.CostCenter,
@@ -109,9 +114,14 @@ export const viewInformation = async (
     From Budget
     INNER JOIN Nature
       ON Nature.Nature = Budget.Nature
-    WHERE (? IS NULL OR Budget.Periode LIKE CONCAT( ? , '%' ))
-    AND (? IS NULL OR Budget.FileResource = ?);`,
-    [periode, periode, fileResource, fileResource],
+    WHERE (? IS NULL OR Budget.FileResource = ?)
+    AND IF(
+        SUBSTRING(Budget.Periode, 5, 2) = 'LH' AND CAST(SUBSTRING(Budget.Periode, 7, 2) AS UNSIGNED) < 6,
+        CAST(SUBSTRING(Budget.Periode, 1, 4) AS UNSIGNED) + 1,
+        CAST(SUBSTRING(Budget.Periode, 1, 4) AS UNSIGNED)
+    ) = ?
+    ORDER BY PeriodYear DESC, MonthIndex DESC;`,
+    [fileResource, fileResource, year],
   );
   return [rows, metadata];
 };
@@ -153,7 +163,7 @@ export const reportInformation = async (
 };
 
 export const patchRequestBudget = async (
-  pool: mysql.Pool,
+  pool: mysql.PoolConnection,
   usage: number,
   costCenter: string,
   nature: string,

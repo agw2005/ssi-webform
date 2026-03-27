@@ -1,11 +1,11 @@
 import {
   allFileResources,
-  allPeriods,
+  availableYears,
   natureByCostCenter,
   patchRequestBudget,
   reportInformation,
   singleBalance,
-  viewInformation,
+  getBudgetsByYear,
 } from "./controllers/Budget.ts";
 import {
   getAllRequestItems,
@@ -86,8 +86,10 @@ export const getAllFileResources = async (
   ctx.response.body = rows;
 };
 
-export const getAllPeriods = async (ctx: RouterContext<"/budget/periods">) => {
-  const [rows, _metadata] = await allPeriods(databasePool);
+export const getAvailableBudgetYears = async (
+  ctx: RouterContext<"/budget/years">,
+) => {
+  const [rows, _metadata] = await availableYears(databasePool);
   ctx.response.status = 200;
   ctx.response.body = rows;
 };
@@ -121,12 +123,12 @@ export const getBudgetViewInformation = async (
   ctx: RouterContext<"/budget">,
 ) => {
   const params = ctx.request.url.searchParams;
-  const periode = params.get("periode") || null;
+  const year = params.get("year") || null;
   const fileResource = params.get("fileresource") || null;
-  const [rows, _metadata] = await viewInformation(
+  const [rows, _metadata] = await getBudgetsByYear(
     databasePool,
-    periode,
     fileResource,
+    year,
   );
   ctx.response.status = 200;
   ctx.response.body = rows;
@@ -356,17 +358,21 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
   const submissionDate = jsDateToMySQLDatetime(now);
   const emailDomain = "ssi.sharp-world.com";
 
-  const noForm = provisionFormNumber();
-  const [noPR, requestorSectionId] = await Promise.all([
-    provisionPRNumber(databasePool, payload.firstStep.department),
-    getSectionIdByName(databasePool, payload.firstStep.section),
-  ]);
+  const connection = await databasePool.getConnection();
 
-  let requestAmount = 0;
-  let isRedLight = false;
+  try {
+    await connection.beginTransaction();
 
-  await Promise.all(
-    payload.thirdStep.usages.map(async (usage) => {
+    const noForm = provisionFormNumber();
+    const [noPR, requestorSectionId] = await Promise.all([
+      provisionPRNumber(connection, payload.firstStep.department),
+      getSectionIdByName(connection, payload.firstStep.section),
+    ]);
+
+    let requestAmount = 0;
+    let isRedLight = false;
+
+    for (const usage of payload.thirdStep.usages) {
       const currencyRate =
         usage.currency === "USD"
           ? Number(forexData.amount.toFixed(2))
@@ -381,126 +387,144 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
 
       requestAmount += netPriceByCurrencyRate;
 
-      await Promise.all([
-        postUsage(
-          databasePool,
-          noPR,
-          usage.costCenter,
-          usage.budgetOrNature,
-          usage.description,
-          quantity,
-          usage.measure,
-          pricePerUnit,
-          usage.currency,
-          usage.estimatedDeliveryDate,
-          usage.vendor,
-          usage.reason,
-          currencyRate,
-          budgetId,
-        ),
-        patchRequestBudget(
-          databasePool,
-          netPriceByCurrencyRate,
-          usage.costCenter,
-          usage.budgetOrNature,
-          usage.periode,
-        ),
-      ]);
+      await postUsage(
+        connection,
+        noPR,
+        usage.costCenter,
+        usage.budgetOrNature,
+        usage.description,
+        quantity,
+        usage.measure,
+        pricePerUnit,
+        usage.currency,
+        usage.estimatedDeliveryDate,
+        usage.vendor,
+        usage.reason,
+        currencyRate,
+        budgetId,
+      );
+
+      patchRequestBudget(
+        connection,
+        netPriceByCurrencyRate,
+        usage.costCenter,
+        usage.budgetOrNature,
+        usage.periode,
+      );
 
       const [currentNatureInfo] = await singleBalance(
-        databasePool,
+        connection,
         Number(usage.costCenter),
         usage.periode,
         usage.budgetOrNature,
       );
+
       const currentNatureBalance = Number(currentNatureInfo[0].Balance) || 0;
-      if (!isRedLight && currentNatureBalance < netPriceByCurrencyRate) {
+
+      if (!isRedLight && currentNatureBalance < netPriceByCurrencyRate)
         isRedLight = true;
-      }
-    }),
-  );
+    }
 
-  const requestSubject = !isRedLight
-    ? payload.secondStep.subject
-    : `[RL] ${payload.secondStep.subject}`;
+    const requestSubject = !isRedLight
+      ? payload.secondStep.subject
+      : `[RL] ${payload.secondStep.subject}`;
 
-  const initialRemarks = !isRedLight ? "" : "[RL]";
+    const initialRemarks = !isRedLight ? "" : "[RL]";
 
-  await postRequestInformation(
-    databasePool,
-    noForm,
-    payload.firstStep.name,
-    payload.firstStep.nrp,
-    payload.firstStep.section,
-    noPR,
-    requestSubject,
-    requestAmount,
-    payload.secondStep.returnOnOutgoing,
-    initialRemarks,
-  );
+    await postRequestInformation(
+      connection,
+      noForm,
+      payload.firstStep.name,
+      payload.firstStep.nrp,
+      payload.firstStep.section,
+      noPR,
+      requestSubject,
+      requestAmount,
+      payload.secondStep.returnOnOutgoing,
+      initialRemarks,
+    );
 
-  const supervisorNames = [
-    ...payload.fourthStep.approver.map((name) => ({ name, type: "A" })),
-    ...payload.fourthStep.releaser.map((name) => ({ name, type: "R" })),
-    ...payload.fourthStep.administrator.map((name) => ({ name, type: "ADM" })),
-  ];
+    const supervisorNames = [
+      ...payload.fourthStep.approver.map((name) => ({ name, type: "A" })),
+      ...payload.fourthStep.releaser.map((name) => ({ name, type: "R" })),
+      ...payload.fourthStep.administrator.map((name) => ({
+        name,
+        type: "ADM",
+      })),
+    ];
 
-  const initialSupervisorId = await getUserIdByName(
-    databasePool,
-    payload.fourthStep.approver[0],
-  );
+    const initialSupervisorId = await getUserIdByName(
+      connection,
+      payload.fourthStep.approver[0],
+    );
 
-  const newTraceId = await postRequestTrace(
-    databasePool,
-    noForm,
-    payload.firstStep.name,
-    String(requestorSectionId),
-    payload.firstStep.nrp,
-    payload.firstStep.ext,
-    `${payload.firstStep.email}@${emailDomain}`,
-    submissionDate,
-    initialSupervisorId,
-    initialRemarks,
-  );
+    const newTraceId = await postRequestTrace(
+      connection,
+      noForm,
+      payload.firstStep.name,
+      String(requestorSectionId),
+      payload.firstStep.nrp,
+      payload.firstStep.ext,
+      `${payload.firstStep.email}@${emailDomain}`,
+      submissionDate,
+      initialSupervisorId,
+      initialRemarks,
+    );
 
-  await Promise.all(
-    supervisorNames.map(async (supervisorName, index) => {
-      const supervisorId = await getUserIdByName(
-        databasePool,
-        supervisorName.name,
-      );
-      await postRequestApproverPath(
-        databasePool,
-        newTraceId,
-        supervisorId,
-        supervisorName.type,
-        index + 1,
-      );
-    }),
-  );
+    await Promise.all(
+      supervisorNames.map(async (supervisorName, index) => {
+        const supervisorId = await getUserIdByName(
+          connection,
+          supervisorName.name,
+        );
+        await postRequestApproverPath(
+          connection,
+          newTraceId,
+          supervisorId,
+          supervisorName.type,
+          index + 1,
+        );
+      }),
+    );
 
-  await Promise.all(
-    payload.fifthStep.files.map((file) =>
-      postRequestFiles(
-        databasePool,
-        noForm,
-        payload.secondStep.subject,
-        payload.firstStep.name,
-        file.name,
-        submissionDate,
+    await Promise.all(
+      payload.fifthStep.files.map((file) =>
+        postRequestFiles(
+          connection,
+          noForm,
+          payload.secondStep.subject,
+          payload.firstStep.name,
+          file.name,
+          submissionDate,
+        ),
       ),
-    ),
-  );
+    );
 
-  const successResponse: SubmitResponse = {
-    message: "Your purchasing request has been filed successfully!",
-    noForm: noForm,
-    noPR: noPR,
-    traceId: String(newTraceId),
-  };
+    await connection.commit();
 
-  ctx.response.status = 200;
-  ctx.response.body = successResponse;
+    const successResponse: SubmitResponse = {
+      message: "Your purchasing request has been filed successfully!",
+      noForm: noForm,
+      noPR: noPR,
+      traceId: String(newTraceId),
+    };
+
+    ctx.response.status = 200;
+    ctx.response.body = successResponse;
+  } catch (err) {
+    const errMessage = err instanceof Error ? err.message : "";
+    const failingResponse: SubmitResponse = {
+      message: errMessage,
+      noForm: "",
+      noPR: "",
+      traceId: "",
+    };
+    await connection.rollback();
+    ctx.response.status = 500;
+    ctx.response.body = failingResponse;
+  } finally {
+    connection.release();
+  }
 };
 
 export const getAuthInformation = async (

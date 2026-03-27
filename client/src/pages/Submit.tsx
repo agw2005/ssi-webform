@@ -221,6 +221,7 @@ const Submit = () => {
       fifthStep: fifthStepInputs,
     };
     try {
+      console.log(payload);
       const submitResponse = await fetch(SUBMIT_URL, submitRequest(payload));
       const submitResponseBody: SubmitResponse = await submitResponse.json();
       if (submitResponse.ok) {

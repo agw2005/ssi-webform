@@ -28,7 +28,7 @@ export const getApproverPathInformation = async (
 };
 
 export const postRequestApproverPath = async (
-  pool: mysql.Pool,
+  pool: mysql.PoolConnection,
   traceId: number,
   userId: number,
   approverType: string,

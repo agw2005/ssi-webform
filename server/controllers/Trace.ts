@@ -166,7 +166,7 @@ export const specificRequest = async (pool: mysql.Pool, traceId: number) => {
 };
 
 export const postRequestTrace = async (
-  pool: mysql.Pool,
+  pool: mysql.PoolConnection,
   noForm: string,
   requestorName: string,
   requestorSectionId: string,

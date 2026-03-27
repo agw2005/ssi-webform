@@ -4,19 +4,18 @@ import BudgetViewFilters from "../components/non-reusable/budget/BudgetViewFilte
 import Switch from "../components/reusable/Switch.tsx";
 import BudgetView from "../components/non-reusable/budget/BudgetView.tsx";
 import ReportView from "../components/non-reusable/budget/ReportView.tsx";
-import type { FileResource, Period } from "@scope/server";
+import type { FileResource, Year } from "@scope/server";
 import useFetch from "../hooks/useFetch.tsx";
 import fileResourceFetchHandler from "../helper/fileResourceFetchHandler.ts";
-import getCurrentPeriod from "../helper/getCurrentPeriod.ts";
 import serverDomain from "../helper/serverDomain.ts";
 
 const FILE_RESOURCES_URL = `${serverDomain}/budget/fileresources`;
-const PERIODS_URL = `${serverDomain}/budget/periods`;
+const BUDGET_YEARS_URL = `${serverDomain}/budget/years`;
 
 const Budget = () => {
   const [viewMode, setViewMode] = useState<"Budget" | "Report">("Budget");
   const [fileResource, setFileResource] = useState("");
-  const [period, setPeriod] = useState(getCurrentPeriod().substring(0, 6));
+  const [year, setYear] = useState(String(new Date().getFullYear()));
 
   const {
     data: fileResources,
@@ -25,15 +24,15 @@ const Budget = () => {
   } = useFetch<FileResource>(FILE_RESOURCES_URL);
 
   const {
-    data: periods,
-    isLoading: isPeriodsLoading,
-    isError: isPeriodsError,
-  } = useFetch<Period>(PERIODS_URL);
+    data: years,
+    isLoading: isYearsLoading,
+    isError: isYearsError,
+  } = useFetch<Year>(BUDGET_YEARS_URL);
 
   return (
     <Primitive
-      isLoading={[isFileResourcesLoading, isPeriodsLoading]}
-      isErr={[isFileResourcesError, isPeriodsError]}
+      isLoading={[isFileResourcesLoading, isYearsLoading]}
+      isErr={[isFileResourcesError, isYearsError]}
       componentName="Budget.tsx"
     >
       <div className="flex gap-2 w-max">
@@ -51,14 +50,23 @@ const Budget = () => {
           <BudgetViewFilters
             variants="black"
             fileResources={fileResourceFetchHandler(fileResources)}
-            periods={!periods ? [] : periods.map((period) => period.Period)}
+            years={
+              !years
+                ? []
+                : [
+                    ...years.map((year) => year.Year),
+                    String(
+                      Math.max(...years.map((year) => Number(year.Year))) + 1,
+                    ),
+                  ]
+            }
             fileResourceValue={fileResource}
-            periodValue={period}
+            yearValue={year}
             fileResourceOnChange={(e) => {
               setFileResource(e.currentTarget.value);
             }}
-            periodOnChange={(e) => {
-              setPeriod(e.currentTarget.value);
+            yearOnChange={(e) => {
+              setYear(e.currentTarget.value);
             }}
           />
         ) : (
@@ -67,7 +75,7 @@ const Budget = () => {
       </div>
 
       {viewMode === "Budget" ? (
-        <BudgetView periode={period} fileResource={fileResource} />
+        <BudgetView year={year} fileResource={fileResource} />
       ) : (
         ""
       )}
@@ -79,7 +87,7 @@ const Budget = () => {
               ? []
               : fileResources.map((budget) => budget.FileResource)
           }
-          periods={!periods ? [] : periods.map((period) => period.Period)}
+          periods={!years ? [] : years.map((year) => year.Year)}
         />
       ) : (
         ""

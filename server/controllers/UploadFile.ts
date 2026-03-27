@@ -18,7 +18,7 @@ export const getMinimumFileInformation = async (
 };
 
 export const postRequestFiles = async (
-  pool: mysql.Pool,
+  pool: mysql.PoolConnection,
   noForm: string,
   requestSubject: string,
   requestorName: string,

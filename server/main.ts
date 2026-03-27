@@ -2,7 +2,7 @@ import { Application, Router } from "@oak/oak";
 import {
   getAllDepartments,
   getAllFileResources,
-  getAllPeriods,
+  getAvailableBudgetYears,
   getApproverPath,
   getAuthInformation,
   getBudgetViewInformation,
@@ -45,7 +45,7 @@ oakRouter.get("/section/names", getSectionNames);
 oakRouter.get("/section/users", getSectionUsers);
 oakRouter.get("/usermaster/names", getSupervisorNames);
 oakRouter.get("/budget/fileresources", getAllFileResources);
-oakRouter.get("/budget/periods", getAllPeriods);
+oakRouter.get("/budget/years", getAvailableBudgetYears);
 oakRouter.get("/budget/nature/:costcenter", getNaturesOfCostCenter);
 oakRouter.get("/budget/nature/:costcenter/:periode/:nature", getSingleBalance);
 oakRouter.get("/budget", getBudgetViewInformation);

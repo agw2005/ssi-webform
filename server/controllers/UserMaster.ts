@@ -21,7 +21,7 @@ export const supervisorNames = async (pool: mysql.Pool) => {
 };
 
 export const getUserIdByName = async (
-  pool: mysql.Pool,
+  pool: mysql.PoolConnection,
   nameUser: string,
 ): Promise<number> => {
   const [rows] = await pool.query<UserIdByName[]>(

@@ -7,21 +7,21 @@ import SelectionInput from "../../reusable/inputs/SelectionInput.tsx";
 interface BudgetViewFiltersProps {
   variants: ColorVariant;
   fileResources: string[];
-  periods: string[];
+  years: string[];
   fileResourceValue: string;
-  periodValue: string;
+  yearValue: string;
   fileResourceOnChange: (input: React.ChangeEvent<HTMLSelectElement>) => void;
-  periodOnChange: (input: React.ChangeEvent<HTMLSelectElement>) => void;
+  yearOnChange: (input: React.ChangeEvent<HTMLSelectElement>) => void;
 }
 
 const BudgetViewFilters = ({
   variants,
   fileResources,
-  periods,
+  years,
   fileResourceValue,
-  periodValue,
+  yearValue,
   fileResourceOnChange,
-  periodOnChange,
+  yearOnChange,
 }: BudgetViewFiltersProps) => {
   return (
     <>
@@ -44,16 +44,16 @@ const BudgetViewFilters = ({
             Period
           </div>
           <select
-            name="budget-view-period"
-            id="budget-view-period"
+            name="budget-view-year"
+            id="budget-view-year"
             className={`text-xs lg:text-sm xl:text-base | flex-1 h-full px-4 rounded-r-xl border ${resolveColorMappings(variants, "input")} outline-none`}
-            value={periodValue}
-            onChange={periodOnChange}
+            value={yearValue}
+            onChange={yearOnChange}
           >
-            {periods.map((period: string, index: number) => {
+            {years.map((year: string, index: number) => {
               return (
-                <option key={index} value={period}>
-                  {period}
+                <option key={index} value={year}>
+                  {year}
                 </option>
               );
             })}

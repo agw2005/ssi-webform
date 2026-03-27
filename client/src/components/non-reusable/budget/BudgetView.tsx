@@ -3,39 +3,16 @@ import LoadingFallback from "../../reusable/LoadingFallback.tsx";
 import formatNumberToString from "../../../helper/formatNumberToString.ts";
 import { Link } from "react-router-dom";
 import serverDomain from "../../../helper/serverDomain.ts";
+import type { BudgetViewAtYear } from "@scope/server";
 
 const BUDGET_VIEW_URL = `${serverDomain}/budget`;
 
 interface BudgetViewProps {
-  periode: string;
+  year: string;
   fileResource: string;
 }
 
-interface BudgetViewResponse {
-  Periode: string;
-  FileResource: string;
-  Department: number;
-  CostCenter: string;
-  Nature: string;
-  Description: string;
-  Budget: string;
-  Balance: string;
-}
-
-const MONTHS = [
-  "01",
-  "02",
-  "03",
-  "04",
-  "05",
-  "06",
-  "07",
-  "08",
-  "09",
-  "10",
-  "11",
-  "12",
-];
+const MONTH_INDEX = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 
 const THREE_COLSPAN_COLUMNS = [
   "(01) January",
@@ -61,16 +38,16 @@ const TWO_ROWSPAN_COLUMNS = [
 
 const SUB_COLUMNS = ["Budget", "Usage", "Balance"];
 
-const BudgetView = ({ periode, fileResource }: BudgetViewProps) => {
+const BudgetView = ({ year, fileResource }: BudgetViewProps) => {
   const [budgetViewData, setBudgetViewData] = useState<
-    BudgetViewResponse[] | null
+    BudgetViewAtYear[] | null
   >(null);
   const [isBudgetViewDataLoading, setIsBudgetViewDataLoading] = useState(false);
   const [isBudgetViewDataError, setIsBudgetViewDataError] =
     useState<Error | null>(null);
 
   const applyParams = (url: URL) => {
-    url.searchParams.set("periode", periode);
+    url.searchParams.set("year", year);
     if (fileResource !== "Show All" && fileResource !== "") {
       url.searchParams.set("fileresource", fileResource);
     }
@@ -90,7 +67,7 @@ const BudgetView = ({ periode, fileResource }: BudgetViewProps) => {
         if (!budgetViewResponse.ok)
           throw new Error(`HTTP error! status: ${budgetViewResponse.status}`);
 
-        const budgetViewResponseJson: BudgetViewResponse[] =
+        const budgetViewResponseJson: BudgetViewAtYear[] =
           await budgetViewResponse.json();
 
         setBudgetViewData(budgetViewResponseJson);
@@ -112,7 +89,7 @@ const BudgetView = ({ periode, fileResource }: BudgetViewProps) => {
     return () => {
       abortController.abort();
     };
-  }, [periode, fileResource]);
+  }, [year, fileResource]);
 
   if (isBudgetViewDataLoading) {
     return <LoadingFallback />;
@@ -127,7 +104,7 @@ const BudgetView = ({ periode, fileResource }: BudgetViewProps) => {
     );
   }
 
-  const uniqueRows =
+  const uniqueRows: BudgetViewAtYear[] | null =
     budgetViewData &&
     budgetViewData.filter(
       (budgetData, index, self) =>
@@ -204,12 +181,12 @@ const BudgetView = ({ periode, fileResource }: BudgetViewProps) => {
                 <td className="text-xs lg:text-sm xl:text-base | border p-2 min-w-50 max-w-50 text-center">
                   {rowData.Description}
                 </td>
-                {MONTHS.map((month, index) => {
+                {MONTH_INDEX.map((monthIndex, index) => {
                   const monthData = budgetViewData?.find(
                     (budgetData) =>
                       budgetData.CostCenter === rowCostCenter &&
                       budgetData.Nature === rowNature &&
-                      budgetData.Periode.endsWith(month),
+                      budgetData.MonthIndex === monthIndex,
                   );
                   const monthBudget = Number(monthData?.Budget || 0);
                   const monthBalance = Number(monthData?.Balance || 0);
