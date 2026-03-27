@@ -2,7 +2,6 @@ import { Link, useSearchParams } from "react-router-dom";
 import Primitive from "../components/reusable/Primitive.tsx";
 import Button from "../components/reusable/Button.tsx";
 import { useEffect, useState } from "react";
-import getDateRangeAtPeriode from "../helper/getDateRangeAtPeriode.ts";
 import dateToMySQLDateInput from "../helper/dateToMySQLDateInput.ts";
 import formatNumberToString from "../helper/formatNumberToString.ts";
 import capitalize from "../helper/capitalize.ts";
@@ -62,7 +61,8 @@ const COLUMNS = [
 
 const Usage = () => {
   const [searchParams] = useSearchParams();
-  const [start, end] = getDateRangeAtPeriode(searchParams.get("periode") || "");
+  const year = searchParams.get("year") || "";
+  const monthIndex = Number(searchParams.get("month")) || 0;
   const nature = searchParams.get("nature") || "";
   const costCenter = searchParams.get("costcenter") || "";
 
@@ -75,8 +75,12 @@ const Usage = () => {
   );
 
   const applyParams = (url: URL) => {
-    const startDate = dateToMySQLDateInput(start);
-    const endDate = dateToMySQLDateInput(end);
+    const startDate = dateToMySQLDateInput(new Date(`${monthIndex}/1/${year}`));
+    const endDate = dateToMySQLDateInput(
+      new Date(
+        `${monthIndex !== 12 ? monthIndex + 1 : 1}/1/${monthIndex !== 12 ? year : year + 1}`,
+      ),
+    );
     url.searchParams.set("nature", nature);
     url.searchParams.set("costcenter", costCenter);
     url.searchParams.set("startdate", startDate);

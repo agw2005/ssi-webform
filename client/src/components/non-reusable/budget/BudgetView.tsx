@@ -199,7 +199,7 @@ const BudgetView = ({ year, fileResource }: BudgetViewProps) => {
                       <td className="text-xs lg:text-sm xl:text-base | border p-2 text-center">
                         <Link
                           className="text-blue-700 underline"
-                          to={`/usage?periode=${monthData?.Periode}&costcenter=${rowData.CostCenter}&nature=${rowNature}`}
+                          to={`/usage?year=${monthData?.PeriodYear}&month=${monthData?.MonthIndex}&costcenter=${rowData.CostCenter}&nature=${rowNature}`}
                         >
                           {formatNumberToString(monthUsage)}
                         </Link>
