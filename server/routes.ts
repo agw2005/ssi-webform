@@ -1,43 +1,29 @@
 import {
   allFileResources,
   allPeriods,
-  basicGet as BudgetGet,
   natureByCostCenter,
   patchRequestBudget,
   reportInformation,
   singleBalance,
   viewInformation,
 } from "./controllers/Budget.ts";
-import { basicGet as FileResourceGet } from "./controllers/FileResource.ts";
-import { basicGet as FlowGet } from "./controllers/Flow.ts";
-import { basicGet as FormGet } from "./controllers/Form.ts";
 import {
-  basicGet as FrmPRDGet,
   getAllRequestItems,
   patchFrmPRDVerdict,
   postUsage,
 } from "./controllers/FrmPRD.ts";
 import {
-  basicGet as FrmPRHGet,
   getRequestItemForBudgetView,
   patchRemarksOfRequest,
   postRequestInformation,
   provisionPRNumber,
 } from "./controllers/FrmPRH.ts";
-import {
-  allDepartments,
-  basicGet as FrmPRNoPRGet,
-} from "./controllers/FrmPRNoPR.ts";
-import { basicGet as NatureGet } from "./controllers/Nature.ts";
-import { basicGet as RateDollarGet } from "./controllers/RateDollar.ts";
-import { basicGet as RateDollarTempGet } from "./controllers/RateDollarTemp.ts";
+import { allDepartments } from "./controllers/FrmPRNoPR.ts";
 import {
   getSectionIdByName,
-  basicGet as SectionGet,
   sectionNames,
   userSectionMappings,
 } from "./controllers/Section.ts";
-import { basicGet as TitleGet } from "./controllers/Title.ts";
 import {
   approveRequests,
   approveRequestsCount,
@@ -47,7 +33,6 @@ import {
   patchTraceVerdict,
   postRequestTrace,
   specificRequest,
-  basicGet as TraceGet,
 } from "./controllers/Trace.ts";
 import {
   getApproverPathInformation,
@@ -55,18 +40,14 @@ import {
   patchTraceDVerdict,
   postRequestApproverPath,
   getOtherApproverInfo,
-  basicGet as TraceDGet,
   patchApproverToActiveApproving,
 } from "./controllers/TraceD.ts";
-import { basicGet as TypeGet } from "./controllers/Type.ts";
 import {
   getMinimumFileInformation,
   postRequestFiles,
-  basicGet as UploadFileGet,
 } from "./controllers/UploadFile.ts";
 import {
   supervisorNames,
-  basicGet as UserMasterGet,
   getUserIdByName,
   getAuthInfo,
   patchNewLogin,
@@ -95,16 +76,6 @@ import { jsDateToMySQLDatetime } from "./helper/jsDateToMySQLDatetime.ts";
 export const healthCheck = (ctx: RouterContext<"/">) => {
   ctx.response.status = 200;
   ctx.response.body = "Healthy";
-};
-
-export const getBudgetsPaginated = async (
-  ctx: RouterContext<"/budget/:pagination/:page">,
-) => {
-  const pagination = Number(ctx.params.pagination);
-  const page = Number(ctx.params.page);
-  const [rows, _metadata] = await BudgetGet(databasePool, page, pagination);
-  ctx.response.status = 200;
-  ctx.response.body = rows;
 };
 
 export const getAllFileResources = async (
@@ -176,65 +147,11 @@ export const getReportViewInformation = async (
   ctx.response.body = rows;
 };
 
-export const getFileResourcesPaginated = async (
-  ctx: RouterContext<"/fileresource/:pagination/:page">,
-) => {
-  const pagination = Number(ctx.params.pagination);
-  const page = Number(ctx.params.page);
-  const [rows, _metadata] = await FileResourceGet(
-    databasePool,
-    page,
-    pagination,
-  );
-  ctx.response.status = 200;
-  ctx.response.body = rows;
-};
-
-export const getFlowsPaginated = async (
-  ctx: RouterContext<"/flow/:pagination/:page">,
-) => {
-  const pagination = Number(ctx.params.pagination);
-  const page = Number(ctx.params.page);
-  const [rows, _metadata] = await FlowGet(databasePool, page, pagination);
-  ctx.response.status = 200;
-  ctx.response.body = rows;
-};
-
-export const getFormsPaginated = async (
-  ctx: RouterContext<"/form/:pagination/:page">,
-) => {
-  const pagination = Number(ctx.params.pagination);
-  const page = Number(ctx.params.page);
-  const [rows, _metadata] = await FormGet(databasePool, page, pagination);
-  ctx.response.status = 200;
-  ctx.response.body = rows;
-};
-
-export const getFrmPRDsPaginated = async (
-  ctx: RouterContext<"/frmprd/:pagination/:page">,
-) => {
-  const pagination = Number(ctx.params.pagination);
-  const page = Number(ctx.params.page);
-  const [rows, _metadata] = await FrmPRDGet(databasePool, page, pagination);
-  ctx.response.status = 200;
-  ctx.response.body = rows;
-};
-
 export const getSpecificRequestItems = async (
   ctx: RouterContext<"/frmprd/request/:traceId">,
 ) => {
   const traceId = Number(ctx.params.traceId);
   const [rows, _metadata] = await getAllRequestItems(databasePool, traceId);
-  ctx.response.status = 200;
-  ctx.response.body = rows;
-};
-
-export const getFrmPRHsPaginated = async (
-  ctx: RouterContext<"/frmprh/:pagination/:page">,
-) => {
-  const pagination = Number(ctx.params.pagination);
-  const page = Number(ctx.params.page);
-  const [rows, _metadata] = await FrmPRHGet(databasePool, page, pagination);
   ctx.response.status = 200;
   ctx.response.body = rows;
 };
@@ -259,64 +176,10 @@ export const getRequestsAtBudgetView = async (
   ctx.response.body = rows;
 };
 
-export const getFrmNoPRsPaginated = async (
-  ctx: RouterContext<"/frmprnopr/:pagination/:page">,
-) => {
-  const pagination = Number(ctx.params.pagination);
-  const page = Number(ctx.params.page);
-  const [rows, _metadata] = await FrmPRNoPRGet(databasePool, page, pagination);
-  ctx.response.status = 200;
-  ctx.response.body = rows;
-};
-
 export const getAllDepartments = async (
   ctx: RouterContext<"/frmprnopr/departments">,
 ) => {
   const [rows, _metadata] = await allDepartments(databasePool);
-  ctx.response.status = 200;
-  ctx.response.body = rows;
-};
-
-export const getNaturesPaginated = async (
-  ctx: RouterContext<"/nature/:pagination/:page">,
-) => {
-  const pagination = Number(ctx.params.pagination);
-  const page = Number(ctx.params.page);
-  const [rows, _metadata] = await NatureGet(databasePool, page, pagination);
-  ctx.response.status = 200;
-  ctx.response.body = rows;
-};
-
-export const getRateDollarsPaginated = async (
-  ctx: RouterContext<"/ratedollar/:pagination/:page">,
-) => {
-  const pagination = Number(ctx.params.pagination);
-  const page = Number(ctx.params.page);
-  const [rows, _metadata] = await RateDollarGet(databasePool, page, pagination);
-  ctx.response.status = 200;
-  ctx.response.body = rows;
-};
-
-export const getRateDollarTempsPaginated = async (
-  ctx: RouterContext<"/ratedollartemp/:pagination/:page">,
-) => {
-  const pagination = Number(ctx.params.pagination);
-  const page = Number(ctx.params.page);
-  const [rows, _metadata] = await RateDollarTempGet(
-    databasePool,
-    page,
-    pagination,
-  );
-  ctx.response.status = 200;
-  ctx.response.body = rows;
-};
-
-export const getSectionsPaginated = async (
-  ctx: RouterContext<"/section/:pagination/:page">,
-) => {
-  const pagination = Number(ctx.params.pagination);
-  const page = Number(ctx.params.page);
-  const [rows, _metadata] = await SectionGet(databasePool, page, pagination);
   ctx.response.status = 200;
   ctx.response.body = rows;
 };
@@ -329,26 +192,6 @@ export const getSectionNames = async (ctx: RouterContext<"/section/names">) => {
 
 export const getSectionUsers = async (ctx: RouterContext<"/section/users">) => {
   const [rows, _metadata] = await userSectionMappings(databasePool);
-  ctx.response.status = 200;
-  ctx.response.body = rows;
-};
-
-export const getTitlesPaginated = async (
-  ctx: RouterContext<"/title/:pagination/:page">,
-) => {
-  const pagination = Number(ctx.params.pagination);
-  const page = Number(ctx.params.page);
-  const [rows, _metadata] = await TitleGet(databasePool, page, pagination);
-  ctx.response.status = 200;
-  ctx.response.body = rows;
-};
-
-export const getTracesPaginated = async (
-  ctx: RouterContext<"/trace/:pagination/:page">,
-) => {
-  const pagination = Number(ctx.params.pagination);
-  const page = Number(ctx.params.page);
-  const [rows, _metadata] = await TraceGet(databasePool, page, pagination);
   ctx.response.status = 200;
   ctx.response.body = rows;
 };
@@ -437,16 +280,6 @@ export const getSpecificRequest = async (
   ctx.response.body = rows;
 };
 
-export const getTraceDsPaginated = async (
-  ctx: RouterContext<"/traced/:pagination/:page">,
-) => {
-  const pagination = Number(ctx.params.pagination);
-  const page = Number(ctx.params.page);
-  const [rows, _metadata] = await TraceDGet(databasePool, page, pagination);
-  ctx.response.status = 200;
-  ctx.response.body = rows;
-};
-
 export const getApproverPath = async (
   ctx: RouterContext<"/traced/:traceId">,
 ) => {
@@ -460,26 +293,6 @@ export const getApproverPath = async (
   ctx.response.body = rows;
 };
 
-export const getTypesPaginated = async (
-  ctx: RouterContext<"/type/:pagination/:page">,
-) => {
-  const pagination = Number(ctx.params.pagination);
-  const page = Number(ctx.params.page);
-  const [rows, _metadata] = await TypeGet(databasePool, page, pagination);
-  ctx.response.status = 200;
-  ctx.response.body = rows;
-};
-
-export const getUploadFilesPaginated = async (
-  ctx: RouterContext<"/uploadfile/:pagination/:page">,
-) => {
-  const pagination = Number(ctx.params.pagination);
-  const page = Number(ctx.params.page);
-  const [rows, _metadata] = await UploadFileGet(databasePool, page, pagination);
-  ctx.response.status = 200;
-  ctx.response.body = rows;
-};
-
 export const getUploadFiles = async (
   ctx: RouterContext<"/uploadfile/:traceId">,
 ) => {
@@ -488,16 +301,6 @@ export const getUploadFiles = async (
     databasePool,
     traceId,
   );
-  ctx.response.status = 200;
-  ctx.response.body = rows;
-};
-
-export const getUserMastersPaginated = async (
-  ctx: RouterContext<"/usermaster/:pagination/:page">,
-) => {
-  const pagination = Number(ctx.params.pagination);
-  const page = Number(ctx.params.page);
-  const [rows, _metadata] = await UserMasterGet(databasePool, page, pagination);
   ctx.response.status = 200;
   ctx.response.body = rows;
 };

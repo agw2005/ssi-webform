@@ -1,21 +1,6 @@
 import type mysql from "mysql2/promise";
-import type { FrmPRDRequestItem, FrmPRDTable } from "../models/FrmPRD.d.ts";
+import type { FrmPRDRequestItem } from "../models/FrmPRD.d.ts";
 import type { ResultSetHeader } from "mysql2/promise.js";
-
-export const basicGet = async (
-  pool: mysql.Pool,
-  page: number,
-  pagination: number = 50,
-) => {
-  const numRows = pagination;
-  const [rows, metadata] = await pool.query<FrmPRDTable[]>(
-    `SELECT * 
-    FROM frm_PR_D
-    LIMIT ? , ?`,
-    [(page - 1) * numRows, numRows],
-  );
-  return [rows, metadata];
-};
 
 export const getAllRequestItems = async (pool: mysql.Pool, traceId: number) => {
   const [rows, metadata] = await pool.query<FrmPRDRequestItem[]>(

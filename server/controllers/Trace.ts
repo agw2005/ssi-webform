@@ -4,32 +4,9 @@ import type {
   TraceRequestOverview,
   TraceRequests,
   TraceRequestsCount,
-  TraceTable,
 } from "../models/Trace.d.ts";
 import type { ResultSetHeader } from "mysql2/promise.js";
 import { sum } from "../helper/sum.ts";
-
-/**
- * A basic GET, affecting all attributes with pagination support.
- * @param pool An instance of mysql2 database pool
- * @param page The page of the GET
- * @param pagination The number of instances to GET
- * @returns An array of instances (all its attributes) and a metadata variable
- */
-export const basicGet = async (
-  pool: mysql.Pool,
-  page: number,
-  pagination: number = 50,
-) => {
-  const numRows = pagination;
-  const [rows, metadata] = await pool.query<TraceTable[]>(
-    `SELECT * 
-    FROM Trace
-    LIMIT ? , ?`,
-    [(page - 1) * numRows, numRows],
-  );
-  return [rows, metadata];
-};
 
 export const homeRequests = async (
   pool: mysql.Pool,

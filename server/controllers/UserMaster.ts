@@ -1,33 +1,10 @@
 import type mysql from "mysql2/promise";
 import type {
   UserMasterName,
-  UserMasterTable,
   UserIdByName,
   AuthInfo,
 } from "../models/UserMaster.d.ts";
 import type { FieldPacket } from "mysql2/promise.js";
-
-/**
- * A basic GET, affecting all attributes with pagination support.
- * @param pool An instance of mysql2 database pool
- * @param page The page of the GET
- * @param pagination The number of instances to GET
- * @returns An array of instances (all its attributes) and a metadata variable
- */
-export const basicGet = async (
-  pool: mysql.Pool,
-  page: number,
-  pagination: number = 50,
-) => {
-  const numRows = pagination;
-  const [rows, metadata] = await pool.query<UserMasterTable[]>(
-    `SELECT * 
-    FROM UserMaster
-    LIMIT ? , ?`,
-    [(page - 1) * numRows, numRows],
-  );
-  return [rows, metadata];
-};
 
 /**
  * GET all instance NRP and password.

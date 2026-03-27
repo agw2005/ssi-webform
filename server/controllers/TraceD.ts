@@ -3,24 +3,8 @@ import type {
   NextApproverPath,
   OtherApproverPathInfo,
   TraceApproverPath,
-  TraceDTable,
 } from "../models/TraceD.d.ts";
 import { jsDateToMySQLDatetime } from "../helper/jsDateToMySQLDatetime.ts";
-
-export const basicGet = async (
-  pool: mysql.Pool,
-  page: number,
-  pagination: number = 50,
-) => {
-  const numRows = pagination;
-  const [rows, metadata] = await pool.query<TraceDTable[]>(
-    `SELECT * 
-    FROM Trace_D
-    LIMIT ? , ?`,
-    [(page - 1) * numRows, numRows],
-  );
-  return [rows, metadata];
-};
 
 export const getApproverPathInformation = async (
   pool: mysql.Pool,
