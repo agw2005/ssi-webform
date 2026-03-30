@@ -3,6 +3,9 @@ import { Link } from "react-router-dom";
 import LoadingFallback from "./LoadingFallback.tsx";
 import ErrorFallback from "./ErrorFallback.tsx";
 import useAuth from "../../hooks/useAuth.tsx";
+import Dialog, { toggleDialog } from "../../components/reusable/Dialog.tsx";
+import { useRef } from "react";
+import Button from "./Button.tsx";
 
 interface PrimitiveProps {
   children: React.ReactNode;
@@ -34,6 +37,8 @@ const Primitive = ({
 
   const activeErrors =
     isErr?.filter((err): err is Error => err instanceof Error) || [];
+
+  const logoutReference = useRef<HTMLDialogElement>(null);
 
   return (
     <div className="bg-yellow-600/25 min-h-screen pb-16">
@@ -76,20 +81,12 @@ const Primitive = ({
           ) : !isAuthorized ? (
             ""
           ) : (
-            <Link
-              onClick={() => {
-                const confirmLogout = globalThis.confirm(
-                  "Are you sure you want to log out?",
-                );
-                if (confirmLogout) {
-                  sessionStorage.removeItem("session_token");
-                }
-              }}
-              to={LINKS.login}
-              className="text-xs lg:text-base | hover:text-yellow-300 transition"
+            <div
+              onClick={() => toggleDialog(logoutReference)}
+              className="text-xs lg:text-base | hover:text-yellow-300 transition | select-none hover:cursor-pointer"
             >
               Logout
-            </Link>
+            </div>
           )}
         </div>
         <div className="flex flex-wrap">
@@ -116,6 +113,31 @@ const Primitive = ({
           children
         )}
       </main>
+      <Dialog
+        toggle={() => toggleDialog(logoutReference)}
+        ref={logoutReference}
+        position="-top-144"
+      >
+        <div className="m-4 flex flex-col gap-8 items-end">
+          <h2 className="text-2xl font-bold">
+            Are you sure you want to log out?
+          </h2>
+          <div className="flex gap-2">
+            <div onClick={() => toggleDialog(logoutReference)}>
+              <Button id="logout-no" label="No" variant="red" />
+            </div>
+            <Link
+              onClick={() => {
+                toggleDialog(logoutReference);
+                sessionStorage.removeItem("session_token");
+              }}
+              to={LINKS.login}
+            >
+              <Button id="logout-yes" label="Yes" variant="green" />
+            </Link>
+          </div>
+        </div>
+      </Dialog>
     </div>
   );
 };

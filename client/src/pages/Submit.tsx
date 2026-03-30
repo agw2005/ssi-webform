@@ -4,7 +4,7 @@ import SecondStep from "../components/non-reusable/submit/SecondStep.tsx";
 import ThirdStep from "../components/non-reusable/submit/ThirdStep.tsx";
 import FourthStep from "../components/non-reusable/submit/FourthStep.tsx";
 import FifthStep from "../components/non-reusable/submit/FifthStep.tsx";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import {
   type Balance,
   type Department,
@@ -25,6 +25,8 @@ import useFetch from "../hooks/useFetch.tsx";
 import useForex from "../hooks/useForex.tsx";
 import serverDomain from "../helper/serverDomain.ts";
 import { useNavigate } from "react-router-dom";
+import Dialog, { toggleDialog } from "../components/reusable/Dialog.tsx";
+import Button from "../components/reusable/Button.tsx";
 
 const SECTION_NAMES_URL = `${serverDomain}/section/names`;
 const FILE_RESOURCES_URL = `${serverDomain}/budget/fileresources`;
@@ -106,6 +108,9 @@ const Submit = () => {
   const [requestIsProcessing, setRequestIsProcessing] = useState(false);
   const [requestIsError, setRequestIsError] = useState<Error | null>(null);
 
+  const [generalModalContent, setGeneralModalContent] =
+    useState<React.ReactNode>();
+
   const {
     data: sectionNames,
     isLoading: isSectionLoading,
@@ -141,6 +146,90 @@ const Submit = () => {
     isLoading: _forexIsLoading,
     error: _forexIsError,
   } = useForex();
+
+  const generalModal = useRef<HTMLDialogElement>(null);
+
+  const toggleGeneralModal = (
+    dialogTitle: string,
+    dialogSubtitle: string,
+    dialogId: string,
+    option: "Submit" | "Submit-success" | "Non-submit" = "Non-submit",
+    submitSuccessData: [string, string, string] = ["", "", ""],
+  ) => {
+    const generalModalContent = (
+      <div className="m-4 flex flex-col gap-8 items-end">
+        <div className="flex flex-col gap-2">
+          <h2 className="text-2xl font-bold">{dialogTitle}!</h2>
+          <p>{dialogSubtitle}.</p>
+        </div>
+        <div className="flex gap-2">
+          <div onClick={() => toggleDialog(generalModal)}>
+            <Button id={dialogId} label="OK" variant="black" />
+          </div>
+        </div>
+      </div>
+    );
+    const submitModalContent = (
+      <div className="m-4 flex flex-col gap-8 items-end">
+        <div className="flex flex-col gap-2">
+          <h2 className="text-2xl font-bold">
+            Are you sure you want to submit?
+          </h2>
+        </div>
+        <div className="flex gap-2">
+          <div onClick={() => toggleDialog(generalModal)}>
+            <Button id="submit-no" label="No" variant="red" />
+          </div>
+          <div
+            onClick={async () => {
+              toggleDialog(generalModal);
+              await handleSubmit();
+            }}
+          >
+            <Button id="submit-yes" label="Yes" variant="green" />
+          </div>
+        </div>
+      </div>
+    );
+    const submitSuccessModalContent = (
+      <div className="m-4 flex flex-col gap-8 items-end">
+        <div className="flex flex-col gap-2">
+          <h2 className="text-2xl font-bold">
+            Successfully created the purchasing request!
+          </h2>
+          <ul>
+            <li>
+              <strong>No. Form</strong> : {submitSuccessData[0]}
+            </li>
+            <li>
+              <strong>No. PR</strong> : {submitSuccessData[1]}
+            </li>
+            <li>
+              <strong>ID Trace</strong> : {submitSuccessData[2]}
+            </li>
+          </ul>
+        </div>
+        <div className="flex gap-2">
+          <div
+            onClick={() => {
+              toggleDialog(generalModal);
+              navigate(`/request/${submitSuccessData[2]}`);
+            }}
+          >
+            <Button id="submit-success-ok" label="OK" variant="black" />
+          </div>
+        </div>
+      </div>
+    );
+    toggleDialog(generalModal);
+    setGeneralModalContent(
+      option === "Non-submit"
+        ? generalModalContent
+        : option === "Submit"
+          ? submitModalContent
+          : submitSuccessModalContent,
+    );
+  };
 
   const fetchBalanceHelper = async (
     costCenter: string,
@@ -225,17 +314,23 @@ const Submit = () => {
       const submitResponse = await fetch(SUBMIT_URL, submitRequest(payload));
       const submitResponseBody: SubmitResponse = await submitResponse.json();
       if (submitResponse.ok) {
-        globalThis.alert(
-          `${submitResponseBody.message}\n
-          No. Form : ${submitResponseBody.noForm}\n
-          No. PR : ${submitResponseBody.noPR}\n
-          ID Trace : ${submitResponseBody.traceId}`,
-        );
-        // console.log(submitResponseBody);
-        navigate(`/request/${submitResponseBody.traceId}`);
+        setProgress([]);
+        setFirstStepInputs(DEFAULT_VALUES.firstStep);
+        setSecondStepInputs(DEFAULT_VALUES.secondStep);
+        setThirdStepInputs(DEFAULT_VALUES.thirdStep);
+        setFourthStepInputs(DEFAULT_VALUES.fourthStep);
+        setFifthStepInputs(DEFAULT_VALUES.fifthStep);
+
+        setTimeout(() => {
+          toggleGeneralModal("", "", "", "Submit-success", [
+            submitResponseBody.noForm,
+            submitResponseBody.noPR,
+            submitResponseBody.traceId,
+          ]);
+        }, 250);
       } else {
         globalThis.alert(
-          `Protocol Failure: Your request reeached the server, but the content of your submission was rejected!\n
+          `Protocol Failure: Your request reached the server, but the content of your submission was rejected!\n
           Err ${submitResponse.status} : ${submitResponseBody.message}`,
         );
       }
@@ -273,6 +368,13 @@ const Submit = () => {
       <div className="flex flex-col gap-8">
         <div className="flex flex-wrap gap-8">
           <FirstStep
+            alertUnfilledForm={() =>
+              toggleGeneralModal(
+                "One or more required fields are empty",
+                "Please fill them out before proceeding",
+                "unfilled-forms-detected",
+              )
+            }
             progressSetter={setProgress}
             firstStepInputsGetter={firstStepInputs}
             firstStepInputsInputsSetter={setFirstStepInputs}
@@ -283,6 +385,13 @@ const Submit = () => {
           />
           {evaluateConstraint(progress, PROGRESS_CONSTRAINT.FIRST_STEP) ? (
             <SecondStep
+              alertUnfilledForm={() =>
+                toggleGeneralModal(
+                  "One or more required fields are empty",
+                  "Please fill them out before proceeding",
+                  "unfilled-forms-detected",
+                )
+              }
               progressSetter={setProgress}
               secondStepInputsGetter={secondStepInputs}
               secondStepInputsInputsSetter={setSecondStepInputs}
@@ -294,6 +403,27 @@ const Submit = () => {
         </div>
         {evaluateConstraint(progress, PROGRESS_CONSTRAINT.SECOND_STEP) ? (
           <ThirdStep
+            alertUnfilledForm={() =>
+              toggleGeneralModal(
+                "One or more required fields are empty",
+                "Please fill them out before proceeding",
+                "unfilled-forms-detected",
+              )
+            }
+            alertNoBudget={() =>
+              toggleGeneralModal(
+                "There is no budget for this nature",
+                "Please select a different nature",
+                "no-budget-detected",
+              )
+            }
+            alertNoUsage={() =>
+              toggleGeneralModal(
+                "No usage detected",
+                "You need to enter at least 1 usage before proceeding",
+                "no-usage-detected",
+              )
+            }
             progressSetter={setProgress}
             thirdStepInputsGetter={thirdStepInputs}
             thirdStepInputsInputsSetter={setThirdStepInputs}
@@ -311,6 +441,13 @@ const Submit = () => {
         <div className="flex flex-wrap gap-8">
           {evaluateConstraint(progress, PROGRESS_CONSTRAINT.THIRD_STEP) ? (
             <FourthStep
+              alertUnfilledForm={() =>
+                toggleGeneralModal(
+                  "One or more required fields are empty",
+                  "Please fill them out before proceeding",
+                  "unfilled-forms-detected",
+                )
+              }
               progressSetter={setProgress}
               fourthStepInputsGetter={fourthStepInputs}
               fourthStepInputsSetter={setFourthStepInputs}
@@ -322,17 +459,39 @@ const Submit = () => {
           )}
           {evaluateConstraint(progress, PROGRESS_CONSTRAINT.FOURTH_STEP) ? (
             <FifthStep
+              alertUnfilledForm={() =>
+                toggleGeneralModal(
+                  "One or more fields from across the steps may be empty",
+                  "You need to fill them out before you can submit your PR",
+                  "unfilled-forms-detected",
+                )
+              }
+              submissionConfirmation={() =>
+                toggleGeneralModal("", "", "", "Submit")
+              }
               fifthStepInputsGetter={fifthStepInputs}
               fifthStepInputsSetter={setFifthStepInputs}
               fifthStepInputsDefaultValue={DEFAULT_VALUES.fifthStep}
               evaluateSubmission={allRequiredFieldsAreFilled}
-              handleSubmit={handleSubmit}
             />
           ) : (
             ""
           )}
         </div>
       </div>
+
+      {/**
+       * NOTE !
+       * Multiple dialog elements did not work as expected.
+       * Use dynamic rendering instead.
+       */}
+      <Dialog
+        toggle={() => toggleDialog(generalModal)}
+        ref={generalModal}
+        position="-top-144"
+      >
+        {generalModalContent}
+      </Dialog>
     </Primitive>
   );
 };

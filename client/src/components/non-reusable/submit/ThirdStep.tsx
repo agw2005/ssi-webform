@@ -48,12 +48,6 @@ const BUDGET_SUMMARY_ATTRIBUTES = [
 const CURRENCY = ["IDR", "JPY", "SGD", "USD"];
 const STEP = 3;
 
-const EMPTY_FIELDS_WARNING =
-  "You need to enter at least 1 usage before proceeding.";
-
-const EMPTY_USAGE_FIELDS_WARNING =
-  "One or more required usage fields are empty.\nPlease fill them out before adding a usage.";
-
 export interface Usage {
   costCenter: string;
   budgetOrNature: string;
@@ -109,6 +103,9 @@ interface ThirdStepProps {
     nature: string,
   ) => Promise<Balance[] | null>;
   submitterDepartmentName: string;
+  alertUnfilledForm: () => void;
+  alertNoBudget: () => void;
+  alertNoUsage: () => void;
 }
 
 const ThirdStep = ({
@@ -122,6 +119,9 @@ const ThirdStep = ({
   setActiveCostCenter,
   fetchBalanceHelper,
   submitterDepartmentName,
+  alertUnfilledForm,
+  alertNoBudget,
+  alertNoUsage,
 }: ThirdStepProps) => {
   const [usageField, setUsageField] = useState<Usage>(DEFAULT_USAGE);
 
@@ -385,27 +385,26 @@ const ThirdStep = ({
           <div
             onClick={() => {
               if (usageField.balance === NO_BALANCE_VALUE) {
-                globalThis.confirm(
-                  "Your balance is empty. Please select a different Nature.",
-                );
+                alertNoBudget();
+                console.log("No budget");
                 return;
               }
-              if (!requiredUsageFieldsAreEmpty()) {
-                const newThirdStepInputs: ThirdStepInputs = {
-                  usages: [
-                    ...thirdStepInputsGetter.usages,
-                    {
-                      ...usageField,
-                      periode: getCurrentPeriod(),
-                    },
-                  ],
-                };
-                thirdStepInputsInputsSetter(newThirdStepInputs);
-                setUsageField(DEFAULT_USAGE);
-              } else {
-                globalThis.confirm(EMPTY_USAGE_FIELDS_WARNING);
+              if (requiredUsageFieldsAreEmpty()) {
+                alertUnfilledForm();
+                console.log("Unfilled");
+                return;
               }
-              console.log(usageField);
+              const newThirdStepInputs: ThirdStepInputs = {
+                usages: [
+                  ...thirdStepInputsGetter.usages,
+                  {
+                    ...usageField,
+                    periode: getCurrentPeriod(),
+                  },
+                ],
+              };
+              thirdStepInputsInputsSetter(newThirdStepInputs);
+              setUsageField(DEFAULT_USAGE);
             }}
           >
             <Button id="add-usage" variant="yellow" label="Add Usage" />
@@ -552,37 +551,35 @@ const ThirdStep = ({
         </>
       )}
 
-      {thirdStepInputsGetter.usages.length !== 0 && (
-        <div className="flex gap-2">
-          <div className="px-4 py-2 border rounded-lg bg-yellow-800 border-yellow-800 text-white font-bold select-none">
-            Total Usage ($) : {formatNumberToString(totalUsage)}
+      <div className="flex gap-2">
+        <div className="px-4 py-2 border rounded-lg bg-yellow-800 border-yellow-800 text-white font-bold select-none">
+          Total Usage ($) : {formatNumberToString(totalUsage)}
+        </div>
+        <div className="flex gap-2 whitespace-nowrap">
+          <div
+            className="bg-black hover:bg-black/70 active:bg-black/85 | px-4 py-2 border rounded-2xl border-black font-bold tracking-wide text-white select-none"
+            onClick={() => {
+              setUsageField(DEFAULT_USAGE);
+              progressSetter((prev) => prev.filter((num) => num !== STEP));
+              thirdStepInputsInputsSetter(thirdStepInputsDefaultValue);
+            }}
+          >
+            Clear
           </div>
-          <div className="flex gap-2 whitespace-nowrap">
-            <div
-              className="bg-black hover:bg-black/70 active:bg-black/85 | px-4 py-2 border rounded-2xl border-black font-bold tracking-wide text-white select-none"
-              onClick={() => {
-                setUsageField(DEFAULT_USAGE);
-                progressSetter((prev) => prev.filter((num) => num !== STEP));
-                thirdStepInputsInputsSetter(thirdStepInputsDefaultValue);
-              }}
-            >
-              Clear
-            </div>
-            <div
-              className="bg-black hover:bg-black/70 active:bg-black/85 | px-4 py-2 border rounded-2xl border-black font-bold tracking-wide text-white select-none"
-              onClick={() => {
-                if (!requiredFieldsAreEmpty()) {
-                  progressSetter((prev) => [...prev, STEP]);
-                } else {
-                  globalThis.confirm(EMPTY_FIELDS_WARNING);
-                }
-              }}
-            >
-              Next
-            </div>
+          <div
+            className="bg-black hover:bg-black/70 active:bg-black/85 | px-4 py-2 border rounded-2xl border-black font-bold tracking-wide text-white select-none"
+            onClick={() => {
+              if (!requiredFieldsAreEmpty()) {
+                progressSetter((prev) => [...prev, STEP]);
+              } else {
+                alertNoUsage();
+              }
+            }}
+          >
+            Next
           </div>
         </div>
-      )}
+      </div>
     </div>
   );
 };

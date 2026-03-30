@@ -17,7 +17,7 @@ import mysqlDateIsoStringToJSString from "../helper/mysqlDateIsoStringToJSString
 import useAuth from "../hooks/useAuth.tsx";
 import Button from "../components/reusable/Button.tsx";
 import { useEffect, useRef, useState } from "react";
-import Dialog from "../components/reusable/Dialog.tsx";
+import Dialog, { toggleDialog } from "../components/reusable/Dialog.tsx";
 import { getCurrentApproverLevel } from "../helper/getCurrentApproverLevel.ts";
 
 interface Overview {
@@ -150,15 +150,6 @@ const Request = () => {
   const [currentOverview, setCurrentOverview] =
     useState<Overview>(EMPTY_OVERVIEW);
 
-  const toggleDialog = () => {
-    if (!rejectReference.current) {
-      return;
-    }
-    rejectReference.current.hasAttribute("open")
-      ? rejectReference.current.close()
-      : rejectReference.current.showModal();
-  };
-
   useEffect(() => {
     if (requestOverviewData && requestOverviewData.length > 0) {
       setCurrentRemarks(requestOverviewData[0].Remarks || "");
@@ -257,7 +248,7 @@ const Request = () => {
               <div
                 className={`${REJECT_BUTTON_STYLINGS} flex-1 text-center px-4 py-2`}
                 onClick={() => {
-                  toggleDialog();
+                  toggleDialog(rejectReference);
                 }}
               >
                 Reject
@@ -506,7 +497,11 @@ const Request = () => {
         </div>
       </div>
       {isAuthorizedApprover && (
-        <Dialog toggleDialog={toggleDialog} ref={rejectReference}>
+        <Dialog
+          toggle={() => toggleDialog(rejectReference)}
+          ref={rejectReference}
+          position="-top-48"
+        >
           <div className="flex flex-col px-16 py-16 gap-4">
             <h2 className="text-xl font-bold">
               Which item(s) are to be rejected?
@@ -573,7 +568,10 @@ const Request = () => {
               />
             </div>
             <div className="flex gap-2 flex-wrap">
-              <div className="flex-1" onClick={toggleDialog}>
+              <div
+                className="flex-1"
+                onClick={() => toggleDialog(rejectReference)}
+              >
                 <Button id="reject-cancel" variant="red" label="Cancel" />
               </div>
               <div

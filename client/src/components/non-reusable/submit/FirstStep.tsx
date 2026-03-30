@@ -14,9 +14,6 @@ import type {
 const FORMS = ["PR", "Cash Advance", "Fixed Asset"];
 const STEP = 1;
 
-const EMPTY_FIELDS_WARNING =
-  "One or more required fields are empty. Please fill them out before proceeding.";
-
 interface FirstStepProps {
   progressSetter: React.Dispatch<React.SetStateAction<number[]>>;
   firstStepInputsGetter: FirstStepInputs;
@@ -27,6 +24,7 @@ interface FirstStepProps {
   sectionNames: SectionName[] | null;
   fileResources: FileResource[] | null;
   departments: Department[] | null;
+  alertUnfilledForm: () => void;
 }
 
 const FirstStep = ({
@@ -37,6 +35,7 @@ const FirstStep = ({
   sectionNames,
   fileResources,
   departments,
+  alertUnfilledForm,
 }: FirstStepProps) => {
   const genericChangeHandler = createGenericChangeHandler(
     firstStepInputsInputsSetter,
@@ -176,7 +175,7 @@ const FirstStep = ({
             if (!requiredFieldsAreEmpty()) {
               progressSetter((prev) => [...prev, STEP]);
             } else {
-              globalThis.confirm(EMPTY_FIELDS_WARNING);
+              alertUnfilledForm();
             }
           }}
         >

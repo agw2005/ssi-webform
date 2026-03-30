@@ -1,19 +1,31 @@
 import { forwardRef } from "react";
 
-interface RejectDialogProps {
+export const toggleDialog = (
+  dialogRef: React.RefObject<HTMLDialogElement | null>,
+) => {
+  if (!dialogRef.current) {
+    return;
+  }
+  dialogRef.current.hasAttribute("open")
+    ? dialogRef.current.close()
+    : dialogRef.current.showModal();
+};
+
+interface DialogProps {
   children: React.ReactNode;
-  toggleDialog: () => void;
+  toggle: () => void;
+  position?: string;
 }
 
-const Dialog = forwardRef<HTMLDialogElement, RejectDialogProps>(
-  ({ children, toggleDialog }, rejectReference) => {
+const Dialog = forwardRef<HTMLDialogElement, DialogProps>(
+  ({ children, toggle, position = "" }, dialogReference) => {
     return (
       <dialog
-        ref={rejectReference}
+        ref={dialogReference}
         onClick={(e) => {
-          if (e.target === e.currentTarget) toggleDialog();
+          if (e.target === e.currentTarget) toggle();
         }}
-        className="self-center justify-self-center rounded-xl"
+        className={`backdrop:bg-black/75 | transition | self-center justify-self-center rounded-xl ${position}`}
       >
         {children}
       </dialog>

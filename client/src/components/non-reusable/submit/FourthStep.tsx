@@ -5,9 +5,6 @@ import type { FourthStepInputs, UserSection } from "@scope/server";
 
 const STEP = 4;
 
-const EMPTY_FIELDS_WARNING =
-  "One or more required fields are empty. Please fill them out before proceeding.";
-
 interface FifthStepProps {
   progressSetter: React.Dispatch<React.SetStateAction<number[]>>;
   fourthStepInputsGetter: FourthStepInputs;
@@ -16,6 +13,7 @@ interface FifthStepProps {
   >;
   fourthStepInputsDefaultValue: FourthStepInputs;
   userSectionMappings: UserSection[] | null;
+  alertUnfilledForm: () => void;
 }
 
 const FourthStep = ({
@@ -24,6 +22,7 @@ const FourthStep = ({
   fourthStepInputsSetter,
   fourthStepInputsDefaultValue,
   userSectionMappings,
+  alertUnfilledForm,
 }: FifthStepProps) => {
   const onChangeHandler =
     (field: keyof FourthStepInputs) => (newSelections: string[]) => {
@@ -133,7 +132,7 @@ const FourthStep = ({
             if (!requiredFieldsAreEmpty()) {
               progressSetter((prev) => [...prev, STEP]);
             } else {
-              globalThis.confirm(EMPTY_FIELDS_WARNING);
+              alertUnfilledForm();
             }
           }}
         >

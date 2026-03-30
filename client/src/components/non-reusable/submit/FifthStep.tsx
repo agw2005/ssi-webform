@@ -6,7 +6,8 @@ interface FifthStepProps {
   fifthStepInputsSetter: React.Dispatch<React.SetStateAction<FifthStepInputs>>;
   fifthStepInputsDefaultValue: FifthStepInputs;
   evaluateSubmission: () => boolean;
-  handleSubmit: () => Promise<void>;
+  alertUnfilledForm: () => void;
+  submissionConfirmation: () => void;
 }
 
 const FifthStep = ({
@@ -14,7 +15,8 @@ const FifthStep = ({
   fifthStepInputsSetter,
   fifthStepInputsDefaultValue,
   evaluateSubmission,
-  handleSubmit,
+  alertUnfilledForm,
+  submissionConfirmation,
 }: FifthStepProps) => {
   const onChangeHandler =
     (field: keyof FifthStepInputs) => (newFiles: File[]) => {
@@ -46,19 +48,9 @@ const FifthStep = ({
           className="bg-black hover:bg-black/70 active:bg-black/85 | px-4 py-2 border rounded-2xl border-black font-bold tracking-wide text-white select-none"
           onClick={() => {
             if (evaluateSubmission()) {
-              globalThis.confirm(
-                "One or more fields from across the steps may be empty. Feel them out before you can submit your PR.",
-              );
+              alertUnfilledForm();
             } else {
-              const isSubmit = globalThis.confirm(
-                "Are you sure you want to submit?",
-              );
-              if (isSubmit) {
-                const submitForm = async () => {
-                  await handleSubmit();
-                };
-                submitForm();
-              }
+              submissionConfirmation();
             }
           }}
         >
