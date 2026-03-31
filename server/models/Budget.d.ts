@@ -69,3 +69,7 @@ export interface ReportViewInformation extends RowDataPacket {
 export interface BudgetYear extends RowDataPacket {
   Year: string;
 }
+
+export interface BudgetPeriod extends RowDataPacket {
+  Period: string;
+}

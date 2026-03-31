@@ -2,6 +2,7 @@ import type mysql from "mysql2/promise";
 import type {
   BudgetBalance,
   BudgetNature,
+  BudgetPeriod,
   BudgetTable,
   BudgetViewInformation,
   BudgetYear,
@@ -24,16 +25,21 @@ export const allFileResources = async (pool: mysql.Pool) => {
   return [rows, metadata];
 };
 
-/**
- * GET all instance of available periods.
- * @param pool An instance of mysql2 database pool
- * @returns An array of budget, containing its periods and a metadata variable
- */
 export const availableYears = async (pool: mysql.Pool) => {
   const [rows, metadata] = await pool.query<BudgetYear[]>(
     `SELECT DISTINCT SUBSTRING(Periode, 1, 4) AS Year
     FROM Budget
     WHERE Periode IS NOT NULL AND Periode <> '';`,
+  );
+  return [rows, metadata];
+};
+
+export const availablePeriods = async (pool: mysql.Pool) => {
+  const [rows, metadata] = await pool.query<BudgetPeriod[]>(
+    `SELECT DISTINCT SUBSTRING(Periode, 1, 6) AS Period
+    FROM Budget
+    WHERE Periode IS NOT NULL AND Periode <> ''
+    ORDER BY Period DESC`,
   );
   return [rows, metadata];
 };

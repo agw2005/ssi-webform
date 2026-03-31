@@ -1,11 +1,12 @@
 import {
   allFileResources,
+  availablePeriods,
   availableYears,
+  getBudgetsByYear,
   natureByCostCenter,
   patchRequestBudget,
   reportInformation,
   singleBalance,
-  getBudgetsByYear,
 } from "./controllers/Budget.ts";
 import {
   getAllRequestItems,
@@ -37,20 +38,20 @@ import {
 import {
   getApproverPathInformation,
   getNextApprover,
-  patchTraceDVerdict,
-  postRequestApproverPath,
   getOtherApproverInfo,
   patchApproverToActiveApproving,
+  patchTraceDVerdict,
+  postRequestApproverPath,
 } from "./controllers/TraceD.ts";
 import {
   getMinimumFileInformation,
   postRequestFiles,
 } from "./controllers/UploadFile.ts";
 import {
-  supervisorNames,
-  getUserIdByName,
   getAuthInfo,
+  getUserIdByName,
   patchNewLogin,
+  supervisorNames,
 } from "./controllers/UserMaster.ts";
 import type { RouterContext } from "@oak/oak";
 import databasePool from "./dbpool.ts";
@@ -90,6 +91,14 @@ export const getAvailableBudgetYears = async (
   ctx: RouterContext<"/budget/years">,
 ) => {
   const [rows, _metadata] = await availableYears(databasePool);
+  ctx.response.status = 200;
+  ctx.response.body = rows;
+};
+
+export const getAvailableBudgetPeriods = async (
+  ctx: RouterContext<"/budget/periods">,
+) => {
+  const [rows, _metadata] = await availablePeriods(databasePool);
   ctx.response.status = 200;
   ctx.response.body = rows;
 };
@@ -373,14 +382,14 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
     let isRedLight = false;
 
     for (const usage of payload.thirdStep.usages) {
-      const currencyRate =
-        usage.currency === "USD"
-          ? Number(forexData.amount.toFixed(2))
-          : Number(
-              forexData.rates[usage.currency as keyof ForexRates].toFixed(2),
-            );
+      const currencyRate = usage.currency === "USD"
+        ? Number(forexData.amount.toFixed(2))
+        : Number(
+          forexData.rates[usage.currency as keyof ForexRates].toFixed(2),
+        );
 
-      const budgetId = `${usage.periode}-${usage.costCenter}-${payload.firstStep.section}`;
+      const budgetId =
+        `${usage.periode}-${usage.costCenter}-${payload.firstStep.section}`;
       const quantity = Number(usage.quantity);
       const pricePerUnit = Number(usage.unitPrice);
       const netPriceByCurrencyRate = (quantity * pricePerUnit) / currencyRate;
@@ -421,8 +430,9 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
 
       const currentNatureBalance = Number(currentNatureInfo[0].Balance) || 0;
 
-      if (!isRedLight && currentNatureBalance < netPriceByCurrencyRate)
+      if (!isRedLight && currentNatureBalance < netPriceByCurrencyRate) {
         isRedLight = true;
+      }
     }
 
     const requestSubject = !isRedLight
@@ -496,7 +506,7 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
           payload.firstStep.name,
           file.name,
           submissionDate,
-        ),
+        )
       ),
     );
 
@@ -546,7 +556,9 @@ export const requestJwt = async (ctx: RouterContext<"/jwt/request">) => {
 
   const request: LoginPayload = await ctx.request.body.json();
   const response = await fetch(
-    `http://${Deno.env.get("SERVER_HOST")}:${Deno.env.get("SERVER_PORT")}/usermaster/auth`,
+    `http://${Deno.env.get("SERVER_HOST")}:${
+      Deno.env.get("SERVER_PORT")
+    }/usermaster/auth`,
   );
   const credentials: AuthInfo[] = await response.json();
 
@@ -726,12 +738,13 @@ export const patchAcceptRequest = async (
     request.supervisorLevel,
   );
 
-  if (nextUserId !== null && nextApproverLevel !== null)
+  if (nextUserId !== null && nextApproverLevel !== null) {
     await patchApproverToActiveApproving(
       databasePool,
       request.traceId,
       nextApproverLevel,
     );
+  }
 
   const { Maxxed: MaxApproverLevel, Summed: SumApproverLevel } =
     await getOtherApproverInfo(databasePool, request.traceId);

@@ -2,9 +2,10 @@ import { Application, Router } from "@oak/oak";
 import {
   getAllDepartments,
   getAllFileResources,
-  getAvailableBudgetYears,
   getApproverPath,
   getAuthInformation,
+  getAvailableBudgetPeriods,
+  getAvailableBudgetYears,
   getBudgetViewInformation,
   getNaturesOfCostCenter,
   getReportViewInformation,
@@ -21,8 +22,8 @@ import {
   getSupervisorNames,
   getUploadFiles,
   healthCheck,
-  patchRejectRequest,
   patchAcceptRequest,
+  patchRejectRequest,
   patchRemarks,
   requestJwt,
   submitRequest,
@@ -46,6 +47,7 @@ oakRouter.get("/section/users", getSectionUsers);
 oakRouter.get("/usermaster/names", getSupervisorNames);
 oakRouter.get("/budget/fileresources", getAllFileResources);
 oakRouter.get("/budget/years", getAvailableBudgetYears);
+oakRouter.get("/budget/periods", getAvailableBudgetPeriods);
 oakRouter.get("/budget/nature/:costcenter", getNaturesOfCostCenter);
 oakRouter.get("/budget/nature/:costcenter/:periode/:nature", getSingleBalance);
 oakRouter.get("/budget", getBudgetViewInformation);
@@ -80,10 +82,14 @@ oakApp.use(oakRouter.allowedMethods());
 
 if (import.meta.main) {
   console.log(
-    `Server is running on http://${Deno.env.get("SERVER_HOST")}:${Deno.env.get("SERVER_PORT")}`,
+    `Server is running on http://${Deno.env.get("SERVER_HOST")}:${
+      Deno.env.get("SERVER_PORT")
+    }`,
   );
   console.log(
-    `CORS available for client http://${Deno.env.get("CLIENT_HOST")}:${Deno.env.get("CLIENT_PORT")}`,
+    `CORS available for client http://${Deno.env.get("CLIENT_HOST")}:${
+      Deno.env.get("CLIENT_PORT")
+    }`,
   );
   await oakApp.listen({ port: Number(Deno.env.get("SERVER_PORT")) });
 }

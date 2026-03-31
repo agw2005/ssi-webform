@@ -13,6 +13,11 @@ import Button from "../components/reusable/Button.tsx";
 import QuarterlyReport from "../components/non-reusable/report/QuarterlyReport.tsx";
 import NatureReport from "../components/non-reusable/report/NatureReport.tsx";
 import SectionReport from "../components/non-reusable/report/SectionReport.tsx";
+import { jsPDF } from "jspdf";
+import { autoTable } from "jspdf-autotable";
+import type { CellHookData } from "jspdf-autotable";
+import getCurrentPeriod from "../helper/getCurrentPeriod.ts";
+import capitalize from "../helper/capitalize.ts";
 
 export interface ReportResponse {
   Periode: string;
@@ -97,7 +102,13 @@ const REPORT_TYPE_TITLE: TypeTitle = {
 
 const Report = () => {
   const [searchParams] = useSearchParams();
-  const reportType = searchParams.get("type") || "";
+  const reportType = (searchParams.get("type") || "") as
+    | "general"
+    | "byquarter"
+    | "bysection"
+    | "bynature"
+    | "empty"
+    | "";
   const reportFileResource = searchParams.get("fileresource") || "";
   const reportPeriod = searchParams.get("period") || "";
   const reportMonth = searchParams.get("month") || "";
@@ -109,7 +120,15 @@ const Report = () => {
   );
 
   const render = {
-    title: (typeOfReport: string) => {
+    title: (
+      typeOfReport:
+        | "general"
+        | "byquarter"
+        | "bysection"
+        | "bynature"
+        | "empty"
+        | "",
+    ) => {
       switch (typeOfReport) {
         case "general":
           return Titles.general(reportPeriod);
@@ -128,7 +147,15 @@ const Report = () => {
           return "";
       }
     },
-    description: (typeOfReport: string) => {
+    description: (
+      typeOfReport:
+        | "general"
+        | "byquarter"
+        | "bysection"
+        | "bynature"
+        | "empty"
+        | "",
+    ) => {
       switch (typeOfReport) {
         case "general":
           return Description.general(reportFileResource);
@@ -144,7 +171,15 @@ const Report = () => {
           return "";
       }
     },
-    table: (typeOfReport: string) => {
+    table: (
+      typeOfReport:
+        | "general"
+        | "byquarter"
+        | "bysection"
+        | "bynature"
+        | "empty"
+        | "",
+    ) => {
       switch (typeOfReport) {
         case "general":
           return (
@@ -199,6 +234,513 @@ const Report = () => {
           );
         default:
           return "";
+      }
+    },
+    pdf: (
+      typeOfReport:
+        | "general"
+        | "byquarter"
+        | "bysection"
+        | "bynature"
+        | "empty"
+        | "",
+    ) => {
+      const space = { title: 6.5, other: 4 };
+      const initialYAxis = { title: 12.5, logo: 30, other: 38.5 };
+      const initialXAxis = 5;
+      const a4PortraitSize = { x: 210, y: 297 };
+      const titleFontSize = 12;
+      const descriptionFontSize = 8;
+      const tableFontSize = 3;
+      const tableCellPadding = 0.75;
+      const tableLineWidth = 0.1;
+      const logoHeight = 3.5;
+      const reportFontFamily = "times";
+      const reportFontStyle = "normal";
+      const isCellNegative = (cell: CellHookData): boolean => {
+        const element = cell.cell.raw as HTMLTableCellElement;
+        const cellText = cell.cell.text[0];
+
+        return (
+          element.classList.contains("bg-red-700") || cellText.startsWith("(")
+        );
+      };
+      const rgbRed700: [number, number, number] = [185, 28, 28];
+      const reportPdf = new jsPDF({
+        orientation: "portrait",
+        unit: "mm",
+        format: "a4",
+        compress: true,
+        precision: 16,
+        floatPrecision: 16,
+      });
+      switch (typeOfReport) {
+        case "general":
+          return async () => {
+            reportPdf.setFont(reportFontFamily, reportFontStyle, "bold");
+            reportPdf.setFontSize(titleFontSize);
+            reportPdf.text(
+              "BUDGET USAGE SUPPLIES, FIX AND REPAIR",
+              a4PortraitSize.x / 2,
+              initialYAxis.title,
+              {
+                align: "center",
+              },
+            );
+
+            reportPdf.text(
+              reportPeriod,
+              a4PortraitSize.x / 2,
+              initialYAxis.title + space.title * 1,
+              {
+                align: "center",
+              },
+            );
+
+            try {
+              interface ImagePayload {
+                base64Png: string;
+                aspectRatio: number;
+              }
+
+              const logoData = await new Promise<ImagePayload>(
+                (resolve, reject) => {
+                  const img = new Image();
+                  img.onload = () => {
+                    const canvas = globalThis.document.createElement("canvas");
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    const ctx = canvas.getContext("2d");
+                    if (ctx) {
+                      ctx.drawImage(img, 0, 0);
+                      resolve({
+                        base64Png: canvas.toDataURL("image/png"),
+                        aspectRatio: img.width / img.height,
+                      });
+                    } else {
+                      reject(new Error("Failed to initialize canvas context"));
+                    }
+                  };
+                  img.onerror = () =>
+                    reject(new Error("Failed to load SVG resource"));
+                  img.src = sharp_logo;
+                },
+              );
+              const logoWidth = logoHeight * logoData.aspectRatio;
+
+              reportPdf.addImage(
+                logoData.base64Png,
+                "PNG",
+                initialXAxis,
+                initialYAxis.logo,
+                logoWidth,
+                logoHeight,
+              );
+            } catch (error) {
+              console.error("Error generating company logo:", error);
+            }
+
+            reportPdf.setFontSize(descriptionFontSize);
+            reportPdf.text(
+              COMPANY_NAME,
+              initialXAxis,
+              initialYAxis.other, //38.5
+              {
+                align: "left",
+              },
+            );
+
+            reportPdf.text(
+              "File Resource :",
+              initialXAxis,
+              initialYAxis.other + space.other,
+              {
+                align: "left",
+              },
+            );
+
+            reportPdf.text(
+              reportFileResource === "Show All" ? "%" : reportFileResource,
+              initialXAxis + 20,
+              initialYAxis.other + space.other,
+              {
+                align: "left",
+              },
+            );
+
+            autoTable(reportPdf, {
+              html: "#report",
+              theme: "grid",
+              startY: initialYAxis.other + space.other * 2,
+              styles: {
+                fontSize: tableFontSize,
+                cellPadding: tableCellPadding,
+                halign: "center",
+                valign: "middle",
+                textColor: "black",
+                lineColor: "black",
+                fillColor: "white",
+                lineWidth: tableLineWidth,
+              },
+              margin: {
+                left: initialXAxis,
+                right: initialXAxis,
+              },
+              didParseCell: (cellContent) => {
+                if (isCellNegative(cellContent)) {
+                  cellContent.cell.styles.fillColor = rgbRed700;
+                  cellContent.cell.styles.textColor = "white";
+                }
+              },
+            });
+
+            reportPdf.save(
+              `General_${reportFileResource === "Show All" ? "All" : reportFileResource}_${reportPeriod}_A4.pdf`,
+            );
+          };
+        case "byquarter":
+          return async () => {
+            reportPdf.setFont(reportFontFamily, reportFontStyle, "bold");
+            reportPdf.setFontSize(titleFontSize);
+            reportPdf.text(
+              `REPORT BUDGET ${
+                reportData && reportData.length !== 0
+                  ? reportData[0].ResourceName.toUpperCase()
+                  : "..."
+              }`,
+              a4PortraitSize.x / 2,
+              initialYAxis.title,
+              {
+                align: "center",
+              },
+            );
+
+            reportPdf.text(
+              getCurrentPeriod(
+                Number(extractYearFromFullPeriode(reportMonth)),
+                Number(extractMonthFromFullPeriode(reportMonth)),
+              ).substring(0, 5),
+              a4PortraitSize.x / 2,
+              initialYAxis.title + space.title * 1,
+              {
+                align: "center",
+              },
+            );
+
+            try {
+              interface ImagePayload {
+                base64Png: string;
+                aspectRatio: number;
+              }
+
+              const logoData = await new Promise<ImagePayload>(
+                (resolve, reject) => {
+                  const img = new Image();
+                  img.onload = () => {
+                    const canvas = globalThis.document.createElement("canvas");
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    const ctx = canvas.getContext("2d");
+                    if (ctx) {
+                      ctx.drawImage(img, 0, 0);
+                      resolve({
+                        base64Png: canvas.toDataURL("image/png"),
+                        aspectRatio: img.width / img.height,
+                      });
+                    } else {
+                      reject(new Error("Failed to initialize canvas context"));
+                    }
+                  };
+                  img.onerror = () =>
+                    reject(new Error("Failed to load SVG resource"));
+                  img.src = sharp_logo;
+                },
+              );
+              const logoWidth = logoHeight * logoData.aspectRatio;
+
+              reportPdf.addImage(
+                logoData.base64Png,
+                "PNG",
+                initialXAxis,
+                initialYAxis.logo,
+                logoWidth,
+                logoHeight,
+              );
+            } catch (error) {
+              console.error("Error generating company logo:", error);
+            }
+
+            reportPdf.setFontSize(descriptionFontSize);
+            reportPdf.text(COMPANY_NAME, initialXAxis, initialYAxis.other, {
+              align: "left",
+            });
+
+            reportPdf.text(
+              "File Resource :",
+              initialXAxis,
+              initialYAxis.other + space.other,
+              {
+                align: "left",
+              },
+            );
+
+            reportPdf.text(
+              reportFileResource === "Show All" ? "%" : reportFileResource,
+              initialXAxis + 20,
+              initialYAxis.other + space.other,
+              {
+                align: "left",
+              },
+            );
+
+            reportPdf.text(
+              "Month :",
+              initialXAxis,
+              initialYAxis.other + space.other * 2,
+              {
+                align: "left",
+              },
+            );
+
+            reportPdf.text(
+              capitalize(
+                MONTHS[Number(extractMonthFromFullPeriode(reportMonth)) - 1],
+              ),
+              initialXAxis + 20,
+              initialYAxis.other + space.other * 2,
+              {
+                align: "left",
+              },
+            );
+
+            autoTable(reportPdf, {
+              html: "#report",
+              theme: "grid",
+              startY: initialYAxis.other + space.other * 3,
+              styles: {
+                fontSize: tableFontSize,
+                cellPadding: tableCellPadding,
+                halign: "center",
+                valign: "middle",
+                textColor: "black",
+                lineColor: "black",
+                fillColor: "white",
+                lineWidth: tableLineWidth,
+              },
+              margin: {
+                left: initialXAxis,
+                right: initialXAxis,
+              },
+              didParseCell: (cellContent) => {
+                if (isCellNegative(cellContent)) {
+                  cellContent.cell.styles.fillColor = rgbRed700;
+                  cellContent.cell.styles.textColor = "white";
+                }
+              },
+            });
+
+            reportPdf.save(
+              `ByQuarter_${reportFileResource}_${reportMonth}_A4.pdf`,
+            );
+          };
+        case "bysection":
+          return async () => {
+            reportPdf.setFont(reportFontFamily, reportFontStyle, "bold");
+            reportPdf.setFontSize(titleFontSize);
+            reportPdf.text(
+              "EXPENSES BUDGET REPORT",
+              a4PortraitSize.x / 2,
+              initialYAxis.title,
+              {
+                align: "center",
+              },
+            );
+
+            reportPdf.text(
+              reportPeriod,
+              a4PortraitSize.x / 2,
+              initialYAxis.title + space.title * 1,
+              {
+                align: "center",
+              },
+            );
+
+            try {
+              interface ImagePayload {
+                base64Png: string;
+                aspectRatio: number;
+              }
+
+              const logoData = await new Promise<ImagePayload>(
+                (resolve, reject) => {
+                  const img = new Image();
+                  img.onload = () => {
+                    const canvas = globalThis.document.createElement("canvas");
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    const ctx = canvas.getContext("2d");
+                    if (ctx) {
+                      ctx.drawImage(img, 0, 0);
+                      resolve({
+                        base64Png: canvas.toDataURL("image/png"),
+                        aspectRatio: img.width / img.height,
+                      });
+                    } else {
+                      reject(new Error("Failed to initialize canvas context"));
+                    }
+                  };
+                  img.onerror = () =>
+                    reject(new Error("Failed to load SVG resource"));
+                  img.src = sharp_logo;
+                },
+              );
+              const logoWidth = logoHeight * logoData.aspectRatio;
+
+              reportPdf.addImage(
+                logoData.base64Png,
+                "PNG",
+                initialXAxis,
+                initialYAxis.logo,
+                logoWidth,
+                logoHeight,
+              );
+            } catch (error) {
+              console.error("Error generating company logo:", error);
+            }
+
+            reportPdf.setFontSize(descriptionFontSize);
+            reportPdf.text(COMPANY_NAME, initialXAxis, initialYAxis.other, {
+              align: "left",
+            });
+
+            autoTable(reportPdf, {
+              html: "#report",
+              theme: "grid",
+              startY: initialYAxis.other + space.other,
+              styles: {
+                fontSize: 2.5,
+                cellPadding: tableCellPadding,
+                halign: "center",
+                valign: "middle",
+                textColor: "black",
+                lineColor: "black",
+                fillColor: "white",
+                lineWidth: tableLineWidth,
+              },
+              margin: {
+                left: initialXAxis,
+                right: initialXAxis,
+              },
+              didParseCell: (cellContent) => {
+                if (isCellNegative(cellContent)) {
+                  cellContent.cell.styles.fillColor = rgbRed700;
+                  cellContent.cell.styles.textColor = "white";
+                }
+              },
+            });
+
+            reportPdf.save(`BySection_${reportPeriod}_A4.pdf`);
+          };
+        case "bynature":
+          return async () => {
+            reportPdf.setFont(reportFontFamily, reportFontStyle, "bold");
+            reportPdf.setFontSize(titleFontSize);
+            reportPdf.text(
+              "EXPENSES BUDGET REPORT",
+              a4PortraitSize.x / 2,
+              initialYAxis.title,
+              {
+                align: "center",
+              },
+            );
+
+            reportPdf.text(
+              reportPeriod,
+              a4PortraitSize.x / 2,
+              initialYAxis.title + space.title * 1,
+              {
+                align: "center",
+              },
+            );
+
+            try {
+              interface ImagePayload {
+                base64Png: string;
+                aspectRatio: number;
+              }
+
+              const logoData = await new Promise<ImagePayload>(
+                (resolve, reject) => {
+                  const img = new Image();
+                  img.onload = () => {
+                    const canvas = globalThis.document.createElement("canvas");
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    const ctx = canvas.getContext("2d");
+                    if (ctx) {
+                      ctx.drawImage(img, 0, 0);
+                      resolve({
+                        base64Png: canvas.toDataURL("image/png"),
+                        aspectRatio: img.width / img.height,
+                      });
+                    } else {
+                      reject(new Error("Failed to initialize canvas context"));
+                    }
+                  };
+                  img.onerror = () =>
+                    reject(new Error("Failed to load SVG resource"));
+                  img.src = sharp_logo;
+                },
+              );
+              const logoWidth = logoHeight * logoData.aspectRatio;
+
+              reportPdf.addImage(
+                logoData.base64Png,
+                "PNG",
+                initialXAxis,
+                initialYAxis.logo,
+                logoWidth,
+                logoHeight,
+              );
+            } catch (error) {
+              console.error("Error generating company logo:", error);
+            }
+
+            reportPdf.setFontSize(descriptionFontSize);
+            reportPdf.text(COMPANY_NAME, initialXAxis, initialYAxis.other, {
+              align: "left",
+            });
+
+            autoTable(reportPdf, {
+              html: "#report",
+              theme: "grid",
+              startY: initialYAxis.other + space.other,
+              styles: {
+                fontSize: 2.5,
+                cellPadding: tableCellPadding,
+                halign: "center",
+                valign: "middle",
+                textColor: "black",
+                lineColor: "black",
+                fillColor: "white",
+                lineWidth: tableLineWidth,
+              },
+              margin: {
+                left: initialXAxis,
+                right: initialXAxis,
+              },
+              didParseCell: (cellContent) => {
+                if (isCellNegative(cellContent)) {
+                  cellContent.cell.styles.fillColor = rgbRed700;
+                  cellContent.cell.styles.textColor = "white";
+                }
+              },
+            });
+
+            reportPdf.save(`ByNature_${reportPeriod}_A4.pdf`);
+          };
+        default:
+          return () => void 0;
       }
     },
   };
@@ -456,11 +998,14 @@ const Report = () => {
   ) : (
     <>
       <title>{`${REPORT_TYPE_TITLE[reportType as keyof TypeTitle]} Report`}</title>
-      {/* <div className="border bg-black flex p-1">
-        <div className="bg-white hover:bg-white/85 active:bg-white/70 | flex border p-1 select-none">
+      <div className="border bg-black flex p-1">
+        <div
+          className="bg-white hover:bg-white/85 active:bg-white/70 | flex border p-1 select-none"
+          onClick={render.pdf(reportType)}
+        >
           Download PDF
         </div>
-      </div> */}
+      </div>
       <div className="border font-sans flex flex-col gap-4 p-4 overflow-x-auto">
         <div className="flex flex-col items-center">
           {!dataExist ? "" : render.title(reportType)}

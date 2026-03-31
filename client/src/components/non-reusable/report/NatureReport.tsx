@@ -85,7 +85,10 @@ const NatureReport = ({
   );
 
   return (
-    <table className="table-auto border border-collapse w-full text-[0.6rem]">
+    <table
+      id="report"
+      className="table-auto border border-collapse w-full text-[0.6rem]"
+    >
       <thead className="border">
         <tr>
           <th rowSpan={2} className="border p-1"></th>

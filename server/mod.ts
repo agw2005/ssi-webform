@@ -4,6 +4,7 @@ export type { UserMasterName as SupervisorNames } from "./models/UserMaster.d.ts
 export type { BudgetFileResource as FileResource } from "./models/Budget.d.ts";
 export type { BudgetViewInformation as BudgetViewAtYear } from "./models/Budget.d.ts";
 export type { BudgetYear as Year } from "./models/Budget.d.ts";
+export type { BudgetPeriod as Period } from "./models/Budget.d.ts";
 export type { BudgetNature as Nature } from "./models/Budget.d.ts";
 export type { BudgetBalance as Balance } from "./models/Budget.d.ts";
 export type { ReportViewInformation as ReportInformation } from "./models/Budget.d.ts";

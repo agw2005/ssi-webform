@@ -4,13 +4,14 @@ import BudgetViewFilters from "../components/non-reusable/budget/BudgetViewFilte
 import Switch from "../components/reusable/Switch.tsx";
 import BudgetView from "../components/non-reusable/budget/BudgetView.tsx";
 import ReportView from "../components/non-reusable/budget/ReportView.tsx";
-import type { FileResource, Year } from "@scope/server";
+import type { FileResource, Year, Period } from "@scope/server";
 import useFetch from "../hooks/useFetch.tsx";
 import fileResourceFetchHandler from "../helper/fileResourceFetchHandler.ts";
 import serverDomain from "../helper/serverDomain.ts";
 
 const FILE_RESOURCES_URL = `${serverDomain}/budget/fileresources`;
 const BUDGET_YEARS_URL = `${serverDomain}/budget/years`;
+const PERIODS_URL = `${serverDomain}/budget/periods`;
 
 const Budget = () => {
   const [viewMode, setViewMode] = useState<"Budget" | "Report">("Budget");
@@ -29,10 +30,16 @@ const Budget = () => {
     isError: isYearsError,
   } = useFetch<Year>(BUDGET_YEARS_URL);
 
+  const {
+    data: periods,
+    isLoading: isPeriodsLoading,
+    isError: isPeriodsError,
+  } = useFetch<Period>(PERIODS_URL);
+
   return (
     <Primitive
-      isLoading={[isFileResourcesLoading, isYearsLoading]}
-      isErr={[isFileResourcesError, isYearsError]}
+      isLoading={[isFileResourcesLoading, isYearsLoading, isPeriodsLoading]}
+      isErr={[isFileResourcesError, isYearsError, isPeriodsError]}
       componentName="Budget.tsx"
       pageTitle="Budget"
     >
@@ -88,7 +95,7 @@ const Budget = () => {
               ? []
               : fileResources.map((budget) => budget.FileResource)
           }
-          periods={!years ? [] : years.map((year) => year.Year)}
+          periods={!periods ? [] : periods.map((period) => period.Period)}
         />
       ) : (
         ""
