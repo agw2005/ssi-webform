@@ -294,7 +294,7 @@ const Home = () => {
           }}
         />
         <SelectionInput
-          label="Supervisor"
+          label="Current Supervisor"
           name="filter-supervisor"
           id="filter-supervisor"
           variant="black"
