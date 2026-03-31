@@ -19,9 +19,12 @@ import Button from "../components/reusable/Button.tsx";
 import { useEffect, useRef, useState } from "react";
 import Dialog, { toggleDialog } from "../components/reusable/Dialog.tsx";
 import { getCurrentApproverLevel } from "../helper/getCurrentApproverLevel.ts";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable/es";
+import type { CellHookData } from "jspdf-autotable/es";
 
 interface Overview {
-  ID: string;
+  "Form ID": string;
   "Form Number": string;
   Requestor: string;
   "PR Number": string;
@@ -66,7 +69,7 @@ const APPROVE_BUTTON_STYLINGS =
   "bg-green-700/40 hover:bg-green-700/80 active:bg-green-700/60 select-none";
 
 const EMPTY_OVERVIEW: Overview = {
-  ID: "",
+  "Form ID": "",
   "Form Number": "",
   Requestor: "",
   "PR Number": "",
@@ -155,7 +158,7 @@ const Request = () => {
       setCurrentRemarks(requestOverviewData[0].Remarks || "");
       setNewRemarks(requestOverviewData[0].Remarks || "");
       setCurrentOverview({
-        ID: requestOverviewData[0].FormID,
+        "Form ID": requestOverviewData[0].FormID,
         "Form Number": requestOverviewData[0].NoForm,
         Requestor: `${capitalize(requestOverviewData[0].Requestor)} (${requestOverviewData[0].RequestorNRP}) - ${requestOverviewData[0].RequestorSection}`,
         "PR Number": requestOverviewData[0].NoPR,
@@ -253,7 +256,147 @@ const Request = () => {
               >
                 Reject
               </div>
-              <div className="bg-blue-700/40 hover:bg-blue-700/80 active:bg-blue-700/60 | flex-1 text-center px-4 py-2 select-none">
+              <div
+                className="bg-blue-700/40 hover:bg-blue-700/80 active:bg-blue-700/60 | flex-1 text-center px-4 py-2 select-none"
+                onClick={() => {
+                  const a4PortraitSize = { x: 210, y: 297 };
+                  const initialXAxis = {
+                    main: 15,
+                    overviewData: 45,
+                  };
+                  const initialYAxis = {
+                    overview: 15,
+                    overviewUnderline: 17,
+                  };
+                  const space = 6;
+                  const requestPdf = new jsPDF({
+                    orientation: "portrait",
+                    unit: "mm",
+                    format: "a4",
+                    compress: true,
+                    precision: 16,
+                    floatPrecision: 16,
+                  });
+
+                  const isCellNoWrap = (cell: CellHookData): boolean => {
+                    const element = cell.cell.raw as HTMLTableCellElement;
+                    return element.classList.contains("whitespace-nowrap");
+                  };
+                  requestPdf.setFontSize(8);
+                  requestPdf.setFont("times", "normal", "bold");
+
+                  requestPdf.text(
+                    "ID Trace",
+                    initialXAxis.main,
+                    initialYAxis.overview,
+                    {
+                      align: "left",
+                    },
+                  );
+
+                  requestPdf.text(
+                    reactRouterParams.requestId || "",
+                    initialXAxis.overviewData,
+                    initialYAxis.overview,
+                    {
+                      align: "left",
+                    },
+                  );
+
+                  requestPdf.line(
+                    initialXAxis.main,
+                    initialYAxis.overviewUnderline,
+                    a4PortraitSize.x - initialXAxis.main,
+                    initialYAxis.overviewUnderline,
+                  );
+
+                  let index = 1;
+                  for (const [key, value] of Object.entries(currentOverview)) {
+                    requestPdf.text(
+                      String(key),
+                      initialXAxis.main,
+                      initialYAxis.overview + space * index,
+                      {
+                        align: "left",
+                      },
+                    );
+
+                    requestPdf.text(
+                      String(value),
+                      initialXAxis.overviewData,
+                      initialYAxis.overview + space * index,
+                      {
+                        align: "left",
+                      },
+                    );
+
+                    requestPdf.line(
+                      initialXAxis.main,
+                      initialYAxis.overviewUnderline + space * index,
+                      a4PortraitSize.x - initialXAxis.main,
+                      initialYAxis.overviewUnderline + space * index,
+                    );
+
+                    index++;
+                  }
+
+                  index += 1;
+                  autoTable(requestPdf, {
+                    html: "#request-items",
+                    theme: "grid",
+                    startY: initialYAxis.overview + space * index,
+                    styles: {
+                      fontSize: 6,
+                      cellPadding: 1.5,
+                      halign: "center",
+                      valign: "middle",
+                      textColor: "black",
+                      lineColor: "black",
+                      fillColor: "white",
+                      lineWidth: 0.1,
+                    },
+                    margin: {
+                      left: initialXAxis.main,
+                      right: initialXAxis.main,
+                    },
+                    didParseCell: (cellContent) => {
+                      if (isCellNoWrap(cellContent)) {
+                        cellContent.cell.styles.cellWidth = "wrap";
+                      }
+                    },
+                  });
+
+                  index += 5;
+                  autoTable(requestPdf, {
+                    html: "#supervisor-path",
+                    theme: "grid",
+                    startY: initialYAxis.overview + space * index,
+                    styles: {
+                      fontSize: 6,
+                      cellPadding: 1.5,
+                      halign: "center",
+                      valign: "middle",
+                      textColor: "black",
+                      lineColor: "black",
+                      fillColor: "white",
+                      lineWidth: 0.1,
+                    },
+                    margin: {
+                      left: initialXAxis.main,
+                      right: initialXAxis.main,
+                    },
+                    didParseCell: (cellContent) => {
+                      if (isCellNoWrap(cellContent)) {
+                        cellContent.cell.styles.cellWidth = "wrap";
+                      }
+                    },
+                  });
+
+                  requestPdf.save(
+                    `Request_${reactRouterParams.requestId}_A4.pdf`,
+                  );
+                }}
+              >
                 Print Request
               </div>
             </div>
@@ -361,7 +504,10 @@ const Request = () => {
         </div>
         <div className="flex flex-col gap-2 overflow-x-auto">
           <h2 className="font-bold text-2xl">Request Items</h2>
-          <table className="table-auto border-collapse w-full">
+          <table
+            id="request-items"
+            className="table-auto border-collapse w-full"
+          >
             <thead>
               <tr>
                 {ITEMS_COLUMNS.map((column, index) => {
@@ -431,7 +577,10 @@ const Request = () => {
         </div>
         <div className="flex flex-col gap-2 overflow-x-auto">
           <h2 className="font-bold text-2xl">Request Progress</h2>
-          <table className="table-auto border-collapse w-full">
+          <table
+            id="supervisor-path"
+            className="table-auto border-collapse w-full"
+          >
             <thead>
               <tr>
                 {PROGRESS_COLUMNS.map((column, index) => {
