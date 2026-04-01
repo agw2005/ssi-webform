@@ -1,38 +1,39 @@
 import React from "react";
-import type { ReportResponse, Row } from "../../../pages/Report.tsx";
+import type { Row } from "../../../pages/Report.tsx";
 import formatNegativeNumber from "../../../helper/formatNegativeNumber.ts";
 import capitalize from "../../../helper/capitalize.ts";
+import type { ReportResponse } from "@scope/server";
 
 interface NatureReportProps {
-  subMonthIndex: string[];
-  subMonth: string[];
-  monthSubColumn: string[];
-  reportData: ReportResponse[];
-  rowData: Row[];
-  period: string;
+  SubMonthIndex: string[];
+  SubMonth: string[];
+  MonthSubColumn: string[];
+  ReportData: ReportResponse[];
+  RowData: Row[];
+  Period: string;
 }
 
 interface NatureReportFooter {
-  month: string;
-  totalBudget: number;
-  totalUsage: number;
-  totalBalance: number;
+  TotalBudget: number;
+  TotalUsage: number;
+  TotalBalance: number;
+  Month: string;
 }
 
 const NatureReport = ({
-  subMonthIndex,
-  subMonth,
-  monthSubColumn,
-  reportData,
-  rowData,
-  period,
+  SubMonthIndex,
+  SubMonth,
+  MonthSubColumn,
+  ReportData,
+  RowData,
+  Period,
 }: NatureReportProps) => {
-  console.log(rowData);
-  if (reportData.length === 0) {
+  console.log(RowData);
+  if (ReportData.length === 0) {
     return <div></div>;
   }
 
-  const categoryCounts = rowData.reduce(
+  const categoryCounts = RowData.reduce(
     (acc, row) => {
       const category = row.Description.includes("(ADM)")
         ? "Administration"
@@ -43,44 +44,44 @@ const NatureReport = ({
     {} as Record<string, number>,
   );
 
-  const tableFooter: NatureReportFooter[] = subMonthIndex.map((monthIndex) => {
-    const totals = rowData.reduce(
+  const tableFooter: NatureReportFooter[] = SubMonthIndex.map((monthIndex) => {
+    const totals = RowData.reduce(
       (acc, row) => {
-        const monthData = row.months?.[monthIndex];
+        const monthData = row.Months?.[monthIndex];
 
         if (monthData) {
-          acc.totalBudget += monthData.budget || 0;
-          acc.totalUsage += monthData.usage || 0;
-          acc.totalBalance += monthData.balance || 0;
+          acc.TotalBudget += monthData.Budget || 0;
+          acc.TotalUsage += monthData.Usage || 0;
+          acc.TotalBalance += monthData.Balance || 0;
         }
 
         return acc;
       },
       {
-        totalBudget: 0,
-        totalUsage: 0,
-        totalBalance: 0,
+        TotalBudget: 0,
+        TotalUsage: 0,
+        TotalBalance: 0,
       },
     );
 
     return {
-      month: monthIndex,
+      Month: monthIndex,
       ...totals,
     };
   });
 
   const grandTotal: NatureReportFooter = tableFooter.reduce(
     (current, next) => {
-      current.totalBudget += next.totalBudget;
-      current.totalUsage += next.totalUsage;
-      current.totalBalance += next.totalBalance;
+      current.TotalBudget += next.TotalBudget;
+      current.TotalUsage += next.TotalUsage;
+      current.TotalBalance += next.TotalBalance;
       return current;
     },
     {
-      month: "AGGREGATED",
-      totalBudget: 0,
-      totalUsage: 0,
-      totalBalance: 0,
+      Month: "AGGREGATED",
+      TotalBudget: 0,
+      TotalUsage: 0,
+      TotalBalance: 0,
     },
   );
 
@@ -98,18 +99,18 @@ const NatureReport = ({
           <th rowSpan={2} className="border p-1">
             DESCRIPTION
           </th>
-          {subMonth.map((month, index) => (
+          {SubMonth.map((month, index) => (
             <th key={index} colSpan={4} className="border p-1">
               {month}
             </th>
           ))}
           <th colSpan={4} className="border p-1">
-            {period}
+            {Period}
           </th>
         </tr>
         <tr>
           {[...Array(7)].map((_, index) => {
-            return monthSubColumn.map((subcolumn, subindex) => {
+            return MonthSubColumn.map((subcolumn, subindex) => {
               return (
                 <th key={`${index}-${subindex}`} className="border p-1">
                   {subcolumn}
@@ -120,10 +121,10 @@ const NatureReport = ({
         </tr>
       </thead>
       <tbody>
-        {rowData.map((row, index) => {
-          const totalUsage = row.totalBudget - row.totalBalance;
-          const percentage = row.totalBudget > 0
-            ? (row.totalBalance / row.totalBudget) * 100
+        {RowData.map((row, index) => {
+          const totalUsage = row.TotalBudget - row.TotalBalance;
+          const percentage = row.TotalBudget > 0
+            ? (row.TotalBalance / row.TotalBudget) * 100
             : 0;
 
           const currentCategory = row.Description.includes("(ADM)")
@@ -131,7 +132,7 @@ const NatureReport = ({
             : "Production";
 
           const previousCategory = index > 0
-            ? rowData[index - 1].Description.includes("(ADM)")
+            ? RowData[index - 1].Description.includes("(ADM)")
               ? "Administration"
               : "Production"
             : null;
@@ -154,32 +155,32 @@ const NatureReport = ({
               <td className="text-[0.75rem] border p-2 whitespace-nowrap text-center">
                 {row.Description}
               </td>
-              {subMonthIndex.map((subMonthKey, subIndex) => {
-                const monthData = row.months[subMonthKey] || {
+              {SubMonthIndex.map((SubMonthKey, subIndex) => {
+                const monthData = row.Months[SubMonthKey] || {
                   budget: 0,
                   usage: 0,
                   balance: 0,
                 };
-                const percentage = monthData.budget > 0
-                  ? (monthData.balance / monthData.budget) * 100
+                const percentage = monthData.Budget > 0
+                  ? (monthData.Balance / monthData.Budget) * 100
                   : 0;
 
                 return (
                   <React.Fragment key={subIndex}>
                     <td className="text-[0.75rem] border p-2 text-center">
-                      {formatNegativeNumber(monthData.budget)}
+                      {formatNegativeNumber(monthData.Budget)}
                     </td>
                     <td className="text-[0.75rem] border p-2 text-center">
-                      {formatNegativeNumber(monthData.usage)}
+                      {formatNegativeNumber(monthData.Usage)}
                     </td>
                     <td
                       className={`text-[0.75rem] border p-2 text-center ${
-                        monthData.balance < 0
+                        monthData.Balance < 0
                           ? "bg-red-700 text-white border-black"
                           : "bg-white"
                       }`}
                     >
-                      {formatNegativeNumber(monthData.balance)}
+                      {formatNegativeNumber(monthData.Balance)}
                     </td>
                     <td
                       className={`text-[0.75rem] border p-2 text-center ${
@@ -194,19 +195,19 @@ const NatureReport = ({
                 );
               })}
               <td className="text-[0.75rem] border p-2 text-center">
-                {formatNegativeNumber(row.totalBudget)}
+                {formatNegativeNumber(row.TotalBudget)}
               </td>
               <td className="text-[0.75rem] border p-2 text-center">
                 {formatNegativeNumber(totalUsage)}
               </td>
               <td
                 className={`text-[0.75rem] border p-2 text-center ${
-                  row.totalBalance < 0
+                  row.TotalBalance < 0
                     ? "bg-red-700 text-white border-black"
                     : "bg-white"
                 }`}
               >
-                {formatNegativeNumber(row.totalBalance)}
+                {formatNegativeNumber(row.TotalBalance)}
               </td>
               <td
                 className={`text-[0.75rem] border p-2 text-center ${
@@ -229,13 +230,13 @@ const NatureReport = ({
           >
             Total
           </td>
-          {subMonthIndex.map((monthIndex, index) => {
+          {SubMonthIndex.map((monthIndex, index) => {
             const currentMonthData = tableFooter.find(
-              (tableFooterData) => tableFooterData.month === monthIndex,
+              (tableFooterData) => tableFooterData.Month === monthIndex,
             );
-            const currentMonthTotalBudget = currentMonthData?.totalBudget || 0;
-            const currentMonthTotalUsage = currentMonthData?.totalUsage || 0;
-            const currentMonthTotalBalance = currentMonthData?.totalBalance ||
+            const currentMonthTotalBudget = currentMonthData?.TotalBudget || 0;
+            const currentMonthTotalUsage = currentMonthData?.TotalUsage || 0;
+            const currentMonthTotalBalance = currentMonthData?.TotalBalance ||
               0;
             const currentMonthTotalPercentage =
               (currentMonthTotalBalance / currentMonthTotalBudget) * 100;
@@ -269,14 +270,14 @@ const NatureReport = ({
               </React.Fragment>
             );
           })}
-          {monthSubColumn.map((subColumn, index) => {
+          {MonthSubColumn.map((subColumn, index) => {
             const currentTotal = Number(
               grandTotal[
                 `total${capitalize(subColumn)}` as keyof NatureReportFooter
               ],
             );
             const percentage =
-              (grandTotal.totalBalance / grandTotal.totalBudget) * 100;
+              (grandTotal.TotalBalance / grandTotal.TotalBudget) * 100;
             return subColumn === "%"
               ? (
                 <td

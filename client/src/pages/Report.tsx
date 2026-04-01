@@ -1,7 +1,6 @@
 import { Link, useSearchParams } from "react-router-dom";
 import sharp_logo from "../assets/svg/sharp_logo.svg";
-import serverDomain from "../helper/serverDomain.ts";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import LoadingFallback from "../components/reusable/LoadingFallback.tsx";
 import GeneralReport from "../components/non-reusable/report/GeneralReport.tsx";
 import extractMonthFromFullPeriode from "../helper/extractMonthFromFullPeriode.ts";
@@ -18,35 +17,21 @@ import { autoTable } from "jspdf-autotable";
 import type { CellHookData } from "jspdf-autotable";
 import getCurrentPeriod from "../helper/getCurrentPeriod.ts";
 import capitalize from "../helper/capitalize.ts";
+import useReport from "../hooks/useReport.tsx";
+import type { ReportResponse } from "@scope/server";
 
-export interface ReportResponse {
-  Periode: string;
-  FileResource: string;
-  ResourceName: string;
-  Department: number;
-  DepartmentGroup: number;
-  CostCenter: string;
-  Nature: string;
-  Description: string;
-  Budget: string;
-  Balance: string;
+interface MonthlyData extends Pick<ReportResponse, "Budget" | "Balance"> {
+  Usage: number;
 }
 
-interface MonthlyData {
-  budget: number;
-  balance: number;
-  usage: number;
-}
-
-export interface Row {
-  Department: number;
-  CostCenter: string;
-  Nature: string;
-  DepartmentGroup: number;
-  Description: string;
-  months: Record<string, MonthlyData>;
-  totalBudget: number;
-  totalBalance: number;
+export interface Row extends
+  Pick<
+    ReportResponse,
+    "Department" | "CostCenter" | "Nature" | "DepartmentGroup" | "Description"
+  > {
+  Months: Record<string, MonthlyData>;
+  TotalBudget: number;
+  TotalBalance: number;
 }
 
 interface TypeTitle {
@@ -55,8 +40,6 @@ interface TypeTitle {
   bysection: string;
   bynature: string;
 }
-
-const REPORT_URL = `${serverDomain}/budget/report`;
 
 const COMPANY_NAME = "PT SHARP SEMICONDUCTOR INDONESIA";
 const MONTHS = [
@@ -113,10 +96,26 @@ const Report = () => {
   const reportPeriod = searchParams.get("period") || "";
   const reportMonth = searchParams.get("month") || "";
 
-  const [reportData, setReportData] = useState<ReportResponse[] | null>(null);
-  const [isReportDataLoading, setIsReportDataLoading] = useState(false);
-  const [isReportDataError, setIsReportDataError] = useState<Error | null>(
-    null,
+  const params = new URLSearchParams();
+  const extractedPeriode = `${extractYearFromFullPeriode(reportMonth)}${
+    FH_MONTHS.includes(
+        MONTHS[Number(extractMonthFromFullPeriode(reportMonth)) - 1],
+      )
+      ? "FH"
+      : "LH"
+  }`;
+
+  reportType === "byquarter"
+    ? params.set("periode", extractedPeriode)
+    : params.set("periode", reportPeriod);
+
+  if (reportFileResource !== "Show All" && reportFileResource !== "") {
+    params.set("fileresource", reportFileResource);
+  }
+
+  const { reportData, isReportDataLoading, isReportDataError } = useReport(
+    reportType,
+    params.toString(),
   );
 
   const render = {
@@ -184,52 +183,52 @@ const Report = () => {
         case "general":
           return (
             <GeneralReport
-              subMonthIndex={comparePeriodHalves(
+              SubMonthIndex={comparePeriodHalves(
                 FH_MONTHS_INDEX,
                 LH_MONTHS_INDEX,
               )}
-              subMonth={comparePeriodHalves(FH_MONTHS, LH_MONTHS)}
-              monthSubColumn={MONTH_SUBCOLS}
-              reportData={reportData || []}
-              rowData={byCostCenterAndNatureRows}
+              SubMonth={comparePeriodHalves(FH_MONTHS, LH_MONTHS)}
+              MonthSubColumn={MONTH_SUBCOLS}
+              ReportData={reportData || []}
+              RowData={byCostCenterAndNatureRows}
             />
           );
         case "byquarter":
           return (
             <QuarterlyReport
-              months={MONTHS}
-              monthSubColumn={[...MONTH_SUBCOLS, "%"]}
-              reportData={reportData || []}
-              month={reportMonth}
-              rowData={byCostCenterAndNatureRows}
+              Months={MONTHS}
+              MonthSubColumn={[...MONTH_SUBCOLS, "%"]}
+              ReportData={reportData || []}
+              Month={reportMonth}
+              RowData={byCostCenterAndNatureRows}
             />
           );
         case "bysection":
           return (
             <SectionReport
-              subMonthIndex={comparePeriodHalves(
+              SubMonthIndex={comparePeriodHalves(
                 FH_MONTHS_INDEX,
                 LH_MONTHS_INDEX,
               )}
-              subMonth={comparePeriodHalves(FH_MONTHS, LH_MONTHS)}
-              monthSubColumn={[...MONTH_SUBCOLS, "%"]}
-              reportData={reportData || []}
-              rowData={byDeptAndNatureRows}
-              period={reportPeriod}
+              SubMonth={comparePeriodHalves(FH_MONTHS, LH_MONTHS)}
+              MonthSubColumn={[...MONTH_SUBCOLS, "%"]}
+              ReportData={reportData || []}
+              RowData={byDeptAndNatureRows}
+              Period={reportPeriod}
             />
           );
         case "bynature":
           return (
             <NatureReport
-              subMonthIndex={comparePeriodHalves(
+              SubMonthIndex={comparePeriodHalves(
                 FH_MONTHS_INDEX,
                 LH_MONTHS_INDEX,
               )}
-              subMonth={comparePeriodHalves(FH_MONTHS, LH_MONTHS)}
-              monthSubColumn={[...MONTH_SUBCOLS, "%"]}
-              reportData={reportData || []}
-              rowData={byNatureAndAdmOrProdRows}
-              period={reportPeriod}
+              SubMonth={comparePeriodHalves(FH_MONTHS, LH_MONTHS)}
+              MonthSubColumn={[...MONTH_SUBCOLS, "%"]}
+              ReportData={reportData || []}
+              RowData={byNatureAndAdmOrProdRows}
+              Period={reportPeriod}
             />
           );
         default:
@@ -753,65 +752,6 @@ const Report = () => {
     return getPeriodHalves(reportPeriod) === "FH" ? fhValue : lhValue;
   };
 
-  const applyParams = (url: URL) => {
-    if (reportType === "byquarter") {
-      url.searchParams.set(
-        "periode",
-        `${extractYearFromFullPeriode(reportMonth)}${
-          FH_MONTHS.includes(
-              MONTHS[Number(extractMonthFromFullPeriode(reportMonth)) - 1],
-            )
-            ? "FH"
-            : "LH"
-        }`,
-      );
-    } else {
-      url.searchParams.set("periode", reportPeriod);
-    }
-    if (reportFileResource !== "Show All" && reportFileResource !== "") {
-      url.searchParams.set("fileresource", reportFileResource);
-    }
-  };
-
-  useEffect(() => {
-    const requestUrl = new URL(REPORT_URL);
-    const abortController = new AbortController();
-    setIsReportDataLoading(true);
-    applyParams(requestUrl);
-
-    const fetchData = async () => {
-      try {
-        const reportResponse = await fetch(requestUrl.toString(), {
-          signal: abortController.signal,
-        });
-        if (!reportResponse.ok) {
-          throw new Error(`HTTP error! status: ${reportResponse.status}`);
-        }
-
-        const reportResponseJson: ReportResponse[] = await reportResponse
-          .json();
-
-        setReportData(reportResponseJson);
-      } catch (err) {
-        if (err instanceof Error && err.name === "AbortError") {
-          return;
-        }
-        const error: Error = new Error(
-          `Encountered an error when fetching API. Please ensure your connection is stable.\n(${err}).`,
-        );
-        setIsReportDataError(error);
-      } finally {
-        setIsReportDataLoading(false);
-      }
-    };
-
-    fetchData();
-
-    return () => {
-      abortController.abort();
-    };
-  }, [reportFileResource, reportPeriod]);
-
   const byCostCenterAndNatureRows = useMemo(() => {
     const map = new Map<string, Row>();
 
@@ -825,9 +765,9 @@ const Report = () => {
           Nature: data.Nature,
           DepartmentGroup: data.DepartmentGroup,
           Description: data.Description,
-          months: {},
-          totalBudget: 0,
-          totalBalance: 0,
+          Months: {},
+          TotalBudget: 0,
+          TotalBalance: 0,
         };
         map.set(key, row);
       }
@@ -836,14 +776,14 @@ const Report = () => {
       const budget = Number(data.Budget || 0);
       const balance = Number(data.Balance || 0);
 
-      row.months[monthKey] = {
-        budget,
-        balance,
-        usage: budget - balance,
+      row.Months[monthKey] = {
+        Budget: budget,
+        Balance: balance,
+        Usage: budget - balance,
       };
 
-      row.totalBudget += budget;
-      row.totalBalance += balance;
+      row.TotalBudget += budget;
+      row.TotalBalance += balance;
     });
 
     //this will sort the array by Department, Description, and Nature! DO NOT CHANGE!!!
@@ -875,9 +815,9 @@ const Report = () => {
           Nature: data.Nature,
           DepartmentGroup: data.DepartmentGroup,
           Description: data.Description,
-          months: {},
-          totalBudget: 0,
-          totalBalance: 0,
+          Months: {},
+          TotalBudget: 0,
+          TotalBalance: 0,
         };
         map.set(key, row);
       }
@@ -887,16 +827,16 @@ const Report = () => {
       const balance = Number(data.Balance || 0);
       const usage = budget - balance;
 
-      if (!row.months[monthKey]) {
-        row.months[monthKey] = { budget: 0, balance: 0, usage: 0 };
+      if (!row.Months[monthKey]) {
+        row.Months[monthKey] = { Budget: 0, Balance: 0, Usage: 0 };
       }
 
-      row.months[monthKey].budget += budget;
-      row.months[monthKey].balance += balance;
-      row.months[monthKey].usage += usage;
+      row.Months[monthKey].Budget += budget;
+      row.Months[monthKey].Balance += balance;
+      row.Months[monthKey].Usage += usage;
 
-      row.totalBudget += budget;
-      row.totalBalance += balance;
+      row.TotalBudget += budget;
+      row.TotalBalance += balance;
     });
 
     return Array.from(map.values()).sort((rowA, rowB) => {
@@ -927,9 +867,9 @@ const Report = () => {
           Nature: data.Nature,
           DepartmentGroup: data.DepartmentGroup,
           Description: data.Description,
-          months: {},
-          totalBudget: 0,
-          totalBalance: 0,
+          Months: {},
+          TotalBudget: 0,
+          TotalBalance: 0,
         };
         map.set(key, row);
       }
@@ -939,16 +879,16 @@ const Report = () => {
       const balance = Number(data.Balance || 0);
       const usage = budget - balance;
 
-      if (!row.months[monthKey]) {
-        row.months[monthKey] = { budget: 0, balance: 0, usage: 0 };
+      if (!row.Months[monthKey]) {
+        row.Months[monthKey] = { Budget: 0, Balance: 0, Usage: 0 };
       }
 
-      row.months[monthKey].budget += budget;
-      row.months[monthKey].balance += balance;
-      row.months[monthKey].usage += usage;
+      row.Months[monthKey].Budget += budget;
+      row.Months[monthKey].Balance += balance;
+      row.Months[monthKey].Usage += usage;
 
-      row.totalBudget += budget;
-      row.totalBalance += balance;
+      row.TotalBudget += budget;
+      row.TotalBalance += balance;
     });
 
     return Array.from(map.values()).sort((rowA, rowB) => {

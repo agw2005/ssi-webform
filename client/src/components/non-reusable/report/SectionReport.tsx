@@ -1,26 +1,27 @@
 import React from "react";
-import type { ReportResponse, Row } from "../../../pages/Report.tsx";
+import type { Row } from "../../../pages/Report.tsx";
 import formatNegativeNumber from "../../../helper/formatNegativeNumber.ts";
+import type { ReportResponse } from "@scope/server";
 
 interface SectionReportProps {
-  subMonthIndex: string[];
-  subMonth: string[];
-  monthSubColumn: string[];
-  reportData: ReportResponse[];
-  rowData: Row[];
-  period: string;
+  SubMonthIndex: string[];
+  SubMonth: string[];
+  MonthSubColumn: string[];
+  ReportData: ReportResponse[];
+  RowData: Row[];
+  Period: string;
 }
 
 const SectionReport = ({
-  subMonthIndex,
-  subMonth,
-  monthSubColumn,
-  reportData,
-  rowData,
-  period,
+  SubMonthIndex,
+  SubMonth,
+  MonthSubColumn,
+  ReportData,
+  RowData,
+  Period,
 }: SectionReportProps) => {
-  console.log(rowData);
-  if (reportData.length === 0) {
+  console.log(RowData);
+  if (ReportData.length === 0) {
     return <div></div>;
   }
 
@@ -40,18 +41,18 @@ const SectionReport = ({
           <th rowSpan={2} className="border p-1">
             NATURE
           </th>
-          {subMonth.map((month, index) => (
+          {SubMonth.map((month, index) => (
             <th key={index} colSpan={4} className="border p-1">
               {month}
             </th>
           ))}
           <th colSpan={4} className="border p-1">
-            {period}
+            {Period}
           </th>
         </tr>
         <tr>
           {[...Array(7)].map((_, index) => {
-            return monthSubColumn.map((subcolumn, subindex) => {
+            return MonthSubColumn.map((subcolumn, subindex) => {
               return (
                 <th key={`${index}-${subindex}`} className="border p-1">
                   {subcolumn}
@@ -62,10 +63,10 @@ const SectionReport = ({
         </tr>
       </thead>
       <tbody>
-        {rowData.map((row, index) => {
-          const totalUsage = row.totalBudget - row.totalBalance;
-          const percentage = row.totalBudget > 0
-            ? (row.totalBalance / row.totalBudget) * 100
+        {RowData.map((row, index) => {
+          const totalUsage = row.TotalBudget - row.TotalBalance;
+          const percentage = row.TotalBudget > 0
+            ? (row.TotalBalance / row.TotalBudget) * 100
             : 0;
 
           return (
@@ -79,32 +80,32 @@ const SectionReport = ({
               <td className="text-[0.75rem] border p-2 whitespace-nowrap text-center">
                 {row.Nature}
               </td>
-              {subMonthIndex.map((subMonthKey, subIndex) => {
-                const monthData = row.months[subMonthKey] || {
+              {SubMonthIndex.map((subMonthKey, subIndex) => {
+                const monthData = row.Months[subMonthKey] || {
                   budget: 0,
                   usage: 0,
                   balance: 0,
                 };
-                const percentage = monthData.budget > 0
-                  ? (monthData.balance / monthData.budget) * 100
+                const percentage = monthData.Budget > 0
+                  ? (monthData.Balance / monthData.Budget) * 100
                   : 0;
 
                 return (
                   <React.Fragment key={subIndex}>
                     <td className="text-[0.75rem] border p-2 text-center">
-                      {formatNegativeNumber(monthData.budget)}
+                      {formatNegativeNumber(monthData.Budget)}
                     </td>
                     <td className="text-[0.75rem] border p-2 text-center">
-                      {formatNegativeNumber(monthData.usage)}
+                      {formatNegativeNumber(monthData.Usage)}
                     </td>
                     <td
                       className={`text-[0.75rem] border p-2 text-center ${
-                        monthData.balance < 0
+                        monthData.Balance < 0
                           ? "bg-red-700 text-white border-black"
                           : "bg-white"
                       }`}
                     >
-                      {formatNegativeNumber(monthData.balance)}
+                      {formatNegativeNumber(monthData.Balance)}
                     </td>
                     <td
                       className={`text-[0.75rem] border p-2 text-center ${
@@ -119,19 +120,19 @@ const SectionReport = ({
                 );
               })}
               <td className="text-[0.75rem] border p-2 text-center">
-                {formatNegativeNumber(row.totalBudget)}
+                {formatNegativeNumber(row.TotalBudget)}
               </td>
               <td className="text-[0.75rem] border p-2 text-center">
                 {formatNegativeNumber(totalUsage)}
               </td>
               <td
                 className={`text-[0.75rem] border p-2 text-center ${
-                  row.totalBalance < 0
+                  row.TotalBalance < 0
                     ? "bg-red-700 text-white border-black"
                     : "bg-white"
                 }`}
               >
-                {formatNegativeNumber(row.totalBalance)}
+                {formatNegativeNumber(row.TotalBalance)}
               </td>
               <td
                 className={`text-[0.75rem] border p-2 text-center ${

@@ -1,4 +1,4 @@
-import type { ReportResponse, Row } from "../../../pages/Report.tsx";
+import type { Row } from "../../../pages/Report.tsx";
 import capitalize from "../../../helper/capitalize.ts";
 import getStartingMonthPeriodOfMonthReport from "../../../helper/getStartingMonthPeriodOfMonthReport.ts";
 import getCurrentPeriod from "../../../helper/getCurrentPeriod.ts";
@@ -7,26 +7,27 @@ import extractYearFromFullPeriode from "../../../helper/extractYearFromFullPerio
 import formatNumberToString from "../../../helper/formatNumberToString.ts";
 import formatNegativeNumber from "../../../helper/formatNegativeNumber.ts";
 import React from "react";
+import type { ReportResponse } from "@scope/server";
 
 interface QuarterlyReportProps {
-  months: string[];
-  monthSubColumn: string[];
-  reportData: ReportResponse[];
-  month: string;
-  rowData: Row[];
+  Months: string[];
+  MonthSubColumn: string[];
+  ReportData: ReportResponse[];
+  Month: string;
+  RowData: Row[];
 }
 
 const QuarterlyReport = ({
-  months,
-  monthSubColumn,
-  reportData,
-  month,
-  rowData,
+  Months,
+  MonthSubColumn,
+  ReportData,
+  Month,
+  RowData,
 }: QuarterlyReportProps) => {
   const [_startingMonthIndex, startingMonthString] =
-    getStartingMonthPeriodOfMonthReport(month);
+    getStartingMonthPeriodOfMonthReport(Month);
 
-  if (reportData.length === 0) {
+  if (ReportData.length === 0) {
     return <div></div>;
   }
 
@@ -49,23 +50,23 @@ const QuarterlyReport = ({
             NATURE
           </th>
           <th colSpan={4} className="border-x p-1">
-            {capitalize(months[Number(month.substring(5)) - 1])}
+            {capitalize(Months[Number(Month.substring(5)) - 1])}
           </th>
           <th colSpan={4} className="border-x p-1">
             {`${capitalize(startingMonthString)}-${
-              capitalize(months[Number(month.substring(5)) - 1])
+              capitalize(Months[Number(Month.substring(5)) - 1])
             }`}
           </th>
           <th colSpan={4} className="border-x p-1">
             {getCurrentPeriod(
-              Number(extractYearFromFullPeriode(month)),
-              Number(extractMonthFromFullPeriode(month)),
+              Number(extractYearFromFullPeriode(Month)),
+              Number(extractMonthFromFullPeriode(Month)),
             ).substring(0, 5)}
           </th>
         </tr>
         <tr>
           {[...Array(3)].map((_, index) => {
-            return monthSubColumn.map((subcolumn, subindex) => {
+            return MonthSubColumn.map((subcolumn, subindex) => {
               return (
                 <th
                   key={`${index}-${subindex}`}
@@ -81,10 +82,10 @@ const QuarterlyReport = ({
         </tr>
       </thead>
       <tbody>
-        {rowData.map((row, index) => {
-          const monthBudget = row.months[month.substring(5)].budget;
-          const monthUsage = row.months[month.substring(5)].usage;
-          const monthBalance = row.months[month.substring(5)].balance;
+        {RowData.map((row, index) => {
+          const monthBudget = row.Months[Month.substring(5)].Budget;
+          const monthUsage = row.Months[Month.substring(5)].Usage;
+          const monthBalance = row.Months[Month.substring(5)].Balance;
           const usagePercentage = (monthBalance / monthBudget) * 100;
 
           return (
