@@ -4,7 +4,7 @@ import Primitive from "../components/reusable/Primitive.tsx";
 import serverDomain from "../helper/serverDomain.ts";
 import useAuth from "../hooks/useAuth.tsx";
 import type { TraceApproveRequests, TraceRequestsCount } from "@scope/server";
-import { useEffect, useReducer, useState } from "react";
+import { useReducer } from "react";
 import stringContainsRedLight from "../helper/stringContainsRedLight.ts";
 import formatNumberToString from "../helper/formatNumberToString.ts";
 import capitalize from "../helper/capitalize.ts";
@@ -17,6 +17,7 @@ import NumberInput from "../components/reusable/inputs/NumberInput.tsx";
 import DateRangeInput from "../components/reusable/inputs/DateRangeInput.tsx";
 import SelectionInput from "../components/reusable/inputs/SelectionInput.tsx";
 import { useDebounce } from "../hooks/useDebounce.tsx";
+import usePurchasingRequests from "../hooks/usePurchasingRequests.tsx";
 
 const REQUESTS_URL = `${serverDomain}/trace/approve`;
 const REQUESTS_COUNT_URL = `${serverDomain}/trace/approve/count`;
@@ -36,7 +37,7 @@ const COLUMNS = [
 const RESULTS = ["All Results", "Approved", "In Progress", "Rejected"];
 
 interface Filters {
-  result: string;
+  status: string;
   pagingRange: number;
   startingDate: string;
   endingDate: string;
@@ -50,7 +51,7 @@ type FilterAction =
   | { type: "SET_PAGE"; page: number };
 
 const DEFAULT_FILTERS: Filters = {
-  result: "",
+  status: "",
   pagingRange: 20,
   startingDate: "",
   endingDate: "",
@@ -91,101 +92,41 @@ const FilterReducer = (state: Filters, action: FilterAction) => {
 const Approve = () => {
   const { authInfo, authIsLoading } = useAuth();
 
-  const [requests, setRequests] = useState<TraceApproveRequests[]>([]);
-  const [isRequestsLoading, setIsRequestsLoading] = useState(false);
-  const [isRequestsError, setIsRequestsError] = useState<Error | null>(null);
-  const [totalRequests, setTotalRequests] = useState(0);
-
   const [filters, setFilters] = useReducer(FilterReducer, DEFAULT_FILTERS);
 
   const debouncedSearch = useDebounce(filters.search, 750);
 
-  const applyParams = (url: URL) => {
-    if (filters.result !== "All Results" && filters.result !== "") {
-      url.searchParams.set("status", filters.result);
-    }
+  const params = new URLSearchParams();
+  if (filters.status !== "All Results" && filters.status !== "") {
+    params.set("status", filters.status);
+  }
+  if (filters.startingDate) params.set("startdate", filters.startingDate);
+  if (filters.endingDate) params.set("enddate", filters.endingDate);
+  if (authInfo) params.set("nrp", authInfo.nrp);
+  if (debouncedSearch) params.set("search", debouncedSearch);
+  params.set("page", String(filters.currentPage));
+  params.set("pagination", String(filters.pagingRange));
 
-    if (filters.startingDate) {
-      url.searchParams.set("startdate", filters.startingDate);
-    }
-
-    if (filters.endingDate) url.searchParams.set("enddate", filters.endingDate);
-
-    if (debouncedSearch) {
-      url.searchParams.set("search", debouncedSearch);
-    }
-
-    url.searchParams.set("page", String(filters.currentPage));
-    url.searchParams.set("pagination", String(filters.pagingRange));
-
-    if (authInfo) url.searchParams.set("nrp", authInfo.nrp);
-  };
-
-  useEffect(() => {
-    setIsRequestsLoading(true);
-    const abortController = new AbortController();
-
-    const fetchData = async () => {
-      const requestUrl = new URL(REQUESTS_URL);
-      const requestCountUrl = new URL(REQUESTS_COUNT_URL);
-
-      applyParams(requestUrl);
-      applyParams(requestCountUrl);
-
-      try {
-        const [requestResponse, countResponse] = await Promise.all([
-          fetch(requestUrl.toString(), { signal: abortController.signal }),
-          fetch(requestCountUrl.toString(), { signal: abortController.signal }),
-        ]);
-
-        if (!requestResponse.ok) {
-          throw new Error(`HTTP error! status: ${requestResponse.status}`);
-        }
-
-        const requestResponseJson: TraceApproveRequests[] =
-          await requestResponse.json();
-        const countResponseJson: TraceRequestsCount[] = await countResponse
-          .json();
-
-        setRequests(requestResponseJson);
-        if (countResponseJson && countResponseJson.length > 0) {
-          setTotalRequests(countResponseJson[0].Count);
-        }
-      } catch (err) {
-        if (err instanceof Error && err.name === "AbortError") {
-          return;
-        }
-        const error: Error = new Error(
-          `Encountered an error when fetching API. Please ensure your connection is stable.\n(${err}).`,
-        );
-        setIsRequestsError(error);
-      } finally {
-        setIsRequestsLoading(false);
-      }
-    };
-
-    fetchData();
-
-    return () => abortController.abort();
-  }, [
-    authInfo,
-    filters.result,
-    filters.pagingRange,
-    filters.currentPage,
-    filters.startingDate,
-    filters.endingDate,
-    debouncedSearch,
-  ]);
+  const {
+    requestIsLoading,
+    requestIsError,
+    totalRequestsAtDatabase,
+    requests,
+  } = usePurchasingRequests<TraceApproveRequests, TraceRequestsCount>(
+    REQUESTS_URL,
+    REQUESTS_COUNT_URL,
+    params.toString(),
+  );
 
   const totalPages = Math.max(
     1,
-    Math.ceil(totalRequests / filters.pagingRange),
+    Math.ceil(totalRequestsAtDatabase / filters.pagingRange),
   );
 
   return (
     <Primitive
-      isLoading={[authIsLoading]}
-      isErr={[isRequestsError]}
+      isLoading={[requestIsLoading, authIsLoading]}
+      isErr={[requestIsError]}
       componentName="Approve.tsx"
       pageTitle="Approval Menu"
     >
@@ -199,12 +140,12 @@ const Approve = () => {
             requiredInput={false}
             defaultDisabledValue="All Results"
             options={RESULTS}
-            value={filters.result}
+            value={filters.status}
             onChangeHandler={(e) => {
               const newResult = e.target.value;
               setFilters({
                 type: "SET_FIELD",
-                field: "result",
+                field: "status",
                 value: newResult,
               });
             }}
@@ -282,7 +223,7 @@ const Approve = () => {
             <Button id="reset-filters" variant="black" label="Reset" />
           </div>
         </div>
-        {isRequestsLoading
+        {requestIsLoading
           ? <LoadingFallback />
           : requests && requests.length === 0
           ? (

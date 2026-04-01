@@ -4,7 +4,7 @@ import NumberInput from "../components/reusable/inputs/NumberInput.tsx";
 import DateRangeInput from "../components/reusable/inputs/DateRangeInput.tsx";
 import TextInput from "../components/reusable/inputs/TextInput.tsx";
 import { Link } from "react-router-dom";
-import { useEffect, useMemo, useReducer, useState } from "react";
+import { useMemo, useReducer } from "react";
 import type {
   FormRequest,
   SectionName,
@@ -22,6 +22,7 @@ import { useDebounce } from "../hooks/useDebounce.tsx";
 import serverDomain from "../helper/serverDomain.ts";
 import { formatDate } from "../helper/formatDate.ts";
 import { statusStyling } from "../helper/statusStyling.ts";
+import usePurchasingRequests from "../hooks/usePurchasingRequests.tsx";
 
 interface SectionInfo {
   IDSection: number;
@@ -105,12 +106,6 @@ const FilterReducer = (state: Filters, action: FilterAction) => {
 
 const Home = () => {
   const [filters, setFilters] = useReducer(FilterReducer, DEFAULT_FILTERS);
-  const [totalRequestInstances, setTotalRequestInstances] = useState(0);
-  const [requestData, setRequestData] = useState<FormRequest[] | null>(null);
-  const [isRequestDataLoading, setIsRequestDataLoading] = useState(false);
-  const [isRequestDataError, setIsRequestDataError] = useState<Error | null>(
-    null,
-  );
   const debouncedSearch = useDebounce(filters.search, 750);
 
   const {
@@ -151,101 +146,49 @@ const Home = () => {
     });
   }, [supervisorNames]);
 
-  const applyParams = (url: URL) => {
-    if (filters.section.IDSection !== SELECT_ALL_INDEX) {
-      url.searchParams.set(
-        "requestorsectionid",
-        filters.section.IDSection.toString(),
-      );
-    }
-    if (filters.status !== "All Status" && filters.status !== "") {
-      url.searchParams.set("status", filters.status);
-    }
-    if (filters.supervisor.IDUser !== SELECT_ALL_INDEX) {
-      url.searchParams.set(
-        "currentsupervisorid",
-        String(filters.supervisor.IDUser),
-      );
-    }
-    if (filters.startingDate) {
-      url.searchParams.set("startdate", filters.startingDate);
-    }
-    if (filters.endingDate) url.searchParams.set("enddate", filters.endingDate);
+  const params = new URLSearchParams();
+  if (filters.status !== "All Status" && filters.status !== "") {
+    params.set("status", filters.status);
+  }
+  if (filters.section.IDSection !== SELECT_ALL_INDEX) {
+    params.set(
+      "requestorsectionid",
+      filters.section.IDSection.toString(),
+    );
+  }
+  if (filters.supervisor.IDUser !== SELECT_ALL_INDEX) {
+    params.set(
+      "currentsupervisorid",
+      String(filters.supervisor.IDUser),
+    );
+  }
+  if (debouncedSearch) params.set("search", debouncedSearch);
+  if (filters.startingDate) params.set("startdate", filters.startingDate);
+  if (filters.endingDate) params.set("enddate", filters.endingDate);
+  if (debouncedSearch) params.set("search", debouncedSearch);
+  params.set("page", String(filters.currentPage));
+  params.set("pagination", String(filters.pagingRange));
 
-    if (debouncedSearch) {
-      url.searchParams.set("search", debouncedSearch);
-    }
-  };
-
-  useEffect(() => {
-    const abortController = new AbortController();
-
-    const fetchData = async () => {
-      const requestUrl = new URL(REQUESTS_URL);
-      const countUrl = new URL(REQUESTS_COUNT_URL);
-
-      applyParams(requestUrl);
-      applyParams(countUrl);
-
-      requestUrl.searchParams.set("pagination", String(filters.pagingRange));
-      requestUrl.searchParams.set("page", String(filters.currentPage));
-
-      setIsRequestDataLoading(true);
-
-      try {
-        const [requestResponse, countResponse] = await Promise.all([
-          fetch(requestUrl.toString(), { signal: abortController.signal }),
-          fetch(countUrl.toString(), { signal: abortController.signal }),
-        ]);
-
-        if (!requestResponse.ok || !countResponse.ok) {
-          throw new Error(`HTTP error! status: ${requestResponse.status}`);
-        }
-
-        const requestResponseJson: FormRequest[] = await requestResponse.json();
-        const countResponseJson: TraceRequestsCount[] = await countResponse
-          .json();
-
-        setRequestData(requestResponseJson);
-        if (countResponseJson && countResponseJson.length > 0) {
-          setTotalRequestInstances(countResponseJson[0].Count);
-        }
-      } catch (err) {
-        if (err instanceof Error && err.name === "AbortError") {
-          return;
-        }
-        const error: Error = new Error(
-          `Encountered an error when fetching API. Please ensure your connection is stable.\n(${err}).`,
-        );
-        setIsRequestDataError(error);
-      } finally {
-        setIsRequestDataLoading(false);
-      }
-    };
-
-    fetchData();
-
-    return () => abortController.abort();
-  }, [
-    filters.section,
-    filters.status,
-    filters.supervisor,
-    filters.pagingRange,
-    filters.currentPage,
-    filters.startingDate,
-    filters.endingDate,
-    debouncedSearch,
-  ]);
+  const {
+    requestIsLoading,
+    requestIsError,
+    totalRequestsAtDatabase,
+    requests,
+  } = usePurchasingRequests<FormRequest, TraceRequestsCount>(
+    REQUESTS_URL,
+    REQUESTS_COUNT_URL,
+    params.toString(),
+  );
 
   const totalPages = Math.max(
     1,
-    Math.ceil(totalRequestInstances / filters.pagingRange),
+    Math.ceil(totalRequestsAtDatabase / filters.pagingRange),
   );
 
   return (
     <Primitive
       isLoading={[isSectionLoading, isSupervisorLoading]}
-      isErr={[sectionError, supervisorError, isRequestDataError]}
+      isErr={[sectionError, supervisorError, requestIsError]}
       componentName="Home.tsx"
       pageTitle="PR Online"
     >
@@ -401,9 +344,9 @@ const Home = () => {
         </div>
       </div>
 
-      {isRequestDataLoading
+      {requestIsLoading
         ? <LoadingFallback />
-        : requestData && requestData.length === 0
+        : requests && requests.length === 0
         ? (
           <div className="mt-4 font-bold text-2xl">
             There is no requests with the selected filters
@@ -426,8 +369,8 @@ const Home = () => {
               </tr>
             </thead>
             <tbody>
-              {requestData &&
-                requestData.map((request, index) => {
+              {requests &&
+                requests.map((request, index) => {
                   return (
                     <tr key={index}>
                       <td className="text-xs lg:text-sm xl:text-base | whitespace-nowrap text-center border break-all p-2">
