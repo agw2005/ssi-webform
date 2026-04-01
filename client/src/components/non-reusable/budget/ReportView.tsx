@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
 import { useReducer } from "react";
-import getCurrentPeriod from "../../../helper/getCurrentPeriod.ts";
 
 interface ReportViewProps {
   fileResources: string[];
@@ -23,19 +22,6 @@ type SelectionAction =
     }
   | { type: "UPDATE_SECTION"; value: string }
   | { type: "UPDATE_NATURE"; value: string };
-
-const DEFAULT_OPTIONS_SELECTION: Selection = {
-  general: {
-    fileResource: "Show All",
-    period: getCurrentPeriod().substring(0, 6),
-  },
-  byQuarter: {
-    month: new Date().toISOString().substring(0, 7),
-    fileResource: "ACC",
-  },
-  bySection: { period: getCurrentPeriod().substring(0, 6) },
-  byNature: { period: getCurrentPeriod().substring(0, 6) },
-};
 
 const optionReducer = (state: Selection, action: SelectionAction) => {
   switch (action.type) {
@@ -65,9 +51,24 @@ const optionReducer = (state: Selection, action: SelectionAction) => {
 };
 
 const ReportView = ({ fileResources, periods }: ReportViewProps) => {
+  console.log(periods);
+
+  const defaultOptionsSelection: Selection = {
+    general: {
+      fileResource: "Show All",
+      period: periods[0],
+    },
+    byQuarter: {
+      month: new Date().toISOString().substring(0, 7),
+      fileResource: "ACC",
+    },
+    bySection: { period: periods[0] },
+    byNature: { period: periods[0] },
+  };
+
   const [options, setOptions] = useReducer(
     optionReducer,
-    DEFAULT_OPTIONS_SELECTION,
+    defaultOptionsSelection,
   );
 
   return (
