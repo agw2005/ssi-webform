@@ -16,7 +16,7 @@ import serverDomain from "../helper/serverDomain.ts";
 import mysqlDateIsoStringToJSString from "../helper/mysqlDateIsoStringToJSString.ts";
 import useAuth from "../hooks/useAuth.tsx";
 import Button from "../components/reusable/Button.tsx";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Dialog, { toggleDialog } from "../components/reusable/Dialog.tsx";
 import { getCurrentApproverLevel } from "../helper/getCurrentApproverLevel.ts";
 import generateRequestPdf from "../helper/generateRequestPdf.ts";
@@ -158,27 +158,30 @@ const Request = () => {
 
   const rejectReference = useRef<HTMLDialogElement>(null);
 
-  const [currentOverview, _] = useState<Overview>(() => {
-    if (!requestOverviewData?.length) return EMPTY_OVERVIEW;
-    else {
-      return {
-        "Form ID": requestOverviewData[0].FormID,
-        "Form Number": requestOverviewData[0].NoForm,
-        Requestor: `${capitalize(requestOverviewData[0].Requestor)} (${
-          requestOverviewData[0].RequestorNRP
-        }) - ${requestOverviewData[0].RequestorSection}`,
-        "PR Number": requestOverviewData[0].NoPR,
-        Subject: requestOverviewData[0].Subject,
-        Amount: `${formatNumberToString(requestOverviewData[0].Amount)} USD`,
-        "Return On Outgoing": requestOverviewData[0].ReturnOnOutgoing,
-        Remarks: requestOverviewData[0].Remarks || "",
-        "Cost Center": requestOverviewData[0].CostCenter,
-        Nature: requestOverviewData[0].Nature,
-        "ID Budget": requestOverviewData[0].IDBudget,
-        Attachment: "",
-      };
-    }
-  });
+  const [currentOverview, setCurrentOverview] = useState<Overview>(
+    EMPTY_OVERVIEW,
+  );
+
+  useEffect(() => {
+    if (!requestOverviewData?.length) return;
+
+    setCurrentOverview({
+      "Form ID": requestOverviewData[0].FormID,
+      "Form Number": requestOverviewData[0].NoForm,
+      Requestor: `${capitalize(requestOverviewData[0].Requestor)} (${
+        requestOverviewData[0].RequestorNRP
+      }) - ${requestOverviewData[0].RequestorSection}`,
+      "PR Number": requestOverviewData[0].NoPR,
+      Subject: requestOverviewData[0].Subject,
+      Amount: `${formatNumberToString(requestOverviewData[0].Amount)} USD`,
+      "Return On Outgoing": requestOverviewData[0].ReturnOnOutgoing,
+      Remarks: requestOverviewData[0].Remarks || "",
+      "Cost Center": requestOverviewData[0].CostCenter,
+      Nature: requestOverviewData[0].Nature,
+      "ID Budget": requestOverviewData[0].IDBudget,
+      Attachment: "",
+    });
+  }, [requestOverviewData]);
 
   const handleVerdict = async (
     verdict: "accept" | "reject",
