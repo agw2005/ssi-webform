@@ -16,7 +16,7 @@ import serverDomain from "../helper/serverDomain.ts";
 import mysqlDateIsoStringToJSString from "../helper/mysqlDateIsoStringToJSString.ts";
 import useAuth from "../hooks/useAuth.tsx";
 import Button from "../components/reusable/Button.tsx";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import Dialog, { toggleDialog } from "../components/reusable/Dialog.tsx";
 import { getCurrentApproverLevel } from "../helper/getCurrentApproverLevel.ts";
 import jsPDF from "jspdf";
@@ -143,22 +143,27 @@ const Request = () => {
     reactRouterParams.requestId,
   );
 
-  const [currentRemarks, setCurrentRemarks] = useState("");
-  const [newRemarks, setNewRemarks] = useState("");
+  const [currentRemarks, setCurrentRemarks] = useState(() => {
+    if (!requestOverviewData?.length) return "";
+    else {
+      return requestOverviewData[0].Remarks;
+    }
+  });
+  const [newRemarks, setNewRemarks] = useState(() => {
+    if (!requestOverviewData?.length) return "";
+    else {
+      return requestOverviewData[0].Remarks;
+    }
+  });
   const [selectedRejects, setSelectedRejects] = useState<number[]>([]);
   const [rejectEmptyErr, setRejectEmptyErr] = useState(false);
 
   const rejectReference = useRef<HTMLDialogElement>(null);
 
-  const [currentOverview, setCurrentOverview] = useState<Overview>(
-    EMPTY_OVERVIEW,
-  );
-
-  useEffect(() => {
-    if (requestOverviewData && requestOverviewData.length > 0) {
-      setCurrentRemarks(requestOverviewData[0].Remarks || "");
-      setNewRemarks(requestOverviewData[0].Remarks || "");
-      setCurrentOverview({
+  const [currentOverview, _] = useState<Overview>(() => {
+    if (!requestOverviewData?.length) return EMPTY_OVERVIEW;
+    else {
+      return {
         "Form ID": requestOverviewData[0].FormID,
         "Form Number": requestOverviewData[0].NoForm,
         Requestor: `${capitalize(requestOverviewData[0].Requestor)} (${
@@ -173,9 +178,9 @@ const Request = () => {
         Nature: requestOverviewData[0].Nature,
         "ID Budget": requestOverviewData[0].IDBudget,
         Attachment: "",
-      });
+      };
     }
-  }, [requestOverviewData]);
+  });
 
   const handleVerdict = async (
     verdict: "accept" | "reject",
