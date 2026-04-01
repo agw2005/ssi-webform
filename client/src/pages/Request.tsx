@@ -276,7 +276,7 @@ const Request = () => {
                     compress: true,
                     precision: 16,
                     floatPrecision: 16,
-                  });
+                  }) as jsPDF & { lastAutoTable: { finalY: number } };
 
                   const isCellNoWrap = (cell: CellHookData): boolean => {
                     const element = cell.cell.raw as HTMLTableCellElement;
@@ -341,6 +341,7 @@ const Request = () => {
                   }
 
                   index += 1;
+
                   autoTable(requestPdf, {
                     html: "#request-items",
                     theme: "grid",
@@ -366,11 +367,13 @@ const Request = () => {
                     },
                   });
 
-                  index += 5;
+                  const lastTableFinalYAxis =
+                    requestPdf.lastAutoTable.finalY || 0;
+
                   autoTable(requestPdf, {
                     html: "#supervisor-path",
                     theme: "grid",
-                    startY: initialYAxis.overview + space * index,
+                    startY: lastTableFinalYAxis + space * 1,
                     styles: {
                       fontSize: 6,
                       cellPadding: 1.5,
