@@ -15,7 +15,7 @@ export type { TraceApproveRequests } from "./models/Trace.d.ts";
 export type { FrmPRDRequestItem as RequestItem } from "./models/FrmPRD.d.ts";
 export type { UploadFileMinimalInformation as UploadedFile } from "./models/UploadFile.d.ts";
 export type { TraceApproverPath as ApproverPath } from "./models/TraceD.d.ts";
-export type { RequestItemsAtBudgetView as RequestItemBudget } from "./models/FrmPRH.d.ts";
+export type { RequestItemsAtBudgetView as BudgetUsages } from "./models/FrmPRH.d.ts";
 export type { ForexAPIResponse } from "./models/FrmPRH.d.ts";
 export type {
   LoginPayload,

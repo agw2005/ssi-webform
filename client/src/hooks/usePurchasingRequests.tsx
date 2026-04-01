@@ -20,10 +20,17 @@ const usePurchasingRequests = <T, U extends { Count: number }>(
     let ignore = false;
 
     const fetchData = async () => {
+      const requestUrlParameterized = new URL(requestUrl);
+      const requestCountUrlParameterized = new URL(requestCountUrl);
+      requestUrlParameterized.search = queryString;
+      requestCountUrlParameterized.search = queryString;
+
       try {
         const [requestResponse, countResponse] = await Promise.all([
-          fetch(requestUrl, { signal: abortController.signal }),
-          fetch(requestCountUrl, { signal: abortController.signal }),
+          fetch(requestUrlParameterized, { signal: abortController.signal }),
+          fetch(requestCountUrlParameterized, {
+            signal: abortController.signal,
+          }),
         ]);
 
         if (!requestResponse.ok) {

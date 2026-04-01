@@ -1,39 +1,10 @@
 import { Link, useSearchParams } from "react-router-dom";
 import Primitive from "../components/reusable/Primitive.tsx";
 import Button from "../components/reusable/Button.tsx";
-import { useEffect, useState } from "react";
 import dateToMySQLDateInput from "../helper/dateToMySQLDateInput.ts";
 import formatNumberToString from "../helper/formatNumberToString.ts";
 import capitalize from "../helper/capitalize.ts";
-import serverDomain from "../helper/serverDomain.ts";
-
-const REQUEST_SPECIFIC_URL = `${serverDomain}/frmprh`;
-
-interface BudgetViewRequestResponse {
-  IDTrace: string;
-  ItemId: string;
-  NoPR: string;
-  AcctAssgCategory: string;
-  CostCenter: string;
-  Nature: string;
-  Description: string;
-  Qty: number;
-  Measure: string;
-  UnitPrice: number;
-  Currency: string;
-  EstimationDeliveryDate: string;
-  Vendor: string;
-  Reason: string;
-  StatusItem: string;
-  RejectedBy: string;
-  Supplier: string;
-  NetPrice: string;
-  DeliveryDate: string;
-  NoPO: string;
-  Rate: number;
-  IDBudget: string;
-  SubmitDate: string;
-}
+import useBudgetUsages from "../hooks/useBudgetUsages.tsx";
 
 const COLUMNS = [
   "Trace ID",
@@ -65,80 +36,36 @@ const Usage = () => {
   const monthIndex = Number(searchParams.get("month")) || 0;
   const nature = searchParams.get("nature") || "";
   const costCenter = searchParams.get("costcenter") || "";
-
-  const [requestsData, setRequestsData] = useState<
-    BudgetViewRequestResponse[] | null
-  >(null);
-  const [isRequestsDataLoading, setIsRequestsDataLoading] = useState(false);
-  const [isRequestsDataError, setIsRequestsDataError] = useState<Error | null>(
-    null,
+  const startDate = dateToMySQLDateInput(new Date(`${monthIndex}/1/${year}`));
+  const endDate = dateToMySQLDateInput(
+    new Date(
+      `${monthIndex !== 12 ? monthIndex + 1 : 1}/1/${
+        monthIndex !== 12 ? year : year + 1
+      }`,
+    ),
   );
 
-  const applyParams = (url: URL) => {
-    const startDate = dateToMySQLDateInput(new Date(`${monthIndex}/1/${year}`));
-    const endDate = dateToMySQLDateInput(
-      new Date(
-        `${monthIndex !== 12 ? monthIndex + 1 : 1}/1/${
-          monthIndex !== 12 ? year : year + 1
-        }`,
-      ),
-    );
-    url.searchParams.set("nature", nature);
-    url.searchParams.set("costcenter", costCenter);
-    url.searchParams.set("startdate", startDate);
-    url.searchParams.set("enddate", endDate);
-  };
+  const params = new URLSearchParams();
+  params.set("nature", nature);
+  params.set("costcenter", costCenter);
+  params.set("startdate", startDate);
+  params.set("enddate", endDate);
 
-  useEffect(() => {
-    const requestUrl = new URL(REQUEST_SPECIFIC_URL);
-    const abortController = new AbortController();
-    setIsRequestsDataLoading(true);
-    applyParams(requestUrl);
-
-    const fetchData = async () => {
-      try {
-        const response = await fetch(requestUrl.toString(), {
-          signal: abortController.signal,
-        });
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const budgetViewRequests: BudgetViewRequestResponse[] = await response
-          .json();
-
-        setRequestsData(budgetViewRequests);
-      } catch (err) {
-        if (err instanceof Error && err.name === "AbortError") {
-          return;
-        }
-        const error: Error = new Error(
-          `Encountered an error when fetching API. Please ensure your connection is stable.\n(${err}).`,
-        );
-        setIsRequestsDataError(error);
-      } finally {
-        setIsRequestsDataLoading(false);
-      }
-    };
-
-    fetchData();
-
-    return () => {
-      abortController.abort();
-    };
-  }, []);
+  const { budgetUsages, usagesIsLoading, usagesIsError } = useBudgetUsages(
+    params.toString(),
+  );
 
   return (
     <Primitive
-      isLoading={[isRequestsDataLoading]}
-      isErr={[isRequestsDataError]}
+      isLoading={[usagesIsLoading]}
+      isErr={[usagesIsError]}
       componentName="Usage.tsx"
       pageTitle="Usage"
     >
       <div className="flex" onClick={() => history.back()}>
         <Button id="go-back" variant="black" label="Back" />
       </div>
-      {requestsData && requestsData.length === 0
+      {budgetUsages && budgetUsages.length === 0
         ? <div className="mt-4 font-bold">There is not items</div>
         : (
           <div className="overflow-x-auto min-h-50 max-h-160 mt-4">
@@ -158,87 +85,87 @@ const Usage = () => {
                 </tr>
               </thead>
               <tbody>
-                {requestsData &&
-                  requestsData.map((requestData, index) => {
+                {budgetUsages &&
+                  budgetUsages.map((budgetUsage, index) => {
                     return (
                       <tr key={index}>
                         <td className="text-xs lg:text-sm xl:text-base | border p-2 whitespace-nowrap text-center">
-                          {requestData.IDTrace}
+                          {budgetUsage.IDTrace}
                         </td>
                         <td className="text-xs lg:text-sm xl:text-base | border p-2 whitespace-nowrap text-center">
-                          {requestData.ItemId}
+                          {budgetUsage.ItemId}
                         </td>
                         <td className="text-xs lg:text-sm xl:text-base | border p-2 whitespace-nowrap text-center">
-                          {requestData.NoPR}
+                          {budgetUsage.NoPR}
                         </td>
                         <td className="text-xs lg:text-sm xl:text-base | border p-2 whitespace-nowrap text-center">
-                          {requestData.AcctAssgCategory
-                            ? requestData.AcctAssgCategory
+                          {budgetUsage.AcctAssgCategory
+                            ? budgetUsage.AcctAssgCategory
                             : "-"}
                         </td>
                         <td className="text-xs lg:text-sm xl:text-base | border p-2 whitespace-nowrap text-center">
-                          {requestData.CostCenter}
+                          {budgetUsage.CostCenter}
                         </td>
                         <td className="text-xs lg:text-sm xl:text-base | border p-2 whitespace-nowrap text-center">
-                          {requestData.Nature}
+                          {budgetUsage.Nature}
                         </td>
                         <td className="text-xs lg:text-sm xl:text-base | border p-2 min-w-48 text-center">
                           <Link
                             className="text-blue-700 underline"
-                            to={`/request/${requestData.IDTrace}`}
+                            to={`/request/${budgetUsage.IDTrace}`}
                           >
-                            {requestData.Description}
+                            {budgetUsage.Description}
                           </Link>
                         </td>
                         <td className="text-xs lg:text-sm xl:text-base | border p-2 whitespace-nowrap text-center">
-                          {formatNumberToString(requestData.Qty)}{" "}
-                          {capitalize(requestData.Measure)}
+                          {formatNumberToString(budgetUsage.Qty)}{" "}
+                          {capitalize(budgetUsage.Measure)}
                         </td>
                         <td className="text-xs lg:text-sm xl:text-base | border p-2 whitespace-nowrap text-center">
-                          {formatNumberToString(requestData.UnitPrice)}
+                          {formatNumberToString(budgetUsage.UnitPrice)}
                         </td>
                         <td className="text-xs lg:text-sm xl:text-base | border p-2 whitespace-nowrap text-center">
-                          {requestData.Currency}
+                          {budgetUsage.Currency}
                         </td>
                         <td className="text-xs lg:text-sm xl:text-base | border p-2 whitespace-nowrap text-center">
-                          {requestData.EstimationDeliveryDate}
+                          {budgetUsage.EstimationDeliveryDate}
                         </td>
                         <td className="text-xs lg:text-sm xl:text-base | border p-2 whitespace-nowrap text-center">
-                          {requestData.Vendor}
+                          {budgetUsage.Vendor}
                         </td>
                         <td className="text-xs lg:text-sm xl:text-base | border p-2 whitespace-nowrap text-center">
-                          {requestData.Reason}
+                          {budgetUsage.Reason}
                         </td>
                         <td className="text-xs lg:text-sm xl:text-base | border p-2 whitespace-nowrap text-center">
-                          {requestData.StatusItem}
+                          {budgetUsage.StatusItem}
                         </td>
                         <td className="text-xs lg:text-sm xl:text-base | border p-2 whitespace-nowrap text-center">
-                          {requestData.RejectedBy
-                            ? requestData.RejectedBy
+                          {budgetUsage.RejectedBy
+                            ? budgetUsage.RejectedBy
                             : "-"}
                         </td>
                         <td className="text-xs lg:text-sm xl:text-base | border p-2 whitespace-nowrap text-center">
-                          {requestData.Supplier ? requestData.Supplier : "-"}
+                          {budgetUsage.Supplier ? budgetUsage.Supplier : "-"}
                         </td>
                         <td className="text-xs lg:text-sm xl:text-base | border p-2 whitespace-nowrap text-center">
                           {formatNumberToString(
-                            requestData.UnitPrice * requestData.Qty,
+                            budgetUsage.UnitPrice * budgetUsage.Qty,
                           )}
                         </td>
                         <td className="text-xs lg:text-sm xl:text-base | border p-2 whitespace-nowrap text-center">
-                          {requestData.DeliveryDate
-                            ? requestData.DeliveryDate
+                          {budgetUsage.DeliveryDate
+                            ? budgetUsage.DeliveryDate
                             : "-"}
                         </td>
                         <td className="text-xs lg:text-sm xl:text-base | border p-2 whitespace-nowrap text-center">
-                          {requestData.NoPO ? requestData.NoPO : "-"}
+                          {budgetUsage.NoPO ? budgetUsage.NoPO : "-"}
                         </td>
                         <td className="text-xs lg:text-sm xl:text-base | border p-2 whitespace-nowrap text-center">
-                          {formatNumberToString(requestData.Rate)}{" "}
-                          {requestData.Currency}
+                          {formatNumberToString(budgetUsage.Rate)}{" "}
+                          {budgetUsage.Currency}
                         </td>
                         <td className="text-xs lg:text-sm xl:text-base | border p-2 whitespace-nowrap text-center">
-                          {requestData.IDBudget}
+                          {budgetUsage.IDBudget}
                         </td>
                       </tr>
                     );
