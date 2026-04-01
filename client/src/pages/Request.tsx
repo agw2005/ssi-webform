@@ -19,11 +19,9 @@ import Button from "../components/reusable/Button.tsx";
 import { useRef, useState } from "react";
 import Dialog, { toggleDialog } from "../components/reusable/Dialog.tsx";
 import { getCurrentApproverLevel } from "../helper/getCurrentApproverLevel.ts";
-import jsPDF from "jspdf";
-import autoTable from "jspdf-autotable/es";
-import type { CellHookData } from "jspdf-autotable/es";
+import generateRequestPdf from "../helper/generateRequestPdf.ts";
 
-interface Overview {
+export interface Overview {
   "Form ID": string;
   "Form Number": string;
   Requestor: string;
@@ -265,147 +263,11 @@ const Request = () => {
               </div>
               <div
                 className="bg-blue-700/40 hover:bg-blue-700/80 active:bg-blue-700/60 | flex-1 text-center px-4 py-2 select-none"
-                onClick={() => {
-                  const a4PortraitSize = { x: 210, y: 297 };
-                  const initialXAxis = {
-                    main: 15,
-                    overviewData: 45,
-                  };
-                  const initialYAxis = {
-                    overview: 15,
-                    overviewUnderline: 17,
-                  };
-                  const space = 6;
-                  const requestPdf = new jsPDF({
-                    orientation: "portrait",
-                    unit: "mm",
-                    format: "a4",
-                    compress: true,
-                    precision: 16,
-                    floatPrecision: 16,
-                  }) as jsPDF & { lastAutoTable: { finalY: number } };
-
-                  const isCellNoWrap = (cell: CellHookData): boolean => {
-                    const element = cell.cell.raw as HTMLTableCellElement;
-                    return element.classList.contains("whitespace-nowrap");
-                  };
-                  requestPdf.setFontSize(8);
-                  requestPdf.setFont("times", "normal", "bold");
-
-                  requestPdf.text(
-                    "ID Trace",
-                    initialXAxis.main,
-                    initialYAxis.overview,
-                    {
-                      align: "left",
-                    },
-                  );
-
-                  requestPdf.text(
+                onClick={() =>
+                  generateRequestPdf(
                     reactRouterParams.requestId || "",
-                    initialXAxis.overviewData,
-                    initialYAxis.overview,
-                    {
-                      align: "left",
-                    },
-                  );
-
-                  requestPdf.line(
-                    initialXAxis.main,
-                    initialYAxis.overviewUnderline,
-                    a4PortraitSize.x - initialXAxis.main,
-                    initialYAxis.overviewUnderline,
-                  );
-
-                  let index = 1;
-                  for (const [key, value] of Object.entries(currentOverview)) {
-                    requestPdf.text(
-                      String(key),
-                      initialXAxis.main,
-                      initialYAxis.overview + space * index,
-                      {
-                        align: "left",
-                      },
-                    );
-
-                    requestPdf.text(
-                      String(value),
-                      initialXAxis.overviewData,
-                      initialYAxis.overview + space * index,
-                      {
-                        align: "left",
-                      },
-                    );
-
-                    requestPdf.line(
-                      initialXAxis.main,
-                      initialYAxis.overviewUnderline + space * index,
-                      a4PortraitSize.x - initialXAxis.main,
-                      initialYAxis.overviewUnderline + space * index,
-                    );
-
-                    index++;
-                  }
-
-                  index += 1;
-
-                  autoTable(requestPdf, {
-                    html: "#request-items",
-                    theme: "grid",
-                    startY: initialYAxis.overview + space * index,
-                    styles: {
-                      fontSize: 6,
-                      cellPadding: 1.5,
-                      halign: "center",
-                      valign: "middle",
-                      textColor: "black",
-                      lineColor: "black",
-                      fillColor: "white",
-                      lineWidth: 0.1,
-                    },
-                    margin: {
-                      left: initialXAxis.main,
-                      right: initialXAxis.main,
-                    },
-                    didParseCell: (cellContent) => {
-                      if (isCellNoWrap(cellContent)) {
-                        cellContent.cell.styles.cellWidth = "wrap";
-                      }
-                    },
-                  });
-
-                  const lastTableFinalYAxis = requestPdf.lastAutoTable.finalY ||
-                    0;
-
-                  autoTable(requestPdf, {
-                    html: "#supervisor-path",
-                    theme: "grid",
-                    startY: lastTableFinalYAxis + space * 1,
-                    styles: {
-                      fontSize: 6,
-                      cellPadding: 1.5,
-                      halign: "center",
-                      valign: "middle",
-                      textColor: "black",
-                      lineColor: "black",
-                      fillColor: "white",
-                      lineWidth: 0.1,
-                    },
-                    margin: {
-                      left: initialXAxis.main,
-                      right: initialXAxis.main,
-                    },
-                    didParseCell: (cellContent) => {
-                      if (isCellNoWrap(cellContent)) {
-                        cellContent.cell.styles.cellWidth = "wrap";
-                      }
-                    },
-                  });
-
-                  requestPdf.save(
-                    `Request_${reactRouterParams.requestId}_A4.pdf`,
-                  );
-                }}
+                    currentOverview,
+                  )}
               >
                 Print Request
               </div>
