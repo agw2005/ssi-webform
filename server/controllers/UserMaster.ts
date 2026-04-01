@@ -1,8 +1,8 @@
 import type mysql from "mysql2/promise";
 import type {
-  UserMasterName,
-  UserIdByName,
   AuthInfo,
+  UserIdByName,
+  UserMasterName,
 } from "../models/UserMaster.d.ts";
 import type { FieldPacket } from "mysql2/promise.js";
 
@@ -67,7 +67,8 @@ export const patchNewLogin = async (
   const seconds = String(now.getSeconds()).padStart(2, "0");
   const cycle = now.getHours() >= 12 ? "PM" : "AM";
 
-  const formattedNow = `${month}/${date}/${year} ${hours}:${minutes}:${seconds} ${cycle}`;
+  const formattedNow =
+    `${month}/${date}/${year} ${hours}:${minutes}:${seconds} ${cycle}`;
 
   await pool.query(
     `UPDATE UserMaster

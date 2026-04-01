@@ -14,7 +14,7 @@ import type {
   Nature,
   ThirdStepInputs,
 } from "@scope/server";
-import type { ForexRates, ForexAPIResponse } from "../../../hooks/useForex.tsx";
+import type { ForexAPIResponse, ForexRates } from "../../../hooks/useForex.tsx";
 import formatNumberToString from "../../../helper/formatNumberToString.ts";
 import formatStringToNumber from "../../../helper/formatStringToNumber.ts";
 import getCurrentPeriod from "../../../helper/getCurrentPeriod.ts";
@@ -74,7 +74,9 @@ interface BudgetSummary {
 const DEFAULT_USAGE = {
   costCenter: "",
   budgetOrNature: "",
-  periode: `${String(new Date().toLocaleString("default", { month: "long" }))} ${String(new Date().getFullYear())}`,
+  periode: `${
+    String(new Date().toLocaleString("default", { month: "long" }))
+  } ${String(new Date().getFullYear())}`,
   balance: NO_BALANCE_VALUE,
   description: "",
   quantity: "",
@@ -169,20 +171,18 @@ const ThirdStep = ({
   const summarizedBudgets = useMemo(() => {
     const summaryMap = thirdStepInputsGetter.usages.reduce(
       (accumulator, usage) => {
-        const costCenterAndNatureCombination = `${usage.costCenter}-${usage.budgetOrNature}`;
+        const costCenterAndNatureCombination =
+          `${usage.costCenter}-${usage.budgetOrNature}`;
         const qty = formatStringToNumber(usage.quantity);
         const price = formatStringToNumber(usage.unitPrice);
         const rawValue = qty * price;
 
-        const forexRate =
-          usage.currency === "USD"
-            ? 1
-            : formatStringToNumber(
-                (
-                  forexInformation?.rates[usage.currency as keyof ForexRates] ||
-                  1
-                ).toFixed(2),
-              );
+        const forexRate = usage.currency === "USD" ? 1 : formatStringToNumber(
+          (
+            forexInformation?.rates[usage.currency as keyof ForexRates] ||
+            1
+          ).toFixed(2),
+        );
 
         const usdValue = rawValue / forexRate;
 
@@ -255,14 +255,10 @@ const ThirdStep = ({
             requiredInput
             variant="yellow"
             defaultDisabledValue="Select Cost Center"
-            mappings={
-              !departments
-                ? []
-                : departments.map((department) => ({
-                    code: department.CostCenter,
-                    label: department.Description,
-                  }))
-            }
+            mappings={!departments ? [] : departments.map((department) => ({
+              code: department.CostCenter,
+              label: department.Description,
+            }))}
             value={usageField.costCenter}
             onChangeHandler={handleCostCenterChange}
           />
@@ -455,7 +451,22 @@ const ThirdStep = ({
                       {usage.currency}
                     </td>
                     <td className="text-xs border p-2 whitespace-nowrap text-center">
-                      {`${usage.currency === "USD" ? `${formatNumberToString(Number(usage.quantity) * Number(usage.unitPrice))}` : formatNumberToString((Number(usage.unitPrice) * Number(usage.quantity)) / Number(forexInformation?.rates[usage.currency as keyof ForexRates] || 1))} USD`}
+                      {`${
+                        usage.currency === "USD"
+                          ? `${
+                            formatNumberToString(
+                              Number(usage.quantity) * Number(usage.unitPrice),
+                            )
+                          }`
+                          : formatNumberToString(
+                            (Number(usage.unitPrice) * Number(usage.quantity)) /
+                              Number(
+                                forexInformation
+                                  ?.rates[usage.currency as keyof ForexRates] ||
+                                  1,
+                              ),
+                          )
+                      } USD`}
                     </td>
                     <td className="text-xs border p-2 whitespace-nowrap text-center">
                       {formatDate(usage.estimatedDeliveryDate)}
@@ -511,8 +522,8 @@ const ThirdStep = ({
               </thead>
               <tbody>
                 {summarizedBudgets.map((summary, index) => {
-                  const remainingBalance =
-                    summary.balance - summary.totalUsageUSD;
+                  const remainingBalance = summary.balance -
+                    summary.totalUsageUSD;
                   return (
                     <tr key={index}>
                       <td className="text-xs lg:text-sm xl:text-base | border p-2 whitespace-nowrap text-center">
@@ -534,9 +545,9 @@ const ThirdStep = ({
                         className={`text-xs lg:text-sm xl:text-base |  | border p-2 whitespace-nowrap text-center`}
                       >
                         <span
-                          className={
-                            remainingBalance < 0 ? "font-bold text-red-500" : ""
-                          }
+                          className={remainingBalance < 0
+                            ? "font-bold text-red-500"
+                            : ""}
                         >
                           {formatNumberToString(remainingBalance)}{" "}
                           {remainingBalance < 0 ? "[RL]" : ""}

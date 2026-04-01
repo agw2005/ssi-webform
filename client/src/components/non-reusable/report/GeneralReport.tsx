@@ -66,10 +66,9 @@ const GeneralReport = ({
       <tbody>
         {rowData.map((row, index) => {
           const totalUsage = row.totalBudget - row.totalBalance;
-          const percentage =
-            row.totalBudget > 0
-              ? (row.totalBalance / row.totalBudget) * 100
-              : 0;
+          const percentage = row.totalBudget > 0
+            ? (row.totalBalance / row.totalBudget) * 100
+            : 0;
 
           return (
             <tr key={index}>
@@ -98,7 +97,11 @@ const GeneralReport = ({
                       {formatNegativeNumber(monthData.usage)}
                     </td>
                     <td
-                      className={`text-[0.75rem] border-x p-2 text-center ${monthData.balance < 0 ? "bg-red-700 text-white border-black" : "bg-white"}`}
+                      className={`text-[0.75rem] border-x p-2 text-center ${
+                        monthData.balance < 0
+                          ? "bg-red-700 text-white border-black"
+                          : "bg-white"
+                      }`}
                     >
                       {formatNegativeNumber(monthData.balance)}
                     </td>
@@ -109,12 +112,20 @@ const GeneralReport = ({
                 {formatNegativeNumber(totalUsage)}
               </td>
               <td
-                className={`text-[0.75rem] border-x p-2 text-center ${row.totalBalance < 0 ? "bg-red-700 text-white border-black" : "bg-white"}`}
+                className={`text-[0.75rem] border-x p-2 text-center ${
+                  row.totalBalance < 0
+                    ? "bg-red-700 text-white border-black"
+                    : "bg-white"
+                }`}
               >
                 {formatNegativeNumber(row.totalBalance)}
               </td>
               <td
-                className={`text-[0.75rem] border-x p-2 text-center ${percentage < 0 ? "bg-red-700 text-white border-black" : "bg-white"}`}
+                className={`text-[0.75rem] border-x p-2 text-center ${
+                  percentage < 0
+                    ? "bg-red-700 text-white border-black"
+                    : "bg-white"
+                }`}
               >
                 {formatNegativeNumber(percentage, "%")}
               </td>

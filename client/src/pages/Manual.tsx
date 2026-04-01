@@ -58,12 +58,13 @@ const Manual = () => {
             </li>
             <li>
               <p>
-                Fill the requestor data on the <strong>Step 1</strong> form.
-                After that, click <strong>Next</strong>.<br />
+                Fill the requestor data on the <strong>Step 1</strong>{" "}
+                form. After that, click <strong>Next</strong>.<br />
                 <span className="text-red-600">
-                  The <strong>Your E-Mail</strong> field will automatically
-                  append <strong>@ssi.sharp-world.com</strong>, so you only need
-                  to specify the email's username.
+                  The <strong>Your E-Mail</strong>{" "}
+                  field will automatically append{" "}
+                  <strong>@ssi.sharp-world.com</strong>, so you only need to
+                  specify the email's username.
                 </span>
               </p>
               <img
@@ -90,19 +91,21 @@ const Manual = () => {
             </li>
             <li>
               <p>
-                Fill the purchasing data on the <strong>Step 3</strong> form.
-                After that, click <strong>Add Usage</strong> to save the
-                purchase. Do this for every purchase that this request will
-                encompass.
+                Fill the purchasing data on the <strong>Step 3</strong>{" "}
+                form. After that, click <strong>Add Usage</strong>{" "}
+                to save the purchase. Do this for every purchase that this
+                request will encompass.
                 <br />
                 You can view the requests you have saved in the table beside the
                 form. You can also delete requests you have made.
                 <br />
                 <span className="text-red-600">
-                  The <strong>Periode</strong> will be affixed to the current
-                  time and date, and the <strong>Balance</strong> will show up
-                  according to the selected <strong>Budget/Nature</strong> (and
-                  by extension, the <strong>Cost Center</strong>).
+                  The <strong>Periode</strong>{" "}
+                  will be affixed to the current time and date, and the{" "}
+                  <strong>Balance</strong>{" "}
+                  will show up according to the selected{" "}
+                  <strong>Budget/Nature</strong> (and by extension, the{" "}
+                  <strong>Cost Center</strong>).
                 </span>
               </p>
               <img
@@ -114,7 +117,8 @@ const Manual = () => {
             <li>
               <p>
                 Below the <strong>Step 3</strong> form, you can view the{" "}
-                <strong>Budget Summary</strong> and <strong>Total Usage</strong>{" "}
+                <strong>Budget Summary</strong> and <strong>Total Usage</strong>
+                {" "}
                 of your purchase requests.
                 <br />
                 Your will know if your request have exceeded the budget when it
@@ -130,8 +134,8 @@ const Manual = () => {
                   exceed the budget.
                 </span>
                 <br />
-                Click <strong>Next</strong> once you have done logging all the
-                necessary purchase.
+                Click <strong>Next</strong>{" "}
+                once you have done logging all the necessary purchase.
               </p>
               <img
                 src={step5Requestor}
@@ -141,9 +145,11 @@ const Manual = () => {
             </li>
             <li>
               <p>
-                Select a supervisor to act as the <strong>Approver</strong>,{" "}
-                <strong>Releaser</strong>, and <strong>Administrator</strong> of
-                your request.
+                Select a supervisor to act as the <strong>Approver</strong>,
+                {" "}
+                <strong>Releaser</strong>, and <strong>Administrator</strong>
+                {" "}
+                of your request.
                 <br />
                 Select a section first using the left dropdown, then the name of
                 the supervisor.
@@ -158,9 +164,9 @@ const Manual = () => {
             </li>
             <li>
               <p>
-                <span className="text-red-700">(Optional)</span> If there are
-                any files you want to attach to this request, you can do so in{" "}
-                <strong>Step 5</strong>.
+                <span className="text-red-700">(Optional)</span>{" "}
+                If there are any files you want to attach to this request, you
+                can do so in <strong>Step 5</strong>.
               </p>
               <img
                 src={step7Requestor}
@@ -174,8 +180,9 @@ const Manual = () => {
                 on <strong>Submit</strong>.<br />
                 A prompt will show to confirm if you want to submit the request.
                 <br />
-                Click on <strong>OK</strong> will redirect you to the loading
-                screen (please do not close the window during this time).
+                Click on <strong>OK</strong>{" "}
+                will redirect you to the loading screen (please do not close the
+                window during this time).
                 <br />
                 After some time, you will receive a response from the server
                 regarding your request. <br /> You can safely click{" "}
@@ -236,7 +243,8 @@ const Manual = () => {
                 request submission date, etc.
                 <br />
                 Click on the subject of the purchasing request to access the
-                details of the request, where you can <strong>
+                details of the request, where you can{" "}
+                <strong>
                   Approve
                 </strong>{" "}
                 or <strong>Reject</strong> the request.
@@ -250,17 +258,18 @@ const Manual = () => {
             <li>
               <p>
                 Inside the request interface, while logged in as the correct
-                user, you can post a verdict, either <strong>Approve</strong> or{" "}
+                user, you can post a verdict, either <strong>Approve</strong> or
+                {" "}
                 <strong>Reject</strong> the request.
                 <br />
                 Furthermore, you can edit the remarks of the request. Just click
-                on the <strong>Remarks</strong> field as start typing. You will
-                need to save the new remark.
+                on the <strong>Remarks</strong>{" "}
+                field as start typing. You will need to save the new remark.
                 <br />
                 <span className="text-red-600">
                   Do note that once you have <strong>Approve</strong> or{" "}
-                  <strong>Reject</strong> a request, you will no longer be able
-                  to edit the remarks.
+                  <strong>Reject</strong>{" "}
+                  a request, you will no longer be able to edit the remarks.
                 </span>
               </p>
               <br />
@@ -273,8 +282,8 @@ const Manual = () => {
                 <strong>In Progress</strong>.
                 <br />
                 The request will either move on to the next supervisor in the
-                path or will be updated to <strong>Final Approved</strong> if
-                there is no more supervisor left.
+                path or will be updated to <strong>Final Approved</strong>{" "}
+                if there is no more supervisor left.
                 <br />
                 Serving the verdict will redirect you to the{" "}
                 <strong>Approval Menu</strong>
@@ -297,8 +306,8 @@ const Manual = () => {
                 reject the request.
                 <br />
                 Post-rejection, you will be redirected to the{" "}
-                <strong>Approval Menu</strong> and the request will be labelled
-                as rejected.
+                <strong>Approval Menu</strong>{" "}
+                and the request will be labelled as rejected.
               </p>
               <img
                 src={step5Approver}

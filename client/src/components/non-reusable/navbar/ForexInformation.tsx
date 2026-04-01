@@ -23,8 +23,11 @@ const ForexInformation = () => {
           {isLoading
             ? LOADING_MESSAGE
             : error
-              ? ERROR_MESSAGE
-              : `${forexInformation?.rates.SGD && formatNumberToString(forexInformation.rates.SGD)} `}
+            ? ERROR_MESSAGE
+            : `${
+              forexInformation?.rates.SGD &&
+              formatNumberToString(forexInformation.rates.SGD)
+            } `}
           <strong>SGD</strong>
         </p>
       </div>
@@ -38,8 +41,11 @@ const ForexInformation = () => {
           {isLoading
             ? LOADING_MESSAGE
             : error
-              ? ERROR_MESSAGE
-              : `${forexInformation?.rates.JPY && formatNumberToString(forexInformation.rates.JPY)} `}
+            ? ERROR_MESSAGE
+            : `${
+              forexInformation?.rates.JPY &&
+              formatNumberToString(forexInformation.rates.JPY)
+            } `}
           <strong>JPY</strong>
         </p>
       </div>
@@ -53,8 +59,11 @@ const ForexInformation = () => {
           {isLoading
             ? LOADING_MESSAGE
             : error
-              ? ERROR_MESSAGE
-              : `${forexInformation?.rates.IDR && formatNumberToString(forexInformation.rates.IDR)} `}
+            ? ERROR_MESSAGE
+            : `${
+              forexInformation?.rates.IDR &&
+              formatNumberToString(forexInformation.rates.IDR)
+            } `}
           <strong>IDR</strong>
         </p>
       </div>
@@ -68,8 +77,11 @@ const ForexInformation = () => {
           {isLoading
             ? LOADING_MESSAGE
             : error
-              ? ERROR_MESSAGE
-              : `${forexInformation?.amount && formatNumberToString(forexInformation.amount)} `}
+            ? ERROR_MESSAGE
+            : `${
+              forexInformation?.amount &&
+              formatNumberToString(forexInformation.amount)
+            } `}
           <strong>USD</strong>
         </p>
       </div>

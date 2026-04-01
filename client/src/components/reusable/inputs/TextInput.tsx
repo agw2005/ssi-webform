@@ -27,7 +27,9 @@ const TextInput = ({
   return (
     <div className="h-8 lg:h-9 xl:h-10 | flex">
       <div
-        className={`text-xs lg:text-sm xl:text-base | font-bold rounded-l-xl h-full justify-self-center border flex items-center px-2 border-r-0 ${resolveColorMappings(variant, "label")} text-white select-none`}
+        className={`text-xs lg:text-sm xl:text-base | font-bold rounded-l-xl h-full justify-self-center border flex items-center px-2 border-r-0 ${
+          resolveColorMappings(variant, "label")
+        } text-white select-none`}
       >
         {label}
         {requiredInput ? "*" : ""}
@@ -38,7 +40,11 @@ const TextInput = ({
         type="text"
         name={name}
         id={id}
-        className={`text-xs lg:text-sm xl:text-base | h-full px-4 rounded-r-xl border ${resolveColorMappings(variant, "input")} ${isDisabled ? "bg-black/10" : "bg-white/50"} outline-none flex-1 ${isDisabled ? "cursor-not-allowed" : ""}`}
+        className={`text-xs lg:text-sm xl:text-base | h-full px-4 rounded-r-xl border ${
+          resolveColorMappings(variant, "input")
+        } ${isDisabled ? "bg-black/10" : "bg-white/50"} outline-none flex-1 ${
+          isDisabled ? "cursor-not-allowed" : ""
+        }`}
         value={value}
         onChange={onChangeHandler}
       />

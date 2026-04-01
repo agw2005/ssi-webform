@@ -22,8 +22,9 @@ const FOREX_API_URL =
  * @returns The forex information, loading state, errors, and manual refetch trigger.
  */
 export const useForex = () => {
-  const [forexInformation, setForexInformation] =
-    useState<ForexAPIResponse | null>(null);
+  const [forexInformation, setForexInformation] = useState<
+    ForexAPIResponse | null
+  >(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 

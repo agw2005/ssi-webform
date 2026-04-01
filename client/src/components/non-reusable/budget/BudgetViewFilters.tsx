@@ -1,6 +1,6 @@
 import {
-  resolveColorMappings,
   type ColorVariant,
+  resolveColorMappings,
 } from "../../../helper/tailwindColorResolver.ts";
 import SelectionInput from "../../reusable/inputs/SelectionInput.tsx";
 
@@ -39,14 +39,18 @@ const BudgetViewFilters = ({
         />
         <div className="h-8 lg:h-9 xl:h-10 | flex">
           <div
-            className={`text-xs lg:text-sm xl:text-base | font-bold rounded-l-xl h-full justify-self-center border flex items-center px-2 border-r-0 ${resolveColorMappings(variants, "label")} text-white select-none`}
+            className={`text-xs lg:text-sm xl:text-base | font-bold rounded-l-xl h-full justify-self-center border flex items-center px-2 border-r-0 ${
+              resolveColorMappings(variants, "label")
+            } text-white select-none`}
           >
             Period
           </div>
           <select
             name="budget-view-year"
             id="budget-view-year"
-            className={`text-xs lg:text-sm xl:text-base | flex-1 h-full px-4 rounded-r-xl border ${resolveColorMappings(variants, "input")} outline-none`}
+            className={`text-xs lg:text-sm xl:text-base | flex-1 h-full px-4 rounded-r-xl border ${
+              resolveColorMappings(variants, "input")
+            } outline-none`}
             value={yearValue}
             onChange={yearOnChange}
           >

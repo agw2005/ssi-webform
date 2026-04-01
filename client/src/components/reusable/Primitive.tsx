@@ -32,8 +32,8 @@ const Primitive = ({
 }: PrimitiveProps) => {
   const { isAuthorized, authIsLoading } = useAuth();
 
-  const isCurrentlyLoading =
-    Array.isArray(isLoading) && isLoading.some((val) => val === true);
+  const isCurrentlyLoading = Array.isArray(isLoading) &&
+    isLoading.some((val) => val === true);
 
   const activeErrors =
     isErr?.filter((err): err is Error => err instanceof Error) || [];
@@ -76,18 +76,22 @@ const Primitive = ({
           >
             User Manual
           </Link>
-          {authIsLoading ? (
-            ""
-          ) : !isAuthorized ? (
-            ""
-          ) : (
-            <div
-              onClick={() => toggleDialog(logoutReference)}
-              className="text-xs lg:text-base | hover:text-yellow-300 transition | select-none hover:cursor-pointer"
-            >
-              Logout
-            </div>
-          )}
+          {authIsLoading
+            ? (
+              ""
+            )
+            : !isAuthorized
+            ? (
+              ""
+            )
+            : (
+              <div
+                onClick={() => toggleDialog(logoutReference)}
+                className="text-xs lg:text-base | hover:text-yellow-300 transition | select-none hover:cursor-pointer"
+              >
+                Logout
+              </div>
+            )}
         </div>
         <div className="flex flex-wrap">
           <ForexInformation />
@@ -96,22 +100,29 @@ const Primitive = ({
               {authIsLoading
                 ? "Loading"
                 : isAuthorized
-                  ? "Approver"
-                  : "Requestor"}
+                ? "Approver"
+                : "Requestor"}
             </p>
           </div>
         </div>
       </nav>
       <main
-        className={`mx-4 lg:mx-8 xl:mx-12 2xl:mx-16 | mt-4 lg:mt-8 xl:mt-12 2xl:mt-16 | bg-white p-4 ${isCurrentlyLoading || activeErrors.length !== 0 ? "w-max pr-16 justify-self-center" : ""}`}
+        className={`mx-4 lg:mx-8 xl:mx-12 2xl:mx-16 | mt-4 lg:mt-8 xl:mt-12 2xl:mt-16 | bg-white p-4 ${
+          isCurrentlyLoading || activeErrors.length !== 0
+            ? "w-max pr-16 justify-self-center"
+            : ""
+        }`}
       >
-        {isCurrentlyLoading ? (
-          <LoadingFallback />
-        ) : activeErrors.length !== 0 ? (
-          <ErrorFallback componentName={componentName} errors={activeErrors} />
-        ) : (
-          children
-        )}
+        {isCurrentlyLoading
+          ? <LoadingFallback />
+          : activeErrors.length !== 0
+          ? (
+            <ErrorFallback
+              componentName={componentName}
+              errors={activeErrors}
+            />
+          )
+          : children}
       </main>
       <Dialog
         toggle={() => toggleDialog(logoutReference)}

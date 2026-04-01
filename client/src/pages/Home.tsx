@@ -4,11 +4,11 @@ import NumberInput from "../components/reusable/inputs/NumberInput.tsx";
 import DateRangeInput from "../components/reusable/inputs/DateRangeInput.tsx";
 import TextInput from "../components/reusable/inputs/TextInput.tsx";
 import { Link } from "react-router-dom";
-import { useEffect, useState, useMemo, useReducer } from "react";
+import { useEffect, useMemo, useReducer, useState } from "react";
 import type {
+  FormRequest,
   SectionName,
   SupervisorNames,
-  FormRequest,
   TraceRequestsCount,
 } from "@scope/server";
 import LoadingFallback from "../components/reusable/LoadingFallback.tsx";
@@ -167,8 +167,9 @@ const Home = () => {
         String(filters.supervisor.IDUser),
       );
     }
-    if (filters.startingDate)
+    if (filters.startingDate) {
       url.searchParams.set("startdate", filters.startingDate);
+    }
     if (filters.endingDate) url.searchParams.set("enddate", filters.endingDate);
 
     if (debouncedSearch) {
@@ -202,8 +203,8 @@ const Home = () => {
         }
 
         const requestResponseJson: FormRequest[] = await requestResponse.json();
-        const countResponseJson: TraceRequestsCount[] =
-          await countResponse.json();
+        const countResponseJson: TraceRequestsCount[] = await countResponse
+          .json();
 
         setRequestData(requestResponseJson);
         if (countResponseJson && countResponseJson.length > 0) {
@@ -318,10 +319,10 @@ const Home = () => {
               field: "supervisor",
               value: matchedSupervisor
                 ? {
-                    NameUser: matchedSupervisor.NameUser,
-                    IDUser: matchedSupervisor.IDUser,
-                    DisplayLabel: matchedSupervisor.displayedName,
-                  }
+                  NameUser: matchedSupervisor.NameUser,
+                  IDUser: matchedSupervisor.IDUser,
+                  DisplayLabel: matchedSupervisor.displayedName,
+                }
                 : DEFAULT_FILTERS.supervisor,
             });
           }}
@@ -374,8 +375,7 @@ const Home = () => {
           currentPage={filters.currentPage}
           totalPages={totalPages}
           onInputChangeHandler={(e) =>
-            setFilters({ type: "SET_PAGE", page: Number(e.target.value) })
-          }
+            setFilters({ type: "SET_PAGE", page: Number(e.target.value) })}
         />
         <TextInput
           label="Search"
@@ -401,83 +401,87 @@ const Home = () => {
         </div>
       </div>
 
-      {isRequestDataLoading ? (
-        <LoadingFallback />
-      ) : requestData && requestData.length === 0 ? (
-        <div className="mt-4 font-bold text-2xl">
-          There is no requests with the selected filters
-        </div>
-      ) : (
-        <table className="table-auto border-collapse min-w-full max-w-full mt-4">
-          <thead>
-            <tr>
-              {COLUMNS.map((column, index) => {
-                return (
-                  <th
-                    key={index}
-                    className="text-xs lg:text-sm xl:text-base | whitespace-nowrap border p-2 bg-blue-800 text-white border-black"
-                  >
-                    {column}
-                  </th>
-                );
-              })}
-            </tr>
-          </thead>
-          <tbody>
-            {requestData &&
-              requestData.map((request, index) => {
-                return (
-                  <tr key={index}>
-                    <td className="text-xs lg:text-sm xl:text-base | whitespace-nowrap text-center border break-all p-2">
-                      {request.IDTrace}
-                    </td>
-                    <td className="text-xs lg:text-sm xl:text-base | border break-all p-2">
-                      <Link
-                        className="text-blue-700 underline"
-                        to={`/request/${request.IDTrace}`}
-                      >
-                        {request.Subject}
-                      </Link>{" "}
-                      {stringContainsRedLight(request.Subject) ||
-                      stringContainsRedLight(request.Remarks) ? (
-                        <span className="text-red-500 font-bold drop-shadow">
-                          Red Light
-                        </span>
-                      ) : (
-                        ""
-                      )}
-                    </td>
-                    <td className="text-xs lg:text-sm xl:text-base | whitespace-nowrap border break-all p-2">
-                      {formatNumberToString(request.Amount)}
-                    </td>
-                    <td className="text-xs lg:text-sm xl:text-base | whitespace-nowrap border break-all p-2">
-                      {capitalize(request.Requestor)}
-                    </td>
-                    <td
-                      className={`text-xs lg:text-sm xl:text-base | whitespace-nowrap border text-center p-2 ${statusStyling(request.Status)}`}
+      {isRequestDataLoading
+        ? <LoadingFallback />
+        : requestData && requestData.length === 0
+        ? (
+          <div className="mt-4 font-bold text-2xl">
+            There is no requests with the selected filters
+          </div>
+        )
+        : (
+          <table className="table-auto border-collapse min-w-full max-w-full mt-4">
+            <thead>
+              <tr>
+                {COLUMNS.map((column, index) => {
+                  return (
+                    <th
+                      key={index}
+                      className="text-xs lg:text-sm xl:text-base | whitespace-nowrap border p-2 bg-blue-800 text-white border-black"
                     >
-                      {request.Status}
-                    </td>
-                    <td className="text-xs lg:text-sm xl:text-base | whitespace-nowrap border break-all p-2">
-                      {
-                        handleDuplicateNameSupervisors.find(
+                      {column}
+                    </th>
+                  );
+                })}
+              </tr>
+            </thead>
+            <tbody>
+              {requestData &&
+                requestData.map((request, index) => {
+                  return (
+                    <tr key={index}>
+                      <td className="text-xs lg:text-sm xl:text-base | whitespace-nowrap text-center border break-all p-2">
+                        {request.IDTrace}
+                      </td>
+                      <td className="text-xs lg:text-sm xl:text-base | border break-all p-2">
+                        <Link
+                          className="text-blue-700 underline"
+                          to={`/request/${request.IDTrace}`}
+                        >
+                          {request.Subject}
+                        </Link>{" "}
+                        {stringContainsRedLight(request.Subject) ||
+                            stringContainsRedLight(request.Remarks)
+                          ? (
+                            <span className="text-red-500 font-bold drop-shadow">
+                              Red Light
+                            </span>
+                          )
+                          : (
+                            ""
+                          )}
+                      </td>
+                      <td className="text-xs lg:text-sm xl:text-base | whitespace-nowrap border break-all p-2">
+                        {formatNumberToString(request.Amount)}
+                      </td>
+                      <td className="text-xs lg:text-sm xl:text-base | whitespace-nowrap border break-all p-2">
+                        {capitalize(request.Requestor)}
+                      </td>
+                      <td
+                        className={`text-xs lg:text-sm xl:text-base | whitespace-nowrap border text-center p-2 ${
+                          statusStyling(request.Status)
+                        }`}
+                      >
+                        {request.Status}
+                      </td>
+                      <td className="text-xs lg:text-sm xl:text-base | whitespace-nowrap border break-all p-2">
+                        {handleDuplicateNameSupervisors.find(
                           (supervisor) =>
                             supervisor.IDUser === request.CurrentSupervisorId,
-                        )?.displayedName
-                      }
-                    </td>
-                    <td className="text-xs lg:text-sm xl:text-base | whitespace-nowrap border text-center p-2">
-                      {formatDate(request.SubmitDate)}
-                    </td>
-                    <td className="text-xs lg:text-sm xl:text-base | whitespace-nowrap border min-w-16 text-center p-2">
-                      {request.Remarks}
-                    </td>
-                  </tr>
-                );
-              })}
-          </tbody>
-        </table>
-      )}
+                        )?.displayedName}
+                      </td>
+                      <td className="text-xs lg:text-sm xl:text-base | whitespace-nowrap border text-center p-2">
+                        {formatDate(request.SubmitDate)}
+                      </td>
+                      <td className="text-xs lg:text-sm xl:text-base | whitespace-nowrap border min-w-16 text-center p-2">
+                        {request.Remarks}
+                      </td>
+                    </tr>
+                  );
+                })}
+            </tbody>
+          </table>
+        )}
     </Primitive>
   );
 };

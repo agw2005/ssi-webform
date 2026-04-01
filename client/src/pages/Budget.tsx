@@ -4,7 +4,7 @@ import BudgetViewFilters from "../components/non-reusable/budget/BudgetViewFilte
 import Switch from "../components/reusable/Switch.tsx";
 import BudgetView from "../components/non-reusable/budget/BudgetView.tsx";
 import ReportView from "../components/non-reusable/budget/ReportView.tsx";
-import type { FileResource, Year, Period } from "@scope/server";
+import type { FileResource, Period, Year } from "@scope/server";
 import useFetch from "../hooks/useFetch.tsx";
 import fileResourceFetchHandler from "../helper/fileResourceFetchHandler.ts";
 import serverDomain from "../helper/serverDomain.ts";
@@ -54,52 +54,50 @@ const Budget = () => {
           setter={setViewMode}
           getter={viewMode}
         />
-        {viewMode === "Budget" ? (
-          <BudgetViewFilters
-            variants="black"
-            fileResources={fileResourceFetchHandler(fileResources)}
-            years={
-              !years
-                ? []
-                : [
-                    ...years.map((year) => year.Year),
-                    String(
-                      Math.max(...years.map((year) => Number(year.Year))) + 1,
-                    ),
-                  ]
-            }
-            fileResourceValue={fileResource}
-            yearValue={year}
-            fileResourceOnChange={(e) => {
-              setFileResource(e.currentTarget.value);
-            }}
-            yearOnChange={(e) => {
-              setYear(e.currentTarget.value);
-            }}
-          />
-        ) : (
-          ""
-        )}
+        {viewMode === "Budget"
+          ? (
+            <BudgetViewFilters
+              variants="black"
+              fileResources={fileResourceFetchHandler(fileResources)}
+              years={!years ? [] : [
+                ...years.map((year) => year.Year),
+                String(
+                  Math.max(...years.map((year) => Number(year.Year))) + 1,
+                ),
+              ]}
+              fileResourceValue={fileResource}
+              yearValue={year}
+              fileResourceOnChange={(e) => {
+                setFileResource(e.currentTarget.value);
+              }}
+              yearOnChange={(e) => {
+                setYear(e.currentTarget.value);
+              }}
+            />
+          )
+          : (
+            ""
+          )}
       </div>
 
-      {viewMode === "Budget" ? (
-        <BudgetView year={year} fileResource={fileResource} />
-      ) : (
-        ""
-      )}
+      {viewMode === "Budget"
+        ? <BudgetView year={year} fileResource={fileResource} />
+        : (
+          ""
+        )}
 
-      {viewMode === "Report" ? (
-        <ReportView
-          fileResources={
-            !fileResources
+      {viewMode === "Report"
+        ? (
+          <ReportView
+            fileResources={!fileResources
               ? []
-              : fileResources.map((budget) => budget.FileResource)
-          }
-          periods={!periods ? [] : periods.map((period) => period.Period)}
-        />
-      ) : (
-        ""
-      )}
+              : fileResources.map((budget) => budget.FileResource)}
+            periods={!periods ? [] : periods.map((period) => period.Period)}
+          />
+        )
+        : (
+          ""
+        )}
     </Primitive>
   );
 };

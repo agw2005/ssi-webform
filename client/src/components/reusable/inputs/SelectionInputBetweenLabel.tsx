@@ -22,7 +22,6 @@ interface SelectionInputBetweenLabelProps {
  * Selection input that shows a right-side label according to the user selection.
  *
  * Currently, it only supports string-string mappings where the strings are both the options and the revealed labels.
- *
  */
 const SelectionInputBetweenLabel = ({
   label,
@@ -41,7 +40,9 @@ const SelectionInputBetweenLabel = ({
   return (
     <div className="h-8 lg:h-9 xl:h-10 | flex">
       <div
-        className={`text-xs lg:text-sm xl:text-base | font-bold rounded-l-xl h-full justify-self-center border flex items-center px-2 border-r-0 ${resolveColorMappings(variant, "label")} text-white select-none`}
+        className={`text-xs lg:text-sm xl:text-base | font-bold rounded-l-xl h-full justify-self-center border flex items-center px-2 border-r-0 ${
+          resolveColorMappings(variant, "label")
+        } text-white select-none`}
       >
         {label}
         {requiredInput ? "*" : ""}
@@ -49,7 +50,9 @@ const SelectionInputBetweenLabel = ({
       <select
         name={name}
         id={id}
-        className={`text-xs lg:text-sm xl:text-base | flex-1 h-full px-4 border ${value === "" ? "rounded-r-xl" : ""} ${resolveColorMappings(variant, "input")} bg-white/50 outline-none`}
+        className={`text-xs lg:text-sm xl:text-base | flex-1 h-full px-4 border ${
+          value === "" ? "rounded-r-xl" : ""
+        } ${resolveColorMappings(variant, "input")} bg-white/50 outline-none`}
         value={value}
         onChange={onChangeHandler}
       >
@@ -64,15 +67,19 @@ const SelectionInputBetweenLabel = ({
           );
         })}
       </select>
-      {value === "" ? (
-        ""
-      ) : (
-        <div
-          className={`text-xs lg:text-sm xl:text-base | whitespace-nowrap font-bold rounded-r-xl h-full justify-self-center border flex items-center px-2 border-r-0 ${resolveColorMappings(variant, "label")} text-white select-none`}
-        >
-          {selectedLabel}
-        </div>
-      )}
+      {value === ""
+        ? (
+          ""
+        )
+        : (
+          <div
+            className={`text-xs lg:text-sm xl:text-base | whitespace-nowrap font-bold rounded-r-xl h-full justify-self-center border flex items-center px-2 border-r-0 ${
+              resolveColorMappings(variant, "label")
+            } text-white select-none`}
+          >
+            {selectedLabel}
+          </div>
+        )}
     </div>
   );
 };

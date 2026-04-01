@@ -61,14 +61,12 @@ const FourthStep = ({
         colorIntensity="600"
         defaultFilterDefaultValue="Select Section"
         revealedFilterDefaultValue="Select Approver"
-        mappings={
-          !userSectionMappings
-            ? []
-            : userSectionReducer(userSectionMappings).map((mapping) => ({
-                filter: mapping.domain,
-                subfilters: mapping.subdomain,
-              }))
-        }
+        mappings={!userSectionMappings
+          ? []
+          : userSectionReducer(userSectionMappings).map((mapping) => ({
+            filter: mapping.domain,
+            subfilters: mapping.subdomain,
+          }))}
         selections={fourthStepInputsGetter.approver}
         onSelectionsChange={onChangeHandler("approver")}
       />
@@ -83,14 +81,12 @@ const FourthStep = ({
         colorIntensity="600"
         defaultFilterDefaultValue="Select Section"
         revealedFilterDefaultValue="Select Releaser"
-        mappings={
-          !userSectionMappings
-            ? []
-            : userSectionReducer(userSectionMappings).map((mapping) => ({
-                filter: mapping.domain,
-                subfilters: mapping.subdomain,
-              }))
-        }
+        mappings={!userSectionMappings
+          ? []
+          : userSectionReducer(userSectionMappings).map((mapping) => ({
+            filter: mapping.domain,
+            subfilters: mapping.subdomain,
+          }))}
         selections={fourthStepInputsGetter.releaser}
         onSelectionsChange={onChangeHandler("releaser")}
       />
@@ -105,14 +101,12 @@ const FourthStep = ({
         colorIntensity="600"
         defaultFilterDefaultValue="Select Section"
         revealedFilterDefaultValue="Select Administrator"
-        mappings={
-          !userSectionMappings
-            ? []
-            : userSectionReducer(userSectionMappings).map((mapping) => ({
-                filter: mapping.domain,
-                subfilters: mapping.subdomain,
-              }))
-        }
+        mappings={!userSectionMappings
+          ? []
+          : userSectionReducer(userSectionMappings).map((mapping) => ({
+            filter: mapping.domain,
+            subfilters: mapping.subdomain,
+          }))}
         selections={fourthStepInputsGetter.administrator}
         onSelectionsChange={onChangeHandler("administrator")}
       />

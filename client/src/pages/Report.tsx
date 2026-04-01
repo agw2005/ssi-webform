@@ -395,7 +395,9 @@ const Report = () => {
             });
 
             reportPdf.save(
-              `General_${reportFileResource === "Show All" ? "All" : reportFileResource}_${reportPeriod}_A4.pdf`,
+              `General_${
+                reportFileResource === "Show All" ? "All" : reportFileResource
+              }_${reportPeriod}_A4.pdf`,
             );
           };
         case "byquarter":
@@ -755,7 +757,13 @@ const Report = () => {
     if (reportType === "byquarter") {
       url.searchParams.set(
         "periode",
-        `${extractYearFromFullPeriode(reportMonth)}${FH_MONTHS.includes(MONTHS[Number(extractMonthFromFullPeriode(reportMonth)) - 1]) ? "FH" : "LH"}`,
+        `${extractYearFromFullPeriode(reportMonth)}${
+          FH_MONTHS.includes(
+              MONTHS[Number(extractMonthFromFullPeriode(reportMonth)) - 1],
+            )
+            ? "FH"
+            : "LH"
+        }`,
       );
     } else {
       url.searchParams.set("periode", reportPeriod);
@@ -776,11 +784,12 @@ const Report = () => {
         const reportResponse = await fetch(requestUrl.toString(), {
           signal: abortController.signal,
         });
-        if (!reportResponse.ok)
+        if (!reportResponse.ok) {
           throw new Error(`HTTP error! status: ${reportResponse.status}`);
+        }
 
-        const reportResponseJson: ReportResponse[] =
-          await reportResponse.json();
+        const reportResponseJson: ReportResponse[] = await reportResponse
+          .json();
 
         setReportData(reportResponseJson);
       } catch (err) {
@@ -974,59 +983,69 @@ const Report = () => {
   if (isReportDataError) {
     return (
       <div className="m-4">
-        <title>{`${REPORT_TYPE_TITLE[reportType as keyof TypeTitle]} Report`}</title>
+        <title>
+          {`${REPORT_TYPE_TITLE[reportType as keyof TypeTitle]} Report`}
+        </title>
         <div>Something unexpected happened.</div>
         {isReportDataError ? isReportDataError.message : ""}
       </div>
     );
   }
 
-  return !dataExist ? (
-    <div className="m-8 flex flex-col items-center gap-4">
-      <title>{`${REPORT_TYPE_TITLE[reportType as keyof TypeTitle]} Report`}</title>
-      <h1 className="text-3xl font-bold">NO DATA FOUND</h1>
-      <h2 className="text-xl font-bold">
-        No data exist for this combination of{" "}
-        <span className="text-red-700">File Resource</span>,{" "}
-        <span className="text-green-700">Month</span>, or{" "}
-        <span className="text-blue-700">Period</span>
-      </h2>
-      <Link to="/budget">
-        <Button id="go-back" variant="black" label="Go Back" />
-      </Link>
-    </div>
-  ) : (
-    <>
-      <title>{`${REPORT_TYPE_TITLE[reportType as keyof TypeTitle]} Report`}</title>
-      <div className="border bg-black flex p-1">
-        <div
-          className="bg-white hover:bg-white/85 active:bg-white/70 | flex border p-1 select-none"
-          onClick={render.pdf(reportType)}
-        >
-          Download PDF
-        </div>
+  return !dataExist
+    ? (
+      <div className="m-8 flex flex-col items-center gap-4">
+        <title>
+          {`${REPORT_TYPE_TITLE[reportType as keyof TypeTitle]} Report`}
+        </title>
+        <h1 className="text-3xl font-bold">NO DATA FOUND</h1>
+        <h2 className="text-xl font-bold">
+          No data exist for this combination of{" "}
+          <span className="text-red-700">File Resource</span>,{" "}
+          <span className="text-green-700">Month</span>, or{" "}
+          <span className="text-blue-700">Period</span>
+        </h2>
+        <Link to="/budget">
+          <Button id="go-back" variant="black" label="Go Back" />
+        </Link>
       </div>
-      <div className="border font-sans flex flex-col gap-4 p-4 overflow-x-auto">
-        <div className="flex flex-col items-center">
-          {!dataExist ? "" : render.title(reportType)}
+    )
+    : (
+      <>
+        <title>
+          {`${REPORT_TYPE_TITLE[reportType as keyof TypeTitle]} Report`}
+        </title>
+        <div className="border bg-black flex p-1">
+          <div
+            className="bg-white hover:bg-white/85 active:bg-white/70 | flex border p-1 select-none"
+            onClick={render.pdf(reportType)}
+          >
+            Download PDF
+          </div>
         </div>
+        <div className="border font-sans flex flex-col gap-4 p-4 overflow-x-auto">
+          <div className="flex flex-col items-center">
+            {!dataExist ? "" : render.title(reportType)}
+          </div>
 
-        <div className="flex flex-col items-start">
-          {!dataExist ? (
-            ""
-          ) : (
-            <>
-              <img src={sharp_logo} alt="Sharp Logo" className="h-4" />
-              <h3 className="text-sm font-medium">{COMPANY_NAME}</h3>
-              {render.description(reportType)}
-            </>
-          )}
+          <div className="flex flex-col items-start">
+            {!dataExist
+              ? (
+                ""
+              )
+              : (
+                <>
+                  <img src={sharp_logo} alt="Sharp Logo" className="h-4" />
+                  <h3 className="text-sm font-medium">{COMPANY_NAME}</h3>
+                  {render.description(reportType)}
+                </>
+              )}
+          </div>
+
+          {render.table(reportType)}
         </div>
-
-        {render.table(reportType)}
-      </div>
-    </>
-  );
+      </>
+    );
 };
 
 export default Report;

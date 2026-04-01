@@ -42,8 +42,10 @@ export const itemsStorageColorVariants = {
 };
 
 export const buttonColorVariants = {
-  red: "border-red-600 bg-red-600 hover:bg-red-600/70 active:bg-red-600/85 text-white",
-  blue: "border-blue-600 bg-blue-600 hover:bg-blue-600/70 active:bg-blue-600/85 text-white",
+  red:
+    "border-red-600 bg-red-600 hover:bg-red-600/70 active:bg-red-600/85 text-white",
+  blue:
+    "border-blue-600 bg-blue-600 hover:bg-blue-600/70 active:bg-blue-600/85 text-white",
   yellow:
     "border-yellow-600 bg-yellow-600 hover:bg-yellow-600/70 active:bg-yellow-600/85 text-white",
   green:
@@ -64,8 +66,10 @@ export const switchOnColorVariants = {
 };
 
 export const switchOffColorVariants = {
-  red: "border-red-600 bg-red-600/0 text-red-600 hover:text-red-600 hover:bg-red-600/20",
-  blue: "border-blue-600 bg-blue-600/0 text-blue-600 hover:text-blue-600 hover:bg-blue-600/20",
+  red:
+    "border-red-600 bg-red-600/0 text-red-600 hover:text-red-600 hover:bg-red-600/20",
+  blue:
+    "border-blue-600 bg-blue-600/0 text-blue-600 hover:text-blue-600 hover:bg-blue-600/20",
   yellow:
     "border-yellow-600 bg-yellow-600/0 text-yellow-600 hover:text-yellow-600 hover:bg-yellow-600/20",
   green:

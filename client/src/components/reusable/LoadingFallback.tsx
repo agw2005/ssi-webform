@@ -1,7 +1,8 @@
 import pensive from "../../assets/images/pensive.webp";
 
 const Spinner = () => (
-  <div className="w-8 md:w-10 lg:w-12 xl:w-14 2xl:w-16 | h-8 md:h-10 lg:h-12 xl:h-14 2xl:h-16 | border-3 md:border-5 lg:border-7 xl:border-9 2xl:border-11 | border-black border-t-yellow-400 rounded-full animate-spin"></div>
+  <div className="w-8 md:w-10 lg:w-12 xl:w-14 2xl:w-16 | h-8 md:h-10 lg:h-12 xl:h-14 2xl:h-16 | border-3 md:border-5 lg:border-7 xl:border-9 2xl:border-11 | border-black border-t-yellow-400 rounded-full animate-spin">
+  </div>
 );
 
 const LoadingFallback = () => {

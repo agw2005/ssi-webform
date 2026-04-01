@@ -28,7 +28,11 @@ const Switch = <T extends string>({
         onClick={() => {
           setter(onValue);
         }}
-        className={`text-xs lg:text-sm xl:text-base | ${getter !== offValue ? resolveColorMappings(variant, "switchOn") : resolveColorMappings(variant, "switchOff")} font-bold tracking-wide rounded-l-xl h-full justify-self-center border flex items-center px-2 border-r-0 select-none`}
+        className={`text-xs lg:text-sm xl:text-base | ${
+          getter !== offValue
+            ? resolveColorMappings(variant, "switchOn")
+            : resolveColorMappings(variant, "switchOff")
+        } font-bold tracking-wide rounded-l-xl h-full justify-self-center border flex items-center px-2 border-r-0 select-none`}
       >
         {onLabel}
       </div>
@@ -36,7 +40,11 @@ const Switch = <T extends string>({
         onClick={() => {
           setter(offValue);
         }}
-        className={`text-xs lg:text-sm xl:text-base | ${getter !== onValue ? resolveColorMappings(variant, "switchOn") : resolveColorMappings(variant, "switchOff")} font-bold tracking-wide rounded-r-xl h-full justify-self-center border flex items-center px-2 select-none`}
+        className={`text-xs lg:text-sm xl:text-base | ${
+          getter !== onValue
+            ? resolveColorMappings(variant, "switchOn")
+            : resolveColorMappings(variant, "switchOff")
+        } font-bold tracking-wide rounded-r-xl h-full justify-self-center border flex items-center px-2 select-none`}
       >
         {offLabel}
       </div>

@@ -367,16 +367,16 @@ export const patchTraceVerdict = async (
       [maxApproverLevel, sumApproverLevel, traceId],
     );
   } else {
-    const isLastSupervisor =
-      nextApproverLevel === null && nextApproverId === null;
+    const isLastSupervisor = nextApproverLevel === null &&
+      nextApproverId === null;
 
     const newStatus = isLastSupervisor ? "Final Approved" : "In Progress";
     const newProcessedBy = isLastSupervisor ? 0 : nextApproverId;
     const newProcessedLevel = isLastSupervisor
       ? sum(maxApproverLevel)
       : nextApproverLevel !== null
-        ? sum(nextApproverLevel)
-        : sum(maxApproverLevel);
+      ? sum(nextApproverLevel)
+      : sum(maxApproverLevel);
     const newLevelProgress = isLastSupervisor
       ? maxApproverLevel
       : nextApproverLevel;

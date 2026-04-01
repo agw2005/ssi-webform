@@ -52,7 +52,9 @@ const QuarterlyReport = ({
             {capitalize(months[Number(month.substring(5)) - 1])}
           </th>
           <th colSpan={4} className="border-x p-1">
-            {`${capitalize(startingMonthString)}-${capitalize(months[Number(month.substring(5)) - 1])}`}
+            {`${capitalize(startingMonthString)}-${
+              capitalize(months[Number(month.substring(5)) - 1])
+            }`}
           </th>
           <th colSpan={4} className="border-x p-1">
             {getCurrentPeriod(
@@ -67,7 +69,9 @@ const QuarterlyReport = ({
               return (
                 <th
                   key={`${index}-${subindex}`}
-                  className={`border-x border-b ${subindex === 3 ? "border-t-0" : "border-t"} p-1`}
+                  className={`border-x border-b ${
+                    subindex === 3 ? "border-t-0" : "border-t"
+                  } p-1`}
                 >
                   {subcolumn}
                 </th>
@@ -104,12 +108,20 @@ const QuarterlyReport = ({
                       {formatNumberToString(monthUsage)}
                     </td>
                     <td
-                      className={`text-[0.75rem] border-x p-2 text-center ${monthBalance < 0 ? "bg-red-700 text-white border-black" : "bg-white"}`}
+                      className={`text-[0.75rem] border-x p-2 text-center ${
+                        monthBalance < 0
+                          ? "bg-red-700 text-white border-black"
+                          : "bg-white"
+                      }`}
                     >
                       {formatNegativeNumber(monthBalance)}
                     </td>
                     <td
-                      className={`text-[0.75rem] border-x p-2 text-center ${usagePercentage < 0 ? "bg-red-700 text-white border-black" : "bg-white"}`}
+                      className={`text-[0.75rem] border-x p-2 text-center ${
+                        usagePercentage < 0
+                          ? "bg-red-700 text-white border-black"
+                          : "bg-white"
+                      }`}
                     >
                       {formatNegativeNumber(monthBalance, "%")}
                     </td>

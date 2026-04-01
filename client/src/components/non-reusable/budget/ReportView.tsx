@@ -16,10 +16,10 @@ interface Selection {
 type SelectionAction =
   | { type: "UPDATE_GENERAL"; field: keyof Selection["general"]; value: string }
   | {
-      type: "UPDATE_QUARTER";
-      field: keyof Selection["byQuarter"];
-      value: string;
-    }
+    type: "UPDATE_QUARTER";
+    field: keyof Selection["byQuarter"];
+    value: string;
+  }
   | { type: "UPDATE_SECTION"; value: string }
   | { type: "UPDATE_NATURE"; value: string };
 
@@ -196,19 +196,21 @@ const ReportView = ({ fileResources, periods }: ReportViewProps) => {
             </select>
           </div>
         </div>
-        {options.byQuarter.month === "" ? (
-          <div className="mt-4 xl:mt-8 | hover:shadow-xl | bg-black/5 hover:bg-black/25 active:bg-white | active:text-black | shadow-md self-center px-4 py-2 border rounded-4xl select-none">
-            Show Report
-          </div>
-        ) : (
-          <Link
-            className="mt-4 xl:mt-8 | hover:shadow-xl | bg-black/5 hover:bg-black/25 active:bg-white | active:text-black | shadow-md self-center px-4 py-2 border rounded-4xl select-none"
-            to={`/report?type=byquarter&month=${options.byQuarter.month}&fileresource=${options.byQuarter.fileResource}`}
-            target="_blank"
-          >
-            Show Report
-          </Link>
-        )}
+        {options.byQuarter.month === ""
+          ? (
+            <div className="mt-4 xl:mt-8 | hover:shadow-xl | bg-black/5 hover:bg-black/25 active:bg-white | active:text-black | shadow-md self-center px-4 py-2 border rounded-4xl select-none">
+              Show Report
+            </div>
+          )
+          : (
+            <Link
+              className="mt-4 xl:mt-8 | hover:shadow-xl | bg-black/5 hover:bg-black/25 active:bg-white | active:text-black | shadow-md self-center px-4 py-2 border rounded-4xl select-none"
+              to={`/report?type=byquarter&month=${options.byQuarter.month}&fileresource=${options.byQuarter.fileResource}`}
+              target="_blank"
+            >
+              Show Report
+            </Link>
+          )}
       </div>
 
       <div className="flex flex-col p-8 bg-blue-100 rounded-2xl items-start flex-1 justify-between">

@@ -78,7 +78,9 @@ const Usage = () => {
     const startDate = dateToMySQLDateInput(new Date(`${monthIndex}/1/${year}`));
     const endDate = dateToMySQLDateInput(
       new Date(
-        `${monthIndex !== 12 ? monthIndex + 1 : 1}/1/${monthIndex !== 12 ? year : year + 1}`,
+        `${monthIndex !== 12 ? monthIndex + 1 : 1}/1/${
+          monthIndex !== 12 ? year : year + 1
+        }`,
       ),
     );
     url.searchParams.set("nature", nature);
@@ -98,11 +100,12 @@ const Usage = () => {
         const response = await fetch(requestUrl.toString(), {
           signal: abortController.signal,
         });
-        if (!response.ok)
+        if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
+        }
 
-        const budgetViewRequests: BudgetViewRequestResponse[] =
-          await response.json();
+        const budgetViewRequests: BudgetViewRequestResponse[] = await response
+          .json();
 
         setRequestsData(budgetViewRequests);
       } catch (err) {
@@ -135,113 +138,115 @@ const Usage = () => {
       <div className="flex" onClick={() => history.back()}>
         <Button id="go-back" variant="black" label="Back" />
       </div>
-      {requestsData && requestsData.length === 0 ? (
-        <div className="mt-4 font-bold">There is not items</div>
-      ) : (
-        <div className="overflow-x-auto min-h-50 max-h-160 mt-4">
-          <table className="table-auto border-collapse mt-4">
-            <thead className="sticky top-0 z-10 border">
-              <tr>
-                {COLUMNS.map((column, index) => {
-                  return (
-                    <th
-                      key={index}
-                      className="text-xs lg:text-sm xl:text-base | border p-2 bg-blue-800 text-white border-black whitespace-nowrap text-center"
-                    >
-                      {column}
-                    </th>
-                  );
-                })}
-              </tr>
-            </thead>
-            <tbody>
-              {requestsData &&
-                requestsData.map((requestData, index) => {
-                  return (
-                    <tr key={index}>
-                      <td className="text-xs lg:text-sm xl:text-base | border p-2 whitespace-nowrap text-center">
-                        {requestData.IDTrace}
-                      </td>
-                      <td className="text-xs lg:text-sm xl:text-base | border p-2 whitespace-nowrap text-center">
-                        {requestData.ItemId}
-                      </td>
-                      <td className="text-xs lg:text-sm xl:text-base | border p-2 whitespace-nowrap text-center">
-                        {requestData.NoPR}
-                      </td>
-                      <td className="text-xs lg:text-sm xl:text-base | border p-2 whitespace-nowrap text-center">
-                        {requestData.AcctAssgCategory
-                          ? requestData.AcctAssgCategory
-                          : "-"}
-                      </td>
-                      <td className="text-xs lg:text-sm xl:text-base | border p-2 whitespace-nowrap text-center">
-                        {requestData.CostCenter}
-                      </td>
-                      <td className="text-xs lg:text-sm xl:text-base | border p-2 whitespace-nowrap text-center">
-                        {requestData.Nature}
-                      </td>
-                      <td className="text-xs lg:text-sm xl:text-base | border p-2 min-w-48 text-center">
-                        <Link
-                          className="text-blue-700 underline"
-                          to={`/request/${requestData.IDTrace}`}
-                        >
-                          {requestData.Description}
-                        </Link>
-                      </td>
-                      <td className="text-xs lg:text-sm xl:text-base | border p-2 whitespace-nowrap text-center">
-                        {formatNumberToString(requestData.Qty)}{" "}
-                        {capitalize(requestData.Measure)}
-                      </td>
-                      <td className="text-xs lg:text-sm xl:text-base | border p-2 whitespace-nowrap text-center">
-                        {formatNumberToString(requestData.UnitPrice)}
-                      </td>
-                      <td className="text-xs lg:text-sm xl:text-base | border p-2 whitespace-nowrap text-center">
-                        {requestData.Currency}
-                      </td>
-                      <td className="text-xs lg:text-sm xl:text-base | border p-2 whitespace-nowrap text-center">
-                        {requestData.EstimationDeliveryDate}
-                      </td>
-                      <td className="text-xs lg:text-sm xl:text-base | border p-2 whitespace-nowrap text-center">
-                        {requestData.Vendor}
-                      </td>
-                      <td className="text-xs lg:text-sm xl:text-base | border p-2 whitespace-nowrap text-center">
-                        {requestData.Reason}
-                      </td>
-                      <td className="text-xs lg:text-sm xl:text-base | border p-2 whitespace-nowrap text-center">
-                        {requestData.StatusItem}
-                      </td>
-                      <td className="text-xs lg:text-sm xl:text-base | border p-2 whitespace-nowrap text-center">
-                        {requestData.RejectedBy ? requestData.RejectedBy : "-"}
-                      </td>
-                      <td className="text-xs lg:text-sm xl:text-base | border p-2 whitespace-nowrap text-center">
-                        {requestData.Supplier ? requestData.Supplier : "-"}
-                      </td>
-                      <td className="text-xs lg:text-sm xl:text-base | border p-2 whitespace-nowrap text-center">
-                        {formatNumberToString(
-                          requestData.UnitPrice * requestData.Qty,
-                        )}
-                      </td>
-                      <td className="text-xs lg:text-sm xl:text-base | border p-2 whitespace-nowrap text-center">
-                        {requestData.DeliveryDate
-                          ? requestData.DeliveryDate
-                          : "-"}
-                      </td>
-                      <td className="text-xs lg:text-sm xl:text-base | border p-2 whitespace-nowrap text-center">
-                        {requestData.NoPO ? requestData.NoPO : "-"}
-                      </td>
-                      <td className="text-xs lg:text-sm xl:text-base | border p-2 whitespace-nowrap text-center">
-                        {formatNumberToString(requestData.Rate)}{" "}
-                        {requestData.Currency}
-                      </td>
-                      <td className="text-xs lg:text-sm xl:text-base | border p-2 whitespace-nowrap text-center">
-                        {requestData.IDBudget}
-                      </td>
-                    </tr>
-                  );
-                })}
-            </tbody>
-          </table>
-        </div>
-      )}
+      {requestsData && requestsData.length === 0
+        ? <div className="mt-4 font-bold">There is not items</div>
+        : (
+          <div className="overflow-x-auto min-h-50 max-h-160 mt-4">
+            <table className="table-auto border-collapse mt-4">
+              <thead className="sticky top-0 z-10 border">
+                <tr>
+                  {COLUMNS.map((column, index) => {
+                    return (
+                      <th
+                        key={index}
+                        className="text-xs lg:text-sm xl:text-base | border p-2 bg-blue-800 text-white border-black whitespace-nowrap text-center"
+                      >
+                        {column}
+                      </th>
+                    );
+                  })}
+                </tr>
+              </thead>
+              <tbody>
+                {requestsData &&
+                  requestsData.map((requestData, index) => {
+                    return (
+                      <tr key={index}>
+                        <td className="text-xs lg:text-sm xl:text-base | border p-2 whitespace-nowrap text-center">
+                          {requestData.IDTrace}
+                        </td>
+                        <td className="text-xs lg:text-sm xl:text-base | border p-2 whitespace-nowrap text-center">
+                          {requestData.ItemId}
+                        </td>
+                        <td className="text-xs lg:text-sm xl:text-base | border p-2 whitespace-nowrap text-center">
+                          {requestData.NoPR}
+                        </td>
+                        <td className="text-xs lg:text-sm xl:text-base | border p-2 whitespace-nowrap text-center">
+                          {requestData.AcctAssgCategory
+                            ? requestData.AcctAssgCategory
+                            : "-"}
+                        </td>
+                        <td className="text-xs lg:text-sm xl:text-base | border p-2 whitespace-nowrap text-center">
+                          {requestData.CostCenter}
+                        </td>
+                        <td className="text-xs lg:text-sm xl:text-base | border p-2 whitespace-nowrap text-center">
+                          {requestData.Nature}
+                        </td>
+                        <td className="text-xs lg:text-sm xl:text-base | border p-2 min-w-48 text-center">
+                          <Link
+                            className="text-blue-700 underline"
+                            to={`/request/${requestData.IDTrace}`}
+                          >
+                            {requestData.Description}
+                          </Link>
+                        </td>
+                        <td className="text-xs lg:text-sm xl:text-base | border p-2 whitespace-nowrap text-center">
+                          {formatNumberToString(requestData.Qty)}{" "}
+                          {capitalize(requestData.Measure)}
+                        </td>
+                        <td className="text-xs lg:text-sm xl:text-base | border p-2 whitespace-nowrap text-center">
+                          {formatNumberToString(requestData.UnitPrice)}
+                        </td>
+                        <td className="text-xs lg:text-sm xl:text-base | border p-2 whitespace-nowrap text-center">
+                          {requestData.Currency}
+                        </td>
+                        <td className="text-xs lg:text-sm xl:text-base | border p-2 whitespace-nowrap text-center">
+                          {requestData.EstimationDeliveryDate}
+                        </td>
+                        <td className="text-xs lg:text-sm xl:text-base | border p-2 whitespace-nowrap text-center">
+                          {requestData.Vendor}
+                        </td>
+                        <td className="text-xs lg:text-sm xl:text-base | border p-2 whitespace-nowrap text-center">
+                          {requestData.Reason}
+                        </td>
+                        <td className="text-xs lg:text-sm xl:text-base | border p-2 whitespace-nowrap text-center">
+                          {requestData.StatusItem}
+                        </td>
+                        <td className="text-xs lg:text-sm xl:text-base | border p-2 whitespace-nowrap text-center">
+                          {requestData.RejectedBy
+                            ? requestData.RejectedBy
+                            : "-"}
+                        </td>
+                        <td className="text-xs lg:text-sm xl:text-base | border p-2 whitespace-nowrap text-center">
+                          {requestData.Supplier ? requestData.Supplier : "-"}
+                        </td>
+                        <td className="text-xs lg:text-sm xl:text-base | border p-2 whitespace-nowrap text-center">
+                          {formatNumberToString(
+                            requestData.UnitPrice * requestData.Qty,
+                          )}
+                        </td>
+                        <td className="text-xs lg:text-sm xl:text-base | border p-2 whitespace-nowrap text-center">
+                          {requestData.DeliveryDate
+                            ? requestData.DeliveryDate
+                            : "-"}
+                        </td>
+                        <td className="text-xs lg:text-sm xl:text-base | border p-2 whitespace-nowrap text-center">
+                          {requestData.NoPO ? requestData.NoPO : "-"}
+                        </td>
+                        <td className="text-xs lg:text-sm xl:text-base | border p-2 whitespace-nowrap text-center">
+                          {formatNumberToString(requestData.Rate)}{" "}
+                          {requestData.Currency}
+                        </td>
+                        <td className="text-xs lg:text-sm xl:text-base | border p-2 whitespace-nowrap text-center">
+                          {requestData.IDBudget}
+                        </td>
+                      </tr>
+                    );
+                  })}
+              </tbody>
+            </table>
+          </div>
+        )}
     </Primitive>
   );
 };

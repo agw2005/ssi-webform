@@ -43,8 +43,9 @@ const BudgetView = ({ year, fileResource }: BudgetViewProps) => {
     BudgetViewAtYear[] | null
   >(null);
   const [isBudgetViewDataLoading, setIsBudgetViewDataLoading] = useState(false);
-  const [isBudgetViewDataError, setIsBudgetViewDataError] =
-    useState<Error | null>(null);
+  const [isBudgetViewDataError, setIsBudgetViewDataError] = useState<
+    Error | null
+  >(null);
 
   const applyParams = (url: URL) => {
     url.searchParams.set("year", year);
@@ -64,8 +65,9 @@ const BudgetView = ({ year, fileResource }: BudgetViewProps) => {
         const budgetViewResponse = await fetch(requestUrl.toString(), {
           signal: abortController.signal,
         });
-        if (!budgetViewResponse.ok)
+        if (!budgetViewResponse.ok) {
           throw new Error(`HTTP error! status: ${budgetViewResponse.status}`);
+        }
 
         const budgetViewResponseJson: BudgetViewAtYear[] =
           await budgetViewResponse.json();
@@ -104,16 +106,15 @@ const BudgetView = ({ year, fileResource }: BudgetViewProps) => {
     );
   }
 
-  const uniqueRows: BudgetViewAtYear[] | null =
-    budgetViewData &&
+  const uniqueRows: BudgetViewAtYear[] | null = budgetViewData &&
     budgetViewData.filter(
       (budgetData, index, self) =>
         index ===
-        self.findIndex(
-          (data) =>
-            data.CostCenter === budgetData.CostCenter &&
-            data.Nature === budgetData.Nature,
-        ),
+          self.findIndex(
+            (data) =>
+              data.CostCenter === budgetData.CostCenter &&
+              data.Nature === budgetData.Nature,
+          ),
     );
 
   return (

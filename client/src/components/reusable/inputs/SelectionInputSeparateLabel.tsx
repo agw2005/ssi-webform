@@ -22,7 +22,6 @@ interface SelectionInputSeparateLabelProps {
  * Selection input that shows a label below its component according to the user selection.
  *
  * Currently, it only supports string-string mappings where the strings are both the options and the revealed labels.
- *
  */
 const SelectionInputSeparateLabel = ({
   label,
@@ -42,7 +41,9 @@ const SelectionInputSeparateLabel = ({
     <div className="flex flex-col gap-2">
       <div className="h-8 lg:h-9 xl:h-10 | flex">
         <div
-          className={`text-xs lg:text-sm xl:text-base | font-bold rounded-l-xl h-full justify-self-center border flex items-center px-2 border-r-0 ${resolveColorMappings(variant, "label")} text-white select-none`}
+          className={`text-xs lg:text-sm xl:text-base | font-bold rounded-l-xl h-full justify-self-center border flex items-center px-2 border-r-0 ${
+            resolveColorMappings(variant, "label")
+          } text-white select-none`}
         >
           {label}
           {requiredInput ? "*" : ""}
@@ -50,7 +51,9 @@ const SelectionInputSeparateLabel = ({
         <select
           name={name}
           id={id}
-          className={`text-xs lg:text-sm xl:text-base | flex-1 px-4 border rounded-r-xl ${resolveColorMappings(variant, "input")} bg-white/50 outline-none`}
+          className={`text-xs lg:text-sm xl:text-base | flex-1 px-4 border rounded-r-xl ${
+            resolveColorMappings(variant, "input")
+          } bg-white/50 outline-none`}
           value={value}
           onChange={onChangeHandler}
         >
@@ -66,17 +69,21 @@ const SelectionInputSeparateLabel = ({
           })}
         </select>
       </div>
-      {value === "" ? (
-        ""
-      ) : (
-        <div className="h-8 lg:h-9 xl:h-10 | flex">
-          <div
-            className={`text-xs lg:text-sm xl:text-base | flex-1 font-bold rounded-xl h-full justify-self-center border flex items-center px-2 border-r-0 ${resolveColorMappings(variant, "label")} text-white select-none`}
-          >
-            {selectedLabel}
+      {value === ""
+        ? (
+          ""
+        )
+        : (
+          <div className="h-8 lg:h-9 xl:h-10 | flex">
+            <div
+              className={`text-xs lg:text-sm xl:text-base | flex-1 font-bold rounded-xl h-full justify-self-center border flex items-center px-2 border-r-0 ${
+                resolveColorMappings(variant, "label")
+              } text-white select-none`}
+            >
+              {selectedLabel}
+            </div>
           </div>
-        </div>
-      )}
+        )}
     </div>
   );
 };

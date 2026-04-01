@@ -122,21 +122,19 @@ const NatureReport = ({
       <tbody>
         {rowData.map((row, index) => {
           const totalUsage = row.totalBudget - row.totalBalance;
-          const percentage =
-            row.totalBudget > 0
-              ? (row.totalBalance / row.totalBudget) * 100
-              : 0;
+          const percentage = row.totalBudget > 0
+            ? (row.totalBalance / row.totalBudget) * 100
+            : 0;
 
           const currentCategory = row.Description.includes("(ADM)")
             ? "Administration"
             : "Production";
 
-          const previousCategory =
-            index > 0
-              ? rowData[index - 1].Description.includes("(ADM)")
-                ? "Administration"
-                : "Production"
-              : null;
+          const previousCategory = index > 0
+            ? rowData[index - 1].Description.includes("(ADM)")
+              ? "Administration"
+              : "Production"
+            : null;
 
           const isFirstOfCategory = currentCategory !== previousCategory;
 
@@ -162,10 +160,9 @@ const NatureReport = ({
                   usage: 0,
                   balance: 0,
                 };
-                const percentage =
-                  monthData.budget > 0
-                    ? (monthData.balance / monthData.budget) * 100
-                    : 0;
+                const percentage = monthData.budget > 0
+                  ? (monthData.balance / monthData.budget) * 100
+                  : 0;
 
                 return (
                   <React.Fragment key={subIndex}>
@@ -176,12 +173,20 @@ const NatureReport = ({
                       {formatNegativeNumber(monthData.usage)}
                     </td>
                     <td
-                      className={`text-[0.75rem] border p-2 text-center ${monthData.balance < 0 ? "bg-red-700 text-white border-black" : "bg-white"}`}
+                      className={`text-[0.75rem] border p-2 text-center ${
+                        monthData.balance < 0
+                          ? "bg-red-700 text-white border-black"
+                          : "bg-white"
+                      }`}
                     >
                       {formatNegativeNumber(monthData.balance)}
                     </td>
                     <td
-                      className={`text-[0.75rem] border p-2 text-center ${percentage < 0 ? "bg-red-700 text-white border-black" : "bg-white"}`}
+                      className={`text-[0.75rem] border p-2 text-center ${
+                        percentage < 0
+                          ? "bg-red-700 text-white border-black"
+                          : "bg-white"
+                      }`}
                     >
                       {formatNegativeNumber(percentage, "%")}
                     </td>
@@ -195,12 +200,20 @@ const NatureReport = ({
                 {formatNegativeNumber(totalUsage)}
               </td>
               <td
-                className={`text-[0.75rem] border p-2 text-center ${row.totalBalance < 0 ? "bg-red-700 text-white border-black" : "bg-white"}`}
+                className={`text-[0.75rem] border p-2 text-center ${
+                  row.totalBalance < 0
+                    ? "bg-red-700 text-white border-black"
+                    : "bg-white"
+                }`}
               >
                 {formatNegativeNumber(row.totalBalance)}
               </td>
               <td
-                className={`text-[0.75rem] border p-2 text-center ${percentage < 0 ? "bg-red-700 text-white border-black" : "bg-white"}`}
+                className={`text-[0.75rem] border p-2 text-center ${
+                  percentage < 0
+                    ? "bg-red-700 text-white border-black"
+                    : "bg-white"
+                }`}
               >
                 {formatNegativeNumber(percentage, "%")}
               </td>
@@ -222,8 +235,8 @@ const NatureReport = ({
             );
             const currentMonthTotalBudget = currentMonthData?.totalBudget || 0;
             const currentMonthTotalUsage = currentMonthData?.totalUsage || 0;
-            const currentMonthTotalBalance =
-              currentMonthData?.totalBalance || 0;
+            const currentMonthTotalBalance = currentMonthData?.totalBalance ||
+              0;
             const currentMonthTotalPercentage =
               (currentMonthTotalBalance / currentMonthTotalBudget) * 100;
 
@@ -236,12 +249,20 @@ const NatureReport = ({
                   {formatNegativeNumber(currentMonthTotalUsage)}
                 </td>
                 <td
-                  className={`text-[0.75rem] border p-2 whitespace-nowrap text-center ${currentMonthTotalBalance < 0 ? "bg-red-700 text-white border-black" : "bg-white"}`}
+                  className={`text-[0.75rem] border p-2 whitespace-nowrap text-center ${
+                    currentMonthTotalBalance < 0
+                      ? "bg-red-700 text-white border-black"
+                      : "bg-white"
+                  }`}
                 >
                   {formatNegativeNumber(currentMonthTotalBalance)}
                 </td>
                 <td
-                  className={`text-[0.75rem] border p-2 whitespace-nowrap text-center ${currentMonthTotalPercentage < 0 ? "bg-red-700 text-white border-black" : "bg-white"}`}
+                  className={`text-[0.75rem] border p-2 whitespace-nowrap text-center ${
+                    currentMonthTotalPercentage < 0
+                      ? "bg-red-700 text-white border-black"
+                      : "bg-white"
+                  }`}
                 >
                   {formatNegativeNumber(currentMonthTotalPercentage, "%")}
                 </td>
@@ -256,21 +277,31 @@ const NatureReport = ({
             );
             const percentage =
               (grandTotal.totalBalance / grandTotal.totalBudget) * 100;
-            return subColumn === "%" ? (
-              <td
-                key={index}
-                className={`text-[0.75rem] border p-2 whitespace-nowrap text-center ${percentage < 0 ? "bg-red-700 text-white border-black" : "bg-white"}`}
-              >
-                {formatNegativeNumber(percentage, "%")}
-              </td>
-            ) : (
-              <td
-                key={index}
-                className={`text-[0.75rem] border p-2 whitespace-nowrap text-center ${currentTotal < 0 ? "bg-red-700 text-white border-black" : "bg-white"}`}
-              >
-                {formatNegativeNumber(currentTotal)}
-              </td>
-            );
+            return subColumn === "%"
+              ? (
+                <td
+                  key={index}
+                  className={`text-[0.75rem] border p-2 whitespace-nowrap text-center ${
+                    percentage < 0
+                      ? "bg-red-700 text-white border-black"
+                      : "bg-white"
+                  }`}
+                >
+                  {formatNegativeNumber(percentage, "%")}
+                </td>
+              )
+              : (
+                <td
+                  key={index}
+                  className={`text-[0.75rem] border p-2 whitespace-nowrap text-center ${
+                    currentTotal < 0
+                      ? "bg-red-700 text-white border-black"
+                      : "bg-white"
+                  }`}
+                >
+                  {formatNegativeNumber(currentTotal)}
+                </td>
+              );
           })}
         </tr>
       </tfoot>

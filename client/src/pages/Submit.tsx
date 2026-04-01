@@ -8,18 +8,18 @@ import { useRef, useState } from "react";
 import {
   type Balance,
   type Department,
-  type FileResource,
-  type Nature,
-  type SectionName,
-  type UserSection,
-  type SubmitPayload,
-  type FirstStepInputs,
-  type SecondStepInputs,
-  type ThirdStepInputs,
-  type FourthStepInputs,
   type FifthStepInputs,
+  type FileResource,
+  type FirstStepInputs,
+  type FourthStepInputs,
+  type Nature,
+  type SecondStepInputs,
+  type SectionName,
+  type SubmitPayload,
   submitRequest,
   type SubmitResponse,
+  type ThirdStepInputs,
+  type UserSection,
 } from "@scope/server";
 import useFetch from "../hooks/useFetch.tsx";
 import useForex from "../hooks/useForex.tsx";
@@ -108,8 +108,9 @@ const Submit = () => {
   const [requestIsProcessing, setRequestIsProcessing] = useState(false);
   const [requestIsError, setRequestIsError] = useState<Error | null>(null);
 
-  const [generalModalContent, setGeneralModalContent] =
-    useState<React.ReactNode>();
+  const [generalModalContent, setGeneralModalContent] = useState<
+    React.ReactNode
+  >();
 
   const {
     data: sectionNames,
@@ -226,8 +227,8 @@ const Submit = () => {
       option === "Non-submit"
         ? generalModalContent
         : option === "Submit"
-          ? submitModalContent
-          : submitSuccessModalContent,
+        ? submitModalContent
+        : submitSuccessModalContent,
     );
   };
 
@@ -242,8 +243,9 @@ const Submit = () => {
       const balanceResponse = await fetch(
         BALANCE_URL(costCenter, period, nature),
       );
-      if (!balanceResponse.ok)
+      if (!balanceResponse.ok) {
         throw new Error(`HTTP error! status: ${balanceResponse.status}`);
+      }
       const balance: Balance[] = await balanceResponse.json();
       return balance;
     } catch (err) {
@@ -373,8 +375,7 @@ const Submit = () => {
                 "One or more required fields are empty",
                 "Please fill them out before proceeding",
                 "unfilled-forms-detected",
-              )
-            }
+              )}
             progressSetter={setProgress}
             firstStepInputsGetter={firstStepInputs}
             firstStepInputsInputsSetter={setFirstStepInputs}
@@ -383,108 +384,111 @@ const Submit = () => {
             fileResources={fileResources}
             departments={departments}
           />
-          {evaluateConstraint(progress, PROGRESS_CONSTRAINT.FIRST_STEP) ? (
-            <SecondStep
-              alertUnfilledForm={() =>
-                toggleGeneralModal(
-                  "One or more required fields are empty",
-                  "Please fill them out before proceeding",
-                  "unfilled-forms-detected",
-                )
-              }
-              progressSetter={setProgress}
-              secondStepInputsGetter={secondStepInputs}
-              secondStepInputsInputsSetter={setSecondStepInputs}
-              secondStepInputsDefaultValue={DEFAULT_VALUES.secondStep}
-            />
-          ) : (
-            ""
-          )}
+          {evaluateConstraint(progress, PROGRESS_CONSTRAINT.FIRST_STEP)
+            ? (
+              <SecondStep
+                alertUnfilledForm={() =>
+                  toggleGeneralModal(
+                    "One or more required fields are empty",
+                    "Please fill them out before proceeding",
+                    "unfilled-forms-detected",
+                  )}
+                progressSetter={setProgress}
+                secondStepInputsGetter={secondStepInputs}
+                secondStepInputsInputsSetter={setSecondStepInputs}
+                secondStepInputsDefaultValue={DEFAULT_VALUES.secondStep}
+              />
+            )
+            : (
+              ""
+            )}
         </div>
-        {evaluateConstraint(progress, PROGRESS_CONSTRAINT.SECOND_STEP) ? (
-          <ThirdStep
-            alertUnfilledForm={() =>
-              toggleGeneralModal(
-                "One or more required fields are empty",
-                "Please fill them out before proceeding",
-                "unfilled-forms-detected",
-              )
-            }
-            alertNoBudget={() =>
-              toggleGeneralModal(
-                "There is no budget for this nature",
-                "Please select a different nature",
-                "no-budget-detected",
-              )
-            }
-            alertNoUsage={() =>
-              toggleGeneralModal(
-                "No usage detected",
-                "You need to enter at least 1 usage before proceeding",
-                "no-usage-detected",
-              )
-            }
-            progressSetter={setProgress}
-            thirdStepInputsGetter={thirdStepInputs}
-            thirdStepInputsInputsSetter={setThirdStepInputs}
-            thirdStepInputsDefaultValue={DEFAULT_VALUES.thirdStep}
-            forexInformation={forexInformation}
-            departments={departments}
-            natures={natures}
-            setActiveCostCenter={setActiveCostCenter}
-            fetchBalanceHelper={fetchBalanceHelper}
-            submitterDepartmentName={firstStepInputs.section}
-          />
-        ) : (
-          ""
-        )}
-        <div className="flex flex-wrap gap-8">
-          {evaluateConstraint(progress, PROGRESS_CONSTRAINT.THIRD_STEP) ? (
-            <FourthStep
+        {evaluateConstraint(progress, PROGRESS_CONSTRAINT.SECOND_STEP)
+          ? (
+            <ThirdStep
               alertUnfilledForm={() =>
                 toggleGeneralModal(
                   "One or more required fields are empty",
                   "Please fill them out before proceeding",
                   "unfilled-forms-detected",
-                )
-              }
-              progressSetter={setProgress}
-              fourthStepInputsGetter={fourthStepInputs}
-              fourthStepInputsSetter={setFourthStepInputs}
-              fourthStepInputsDefaultValue={DEFAULT_VALUES.fourthStep}
-              userSectionMappings={userSectionMappings}
-            />
-          ) : (
-            ""
-          )}
-          {evaluateConstraint(progress, PROGRESS_CONSTRAINT.FOURTH_STEP) ? (
-            <FifthStep
-              alertUnfilledForm={() =>
+                )}
+              alertNoBudget={() =>
                 toggleGeneralModal(
-                  "One or more fields from across the steps may be empty",
-                  "You need to fill them out before you can submit your PR",
-                  "unfilled-forms-detected",
-                )
-              }
-              submissionConfirmation={() =>
-                toggleGeneralModal("", "", "", "Submit")
-              }
-              fifthStepInputsGetter={fifthStepInputs}
-              fifthStepInputsSetter={setFifthStepInputs}
-              fifthStepInputsDefaultValue={DEFAULT_VALUES.fifthStep}
-              evaluateSubmission={allRequiredFieldsAreFilled}
+                  "There is no budget for this nature",
+                  "Please select a different nature",
+                  "no-budget-detected",
+                )}
+              alertNoUsage={() =>
+                toggleGeneralModal(
+                  "No usage detected",
+                  "You need to enter at least 1 usage before proceeding",
+                  "no-usage-detected",
+                )}
+              progressSetter={setProgress}
+              thirdStepInputsGetter={thirdStepInputs}
+              thirdStepInputsInputsSetter={setThirdStepInputs}
+              thirdStepInputsDefaultValue={DEFAULT_VALUES.thirdStep}
+              forexInformation={forexInformation}
+              departments={departments}
+              natures={natures}
+              setActiveCostCenter={setActiveCostCenter}
+              fetchBalanceHelper={fetchBalanceHelper}
+              submitterDepartmentName={firstStepInputs.section}
             />
-          ) : (
+          )
+          : (
             ""
           )}
+        <div className="flex flex-wrap gap-8">
+          {evaluateConstraint(progress, PROGRESS_CONSTRAINT.THIRD_STEP)
+            ? (
+              <FourthStep
+                alertUnfilledForm={() =>
+                  toggleGeneralModal(
+                    "One or more required fields are empty",
+                    "Please fill them out before proceeding",
+                    "unfilled-forms-detected",
+                  )}
+                progressSetter={setProgress}
+                fourthStepInputsGetter={fourthStepInputs}
+                fourthStepInputsSetter={setFourthStepInputs}
+                fourthStepInputsDefaultValue={DEFAULT_VALUES.fourthStep}
+                userSectionMappings={userSectionMappings}
+              />
+            )
+            : (
+              ""
+            )}
+          {evaluateConstraint(progress, PROGRESS_CONSTRAINT.FOURTH_STEP)
+            ? (
+              <FifthStep
+                alertUnfilledForm={() =>
+                  toggleGeneralModal(
+                    "One or more fields from across the steps may be empty",
+                    "You need to fill them out before you can submit your PR",
+                    "unfilled-forms-detected",
+                  )}
+                submissionConfirmation={() =>
+                  toggleGeneralModal("", "", "", "Submit")}
+                fifthStepInputsGetter={fifthStepInputs}
+                fifthStepInputsSetter={setFifthStepInputs}
+                fifthStepInputsDefaultValue={DEFAULT_VALUES.fifthStep}
+                evaluateSubmission={allRequiredFieldsAreFilled}
+              />
+            )
+            : (
+              ""
+            )}
         </div>
       </div>
 
-      {/**
-       * NOTE !
-       * Multiple dialog elements did not work as expected.
-       * Use dynamic rendering instead.
-       */}
+      {
+        /**
+         * NOTE !
+         * Multiple dialog elements did not work as expected.
+         * Use dynamic rendering instead.
+         */
+      }
       <Dialog
         toggle={() => toggleDialog(generalModal)}
         ref={generalModal}

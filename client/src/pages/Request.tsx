@@ -2,12 +2,12 @@ import { useNavigate, useParams } from "react-router-dom";
 import Primitive from "../components/reusable/Primitive.tsx";
 import useFetch from "../hooks/useFetch.tsx";
 import type {
-  RequestOverview,
-  RequestItem,
-  UploadedFile,
   ApproverPath,
-  PatchRemarksPayload,
   patchApprovalVerdict,
+  PatchRemarksPayload,
+  RequestItem,
+  RequestOverview,
+  UploadedFile,
 } from "@scope/server";
 import { onlyNumerics } from "@scope/server";
 import capitalize from "../helper/capitalize.ts";
@@ -150,8 +150,9 @@ const Request = () => {
 
   const rejectReference = useRef<HTMLDialogElement>(null);
 
-  const [currentOverview, setCurrentOverview] =
-    useState<Overview>(EMPTY_OVERVIEW);
+  const [currentOverview, setCurrentOverview] = useState<Overview>(
+    EMPTY_OVERVIEW,
+  );
 
   useEffect(() => {
     if (requestOverviewData && requestOverviewData.length > 0) {
@@ -160,7 +161,9 @@ const Request = () => {
       setCurrentOverview({
         "Form ID": requestOverviewData[0].FormID,
         "Form Number": requestOverviewData[0].NoForm,
-        Requestor: `${capitalize(requestOverviewData[0].Requestor)} (${requestOverviewData[0].RequestorNRP}) - ${requestOverviewData[0].RequestorSection}`,
+        Requestor: `${capitalize(requestOverviewData[0].Requestor)} (${
+          requestOverviewData[0].RequestorNRP
+        }) - ${requestOverviewData[0].RequestorSection}`,
         "PR Number": requestOverviewData[0].NoPR,
         Subject: requestOverviewData[0].Subject,
         Amount: `${formatNumberToString(requestOverviewData[0].Amount)} USD`,
@@ -200,8 +203,7 @@ const Request = () => {
 
   if (requestOverviewData === null) return;
 
-  const isAuthorizedApprover =
-    authInfo &&
+  const isAuthorizedApprover = authInfo &&
     requestApproverPathData &&
     approverIsAuthorized(requestApproverPathData, authInfo.nrp);
 
@@ -367,8 +369,8 @@ const Request = () => {
                     },
                   });
 
-                  const lastTableFinalYAxis =
-                    requestPdf.lastAutoTable.finalY || 0;
+                  const lastTableFinalYAxis = requestPdf.lastAutoTable.finalY ||
+                    0;
 
                   autoTable(requestPdf, {
                     html: "#supervisor-path",
@@ -412,64 +414,68 @@ const Request = () => {
             }`;
 
             if (key === "Remarks") {
-              return isAuthorizedApprover ? (
-                <div key={key} className={blackAndWhite}>
-                  <div className="flex-1 px-4 py-2">{key}</div>
-                  <div className="flex-9 px-4 py-2 flex flex-col gap-2">
-                    <input
-                      type="text"
-                      className={`px-2 py-1 rounded-xl outline-none ${currentRemarks !== newRemarks ? "bg-red-900/20" : ""}`}
-                      name="new-remarks"
-                      id="new-remarks"
-                      value={newRemarks}
-                      placeholder={currentRemarks || "Remarks is empty"}
-                      onChange={(e) => setNewRemarks(e.currentTarget.value)}
-                    />
-                    <div
-                      className="w-max flex items-center gap-4"
-                      onClick={async () => {
-                        const payload: PatchRemarksPayload = {
-                          newRemarks: newRemarks,
-                          noForm: requestOverviewData[0].NoForm,
-                        };
-                        try {
-                          const response = await fetch(PATCH_REMARKS_URL, {
-                            method: "PATCH",
-                            headers: {
-                              "Content-Type": "application/json",
-                            },
-                            body: JSON.stringify(payload),
-                          });
-                          if (!response.ok) {
-                            console.error(
-                              "There was a problem in saving the new remarks",
-                            );
-                          }
-                        } catch (err) {
-                          console.error(err);
-                        }
-                        setCurrentRemarks(newRemarks);
-                      }}
-                    >
-                      <Button
-                        label="Save remarks"
-                        id="save-new-remarks"
-                        variant="black"
+              return isAuthorizedApprover
+                ? (
+                  <div key={key} className={blackAndWhite}>
+                    <div className="flex-1 px-4 py-2">{key}</div>
+                    <div className="flex-9 px-4 py-2 flex flex-col gap-2">
+                      <input
+                        type="text"
+                        className={`px-2 py-1 rounded-xl outline-none ${
+                          currentRemarks !== newRemarks ? "bg-red-900/20" : ""
+                        }`}
+                        name="new-remarks"
+                        id="new-remarks"
+                        value={newRemarks}
+                        placeholder={currentRemarks || "Remarks is empty"}
+                        onChange={(e) => setNewRemarks(e.currentTarget.value)}
                       />
-                      {currentRemarks !== newRemarks && (
-                        <p className="text-sm">Changes are not saved</p>
-                      )}
+                      <div
+                        className="w-max flex items-center gap-4"
+                        onClick={async () => {
+                          const payload: PatchRemarksPayload = {
+                            newRemarks: newRemarks,
+                            noForm: requestOverviewData[0].NoForm,
+                          };
+                          try {
+                            const response = await fetch(PATCH_REMARKS_URL, {
+                              method: "PATCH",
+                              headers: {
+                                "Content-Type": "application/json",
+                              },
+                              body: JSON.stringify(payload),
+                            });
+                            if (!response.ok) {
+                              console.error(
+                                "There was a problem in saving the new remarks",
+                              );
+                            }
+                          } catch (err) {
+                            console.error(err);
+                          }
+                          setCurrentRemarks(newRemarks);
+                        }}
+                      >
+                        <Button
+                          label="Save remarks"
+                          id="save-new-remarks"
+                          variant="black"
+                        />
+                        {currentRemarks !== newRemarks && (
+                          <p className="text-sm">Changes are not saved</p>
+                        )}
+                      </div>
                     </div>
                   </div>
-                </div>
-              ) : (
-                <div key={key} className={blackAndWhite}>
-                  <div className="flex-1 px-4 py-2">{key}</div>
-                  <div className="flex-9 px-4 py-2">
-                    {value === "" ? "-" : value}
+                )
+                : (
+                  <div key={key} className={blackAndWhite}>
+                    <div className="flex-1 px-4 py-2">{key}</div>
+                    <div className="flex-9 px-4 py-2">
+                      {value === "" ? "-" : value}
+                    </div>
                   </div>
-                </div>
-              );
+                );
             } else if (key !== "Attachment") {
               return (
                 <div key={key} className={blackAndWhite}>
@@ -491,7 +497,9 @@ const Request = () => {
                           return (
                             <div
                               key={index}
-                              title={`Date Uploaded: ${new Date(attachment.DateUpload).toISOString()}`}
+                              title={`Date Uploaded: ${
+                                new Date(attachment.DateUpload).toISOString()
+                              }`}
                             >
                               <a href="#" target="_blank">
                                 {attachment.Filename}
@@ -554,11 +562,9 @@ const Request = () => {
                       </td>
                       <td
                         className="bg-white hover:bg-black/10 active:bg-black/5 | whitespace-nowrap border text-center px-4 py-2"
-                        title={
-                          item.RejectedBy
-                            ? `Rejected by : ${item.RejectedBy}`
-                            : ""
-                        }
+                        title={item.RejectedBy
+                          ? `Rejected by : ${item.RejectedBy}`
+                          : ""}
                       >
                         {item.StatusItem === "True" ? "Yes" : "No"}
                       </td>
@@ -609,8 +615,8 @@ const Request = () => {
                         {supervisor.ApproverType === "A"
                           ? "Approver"
                           : supervisor.ApproverType === "R"
-                            ? "Releaser"
-                            : "Administrator"}
+                          ? "Releaser"
+                          : "Administrator"}
                       </td>
                       <td
                         className={`hover:bg-black/10 active:bg-black/5 | whitespace-nowrap border text-center px-4 py-2`}
@@ -623,23 +629,25 @@ const Request = () => {
                         {capitalize(supervisor.NameUser)}
                       </td>
                       <td
-                        className={`${handleProgressColors(supervisor.Result)} hover:bg-black/10 active:bg-black/5 | whitespace-nowrap border text-center px-4 py-2`}
+                        className={`${
+                          handleProgressColors(supervisor.Result)
+                        } hover:bg-black/10 active:bg-black/5 | whitespace-nowrap border text-center px-4 py-2`}
                       >
                         {supervisor.Result !== ""
                           ? supervisor.Result
                           : requestIsRejected
-                            ? "-"
-                            : "In Queue"}
+                          ? "-"
+                          : "In Queue"}
                       </td>
                       <td
                         className={`hover:bg-black/10 active:bg-black/5 | whitespace-nowrap border text-center px-4 py-2`}
                       >
                         {supervisor.Result === "In Progress" ||
-                        supervisor.Result === ""
+                            supervisor.Result === ""
                           ? "-"
                           : mysqlDateIsoStringToJSString(
-                              supervisor.DateApprove,
-                            )}
+                            supervisor.DateApprove,
+                          )}
                       </td>
                     </tr>
                   );
@@ -675,7 +683,8 @@ const Request = () => {
                           } else {
                             setSelectedRejects(
                               selectedRejects.filter(
-                                (selected) => selected !== newValue,
+                                (selected) =>
+                                  selected !== newValue,
                               ),
                             );
                           }
@@ -711,12 +720,10 @@ const Request = () => {
               <Button
                 id="reject-submit"
                 variant="black"
-                label={
-                  requestItemsData &&
-                  requestItemsData.length !== selectedRejects.length
-                    ? "Select All"
-                    : "Deselect All"
-                }
+                label={requestItemsData &&
+                    requestItemsData.length !== selectedRejects.length
+                  ? "Select All"
+                  : "Deselect All"}
               />
             </div>
             <div className="flex gap-2 flex-wrap">

@@ -37,7 +37,9 @@ const DateRangeInput = ({
   return (
     <div className="h-8 lg:h-9 xl:h-10 | flex">
       <div
-        className={`text-xs lg:text-sm xl:text-base | font-bold rounded-l-xl h-full justify-self-center border flex items-center justify-center px-2 border-r-0 ${resolveColorMappings(variant, "label")} text-white select-none`}
+        className={`text-xs lg:text-sm xl:text-base | font-bold rounded-l-xl h-full justify-self-center border flex items-center justify-center px-2 border-r-0 ${
+          resolveColorMappings(variant, "label")
+        } text-white select-none`}
       >
         {firstLabel}
         {firstDateRequiredInput ? "*" : ""}
@@ -47,12 +49,16 @@ const DateRangeInput = ({
         type="date"
         name={`${name}-start`}
         id={`${id}-start`}
-        className={`text-xs lg:text-sm xl:text-base | flex-1 px-4 border ${resolveColorMappings(variant, "input")} bg-white/50 outline-none`}
+        className={`text-xs lg:text-sm xl:text-base | flex-1 px-4 border ${
+          resolveColorMappings(variant, "input")
+        } bg-white/50 outline-none`}
         value={startingDateValue}
         onChange={startingDateOnChangeHandler}
       />
       <div
-        className={`text-xs lg:text-sm xl:text-base | font-bold h-full justify-self-center border flex items-center justify-center px-2 border-r-0 ${resolveColorMappings(variant, "label")} text-white select-none`}
+        className={`text-xs lg:text-sm xl:text-base | font-bold h-full justify-self-center border flex items-center justify-center px-2 border-r-0 ${
+          resolveColorMappings(variant, "label")
+        } text-white select-none`}
       >
         {secondLabel}
         {secondDateRequiredInput ? "*" : ""}
@@ -62,7 +68,9 @@ const DateRangeInput = ({
         type="date"
         name={`${name}-end`}
         id={`${id}-end`}
-        className={`text-xs lg:text-sm xl:text-base | flex-1 px-4 rounded-r-xl border ${resolveColorMappings(variant, "input")} bg-white/50 outline-none`}
+        className={`text-xs lg:text-sm xl:text-base | flex-1 px-4 rounded-r-xl border ${
+          resolveColorMappings(variant, "input")
+        } bg-white/50 outline-none`}
         value={endingDateValue}
         onChange={endingOnDateChangeHandler}
       />

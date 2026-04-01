@@ -18,15 +18,17 @@ const DEFAULT_FORM_CONTENT: LoginPayload = {
 
 const Login = () => {
   const navigate = useNavigate();
-  const [loginInformation, setLoginInformation] =
-    useState<LoginPayload>(DEFAULT_FORM_CONTENT);
+  const [loginInformation, setLoginInformation] = useState<LoginPayload>(
+    DEFAULT_FORM_CONTENT,
+  );
   const [credentialIsInvalid, setCredentialIsInvalid] = useState(false);
   const [inputIsEmpty, setInputIsEmpty] = useState(false);
   const [loginIsLoading, setLoginIsLoading] = useState(false);
   const [loginIsError, setLoginIsError] = useState<Error | null>(null);
 
-  const loginInputChangeHandler =
-    createGenericChangeHandler(setLoginInformation);
+  const loginInputChangeHandler = createGenericChangeHandler(
+    setLoginInformation,
+  );
 
   const handleSubmit = async () => {
     setInputIsEmpty(false);

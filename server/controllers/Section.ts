@@ -1,8 +1,8 @@
 import type mysql from "mysql2/promise";
 import type {
+  SectionId,
   SectionName,
   UserSection,
-  SectionId,
 } from "../models/Section.d.ts";
 
 /**

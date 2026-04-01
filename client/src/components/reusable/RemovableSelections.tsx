@@ -16,13 +16,17 @@ const RemovableSelections = <T,>({
 }: RemovableSelectionsProps<T>) => {
   return (
     <div
-      className={`text-xs lg:text-sm xl:text-base | w-full flex flex-wrap gap-2 min-h-10 font-bold rounded-b-xl justify-self-center border ${resolveColorMappings(variant, "itemsStorage")} text-white select-none p-2`}
+      className={`text-xs lg:text-sm xl:text-base | w-full flex flex-wrap gap-2 min-h-10 font-bold rounded-b-xl justify-self-center border ${
+        resolveColorMappings(variant, "itemsStorage")
+      } text-white select-none p-2`}
     >
       {array.map((selection, index) => {
         return (
           <div className="flex" key={index}>
             <div
-              className={`text-xs lg:text-sm | font-normal ${resolveColorMappings(variant, "label")} rounded-l-xl p-2 flex items-center | to-handle-long-texts:( min-w-0 truncate max-w-64 )`}
+              className={`text-xs lg:text-sm | font-normal ${
+                resolveColorMappings(variant, "label")
+              } rounded-l-xl p-2 flex items-center | to-handle-long-texts:( min-w-0 truncate max-w-64 )`}
             >
               {getLabel(selection)}
             </div>

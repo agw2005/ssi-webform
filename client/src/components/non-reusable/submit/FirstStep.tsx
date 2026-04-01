@@ -80,11 +80,9 @@ const FirstStep = ({
         requiredInput
         variant="red"
         defaultDisabledValue="Select Section"
-        options={
-          !sectionNames
-            ? []
-            : sectionNames?.map((section) => section.SectionName)
-        }
+        options={!sectionNames
+          ? []
+          : sectionNames?.map((section) => section.SectionName)}
         value={firstStepInputsGetter.section}
         onChangeHandler={genericChangeHandler("section")}
       />
@@ -137,14 +135,10 @@ const FirstStep = ({
         requiredInput
         variant="red"
         defaultDisabledValue="Select Department Code"
-        mappings={
-          !departments
-            ? []
-            : departments.map((department) => ({
-                code: department.CostCenter,
-                label: department.Description,
-              }))
-        }
+        mappings={!departments ? [] : departments.map((department) => ({
+          code: department.CostCenter,
+          label: department.Description,
+        }))}
         value={firstStepInputsGetter.department}
         onChangeHandler={genericChangeHandler("department")}
       />

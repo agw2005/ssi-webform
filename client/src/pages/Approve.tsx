@@ -105,8 +105,9 @@ const Approve = () => {
       url.searchParams.set("status", filters.result);
     }
 
-    if (filters.startingDate)
+    if (filters.startingDate) {
       url.searchParams.set("startdate", filters.startingDate);
+    }
 
     if (filters.endingDate) url.searchParams.set("enddate", filters.endingDate);
 
@@ -143,8 +144,8 @@ const Approve = () => {
 
         const requestResponseJson: TraceApproveRequests[] =
           await requestResponse.json();
-        const countResponseJson: TraceRequestsCount[] =
-          await countResponse.json();
+        const countResponseJson: TraceRequestsCount[] = await countResponse
+          .json();
 
         setRequests(requestResponseJson);
         if (countResponseJson && countResponseJson.length > 0) {
@@ -256,8 +257,7 @@ const Approve = () => {
             currentPage={filters.currentPage}
             totalPages={totalPages}
             onInputChangeHandler={(e) =>
-              setFilters({ type: "SET_PAGE", page: Number(e.target.value) })
-            }
+              setFilters({ type: "SET_PAGE", page: Number(e.target.value) })}
           />
           <TextInput
             label="Search"
@@ -282,85 +282,91 @@ const Approve = () => {
             <Button id="reset-filters" variant="black" label="Reset" />
           </div>
         </div>
-        {isRequestsLoading ? (
-          <LoadingFallback />
-        ) : requests && requests.length === 0 ? (
-          <div className="font-bold text-2xl">
-            There is no requests with You as the supervisor.
-          </div>
-        ) : (
-          <table className="table-auto border-collapse min-w-full max-w-full">
-            <thead>
-              <tr>
-                {COLUMNS.map((column, index) => {
-                  return (
-                    <th
-                      key={index}
-                      className="text-xs lg:text-sm xl:text-base | whitespace-nowrap border p-2 bg-blue-800 text-white border-black"
-                    >
-                      {column}
-                    </th>
-                  );
-                })}
-              </tr>
-            </thead>
-            <tbody>
-              {requests &&
-                requests.map((request, index) => {
-                  return (
-                    <tr key={index}>
-                      <td className="text-xs lg:text-sm xl:text-base | whitespace-nowrap text-center border break-all p-2">
-                        {request.IDTrace}
-                      </td>
-                      <td className="text-xs lg:text-sm xl:text-base | border break-all p-2">
-                        <Link
-                          className="text-blue-700 underline"
-                          to={`/request/${request.IDTrace}`}
-                        >
-                          {request.Subject}
-                        </Link>{" "}
-                        {stringContainsRedLight(String(request.Subject)) ||
-                        stringContainsRedLight(String(request.Remarks)) ? (
-                          <span className="text-red-500 font-bold drop-shadow">
-                            Red Light
-                          </span>
-                        ) : (
-                          ""
-                        )}
-                      </td>
-                      <td className="text-xs lg:text-sm xl:text-base | whitespace-nowrap border break-all p-2">
-                        {formatNumberToString(request.Amount)}
-                      </td>
-                      <td className="text-xs lg:text-sm xl:text-base | whitespace-nowrap border break-all p-2">
-                        {capitalize(request.Requestor)}
-                      </td>
-                      <td className="text-xs lg:text-sm xl:text-base | whitespace-nowrap border text-center break-all p-2">
-                        {SupervisorType(
-                          request.SupervisorType as "A" | "R" | "ADM",
-                        )}
-                      </td>
-                      <td className="text-xs lg:text-sm xl:text-base | whitespace-nowrap border text-center break-all p-2">
-                        {request.SupervisorStep}
-                      </td>
-                      <td
-                        className={`text-xs lg:text-sm xl:text-base | whitespace-nowrap border text-center p-2 ${resultStyling(request.Result)}`}
+        {isRequestsLoading
+          ? <LoadingFallback />
+          : requests && requests.length === 0
+          ? (
+            <div className="font-bold text-2xl">
+              There is no requests with You as the supervisor.
+            </div>
+          )
+          : (
+            <table className="table-auto border-collapse min-w-full max-w-full">
+              <thead>
+                <tr>
+                  {COLUMNS.map((column, index) => {
+                    return (
+                      <th
+                        key={index}
+                        className="text-xs lg:text-sm xl:text-base | whitespace-nowrap border p-2 bg-blue-800 text-white border-black"
                       >
-                        {request.Result === ""
-                          ? "Awaiting Turn"
-                          : request.Result}
-                      </td>
-                      <td className="text-xs lg:text-sm xl:text-base | whitespace-nowrap border text-center p-2">
-                        {formatDate(request.SubmitDate)}
-                      </td>
-                      <td className="text-xs lg:text-sm xl:text-base | whitespace-nowrap border min-w-16 text-center p-2">
-                        {request.Remarks}
-                      </td>
-                    </tr>
-                  );
-                })}
-            </tbody>
-          </table>
-        )}
+                        {column}
+                      </th>
+                    );
+                  })}
+                </tr>
+              </thead>
+              <tbody>
+                {requests &&
+                  requests.map((request, index) => {
+                    return (
+                      <tr key={index}>
+                        <td className="text-xs lg:text-sm xl:text-base | whitespace-nowrap text-center border break-all p-2">
+                          {request.IDTrace}
+                        </td>
+                        <td className="text-xs lg:text-sm xl:text-base | border break-all p-2">
+                          <Link
+                            className="text-blue-700 underline"
+                            to={`/request/${request.IDTrace}`}
+                          >
+                            {request.Subject}
+                          </Link>{" "}
+                          {stringContainsRedLight(String(request.Subject)) ||
+                              stringContainsRedLight(String(request.Remarks))
+                            ? (
+                              <span className="text-red-500 font-bold drop-shadow">
+                                Red Light
+                              </span>
+                            )
+                            : (
+                              ""
+                            )}
+                        </td>
+                        <td className="text-xs lg:text-sm xl:text-base | whitespace-nowrap border break-all p-2">
+                          {formatNumberToString(request.Amount)}
+                        </td>
+                        <td className="text-xs lg:text-sm xl:text-base | whitespace-nowrap border break-all p-2">
+                          {capitalize(request.Requestor)}
+                        </td>
+                        <td className="text-xs lg:text-sm xl:text-base | whitespace-nowrap border text-center break-all p-2">
+                          {SupervisorType(
+                            request.SupervisorType as "A" | "R" | "ADM",
+                          )}
+                        </td>
+                        <td className="text-xs lg:text-sm xl:text-base | whitespace-nowrap border text-center break-all p-2">
+                          {request.SupervisorStep}
+                        </td>
+                        <td
+                          className={`text-xs lg:text-sm xl:text-base | whitespace-nowrap border text-center p-2 ${
+                            resultStyling(request.Result)
+                          }`}
+                        >
+                          {request.Result === ""
+                            ? "Awaiting Turn"
+                            : request.Result}
+                        </td>
+                        <td className="text-xs lg:text-sm xl:text-base | whitespace-nowrap border text-center p-2">
+                          {formatDate(request.SubmitDate)}
+                        </td>
+                        <td className="text-xs lg:text-sm xl:text-base | whitespace-nowrap border min-w-16 text-center p-2">
+                          {request.Remarks}
+                        </td>
+                      </tr>
+                    );
+                  })}
+              </tbody>
+            </table>
+          )}
       </div>
     </Primitive>
   );
