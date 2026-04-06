@@ -562,42 +562,59 @@ export const requestJwt = async (ctx: RouterContext<"/jwt/request">) => {
   );
   const credentials: AuthInfo[] = await response.json();
 
-  for (const credential of credentials) {
-    const validNrp = credential.NRP === request.nrp;
-    const validPassword = credential.Password === request.password;
+  let validCredentials: AuthInfo | null = null;
 
-    if (validNrp && validPassword) {
-      const jwtPayload: Payload = {
-        iss: credential.NRP,
-        exp: nineHourExpiration,
-        userId: credential.IDUser,
-        userName: credential.UserName,
-        nameUser: credential.NameUser,
-        nrp: credential.NRP,
-      };
+  const isAdmin = request.nrp === "Admin" &&
+    request.password ===
+      credentials.filter((credential) => credential.IDUser === 1)[0].Password;
 
-      const jwt = await create(jwtHeader, jwtPayload, jwtKey);
-
-      if (jwt) {
-        const authorizedResponse: LoginResponse = {
-          message: authorizedMessage,
-          nrp: credential.NRP,
-          jwt: jwt,
-        };
-        patchNewLogin(databasePool, credential.IDUser);
-        ctx.response.status = 200;
-        ctx.response.body = authorizedResponse;
-      } else {
-        const errResponse: LoginResponse = {
-          message: generationErrMessage,
-          nrp: credential.NRP,
-          jwt: "",
-        };
-        ctx.response.status = 500;
-        ctx.response.body = errResponse;
+  if (isAdmin) {
+    const adminCredentials = credentials.filter((credential) =>
+      credential.IDUser === 1
+    )[0];
+    validCredentials = adminCredentials;
+  } else {
+    for (const credential of credentials) {
+      const validNRP = credential.NRP = request.nrp;
+      const validPassword = credential.Password === request.password;
+      if (validNRP && validPassword) {
+        validCredentials = credential;
+        break;
       }
-      return;
     }
+  }
+
+  if (validCredentials !== null) {
+    const jwtPayload: Payload = {
+      iss: validCredentials.NRP,
+      exp: nineHourExpiration,
+      userId: validCredentials.IDUser,
+      userName: validCredentials.UserName,
+      nameUser: validCredentials.NameUser,
+      nrp: validCredentials.NRP,
+    };
+
+    const jwt = await create(jwtHeader, jwtPayload, jwtKey);
+
+    if (jwt) {
+      const authorizedResponse: LoginResponse = {
+        message: authorizedMessage,
+        nrp: validCredentials.NRP,
+        jwt: jwt,
+      };
+      patchNewLogin(databasePool, validCredentials.IDUser);
+      ctx.response.status = 200;
+      ctx.response.body = authorizedResponse;
+    } else {
+      const errResponse: LoginResponse = {
+        message: generationErrMessage,
+        nrp: validCredentials.NRP,
+        jwt: "",
+      };
+      ctx.response.status = 500;
+      ctx.response.body = errResponse;
+    }
+    return;
   }
 
   const unauthorizedResponse: LoginResponse = {

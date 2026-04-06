@@ -30,7 +30,8 @@ const Login = () => {
     setLoginInformation,
   );
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     setInputIsEmpty(false);
     setCredentialIsInvalid(false);
     if (
@@ -47,10 +48,13 @@ const Login = () => {
         );
 
         const responseBody: LoginResponse = await response.json();
+        const isAdmin = responseBody.nrp === "";
+        console.log(responseBody);
 
         if (response.ok) {
           sessionStorage.setItem("session_token", responseBody.jwt);
-          navigate("/approve");
+          if (isAdmin) navigate("/admin");
+          else navigate("/approve");
         } else {
           setCredentialIsInvalid(true);
         }
@@ -83,7 +87,10 @@ const Login = () => {
           <TipBox label="Please fill out both NRP and Password" variant="red" />
         )}
 
-        <div className="flex flex-col gap-2 lg:max-w-1/4">
+        <form
+          onSubmit={handleSubmit}
+          className="flex flex-col gap-2 lg:max-w-1/4"
+        >
           <TextInput
             label="NRP"
             name="user-nrp"
@@ -105,15 +112,10 @@ const Login = () => {
             onChangeHandler={loginInputChangeHandler("password")}
           />
 
-          <div
-            className="flex"
-            onClick={() => {
-              handleSubmit();
-            }}
-          >
+          <button type="submit" className="flex">
             <Button id="login-submit" variant="black" label="Sign in" />
-          </div>
-        </div>
+          </button>
+        </form>
         <Link
           to="/submit"
           className="text-blue-500 underline font-bold"

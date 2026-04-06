@@ -22,6 +22,7 @@ const LINKS = {
   budget: "/budget",
   manual: "/manual",
   login: "/login",
+  admin: "/admin",
 };
 const Primitive = ({
   children,
@@ -30,7 +31,7 @@ const Primitive = ({
   componentName,
   pageTitle,
 }: PrimitiveProps) => {
-  const { isAuthorized, authIsLoading } = useAuth();
+  const { isAuthorized, authIsLoading, authInfo } = useAuth();
 
   const isCurrentlyLoading = Array.isArray(isLoading) &&
     isLoading.some((val) => val === true);
@@ -39,6 +40,8 @@ const Primitive = ({
     isErr?.filter((err): err is Error => err instanceof Error) || [];
 
   const logoutReference = useRef<HTMLDialogElement>(null);
+
+  const isAdmin = authInfo?.userId === 1;
 
   return (
     <div className="bg-yellow-600/25 min-h-screen pb-16">
@@ -84,13 +87,30 @@ const Primitive = ({
             ? (
               ""
             )
-            : (
+            : !isAdmin
+            ? (
               <div
                 onClick={() => toggleDialog(logoutReference)}
                 className="text-xs lg:text-base | hover:text-yellow-300 transition | select-none hover:cursor-pointer"
               >
                 Logout
               </div>
+            )
+            : (
+              <>
+                <Link
+                  to={LINKS.admin}
+                  className="text-xs lg:text-base | hover:text-yellow-300 transition | select-none hover:cursor-pointer"
+                >
+                  Admin Panel
+                </Link>
+                <div
+                  onClick={() => toggleDialog(logoutReference)}
+                  className="text-xs lg:text-base | hover:text-yellow-300 transition | select-none hover:cursor-pointer"
+                >
+                  Logout
+                </div>
+              </>
             )}
         </div>
         <div className="flex flex-wrap">
@@ -99,6 +119,8 @@ const Primitive = ({
             <p className="select-none">
               {authIsLoading
                 ? "Loading"
+                : isAdmin
+                ? "Administrator"
                 : isAuthorized
                 ? "Approver"
                 : "Requestor"}

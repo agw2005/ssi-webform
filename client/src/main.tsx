@@ -13,6 +13,8 @@ import Report from "./pages/Report.tsx";
 import LoadingFallback from "./components/reusable/LoadingFallback.tsx";
 import { approveLoader } from "./helper/loader/approveLoader.ts";
 import { loginLoader } from "./helper/loader/loginLoader.ts";
+import { adminLoader } from "./helper/loader/adminLoader.ts";
+import Admin from "./pages/Admin.tsx";
 
 const router = createBrowserRouter([
   { path: "/", element: <Home /> },
@@ -32,6 +34,12 @@ const router = createBrowserRouter([
     path: "/login",
     element: <Login />,
     loader: loginLoader,
+    hydrateFallbackElement: <LoadingFallback />,
+  },
+  {
+    path: "/admin",
+    element: <Admin />,
+    loader: adminLoader,
     hydrateFallbackElement: <LoadingFallback />,
   },
 ]);
