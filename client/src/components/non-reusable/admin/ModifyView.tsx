@@ -1,45 +1,42 @@
-import Primitive from "../components/reusable/Primitive.tsx";
-import SelectionInput from "../components/reusable/inputs/SelectionInput.tsx";
-import NumberInput from "../components/reusable/inputs/NumberInput.tsx";
-import DateRangeInput from "../components/reusable/inputs/DateRangeInput.tsx";
-import TextInput from "../components/reusable/inputs/TextInput.tsx";
-import { Link } from "react-router-dom";
-import { useReducer } from "react";
 import type {
   FormRequest,
-  SectionName,
   SupervisorNames,
   TraceRequestsCount,
 } from "@scope/server";
-import LoadingFallback from "../components/reusable/LoadingFallback.tsx";
-import useFetch from "../hooks/useFetch.tsx";
-import capitalize from "../helper/capitalize.ts";
-import PagingButton from "../components/reusable/PagingButton.tsx";
-import Button from "../components/reusable/Button.tsx";
-import stringContainsRedLight from "../helper/stringContainsRedLight.ts";
-import formatNumberToString from "../helper/formatNumberToString.ts";
-import { useDebounce } from "../hooks/useDebounce.tsx";
-import serverDomain from "../helper/serverDomain.ts";
-import { formatDate } from "../helper/formatDate.ts";
-import { statusStyling } from "../helper/statusStyling.ts";
-import usePurchasingRequests from "../hooks/usePurchasingRequests.tsx";
-import { useDuplicateSupervisors } from "../hooks/useDuplicateSupervisors.tsx";
+import { useDuplicateSupervisors } from "../../../hooks/useDuplicateSupervisors.tsx";
+import useFetch from "../../../hooks/useFetch.tsx";
+import Button from "../../reusable/Button.tsx";
+import DateRangeInput from "../../reusable/inputs/DateRangeInput.tsx";
+import NumberInput from "../../reusable/inputs/NumberInput.tsx";
+import TextInput from "../../reusable/inputs/TextInput.tsx";
+import LoadingFallback from "../../reusable/LoadingFallback.tsx";
+import PagingButton from "../../reusable/PagingButton.tsx";
+import { useReducer } from "react";
+import { useDebounce } from "../../../hooks/useDebounce.tsx";
+import serverDomain from "../../../helper/serverDomain.ts";
+import usePurchasingRequests from "../../../hooks/usePurchasingRequests.tsx";
+import stringContainsRedLight from "../../../helper/stringContainsRedLight.ts";
+import { Link } from "react-router-dom";
+import formatNumberToString from "../../../helper/formatNumberToString.ts";
+import capitalize from "../../../helper/capitalize.ts";
+import { statusStyling } from "../../../helper/statusStyling.ts";
+import { formatDate } from "../../../helper/formatDate.ts";
 
-interface SectionInfo {
-  IDSection: number;
-  SectionName: string;
-}
+const REQUESTS_URL = `${serverDomain}/trace/requests`;
+const REQUESTS_COUNT_URL = `${serverDomain}/trace/requests/count`;
+const SUPERVISOR_NAMES_URL = `${serverDomain}/usermaster/names`;
 
-interface SupervisorInfo {
-  NameUser: string;
-  IDUser: number;
-  DisplayLabel: string;
-}
+const COLUMNS = [
+  "ID Trace",
+  "Subject",
+  "Amount",
+  "Requestor",
+  "Status",
+  "Current Supervisor",
+  "Submit Date",
+];
 
 interface Filters {
-  section: SectionInfo;
-  supervisor: SupervisorInfo;
-  status: string;
   pagingRange: number;
   startingDate: string;
   endingDate: string;
@@ -51,42 +48,6 @@ type FilterAction =
   | { type: "SET_FIELD"; field: keyof Filters; value: unknown }
   | { type: "RESET_FILTERS" }
   | { type: "SET_PAGE"; page: number };
-
-const COLUMNS = [
-  "ID Trace",
-  "Subject",
-  "Amount",
-  "Requestor",
-  "Status",
-  "Current Supervisor",
-  "Submit Date",
-  "Remarks",
-];
-
-const STATUSES = [
-  "All Status",
-  "Final Approved",
-  "In Progress",
-  "Rejected",
-  "Cancelled",
-  "Expired",
-];
-const SELECT_ALL_INDEX = -99;
-const SECTION_NAMES_URL = `${serverDomain}/section/names`;
-const SUPERVISOR_NAMES_URL = `${serverDomain}/usermaster/names`;
-const REQUESTS_URL = `${serverDomain}/trace/requests`;
-const REQUESTS_COUNT_URL = `${serverDomain}/trace/requests/count`;
-
-const DEFAULT_FILTERS: Filters = {
-  section: { IDSection: SELECT_ALL_INDEX, SectionName: "" },
-  supervisor: { NameUser: "", IDUser: SELECT_ALL_INDEX, DisplayLabel: "" },
-  status: "",
-  pagingRange: 20,
-  startingDate: "",
-  endingDate: "",
-  search: "",
-  currentPage: 1,
-};
 
 const FilterReducer = (state: Filters, action: FilterAction) => {
   switch (action.type) {
@@ -105,42 +66,19 @@ const FilterReducer = (state: Filters, action: FilterAction) => {
   }
 };
 
-const Home = () => {
+const DEFAULT_FILTERS: Filters = {
+  pagingRange: 20,
+  startingDate: "",
+  endingDate: "",
+  search: "",
+  currentPage: 1,
+};
+
+const ModifyView = () => {
   const [filters, setFilters] = useReducer(FilterReducer, DEFAULT_FILTERS);
   const debouncedSearch = useDebounce(filters.search, 750);
 
-  const {
-    data: sectionNames,
-    isLoading: isSectionLoading,
-    isError: sectionError,
-  } = useFetch<SectionName>(SECTION_NAMES_URL);
-
-  const {
-    data: supervisorNames,
-    isLoading: isSupervisorLoading,
-    isError: supervisorError,
-  } = useFetch<SupervisorNames>(SUPERVISOR_NAMES_URL);
-
-  const duplicateSupervisorNames = useDuplicateSupervisors(
-    supervisorNames,
-  );
-
   const params = new URLSearchParams();
-  if (filters.status !== "All Status" && filters.status !== "") {
-    params.set("status", filters.status);
-  }
-  if (filters.section.IDSection !== SELECT_ALL_INDEX) {
-    params.set(
-      "requestorsectionid",
-      filters.section.IDSection.toString(),
-    );
-  }
-  if (filters.supervisor.IDUser !== SELECT_ALL_INDEX) {
-    params.set(
-      "currentsupervisorid",
-      String(filters.supervisor.IDUser),
-    );
-  }
   if (debouncedSearch) params.set("search", debouncedSearch);
   if (filters.startingDate) params.set("startdate", filters.startingDate);
   if (filters.endingDate) params.set("enddate", filters.endingDate);
@@ -149,7 +87,7 @@ const Home = () => {
 
   const {
     requestIsLoading,
-    requestIsError,
+    requestIsError: _requestIsError,
     totalRequestsAtDatabase,
     requests,
   } = usePurchasingRequests<FormRequest, TraceRequestsCount>(
@@ -158,96 +96,32 @@ const Home = () => {
     params.toString(),
   );
 
+  const {
+    data: supervisorNames,
+    isLoading: _isSupervisorLoading,
+    isError: _supervisorError,
+  } = useFetch<SupervisorNames>(SUPERVISOR_NAMES_URL);
+
   const totalPages = Math.max(
     1,
     Math.ceil(totalRequestsAtDatabase / filters.pagingRange),
   );
 
-  return (
-    <Primitive
-      isLoading={[isSectionLoading, isSupervisorLoading]}
-      isErr={[sectionError, supervisorError, requestIsError]}
-      componentName="Home.tsx"
-      pageTitle="PR Online"
-    >
-      <div className="flex gap-2 flex-wrap">
-        <SelectionInput
-          label="Section"
-          name="filter-section"
-          id="filter-section"
-          variant="black"
-          requiredInput={false}
-          defaultDisabledValue="All Section"
-          options={[
-            "All Section",
-            ...(!sectionNames
-              ? []
-              : sectionNames.map((section) => section.SectionName)),
-          ]}
-          value={filters.section.SectionName}
-          onChangeHandler={(e) => {
-            const selectedSectionName = e.target.value;
-            const matchedSection = sectionNames?.find(
-              (section) => section.SectionName === selectedSectionName,
-            );
-            setFilters({
-              type: "SET_FIELD",
-              field: "section",
-              value: matchedSection || DEFAULT_FILTERS.section,
-            });
-          }}
-        />
-        <SelectionInput
-          label="Status"
-          name="filter-status"
-          id="filter-status"
-          variant="black"
-          requiredInput={false}
-          defaultDisabledValue="All Status"
-          options={STATUSES}
-          value={filters.status}
-          onChangeHandler={(e) => {
-            const newStatus = e.target.value;
-            setFilters({
-              type: "SET_FIELD",
-              field: "status",
-              value: newStatus,
-            });
-          }}
-        />
-        <SelectionInput
-          label="Current Supervisor"
-          name="filter-supervisor"
-          id="filter-supervisor"
-          variant="black"
-          requiredInput={false}
-          defaultDisabledValue="All Supervisor"
-          options={[
-            "All Supervisor",
-            ...duplicateSupervisorNames.map(
-              (supervisor) => supervisor.displayedName,
-            ),
-          ]}
-          value={filters.supervisor.DisplayLabel}
-          onChangeHandler={(e) => {
-            const newSupervisor = e.target.value;
-            const matchedSupervisor = duplicateSupervisorNames.find(
-              (supervisor) => supervisor.displayedName === newSupervisor,
-            );
+  const duplicateSupervisorNames = useDuplicateSupervisors(
+    supervisorNames,
+  );
 
-            setFilters({
-              type: "SET_FIELD",
-              field: "supervisor",
-              value: matchedSupervisor
-                ? {
-                  NameUser: matchedSupervisor.NameUser,
-                  IDUser: matchedSupervisor.IDUser,
-                  DisplayLabel: matchedSupervisor.displayedName,
-                }
-                : DEFAULT_FILTERS.supervisor,
-            });
-          }}
-        />
+  const editRequest = () => {
+    // TODO: add modification logic
+  };
+
+  const deleteRequest = () => {
+    // TODO: add deletion logic
+  };
+
+  return (
+    <div className="flex flex-col gap-2">
+      <div className="h-8 lg:h-9 xl:h-10 | flex items-center w-max gap-2 mt-4">
         <DateRangeInput
           name="filter-date-range"
           id="filter-date-range"
@@ -321,7 +195,6 @@ const Home = () => {
           <Button id="reset-filters" variant="black" label="Reset" />
         </div>
       </div>
-
       {requestIsLoading
         ? <LoadingFallback />
         : requests && requests.length === 0
@@ -388,14 +261,24 @@ const Home = () => {
                       <td className="text-xs lg:text-sm xl:text-base | whitespace-nowrap border break-all p-2">
                         {duplicateSupervisorNames.find(
                           (supervisor) =>
-                            supervisor.IDUser === request.CurrentSupervisorId,
+                            supervisor.IDUser ===
+                              request.CurrentSupervisorId,
                         )?.displayedName}
                       </td>
                       <td className="text-xs lg:text-sm xl:text-base | whitespace-nowrap border text-center p-2">
                         {formatDate(request.SubmitDate)}
                       </td>
-                      <td className="text-xs lg:text-sm xl:text-base | whitespace-nowrap border min-w-16 text-center p-2">
-                        {request.Remarks}
+                      <td
+                        className="bg-yellow-500/50 hover:bg-yellow-500 active:bg-yellow-800 | text-black active:text-white | border-black active:border-black | text-xs lg:text-sm xl:text-base | whitespace-nowrap border min-w-16 text-center p-2 select-none"
+                        onClick={editRequest}
+                      >
+                        Edit
+                      </td>
+                      <td
+                        className="bg-red-500/50 hover:bg-red-500 active:bg-red-800 | text-black active:text-white | border-black active:border-black | text-xs lg:text-sm xl:text-base | whitespace-nowrap border min-w-16 text-center p-2 select-none"
+                        onClick={deleteRequest}
+                      >
+                        Delete
                       </td>
                     </tr>
                   );
@@ -403,8 +286,8 @@ const Home = () => {
             </tbody>
           </table>
         )}
-    </Primitive>
+    </div>
   );
 };
 
-export default Home;
+export default ModifyView;
