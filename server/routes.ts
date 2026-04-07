@@ -5,6 +5,7 @@ import {
   getBudgetsByYear,
   natureByCostCenter,
   patchRequestBudget,
+  putBudgetData,
   reportInformation,
   singleBalance,
 } from "./controllers/Budget.ts";
@@ -56,6 +57,7 @@ import {
 import type { RouterContext } from "@oak/oak";
 import databasePool from "./dbpool.ts";
 import type {
+  BudgetData,
   ForexAPIResponse,
   LoginPayload,
   LoginResponse,
@@ -777,4 +779,19 @@ export const patchAcceptRequest = async (
   );
 
   ctx.response.status = 200;
+};
+
+export const putBudgets = async (
+  ctx: RouterContext<"/admin/budget">,
+) => {
+  const connection = await databasePool.getConnection();
+  const request: BudgetData[] = await ctx.request.body.json();
+
+  if (request.length < 1) {
+    ctx.response.status = 500;
+    return;
+  } else {
+    await putBudgetData(connection, request);
+    ctx.response.status = 200;
+  }
 };

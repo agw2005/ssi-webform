@@ -11,7 +11,7 @@ export const handleCors = (ctx: Context) => {
   );
   ctx.response.headers.set(
     "Access-Control-Allow-Methods",
-    "GET, POST, PATCH, OPTIONS",
+    "GET, POST, PATCH, PUT, OPTIONS",
   );
   ctx.response.headers.set(
     "Access-Control-Allow-Headers",

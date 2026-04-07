@@ -25,6 +25,7 @@ import {
   patchAcceptRequest,
   patchRejectRequest,
   patchRemarks,
+  putBudgets,
   requestJwt,
   submitRequest,
 } from "./routes.ts";
@@ -75,6 +76,7 @@ oakRouter.get("/jwt/verify", verifyJwt);
 oakRouter.patch("/approve/remarks", patchRemarks);
 oakRouter.patch("/approve/reject", patchRejectRequest);
 oakRouter.patch("/approve/accept", patchAcceptRequest);
+oakRouter.put("/admin/budget", putBudgets);
 
 // Rest of the code
 oakApp.use(oakRouter.routes());

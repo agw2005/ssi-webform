@@ -2,9 +2,18 @@ import { useEffect, useMemo, useRef, useState } from "react";
 // @deno-types="https://cdn.sheetjs.com/xlsx-0.20.3/package/types/index.d.ts"
 import * as XLSX from "xlsx";
 import type { BudgetData } from "@scope/server";
+import { putBudgets } from "@scope/server";
 import getCurrentPeriod from "../../../helper/getCurrentPeriod.ts";
 import TipBox from "../../reusable/TipBox.tsx";
 import Button from "../../reusable/Button.tsx";
+import serverDomain from "../../../helper/serverDomain.ts";
+import { useNavigate } from "react-router-dom";
+
+const SUBMIT_URL = `${serverDomain}/admin/budget`;
+
+interface AddViewProps {
+  toggleDialog: () => void;
+}
 
 interface MonthlyBudget {
   January: number;
@@ -56,12 +65,31 @@ const TABLE_COLUMNS = [
   "December",
 ];
 
-const AddView = () => {
+const AddView = ({ toggleDialog }: AddViewProps) => {
+  const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [budgetFile, setBudgetFile] = useState<File | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [budgetData, currentBudgetData] = useState<BudgetData[]>([]);
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+
+  const handleSubmit = async () => {
+    try {
+      const response = await fetch(SUBMIT_URL, putBudgets(budgetData));
+      if (response.ok) {
+        console.log("Ok");
+        navigate("/");
+      }
+      handleClearFile();
+    } catch (err) {
+      const error: Error = new Error(
+        `Transport Failure: Your request did not reached the server. Please contact the administrator of this problem.\n(${err}).`,
+      );
+      console.error(error);
+    } finally {
+      navigate(`/`);
+    }
+  };
 
   const displayedBudgets: DisplayBudgetData[] = useMemo(() => {
     if (!budgetData) return [];
@@ -323,7 +351,15 @@ const AddView = () => {
         </div>
       )}
       <div className="flex gap-2 items-center">
-        <div onClick={() => {}}>
+        <div
+          onClick={() => {
+            if (budgetData.length < 1) {
+              toggleDialog();
+            } else {
+              handleSubmit();
+            }
+          }}
+        >
           <Button label="Add" variant="black" id="add-budget-button" />
         </div>
         <TipBox

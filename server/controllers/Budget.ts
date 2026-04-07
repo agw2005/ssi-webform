@@ -1,6 +1,7 @@
 import type mysql from "mysql2/promise";
 import type {
   BudgetBalance,
+  BudgetData,
   BudgetNature,
   BudgetPeriod,
   BudgetTable,
@@ -181,8 +182,109 @@ export const patchRequestBudget = async (
       WHERE
         CostCenter = ?
         AND Nature = ? 
-        AND Periode = ?`,
+        AND Periode = ?;`,
     [usage, costCenter, nature, period],
   );
   return [rows, metadata];
+};
+
+const getSpecificBudgetData = async (
+  pool: mysql.PoolConnection,
+  costCenter: string,
+  nature: string,
+  periode: string,
+  idSection: number,
+  fileResource: string,
+) => {
+  const [rows, _metadata] = await pool.query<BudgetTable[]>(
+    `SELECT *
+      FROM Budget
+      WHERE
+        CostCenter = ?
+        AND Nature = ?
+        AND Periode = ?
+        AND IDSection = ?
+        AND FileResource = ?;`,
+    [costCenter, nature, periode, idSection, fileResource],
+  );
+  return rows[0];
+};
+
+export const putBudgetData = async (
+  pool: mysql.PoolConnection,
+  data: BudgetData[],
+) => {
+  for (const budgetData of data) {
+    const potentialDuplicate = await getSpecificBudgetData(
+      pool,
+      budgetData.CostCenter,
+      budgetData.Nature,
+      budgetData.Periode,
+      budgetData.IDSection,
+      budgetData.FileResource,
+    );
+
+    let payload: BudgetData = {
+      CostCenter: budgetData.CostCenter,
+      Nature: budgetData.Nature,
+      Periode: budgetData.Periode,
+      Budget: budgetData.Budget,
+      Balance: budgetData.Balance,
+      IDSection: budgetData.IDSection,
+      FileResource: budgetData.FileResource,
+    };
+
+    console.log(payload);
+    console.log(potentialDuplicate);
+
+    if (potentialDuplicate) {
+      const newBudget = budgetData.Budget;
+      const oldBudget = Number(potentialDuplicate.Budget);
+      const difference = newBudget - oldBudget;
+
+      payload = {
+        ...payload,
+        Budget: budgetData.Budget,
+        Balance: Number(potentialDuplicate.Balance) + difference,
+      };
+
+      await pool.query<ResultSetHeader>(
+        `UPDATE Budget
+          SET
+            Budget = ?,
+            Balance = ?
+          WHERE
+            CostCenter = ?
+            AND Nature = ?
+            AND Periode = ?
+            AND IDSection = ?
+            AND FileResource = ?;`,
+        [
+          payload.Budget,
+          payload.Balance,
+          payload.CostCenter,
+          payload.Nature,
+          payload.Periode,
+          payload.IDSection,
+          payload.FileResource,
+        ],
+      );
+    } else {
+      await pool.query<ResultSetHeader>(
+        `INSERT INTO Budget
+            (CostCenter, Nature, Periode, Budget, Balance, IDSection, FileResource)
+          VALUES
+            (?         , ?     , ?      , ?     , ?      , ?        , ?           );`,
+        [
+          payload.CostCenter,
+          payload.Nature,
+          payload.Periode,
+          payload.Budget,
+          payload.Balance,
+          payload.IDSection,
+          payload.FileResource,
+        ],
+      );
+    }
+  }
 };

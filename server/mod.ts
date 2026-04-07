@@ -1,3 +1,5 @@
+import type { BudgetData } from "./models/Budget.d.ts";
+
 export type { SectionName } from "./models/Section.d.ts";
 export type { UserSection } from "./models/Section.d.ts";
 export type { UserMasterName as SupervisorNames } from "./models/UserMaster.d.ts";
@@ -117,3 +119,11 @@ export interface patchApprovalVerdict {
   supervisorId: number;
   supervisorLevel: number;
 }
+
+export const putBudgets = (payload: BudgetData[]) => {
+  const Request = {
+    method: "PUT",
+    body: JSON.stringify(payload),
+  };
+  return Request;
+};
