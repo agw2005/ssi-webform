@@ -3,15 +3,17 @@ import type { RowDataPacket } from "mysql2";
 /**
  * Interface of the `Budget` table.
  */
-export interface BudgetTable extends RowDataPacket {
+export interface BudgetData {
   CostCenter: string;
   Nature: string;
   Periode: string;
   Budget: number;
   Balance: number;
   IDSection: number;
-  FileResource: number;
+  FileResource: string;
 }
+
+export interface BudgetTable extends BudgetData, RowDataPacket {}
 
 /**
  * Interface for the `Budget` table used to get the file resources.

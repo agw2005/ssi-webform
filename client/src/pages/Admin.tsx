@@ -2,6 +2,7 @@ import { useState } from "react";
 import Primitive from "../components/reusable/Primitive.tsx";
 import Switch from "../components/reusable/Switch.tsx";
 import ModifyView from "../components/non-reusable/admin/ModifyView.tsx";
+import AddView from "../components/non-reusable/admin/AddView.tsx";
 
 const Admin = () => {
   const [viewMode, setViewMode] = useState<"Modify" | "Add">("Modify");
@@ -24,11 +25,7 @@ const Admin = () => {
         getter={viewMode}
       />
       {viewMode === "Modify" && <ModifyView />}
-      {viewMode === "Add" && (
-        <div className="h-8 lg:h-9 xl:h-10 | flex items-center w-max gap-2">
-          Add
-        </div>
-      )}
+      {viewMode === "Add" && <AddView />}
     </Primitive>
   );
 };

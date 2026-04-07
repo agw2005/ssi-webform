@@ -17,6 +17,7 @@ export type { UploadFileMinimalInformation as UploadedFile } from "./models/Uplo
 export type { TraceApproverPath as ApproverPath } from "./models/TraceD.d.ts";
 export type { RequestItemsAtBudgetView as BudgetUsages } from "./models/FrmPRH.d.ts";
 export type { ForexAPIResponse } from "./models/FrmPRH.d.ts";
+export type { BudgetData } from "./models/Budget.d.ts";
 export type {
   LoginPayload,
   LoginResponse,
