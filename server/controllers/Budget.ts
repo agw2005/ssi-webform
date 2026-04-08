@@ -127,7 +127,7 @@ export const getBudgetsByYear = async (
         CAST(SUBSTRING(Budget.Periode, 1, 4) AS UNSIGNED) + 1,
         CAST(SUBSTRING(Budget.Periode, 1, 4) AS UNSIGNED)
     ) = ?
-    ORDER BY PeriodYear DESC, MonthIndex DESC;`,
+    ORDER BY Budget.FileResource ASC;`,
     [fileResource, fileResource, year],
   );
   return [rows, metadata];
@@ -233,9 +233,6 @@ export const putBudgetData = async (
       IDSection: budgetData.IDSection,
       FileResource: budgetData.FileResource,
     };
-
-    console.log(payload);
-    console.log(potentialDuplicate);
 
     if (potentialDuplicate) {
       const newBudget = budgetData.Budget;

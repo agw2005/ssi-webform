@@ -8,6 +8,43 @@ import Dialog, { toggleDialog } from "../components/reusable/Dialog.tsx";
 const Admin = () => {
   const [viewMode, setViewMode] = useState<"Modify" | "Add">("Modify");
   const generalModal = useRef<HTMLDialogElement>(null);
+  const [generalModalContent, setGeneralModalContent] = useState<
+    React.ReactNode
+  >();
+
+  const toggleGeneralModal = (option: "empty" | "success" | "error") => {
+    const emptyContent = (
+      <div className="flex flex-col gap-2 p-4 select-none">
+        <h3 className="font-bold text-2xl">
+          Please upload the budget according to the format!
+        </h3>
+      </div>
+    );
+    const successContent = (
+      <div className="flex flex-col gap-2 p-4 select-none items-center">
+        <h3 className="font-bold text-2xl">
+          Succesfully added budget to the system.
+        </h3>
+        <p>Click anywhere to continue</p>
+      </div>
+    );
+    const errorContent = (
+      <div className="flex flex-col gap-2 p-4 select-none items-center">
+        <h3 className="font-bold text-2xl">
+          Encountered a problem during submission. Aborted the request.
+        </h3>
+        <p>Click anywhere to continue</p>
+      </div>
+    );
+    toggleDialog(generalModal);
+    setGeneralModalContent(
+      option === "empty"
+        ? emptyContent
+        : option === "success"
+        ? successContent
+        : errorContent,
+    );
+  };
 
   return (
     <Primitive
@@ -27,19 +64,13 @@ const Admin = () => {
         getter={viewMode}
       />
       {viewMode === "Modify" && <ModifyView />}
-      {viewMode === "Add" && (
-        <AddView toggleDialog={() => toggleDialog(generalModal)} />
-      )}
+      {viewMode === "Add" && <AddView toggleDialog={toggleGeneralModal} />}
       <Dialog
         toggle={() => toggleDialog(generalModal)}
         ref={generalModal}
         position="-top-144"
       >
-        <div className="flex flex-col gap-2 p-4 select-none">
-          <h3 className="font-bold text-2xl">
-            Please upload the budget according to the format
-          </h3>
-        </div>
+        {generalModalContent}
       </Dialog>
     </Primitive>
   );

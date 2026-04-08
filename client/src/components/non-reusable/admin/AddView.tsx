@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 // @deno-types="https://cdn.sheetjs.com/xlsx-0.20.3/package/types/index.d.ts"
 import * as XLSX from "xlsx";
 import type { BudgetData } from "@scope/server";
@@ -7,12 +7,13 @@ import getCurrentPeriod from "../../../helper/getCurrentPeriod.ts";
 import TipBox from "../../reusable/TipBox.tsx";
 import Button from "../../reusable/Button.tsx";
 import serverDomain from "../../../helper/serverDomain.ts";
-import { useNavigate } from "react-router-dom";
+import LoadingFallback from "../../reusable/LoadingFallback.tsx";
+import ErrorFallback from "../../reusable/ErrorFallback.tsx";
 
 const SUBMIT_URL = `${serverDomain}/admin/budget`;
 
 interface AddViewProps {
-  toggleDialog: () => void;
+  toggleDialog: (option: "empty" | "success" | "error") => void;
 }
 
 interface MonthlyBudget {
@@ -66,28 +67,34 @@ const TABLE_COLUMNS = [
 ];
 
 const AddView = ({ toggleDialog }: AddViewProps) => {
-  const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [budgetFile, setBudgetFile] = useState<File | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [budgetData, currentBudgetData] = useState<BudgetData[]>([]);
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const [submissionIsLoading, setSubmissionIsLoading] = useState(false);
+  const [submissionIsError, setSubmissionIsError] = useState<Error | null>(
+    null,
+  );
 
   const handleSubmit = async () => {
+    setSubmissionIsLoading(true);
+    setSubmissionIsError(null);
     try {
       const response = await fetch(SUBMIT_URL, putBudgets(budgetData));
       if (response.ok) {
-        console.log("Ok");
-        navigate("/");
+        toggleDialog("success");
       }
       handleClearFile();
     } catch (err) {
       const error: Error = new Error(
         `Transport Failure: Your request did not reached the server. Please contact the administrator of this problem.\n(${err}).`,
       );
-      console.error(error);
+      setSubmissionIsError(error);
+      toggleDialog("error");
     } finally {
-      navigate(`/`);
+      setSubmissionIsLoading(false);
+      handleClearFile();
     }
   };
 
@@ -228,9 +235,15 @@ const AddView = ({ toggleDialog }: AddViewProps) => {
     currentBudgetData([]);
   };
 
-  useEffect(() => {
-    console.log(displayedBudgets);
-  }, [budgetData]);
+  if (submissionIsLoading) return <LoadingFallback />;
+  if (submissionIsError) {
+    return (
+      <ErrorFallback
+        componentName="AddView.tsx"
+        errors={[submissionIsError]}
+      />
+    );
+  }
 
   return (
     <div className="mt-4 flex flex-col gap-4">
@@ -350,23 +363,26 @@ const AddView = ({ toggleDialog }: AddViewProps) => {
           </table>
         </div>
       )}
-      <div className="flex gap-2 items-center">
-        <div
-          onClick={() => {
-            if (budgetData.length < 1) {
-              toggleDialog();
-            } else {
-              handleSubmit();
-            }
-          }}
-        >
-          <Button label="Add" variant="black" id="add-budget-button" />
-        </div>
-        <TipBox
-          label="If there's a pre-existing budget value inside the database with the same [Cost Center/Nature/ID Section/File Resource], it will be overwritten!"
-          variant="red"
-        />
-      </div>
+      {!(budgetData.length < 1) &&
+        (
+          <div className="flex gap-2 items-center">
+            <div
+              onClick={() => {
+                if (budgetData.length < 1) {
+                  toggleDialog("empty");
+                } else {
+                  handleSubmit();
+                }
+              }}
+            >
+              <Button label="Add" variant="black" id="add-budget-button" />
+            </div>
+            <TipBox
+              label="If there's a pre-existing budget value inside the database with the same [Cost Center/Nature/ID Section/File Resource], it will be overwritten!"
+              variant="red"
+            />
+          </div>
+        )}
     </div>
   );
 };
