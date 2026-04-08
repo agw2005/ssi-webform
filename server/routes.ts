@@ -860,16 +860,27 @@ export const deleteRequest = async (ctx: RouterContext<"/admin/:traceId">) => {
   const connection = await databasePool.getConnection();
 
   try {
+    connection.beginTransaction();
+
     const { formId, noForm, noPr, requestItems } = await getRequestIds(
       connection,
       traceId,
     );
 
-    // DELETE frm_PR_D
-    await deleteRequestItems(connection, noPr);
+    // POST to table UploadFile
+    await deleteRequestFiles(connection, noForm);
+
+    // DELETE Trace_D
+    await deleteRequestApproverPath(connection, traceId);
+
+    // DELETE Trace
+    await deleteRequestTrace(connection, noForm);
+
+    // DELETE frm_PR_H
+    await deleteRequestInformation(connection, formId);
 
     // PATCH Budget
-    Promise.all(requestItems.map(async (item) => {
+    await Promise.all(requestItems.map(async (item) => {
       await patchRequestBudget(
         connection,
         -item.NetPrice,
@@ -880,17 +891,8 @@ export const deleteRequest = async (ctx: RouterContext<"/admin/:traceId">) => {
       );
     }));
 
-    // DELETE frm_PR_H
-    await deleteRequestInformation(connection, formId);
-
-    // DELETE Trace
-    await deleteRequestTrace(connection, noForm);
-
-    // DELETE Trace_D
-    await deleteRequestApproverPath(connection, traceId);
-
-    // POST to table UploadFile
-    await deleteRequestFiles(connection, noForm);
+    // DELETE frm_PR_D
+    await deleteRequestItems(connection, noPr);
 
     await connection.commit();
 

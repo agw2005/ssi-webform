@@ -18,6 +18,7 @@ const useFetch = <T,>(url: string, param: string = "") => {
       try {
         const response = await fetch(`${url}/${param}`, {
           signal: abortController.signal,
+          cache: "no-cache",
         });
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
