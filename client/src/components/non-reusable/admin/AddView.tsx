@@ -14,7 +14,7 @@ const SUBMIT_URL = `${serverDomain}/admin/budget`;
 
 interface AddViewProps {
   toggleDialog: (
-    option: "empty" | "success" | "error",
+    option: "empty" | "success" | "error" | "modify",
     errMessage?: Error | null,
   ) => void;
 }

@@ -29,8 +29,8 @@ const SUPERVISOR_NAMES_URL = `${serverDomain}/usermaster/names`;
 
 interface ModifyViewProps {
   toggleDialog: (
-    option: "empty" | "success" | "error",
-    errMessage: Error | null,
+    option: "empty" | "success" | "error" | "modify",
+    errMessage?: Error | null,
   ) => void;
 }
 
@@ -126,7 +126,7 @@ const ModifyView = ({ toggleDialog }: ModifyViewProps) => {
   );
 
   const editRequest = () => {
-    // TODO: add modification logic
+    toggleDialog("modify");
   };
 
   const deleteRequest = async (traceId: number) => {

@@ -4,6 +4,7 @@ import Switch from "../components/reusable/Switch.tsx";
 import ModifyView from "../components/non-reusable/admin/ModifyView.tsx";
 import AddView from "../components/non-reusable/admin/AddView.tsx";
 import Dialog, { toggleDialog } from "../components/reusable/Dialog.tsx";
+import Button from "../components/reusable/Button.tsx";
 
 const Admin = () => {
   const [viewMode, setViewMode] = useState<"Modify" | "Add">("Modify");
@@ -13,7 +14,7 @@ const Admin = () => {
   >();
 
   const toggleGeneralModal = (
-    option: "empty" | "success" | "error",
+    option: "empty" | "success" | "error" | "modify",
     errMessage?: Error | null,
   ) => {
     const err = errMessage ?? null;
@@ -42,13 +43,29 @@ const Admin = () => {
         <p>Click anywhere to continue</p>
       </div>
     );
+    const modifyContent = (
+      <form className="flex flex-col w-2xl gap-4 p-4 select-none">
+        <label htmlFor="input-text" className="flex items-center gap-2">
+          <p className="font-bold">Text</p>
+          <input
+            type="text"
+            name="input-text"
+            id="input-text"
+            className="border px-2 py-1 w-full rounded-xl"
+          />
+        </label>
+        <Button label="Modify" id="modify-button" variant="black" />
+      </form>
+    );
     toggleDialog(generalModal);
     setGeneralModalContent(
       option === "empty"
         ? emptyContent
         : option === "success"
         ? successContent
-        : errorContent,
+        : option === "error"
+        ? errorContent
+        : modifyContent,
     );
   };
 
