@@ -1,5 +1,7 @@
 import type mysql from "mysql2/promise";
 import type {
+  PurchasingRequestIds,
+  PurchasingRequestItemsInformation,
   TraceApproveRequests,
   TraceRequestOverview,
   TraceRequests,
@@ -393,4 +395,54 @@ export const patchTraceVerdict = async (
     );
   }
   return void 0;
+};
+
+export const getRequestIds = async (
+  pool: mysql.PoolConnection,
+  idTrace: number,
+): Promise<{
+  formId: number;
+  noForm: string;
+  noPr: string;
+  requestItems: PurchasingRequestItemsInformation[];
+}> => {
+  const [row, _metadata] = await pool.query<PurchasingRequestIds[]>(
+    `SELECT DISTINCT
+        frm_PR_H.ID AS FormID,
+        frm_PR_H.NoForm,
+        frm_PR_H.NoPR,
+        frm_PR_D.CostCenter,
+        frm_PR_D.Nature,
+        frm_PR_D.IDBudget,
+        frm_PR_D.NetPrice
+      FROM Trace
+      INNER JOIN frm_PR_H
+        ON frm_PR_H.NoForm = Trace.NoForm
+      INNER JOIN frm_PR_D
+        ON frm_PR_D.NoPR = frm_PR_H.NoPR
+      WHERE Trace.IDTrace = ?;`,
+    [idTrace],
+  );
+
+  const items: PurchasingRequestItemsInformation[] = row.map((item) => ({
+    CostCenter: item.CostCenter,
+    Nature: item.Nature,
+    Periode: item.IDBudget.substring(0, 8),
+    NetPrice: item.NetPrice,
+    FileResource: item.IDBudget.substring(0, 13),
+  }));
+
+  return {
+    formId: row[0].FormID,
+    noForm: row[0].NoForm,
+    noPr: row[0].NoPR,
+    requestItems: items,
+  };
+};
+
+export const deleteRequestTrace = async (
+  pool: mysql.PoolConnection,
+  noForm: string,
+) => {
+  await pool.query(`DELETE FROM Trace WHERE NoForm = ?;`, [noForm]);
 };

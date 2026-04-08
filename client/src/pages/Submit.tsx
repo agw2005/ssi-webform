@@ -433,7 +433,7 @@ const Submit = () => {
               natures={natures}
               setActiveCostCenter={setActiveCostCenter}
               fetchBalanceHelper={fetchBalanceHelper}
-              submitterDepartmentName={firstStepInputs.section}
+              submitterDepartmentName={firstStepInputs.fileResource}
             />
           )
           : (

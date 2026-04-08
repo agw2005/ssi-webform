@@ -35,3 +35,10 @@ export const postRequestFiles = async (
   const newUploadId = rows.insertId;
   return newUploadId;
 };
+
+export const deleteRequestFiles = async (
+  pool: mysql.PoolConnection,
+  noForm: string,
+) => {
+  await pool.query(`DELETE FROM UploadFile WHERE NoForm = ?`, [noForm]);
+};

@@ -140,3 +140,10 @@ export const patchApproverToActiveApproving = async (
   );
   return void 0;
 };
+
+export const deleteRequestApproverPath = async (
+  pool: mysql.PoolConnection,
+  traceId: number,
+) => {
+  await pool.query(`DELETE FROM Trace_D WHERE IDTrace = ?;`, [traceId]);
+};

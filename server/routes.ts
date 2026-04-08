@@ -12,11 +12,13 @@ import {
   singleBalance,
 } from "./controllers/Budget.ts";
 import {
+  deleteRequestItems,
   getAllRequestItems,
   patchFrmPRDVerdict,
   postUsage,
 } from "./controllers/FrmPRD.ts";
 import {
+  deleteRequestInformation,
   getRequestItemForBudgetView,
   patchRemarksOfRequest,
   postRequestInformation,
@@ -31,6 +33,8 @@ import {
 import {
   approveRequests,
   approveRequestsCount,
+  deleteRequestTrace,
+  getRequestIds,
   homeRequests,
   homeRequestsCount,
   patchRemarksOfTrace,
@@ -39,6 +43,7 @@ import {
   specificRequest,
 } from "./controllers/Trace.ts";
 import {
+  deleteRequestApproverPath,
   getApproverPathInformation,
   getNextApprover,
   getOtherApproverInfo,
@@ -47,6 +52,7 @@ import {
   postRequestApproverPath,
 } from "./controllers/TraceD.ts";
 import {
+  deleteRequestFiles,
   getMinimumFileInformation,
   postRequestFiles,
 } from "./controllers/UploadFile.ts";
@@ -423,6 +429,7 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
         usage.costCenter,
         usage.budgetOrNature,
         usage.periode,
+        payload.firstStep.fileResource,
       );
 
       const [currentNatureInfo] = await singleBalance(
@@ -843,6 +850,55 @@ export const putBudgets = async (
     const errMessage = err instanceof Error ? err.message : "";
     ctx.response.status = 500;
     ctx.response.body = errMessage;
+  } finally {
+    connection.release();
+  }
+};
+
+export const deleteRequest = async (ctx: RouterContext<"/admin/:traceId">) => {
+  const traceId = Number(ctx.params.traceId);
+  const connection = await databasePool.getConnection();
+
+  try {
+    const { formId, noForm, noPr, requestItems } = await getRequestIds(
+      connection,
+      traceId,
+    );
+
+    // DELETE frm_PR_D
+    await deleteRequestItems(connection, noPr);
+
+    // PATCH Budget
+    Promise.all(requestItems.map(async (item) => {
+      await patchRequestBudget(
+        connection,
+        -item.NetPrice,
+        item.CostCenter,
+        item.Nature,
+        item.Periode,
+        item.FileResource,
+      );
+    }));
+
+    // DELETE frm_PR_H
+    await deleteRequestInformation(connection, formId);
+
+    // DELETE Trace
+    await deleteRequestTrace(connection, noForm);
+
+    // DELETE Trace_D
+    await deleteRequestApproverPath(connection, traceId);
+
+    // POST to table UploadFile
+    await deleteRequestFiles(connection, noForm);
+
+    await connection.commit();
+
+    ctx.response.status = 200;
+  } catch (err) {
+    await connection.rollback();
+    ctx.response.status = 500;
+    console.error(err);
   } finally {
     connection.release();
   }

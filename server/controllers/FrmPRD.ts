@@ -89,3 +89,13 @@ export const patchFrmPRDVerdict = async (
   );
   return void 0;
 };
+
+export const deleteRequestItems = async (
+  pool: mysql.PoolConnection,
+  noPr: string,
+): Promise<void> => {
+  await pool.query(
+    `DELETE FROM frm_PR_D WHERE NoPR = ?;`,
+    [noPr],
+  );
+};

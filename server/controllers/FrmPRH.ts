@@ -129,3 +129,13 @@ export const patchRemarksOfRequest = async (
     [newRemarks, noForm],
   );
 };
+
+export const deleteRequestInformation = async (
+  pool: mysql.PoolConnection,
+  formId: number,
+) => {
+  await pool.query(
+    `DELETE FROM frm_PR_H WHERE ID = ?;`,
+    [formId],
+  );
+};

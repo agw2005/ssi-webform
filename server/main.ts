@@ -1,5 +1,6 @@
 import { Application, Router } from "@oak/oak";
 import {
+  deleteRequest,
   getAllDepartments,
   getAllFileResources,
   getApproverPath,
@@ -77,6 +78,7 @@ oakRouter.patch("/approve/remarks", patchRemarks);
 oakRouter.patch("/approve/reject", patchRejectRequest);
 oakRouter.patch("/approve/accept", patchAcceptRequest);
 oakRouter.put("/admin/budget", putBudgets);
+oakRouter.delete("/admin/:traceId", deleteRequest);
 
 // Rest of the code
 oakApp.use(oakRouter.routes());

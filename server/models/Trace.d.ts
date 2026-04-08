@@ -68,3 +68,22 @@ export interface TraceApproveRequests extends RowDataPacket {
   SupervisorStep: number;
   SupervisorType: string;
 }
+
+export interface PurchasingRequestIds extends RowDataPacket {
+  FormID: number;
+  NoForm: string;
+  NoPR: string;
+  CostCenter: string;
+  Nature: string;
+  IDBudget: string;
+  NetPrice: number;
+  FileResource: string;
+}
+
+export interface PurchasingRequestItemsInformation {
+  CostCenter: string;
+  Nature: string;
+  Periode: string;
+  NetPrice: number;
+  FileResource: string;
+}
