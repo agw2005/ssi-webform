@@ -3,9 +3,11 @@ import {
   availablePeriods,
   availableYears,
   getBudgetsByYear,
+  getSpecificBudgetData,
   natureByCostCenter,
   patchRequestBudget,
-  putBudgetData,
+  patchSpecificBudgetNewBudget,
+  postBudget,
   reportInformation,
   singleBalance,
 } from "./controllers/Budget.ts";
@@ -784,14 +786,64 @@ export const patchAcceptRequest = async (
 export const putBudgets = async (
   ctx: RouterContext<"/admin/budget">,
 ) => {
-  const connection = await databasePool.getConnection();
   const request: BudgetData[] = await ctx.request.body.json();
 
   if (request.length < 1) {
-    ctx.response.status = 500;
+    ctx.response.status = 400;
+    ctx.response.body = "Request body was empty";
     return;
-  } else {
-    await putBudgetData(connection, request);
+  }
+
+  const connection = await databasePool.getConnection();
+
+  try {
+    await connection.beginTransaction();
+
+    for (const budgetData of request) {
+      const potentialDuplicate: BudgetData = await getSpecificBudgetData(
+        connection,
+        budgetData.CostCenter,
+        budgetData.Nature,
+        budgetData.Periode,
+        budgetData.IDSection,
+        budgetData.FileResource,
+      );
+
+      let payload: BudgetData = {
+        CostCenter: budgetData.CostCenter,
+        Nature: budgetData.Nature,
+        Periode: budgetData.Periode,
+        Budget: budgetData.Budget,
+        Balance: budgetData.Balance,
+        IDSection: budgetData.IDSection,
+        FileResource: budgetData.FileResource,
+      };
+
+      if (potentialDuplicate) {
+        const newBudget = budgetData.Budget;
+        const oldBudget = Number(potentialDuplicate.Budget);
+        const difference = newBudget - oldBudget;
+
+        payload = {
+          ...payload,
+          Budget: budgetData.Budget,
+          Balance: Number(potentialDuplicate.Balance) + difference,
+        };
+
+        await patchSpecificBudgetNewBudget(connection, payload);
+      } else {
+        await postBudget(connection, payload);
+      }
+    }
+
+    await connection.commit();
     ctx.response.status = 200;
+  } catch (err) {
+    await connection.rollback();
+    const errMessage = err instanceof Error ? err.message : "";
+    ctx.response.status = 500;
+    ctx.response.body = errMessage;
+  } finally {
+    connection.release();
   }
 };
