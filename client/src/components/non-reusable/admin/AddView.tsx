@@ -13,7 +13,10 @@ import ErrorFallback from "../../reusable/ErrorFallback.tsx";
 const SUBMIT_URL = `${serverDomain}/admin/budget`;
 
 interface AddViewProps {
-  toggleDialog: (option: "empty" | "success" | "error") => void;
+  toggleDialog: (
+    option: "empty" | "success" | "error",
+    errMessage?: Error | null,
+  ) => void;
 }
 
 interface MonthlyBudget {

@@ -11,7 +11,7 @@ import NumberInput from "../../reusable/inputs/NumberInput.tsx";
 import TextInput from "../../reusable/inputs/TextInput.tsx";
 import LoadingFallback from "../../reusable/LoadingFallback.tsx";
 import PagingButton from "../../reusable/PagingButton.tsx";
-import { useReducer } from "react";
+import { useReducer, useState } from "react";
 import { useDebounce } from "../../../hooks/useDebounce.tsx";
 import serverDomain from "../../../helper/serverDomain.ts";
 import usePurchasingRequests from "../../../hooks/usePurchasingRequests.tsx";
@@ -21,10 +21,18 @@ import formatNumberToString from "../../../helper/formatNumberToString.ts";
 import capitalize from "../../../helper/capitalize.ts";
 import { statusStyling } from "../../../helper/statusStyling.ts";
 import { formatDate } from "../../../helper/formatDate.ts";
+import TipBox from "../../reusable/TipBox.tsx";
 
 const REQUESTS_URL = `${serverDomain}/trace/requests`;
 const REQUESTS_COUNT_URL = `${serverDomain}/trace/requests/count`;
 const SUPERVISOR_NAMES_URL = `${serverDomain}/usermaster/names`;
+
+interface ModifyViewProps {
+  toggleDialog: (
+    option: "empty" | "success" | "error",
+    errMessage: Error | null,
+  ) => void;
+}
 
 const COLUMNS = [
   "ID Trace",
@@ -74,7 +82,11 @@ const DEFAULT_FILTERS: Filters = {
   currentPage: 1,
 };
 
-const ModifyView = () => {
+const ModifyView = ({ toggleDialog }: ModifyViewProps) => {
+  const [modificationIsLoading, setModificationIsLoading] = useState(false);
+  const [modificationIsError, setModificationIsError] = useState<Error | null>(
+    null,
+  );
   const [filters, setFilters] = useReducer(FilterReducer, DEFAULT_FILTERS);
   const debouncedSearch = useDebounce(filters.search, 750);
 
@@ -90,6 +102,7 @@ const ModifyView = () => {
     requestIsError: _requestIsError,
     totalRequestsAtDatabase,
     requests,
+    refetch: refetchRequest,
   } = usePurchasingRequests<FormRequest, TraceRequestsCount>(
     REQUESTS_URL,
     REQUESTS_COUNT_URL,
@@ -100,6 +113,7 @@ const ModifyView = () => {
     data: supervisorNames,
     isLoading: _isSupervisorLoading,
     isError: _supervisorError,
+    refetch: refetchSupervisor,
   } = useFetch<SupervisorNames>(SUPERVISOR_NAMES_URL);
 
   const totalPages = Math.max(
@@ -115,8 +129,30 @@ const ModifyView = () => {
     // TODO: add modification logic
   };
 
-  const deleteRequest = () => {
-    // TODO: add deletion logic
+  const deleteRequest = async (traceId: number) => {
+    setModificationIsLoading(true);
+    setModificationIsError(null);
+    const abortController = new AbortController();
+    try {
+      const response = await fetch(
+        `${serverDomain}/admin/${traceId}`,
+        { method: "DELETE", signal: abortController.signal },
+      );
+      if (response.ok) {
+        refetchRequest();
+        refetchSupervisor();
+      }
+    } catch (err) {
+      if (err instanceof Error && err.name === "AbortError") return;
+      const error: Error = new Error(
+        `Encountered an error when deleting data from the database. Please ensure your connection is stable.\n(${err}).`,
+      );
+      setModificationIsError(error);
+      console.error(error);
+      toggleDialog("error", error);
+    } finally {
+      setModificationIsLoading(false);
+    }
   };
 
   return (
@@ -195,7 +231,15 @@ const ModifyView = () => {
           <Button id="reset-filters" variant="black" label="Reset" />
         </div>
       </div>
-      {requestIsLoading
+      {modificationIsError && (
+        <div className="max-w-full">
+          <TipBox
+            label="Encountered an error when modifying data from the database. Please ensure your connection is stable"
+            variant="red"
+          />
+        </div>
+      )}
+      {requestIsLoading && modificationIsLoading
         ? <LoadingFallback />
         : requests && requests.length === 0
         ? (
@@ -276,7 +320,7 @@ const ModifyView = () => {
                       </td>
                       <td
                         className="bg-red-500/50 hover:bg-red-500 active:bg-red-800 | text-black active:text-white | border-black active:border-black | text-xs lg:text-sm xl:text-base | whitespace-nowrap border min-w-16 text-center p-2 select-none"
-                        onClick={deleteRequest}
+                        onClick={() => deleteRequest(request.IDTrace)}
                       >
                         Delete
                       </td>

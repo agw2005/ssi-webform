@@ -12,7 +12,11 @@ const Admin = () => {
     React.ReactNode
   >();
 
-  const toggleGeneralModal = (option: "empty" | "success" | "error") => {
+  const toggleGeneralModal = (
+    option: "empty" | "success" | "error",
+    errMessage?: Error | null,
+  ) => {
+    const err = errMessage ?? null;
     const emptyContent = (
       <div className="flex flex-col gap-2 p-4 select-none">
         <h3 className="font-bold text-2xl">
@@ -31,7 +35,9 @@ const Admin = () => {
     const errorContent = (
       <div className="flex flex-col gap-2 p-4 select-none items-center">
         <h3 className="font-bold text-2xl">
-          Encountered a problem during submission. Aborted the request.
+          {err
+            ? err.message
+            : "Encountered a problem during submission. Aborted the request."}
         </h3>
         <p>Click anywhere to continue</p>
       </div>
@@ -63,7 +69,11 @@ const Admin = () => {
         setter={setViewMode}
         getter={viewMode}
       />
-      {viewMode === "Modify" && <ModifyView />}
+      {viewMode === "Modify" && (
+        <ModifyView
+          toggleDialog={toggleGeneralModal}
+        />
+      )}
       {viewMode === "Add" && <AddView toggleDialog={toggleGeneralModal} />}
       <Dialog
         toggle={() => toggleDialog(generalModal)}
