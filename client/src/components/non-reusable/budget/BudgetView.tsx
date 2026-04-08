@@ -1,11 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import LoadingFallback from "../../reusable/LoadingFallback.tsx";
 import formatNumberToString from "../../../helper/formatNumberToString.ts";
 import { Link } from "react-router-dom";
-import serverDomain from "../../../helper/serverDomain.ts";
 import type { BudgetViewAtYear } from "@scope/server";
-
-const BUDGET_VIEW_URL = `${serverDomain}/budget`;
+import useBudgets from "../../../hooks/useBudgets.tsx";
 
 interface BudgetViewProps {
   year: string;
@@ -39,59 +37,21 @@ const TWO_ROWSPAN_COLUMNS = [
 const SUB_COLUMNS = ["Budget", "Usage", "Balance"];
 
 const BudgetView = ({ year, fileResource }: BudgetViewProps) => {
-  const [budgetViewData, setBudgetViewData] = useState<
-    BudgetViewAtYear[] | null
-  >(null);
-  const [isBudgetViewDataLoading, setIsBudgetViewDataLoading] = useState(false);
-  const [isBudgetViewDataError, setIsBudgetViewDataError] = useState<
-    Error | null
-  >(null);
+  const params = new URLSearchParams();
+  params.set("year", year);
+  if (fileResource !== "Show All" && fileResource !== "") {
+    params.set("fileresource", fileResource);
+  }
 
-  const applyParams = (url: URL) => {
-    url.searchParams.set("year", year);
-    if (fileResource !== "Show All" && fileResource !== "") {
-      url.searchParams.set("fileresource", fileResource);
-    }
-  };
-
-  useEffect(() => {
-    const requestUrl = new URL(BUDGET_VIEW_URL);
-    const abortController = new AbortController();
-    setIsBudgetViewDataLoading(true);
-    applyParams(requestUrl);
-
-    const fetchData = async () => {
-      try {
-        const budgetViewResponse = await fetch(requestUrl.toString(), {
-          signal: abortController.signal,
-        });
-        if (!budgetViewResponse.ok) {
-          throw new Error(`HTTP error! status: ${budgetViewResponse.status}`);
-        }
-
-        const budgetViewResponseJson: BudgetViewAtYear[] =
-          await budgetViewResponse.json();
-
-        setBudgetViewData(budgetViewResponseJson);
-      } catch (err) {
-        if (err instanceof Error && err.name === "AbortError") {
-          return;
-        }
-        const error: Error = new Error(
-          `Encountered an error when fetching API. Please ensure your connection is stable.\n(${err}).`,
-        );
-        setIsBudgetViewDataError(error);
-      } finally {
-        setIsBudgetViewDataLoading(false);
-      }
-    };
-
-    fetchData();
-
-    return () => {
-      abortController.abort();
-    };
-  }, [year, fileResource]);
+  const {
+    budgets: budgetViewData,
+    budgetIsLoading: isBudgetViewDataLoading,
+    budgetIsError: isBudgetViewDataError,
+  } = useBudgets(
+    year,
+    fileResource,
+    params.toString(),
+  );
 
   if (isBudgetViewDataLoading) {
     return <LoadingFallback />;
