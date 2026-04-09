@@ -10,9 +10,9 @@ import Button from "../../reusable/Button.tsx";
 import { dateSplitter } from "../../../helper/dateSplitter.ts";
 import type {
   Balance,
-  Department,
   Nature,
   ThirdStepInputs,
+  ValidCostCenter,
 } from "@scope/server";
 import type { ForexAPIResponse, ForexRates } from "../../../hooks/useForex.tsx";
 import formatNumberToString from "../../../helper/formatNumberToString.ts";
@@ -96,7 +96,7 @@ interface ThirdStepProps {
   >;
   thirdStepInputsDefaultValue: ThirdStepInputs;
   forexInformation: ForexAPIResponse | null;
-  departments: Department[] | null;
+  costCenters: ValidCostCenter[] | null;
   natures: Nature[] | null;
   setActiveCostCenter: React.Dispatch<React.SetStateAction<string>>;
   fetchBalanceHelper: (
@@ -116,7 +116,7 @@ const ThirdStep = ({
   thirdStepInputsInputsSetter,
   thirdStepInputsDefaultValue,
   forexInformation,
-  departments,
+  costCenters,
   natures,
   setActiveCostCenter,
   fetchBalanceHelper,
@@ -255,9 +255,9 @@ const ThirdStep = ({
             requiredInput
             variant="yellow"
             defaultDisabledValue="Select Cost Center"
-            mappings={!departments ? [] : departments.map((department) => ({
-              code: department.CostCenter,
-              label: department.Description,
+            mappings={!costCenters ? [] : costCenters.map((costCenter) => ({
+              code: costCenter.Identifier,
+              label: costCenter.Description,
             }))}
             value={usageField.costCenter}
             onChangeHandler={handleCostCenterChange}

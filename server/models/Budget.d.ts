@@ -75,3 +75,14 @@ export interface BudgetYear extends RowDataPacket {
 export interface BudgetPeriod extends RowDataPacket {
   Period: string;
 }
+
+export interface ValidDepartment extends RowDataPacket {
+  Identifier: string;
+  Description: string;
+  Dept: string;
+}
+
+export interface ValidCostCenter extends RowDataPacket {
+  Identifier: string;
+  Description: string;
+}

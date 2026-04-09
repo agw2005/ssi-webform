@@ -1,14 +1,15 @@
 import { Application, Router } from "@oak/oak";
 import {
   deleteRequest,
-  getAllDepartments,
   getAllFileResources,
+  getAllValidCostCenters,
+  getAllValidDepartments,
+  getAllValidNatures,
   getApproverPath,
   getAuthInformation,
   getAvailableBudgetPeriods,
   getAvailableBudgetYears,
   getBudgetViewInformation,
-  getNaturesOfCostCenter,
   getReportViewInformation,
   getRequests,
   getRequestsAtBudgetView,
@@ -50,11 +51,12 @@ oakRouter.get("/usermaster/names", getSupervisorNames);
 oakRouter.get("/budget/fileresources", getAllFileResources);
 oakRouter.get("/budget/years", getAvailableBudgetYears);
 oakRouter.get("/budget/periods", getAvailableBudgetPeriods);
-oakRouter.get("/budget/nature/:costcenter", getNaturesOfCostCenter);
+oakRouter.get("/budget/nature", getAllValidNatures);
 oakRouter.get("/budget/nature/:costcenter/:periode/:nature", getSingleBalance);
 oakRouter.get("/budget", getBudgetViewInformation);
 oakRouter.get("/budget/report", getReportViewInformation);
-oakRouter.get("/frmprnopr/departments", getAllDepartments);
+oakRouter.get("/budget/departments", getAllValidDepartments);
+oakRouter.get("/budget/costcenters", getAllValidCostCenters);
 oakRouter.get("/trace/requests", getRequests);
 oakRouter.get("/trace/requests/count", getRequestsCount);
 oakRouter.get("/trace/request/:traceId", getSpecificRequest);

@@ -7,7 +7,6 @@ import FifthStep from "../components/non-reusable/submit/FifthStep.tsx";
 import { useRef, useState } from "react";
 import {
   type Balance,
-  type Department,
   type FifthStepInputs,
   type FileResource,
   type FirstStepInputs,
@@ -20,6 +19,8 @@ import {
   type SubmitResponse,
   type ThirdStepInputs,
   type UserSection,
+  type ValidCostCenter,
+  type ValidDepartment,
 } from "@scope/server";
 import useFetch from "../hooks/useFetch.tsx";
 import useForex from "../hooks/useForex.tsx";
@@ -27,11 +28,28 @@ import serverDomain from "../helper/serverDomain.ts";
 import { useNavigate } from "react-router-dom";
 import Dialog, { toggleDialog } from "../components/reusable/Dialog.tsx";
 import Button from "../components/reusable/Button.tsx";
+import getCurrentPeriod from "../helper/getCurrentPeriod.ts";
 
 const SECTION_NAMES_URL = `${serverDomain}/section/names`;
 const FILE_RESOURCES_URL = `${serverDomain}/budget/fileresources`;
-const DEPARTMENTS_URL = `${serverDomain}/frmprnopr/departments`;
-const NATURES_URL = `${serverDomain}/budget/nature`;
+const DEPARTMENTS_URL = (fileResource: string) =>
+  `${serverDomain}/budget/departments?period=${getCurrentPeriod()}${
+    fileResource ? `&fileresource=${fileResource}` : ""
+  }`;
+const COST_CENTERS_URL = (fileResource: string, deptId: number | null) =>
+  `${serverDomain}/budget/costcenters?period=${getCurrentPeriod()}${
+    fileResource ? `&fileresource=${fileResource}` : ""
+  }${deptId ? `&dept=${deptId}` : ""}`;
+const NATURES_URL = (
+  fileResource: string,
+  deptId: number | null,
+  costCenter: string | null,
+) =>
+  `${serverDomain}/budget/nature?period=${getCurrentPeriod()}${
+    fileResource ? `&fileresource=${fileResource}` : ""
+  }${deptId ? `&dept=${deptId}` : ""}${
+    costCenter === "" ? `&costcenter=${costCenter}` : ""
+  }`;
 const BALANCE_URL = (costCenter: string, period: string, nature: string) =>
   `${serverDomain}/budget/nature/${costCenter}/${period}/${nature}`;
 const USER_SECTION_MAPPINGS_URL = `${serverDomain}/section/users`;
@@ -128,13 +146,32 @@ const Submit = () => {
     data: departments,
     isLoading: isDepartmentsLoading,
     isError: isDepartmentsError,
-  } = useFetch<Department>(DEPARTMENTS_URL);
+  } = useFetch<ValidDepartment>(DEPARTMENTS_URL(firstStepInputs.fileResource));
+
+  const {
+    data: costCenters,
+    isLoading: isCostCentersLoading,
+    isError: isCostCentersError,
+  } = useFetch<ValidCostCenter>(
+    COST_CENTERS_URL(
+      firstStepInputs.fileResource,
+      firstStepInputs.department === DEFAULT_VALUES.firstStep.department
+        ? null
+        : Number(firstStepInputs.department),
+    ),
+  );
 
   const {
     data: natures,
     isLoading: _isNaturesLoading,
     isError: isNaturesError,
-  } = useFetch<Nature>(`${NATURES_URL}/${activeCostCenter || "103"}`);
+  } = useFetch<Nature>(NATURES_URL(
+    firstStepInputs.fileResource,
+    firstStepInputs.department === DEFAULT_VALUES.firstStep.department
+      ? null
+      : Number(firstStepInputs.department),
+    activeCostCenter,
+  ));
 
   const {
     data: userSectionMappings,
@@ -354,6 +391,7 @@ const Submit = () => {
         isDepartmentsLoading,
         isUserSectionMappingsLoading,
         requestIsProcessing,
+        isCostCentersLoading,
       ]}
       isErr={[
         isSectionError,
@@ -363,6 +401,7 @@ const Submit = () => {
         balanceError,
         isUserSectionMappingsError,
         requestIsError,
+        isCostCentersError,
       ]}
       componentName="Submit.tsx"
       pageTitle="Submit PR"
@@ -429,7 +468,7 @@ const Submit = () => {
               thirdStepInputsInputsSetter={setThirdStepInputs}
               thirdStepInputsDefaultValue={DEFAULT_VALUES.thirdStep}
               forexInformation={forexInformation}
-              departments={departments}
+              costCenters={costCenters}
               natures={natures}
               setActiveCostCenter={setActiveCostCenter}
               fetchBalanceHelper={fetchBalanceHelper}

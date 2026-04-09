@@ -5,10 +5,10 @@ import SelectionInputBetweenLabel from "../../reusable/inputs/SelectionInputBetw
 import { createGenericChangeHandler } from "../../../helper/genericInputHandler.ts";
 import fileResourceFetchHandler from "../../../helper/fileResourceFetchHandler.ts";
 import type {
-  Department,
   FileResource,
   FirstStepInputs,
   SectionName,
+  ValidDepartment,
 } from "@scope/server";
 
 const FORMS = ["PR", "Cash Advance", "Fixed Asset"];
@@ -23,7 +23,7 @@ interface FirstStepProps {
   firstStepInputsDefaultValue: FirstStepInputs;
   sectionNames: SectionName[] | null;
   fileResources: FileResource[] | null;
-  departments: Department[] | null;
+  departments: ValidDepartment[] | null;
   alertUnfilledForm: () => void;
 }
 
@@ -126,7 +126,13 @@ const FirstStep = ({
         defaultDisabledValue="Select File Resource"
         options={fileResourceFetchHandler(fileResources)}
         value={firstStepInputsGetter.fileResource}
-        onChangeHandler={genericChangeHandler("fileResource")}
+        onChangeHandler={(e) => {
+          genericChangeHandler("fileResource")(e);
+          firstStepInputsInputsSetter((prev) => ({
+            ...prev,
+            department: firstStepInputsDefaultValue.department,
+          }));
+        }}
       />
       <SelectionInputBetweenLabel
         label="Department"
@@ -136,11 +142,13 @@ const FirstStep = ({
         variant="red"
         defaultDisabledValue="Select Department Code"
         mappings={!departments ? [] : departments.map((department) => ({
-          code: department.CostCenter,
+          code: String(department.Identifier),
           label: department.Description,
         }))}
         value={firstStepInputsGetter.department}
         onChangeHandler={genericChangeHandler("department")}
+        isDisabled={firstStepInputsGetter.fileResource ===
+          firstStepInputsDefaultValue.fileResource}
       />
       <SelectionInput
         label="Select Form"

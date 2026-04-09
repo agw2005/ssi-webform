@@ -16,7 +16,7 @@ const useFetch = <T,>(url: string, param: string = "") => {
 
     const fetchData = async () => {
       try {
-        const response = await fetch(`${url}/${param}`, {
+        const response = await fetch(`${url}${param ? `/${param}` : ""}`, {
           signal: abortController.signal,
           cache: "no-cache",
         });

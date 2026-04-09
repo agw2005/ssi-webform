@@ -8,6 +8,8 @@ import type {
   BudgetViewInformation,
   BudgetYear,
   ReportViewInformation,
+  ValidCostCenter,
+  ValidDepartment,
 } from "../models/Budget.d.ts";
 import type { ResultSetHeader } from "mysql2/promise.js";
 
@@ -45,22 +47,32 @@ export const availablePeriods = async (pool: mysql.Pool) => {
   return [rows, metadata];
 };
 
-/**
- * GET all instance of available natures by a single cost center.
- * @param pool An instance of mysql2 database pool
- * @param costCenter A valid cost center value
- * @returns An array of budget, containing all the natures of a cost center and a metadata variable
- */
-export const natureByCostCenter = async (
+export const getValidNatures = async (
   pool: mysql.Pool,
-  costCenter: number,
+  fullPeriode: string | null,
+  fileResource: string | null,
+  deptId: number | null,
+  costCenter: string | null,
 ) => {
   const [rows, metadata] = await pool.query<BudgetNature[]>(
     `SELECT DISTINCT Nature
-    FROM Budget
-    WHERE CostCenter = ?
-    ORDER BY Nature DESC`,
-    [costCenter],
+      FROM Budget
+      WHERE IDSection IS NOT NULL
+      AND (? IS NULL OR Periode = ?)
+      AND (? IS NULL OR FileResource = ?)
+      AND (? IS NULL OR IDSection = ?)
+      AND (? IS NULL OR CostCenter = ?)
+      ORDER BY Nature;`,
+    [
+      fullPeriode,
+      fullPeriode,
+      fileResource,
+      fileResource,
+      deptId,
+      deptId,
+      costCenter,
+      costCenter,
+    ],
   );
   return [rows, metadata];
 };
@@ -258,4 +270,49 @@ export const postBudget = async (
       data.FileResource,
     ],
   );
+};
+
+export const getValidDepartments = async (
+  pool: mysql.Pool,
+  fullPeriode: string | null,
+  fileResource: string | null,
+) => {
+  const [rows, metadata] = await pool.query<ValidDepartment[]>(
+    `SELECT DISTINCT
+        Budget.IDSection AS Identifier,
+        frm_PR_NoPR.Description,
+        frm_PR_NoPR.Dept
+      FROM Budget
+      INNER JOIN frm_PR_NoPR
+        ON frm_PR_NoPR.CostCenter = Budget.IDSection
+      WHERE IDSection IS NOT NULL
+      AND (? IS NULL OR Periode = ?)
+      AND (? IS NULL OR FileResource = ?)
+      ORDER BY IDSection;`,
+    [fullPeriode, fullPeriode, fileResource, fileResource],
+  );
+  return [rows, metadata];
+};
+
+export const getValidCostCenters = async (
+  pool: mysql.Pool,
+  fullPeriode: string | null,
+  fileResource: string | null,
+  deptId: number | null,
+) => {
+  const [rows, metadata] = await pool.query<ValidCostCenter[]>(
+    `SELECT DISTINCT
+        Budget.CostCenter AS Identifier,
+        Description
+      FROM Budget
+      INNER JOIN frm_PR_NoPR
+        ON frm_PR_NoPR.CostCenter = Budget.CostCenter
+      WHERE IDSection IS NOT NULL
+        AND (? IS NULL OR Periode = ?)
+        AND (? IS NULL OR FileResource = ?)
+        AND (? IS NULL OR IDSection = ?)
+      ORDER BY Budget.CostCenter;`,
+    [fullPeriode, fullPeriode, fileResource, fileResource, deptId, deptId],
+  );
+  return [rows, metadata];
 };

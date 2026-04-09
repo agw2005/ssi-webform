@@ -15,6 +15,7 @@ interface SelectionInputBetweenLabelProps {
   defaultDisabledValue: string;
   mappings: StringToStringMapping[];
   value: string;
+  isDisabled?: boolean;
   onChangeHandler: (input: React.ChangeEvent<HTMLSelectElement>) => void;
 }
 
@@ -32,6 +33,7 @@ const SelectionInputBetweenLabel = ({
   defaultDisabledValue,
   mappings,
   value,
+  isDisabled = false,
   onChangeHandler,
 }: SelectionInputBetweenLabelProps) => {
   const selectedMapping = mappings.find((mapping) => mapping.code === value);
@@ -52,9 +54,12 @@ const SelectionInputBetweenLabel = ({
         id={id}
         className={`text-xs lg:text-sm xl:text-base | flex-1 h-full px-4 border ${
           value === "" ? "rounded-r-xl" : ""
-        } ${resolveColorMappings(variant, "input")} bg-white/50 outline-none`}
+        } ${resolveColorMappings(variant, "input")} ${
+          isDisabled ? "bg-black/10" : "bg-white/50"
+        } outline-none`}
         value={value}
         onChange={onChangeHandler}
+        disabled={isDisabled}
       >
         <option value="" disabled>
           {defaultDisabledValue}

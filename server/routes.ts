@@ -4,7 +4,9 @@ import {
   availableYears,
   getBudgetsByYear,
   getSpecificBudgetData,
-  natureByCostCenter,
+  getValidCostCenters,
+  getValidDepartments,
+  getValidNatures,
   patchRequestBudget,
   patchSpecificBudgetNewBudget,
   postBudget,
@@ -24,7 +26,6 @@ import {
   postRequestInformation,
   provisionPRNumber,
 } from "./controllers/FrmPRH.ts";
-import { allDepartments } from "./controllers/FrmPRNoPR.ts";
 import {
   getSectionIdByName,
   sectionNames,
@@ -113,11 +114,23 @@ export const getAvailableBudgetPeriods = async (
   ctx.response.body = rows;
 };
 
-export const getNaturesOfCostCenter = async (
-  ctx: RouterContext<"/budget/nature/:costcenter">,
+export const getAllValidNatures = async (
+  ctx: RouterContext<"/budget/nature">,
 ) => {
-  const costcenter = Number(ctx.params.costcenter);
-  const [rows, _metadata] = await natureByCostCenter(databasePool, costcenter);
+  const params = ctx.request.url.searchParams;
+
+  const fullPeriode = params.get("period") || null;
+  const fileResource = params.get("fileresource") || null;
+  const dept = Number(params.get("dept")) || null;
+  const costCenter = params.get("costcenter") || null;
+
+  const [rows, _metadata] = await getValidNatures(
+    databasePool,
+    fullPeriode,
+    fileResource,
+    dept,
+    costCenter,
+  );
   ctx.response.status = 200;
   ctx.response.body = rows;
 };
@@ -193,14 +206,6 @@ export const getRequestsAtBudgetView = async (
     startDate,
     endDate,
   );
-  ctx.response.status = 200;
-  ctx.response.body = rows;
-};
-
-export const getAllDepartments = async (
-  ctx: RouterContext<"/frmprnopr/departments">,
-) => {
-  const [rows, _metadata] = await allDepartments(databasePool);
   ctx.response.status = 200;
   ctx.response.body = rows;
 };
@@ -904,4 +909,40 @@ export const deleteRequest = async (ctx: RouterContext<"/admin/:traceId">) => {
   } finally {
     connection.release();
   }
+};
+
+export const getAllValidDepartments = async (
+  ctx: RouterContext<"/budget/departments">,
+) => {
+  const params = ctx.request.url.searchParams;
+
+  const fullPeriode = params.get("period") || null;
+  const fileResource = params.get("fileresource") || null;
+
+  const [rows, _metadata] = await getValidDepartments(
+    databasePool,
+    fullPeriode,
+    fileResource,
+  );
+  ctx.response.status = 200;
+  ctx.response.body = rows;
+};
+
+export const getAllValidCostCenters = async (
+  ctx: RouterContext<"/budget/costcenters">,
+) => {
+  const params = ctx.request.url.searchParams;
+
+  const fullPeriode = params.get("period") || null;
+  const fileResource = params.get("fileresource") || null;
+  const dept = Number(params.get("dept")) || null;
+
+  const [rows, _metadata] = await getValidCostCenters(
+    databasePool,
+    fullPeriode,
+    fileResource,
+    dept,
+  );
+  ctx.response.status = 200;
+  ctx.response.body = rows;
 };
