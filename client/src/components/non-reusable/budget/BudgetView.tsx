@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import LoadingFallback from "../../reusable/LoadingFallback.tsx";
 import formatNumberToString from "../../../helper/formatNumberToString.ts";
 import { Link } from "react-router-dom";
@@ -53,6 +53,23 @@ const BudgetView = ({ year, fileResource }: BudgetViewProps) => {
     params.toString(),
   );
 
+  const uniqueRows: BudgetViewAtYear[] | null = budgetViewData &&
+    budgetViewData.filter(
+      (budgetData, index, self) =>
+        index ===
+          self.findIndex(
+            (data) =>
+              data.CostCenter === budgetData.CostCenter &&
+              data.Nature === budgetData.Nature &&
+              data.Department === budgetData.Department &&
+              data.FileResource === budgetData.FileResource,
+          ),
+    );
+
+  useEffect(() => {
+    console.log(uniqueRows);
+  }, [uniqueRows]);
+
   if (isBudgetViewDataLoading) {
     return <LoadingFallback />;
   }
@@ -65,17 +82,6 @@ const BudgetView = ({ year, fileResource }: BudgetViewProps) => {
       </div>
     );
   }
-
-  const uniqueRows: BudgetViewAtYear[] | null = budgetViewData &&
-    budgetViewData.filter(
-      (budgetData, index, self) =>
-        index ===
-          self.findIndex(
-            (data) =>
-              data.CostCenter === budgetData.CostCenter &&
-              data.Nature === budgetData.Nature,
-          ),
-    );
 
   return (
     <div className="overflow-x-auto min-h-50 max-h-160 mt-4">
