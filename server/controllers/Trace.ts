@@ -349,7 +349,7 @@ export const patchRemarksOfTrace = async (
 };
 
 export const patchTraceVerdict = async (
-  pool: mysql.Pool,
+  pool: mysql.Pool | mysql.PoolConnection,
   verdict: "Rejected" | "Approved",
   traceId: number,
   maxApproverLevel: number,

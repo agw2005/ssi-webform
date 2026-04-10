@@ -75,7 +75,7 @@ export const postUsage = async (
 };
 
 export const patchFrmPRDVerdict = async (
-  pool: mysql.Pool,
+  pool: mysql.Pool | mysql.PoolConnection,
   supervisorId: number,
   itemId: number,
 ) => {

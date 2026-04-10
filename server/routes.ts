@@ -736,41 +736,73 @@ export const patchRejectRequest = async (
   ctx: RouterContext<"/approve/reject">,
 ) => {
   const request: patchApprovalVerdict = await ctx.request.body.json();
+  const connection = await databasePool.getConnection();
 
-  await patchTraceDVerdict(
-    databasePool,
-    "Rejected",
-    request.traceId,
-    request.supervisorLevel,
-  );
+  try {
+    connection.beginTransaction();
 
-  const { nextUserId, nextApproverLevel } = await getNextApprover(
-    databasePool,
-    request.traceId,
-    request.supervisorId,
-    request.supervisorLevel,
-  );
+    const { formId: _formId, noForm: _noForm, noPr: _noPr, requestItems } =
+      await getRequestIds(
+        connection,
+        request.traceId,
+      );
 
-  const { Maxxed: MaxApproverLevel, Summed: SumApproverLevel } =
-    await getOtherApproverInfo(databasePool, request.traceId);
+    await patchTraceDVerdict(
+      connection,
+      "Rejected",
+      request.traceId,
+      request.supervisorLevel,
+    );
 
-  await patchTraceVerdict(
-    databasePool,
-    "Rejected",
-    request.traceId,
-    MaxApproverLevel,
-    SumApproverLevel,
-    nextUserId,
-    nextApproverLevel,
-  );
+    const { nextUserId, nextApproverLevel } = await getNextApprover(
+      connection,
+      request.traceId,
+      request.supervisorId,
+      request.supervisorLevel,
+    );
 
-  await Promise.all(
-    request.rejectedItems.map(async (itemId) => {
-      await patchFrmPRDVerdict(databasePool, request.supervisorId, itemId);
-    }),
-  );
+    const { Maxxed: MaxApproverLevel, Summed: SumApproverLevel } =
+      await getOtherApproverInfo(connection, request.traceId);
 
-  ctx.response.status = 200;
+    // Return requested budget (all items)
+    await Promise.all(requestItems.map(async (item) => {
+      await patchRequestBudget(
+        connection,
+        -item.NetPrice,
+        item.CostCenter,
+        item.Nature,
+        item.Periode,
+        item.FileResource,
+        item.Department,
+      );
+    }));
+
+    await patchTraceVerdict(
+      connection,
+      "Rejected",
+      request.traceId,
+      MaxApproverLevel,
+      SumApproverLevel,
+      nextUserId,
+      nextApproverLevel,
+    );
+
+    await Promise.all(
+      request.rejectedItems.map(async (itemId) => {
+        await patchFrmPRDVerdict(connection, request.supervisorId, itemId);
+      }),
+    );
+
+    await connection.commit();
+
+    ctx.response.status = 200;
+  } catch (err) {
+    await connection.rollback();
+    ctx.response.status = 500;
+    console.error(err);
+  } finally {
+    connection.release();
+  }
 };
 
 export const patchAcceptRequest = async (
@@ -909,7 +941,7 @@ export const deleteRequest = async (ctx: RouterContext<"/admin/:traceId">) => {
     await Promise.all(requestItems.map(async (item) => {
       await patchRequestBudget(
         connection,
-        -item.NetPrice, //
+        -item.NetPrice,
         item.CostCenter,
         item.Nature,
         item.Periode,

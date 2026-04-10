@@ -46,7 +46,7 @@ export const postRequestApproverPath = async (
 };
 
 export const patchTraceDVerdict = async (
-  pool: mysql.Pool,
+  pool: mysql.Pool | mysql.PoolConnection,
   verdict: "Rejected" | "Approved",
   traceId: number,
   currentApproverLevel: number,
@@ -70,7 +70,7 @@ export const patchTraceDVerdict = async (
  * Will return two `null` values if the input UserID is the last supervisor.
  */
 export const getNextApprover = async (
-  pool: mysql.Pool,
+  pool: mysql.Pool | mysql.PoolConnection,
   traceId: number,
   idUser: number,
   currentLevel: number,
@@ -108,7 +108,7 @@ export const getNextApprover = async (
 };
 
 export const getOtherApproverInfo = async (
-  pool: mysql.Pool,
+  pool: mysql.Pool | mysql.PoolConnection,
   traceId: number,
 ) => {
   const [rows, _metadata] = await pool.query<OtherApproverPathInfo[]>(
