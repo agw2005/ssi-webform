@@ -86,4 +86,5 @@ export interface PurchasingRequestItemsInformation {
   Periode: string;
   NetPrice: number;
   FileResource: string;
+  Department: string;
 }

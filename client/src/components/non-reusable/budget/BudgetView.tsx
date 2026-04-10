@@ -61,8 +61,8 @@ const BudgetView = ({ year, fileResource }: BudgetViewProps) => {
             (data) =>
               data.CostCenter === budgetData.CostCenter &&
               data.Nature === budgetData.Nature &&
-              data.Department === budgetData.Department &&
-              data.FileResource === budgetData.FileResource,
+              data.FileResource === budgetData.FileResource &&
+              data.Department === budgetData.Department,
           ),
     );
 
@@ -134,10 +134,13 @@ const BudgetView = ({ year, fileResource }: BudgetViewProps) => {
           {uniqueRows?.map((rowData, index) => {
             const rowCostCenter = rowData.CostCenter;
             const rowNature = rowData.Nature;
+            const rowDepartment = rowData.Department;
+            const rowFileResource = rowData.FileResource;
+            const rowDescription = rowData.Description;
             return (
               <tr key={index}>
                 <td className="text-xs lg:text-sm xl:text-base | border p-2 whitespace-nowrap text-center">
-                  {rowData.FileResource} ({rowData.Department})
+                  {rowFileResource} ({rowDepartment})
                 </td>
                 <td className="text-xs lg:text-sm xl:text-base | border p-2 whitespace-nowrap text-center">
                   {rowCostCenter}
@@ -146,13 +149,16 @@ const BudgetView = ({ year, fileResource }: BudgetViewProps) => {
                   {rowNature}
                 </td>
                 <td className="text-xs lg:text-sm xl:text-base | border p-2 min-w-50 max-w-50 text-center">
-                  {rowData.Description}
+                  {rowDescription}
                 </td>
                 {MONTH_INDEX.map((monthIndex, index) => {
                   const monthData = budgetViewData?.find(
                     (budgetData) =>
                       budgetData.CostCenter === rowCostCenter &&
                       budgetData.Nature === rowNature &&
+                      budgetData.Department === rowDepartment &&
+                      budgetData.FileResource === rowFileResource &&
+                      budgetData.Description === rowDescription &&
                       budgetData.MonthIndex === monthIndex,
                   );
                   const monthBudget = Number(monthData?.Budget || 0);

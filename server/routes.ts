@@ -435,7 +435,9 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
         usage.budgetOrNature,
         usage.periode,
         payload.firstStep.fileResource,
+        payload.firstStep.department,
       );
+      console.log(payload.firstStep.department);
 
       const [currentNatureInfo] = await singleBalance(
         connection,
@@ -893,6 +895,7 @@ export const deleteRequest = async (ctx: RouterContext<"/admin/:traceId">) => {
         item.Nature,
         item.Periode,
         item.FileResource,
+        item.Department,
       );
     }));
 

@@ -188,6 +188,7 @@ export const patchRequestBudget = async (
   nature: string,
   period: string,
   fileResource: string,
+  dept: string,
 ) => {
   const [rows, metadata] = await pool.query<ResultSetHeader>(
     `UPDATE Budget
@@ -196,8 +197,9 @@ export const patchRequestBudget = async (
         CostCenter = ?
         AND Nature = ? 
         AND Periode = ?
-        AND FileResource = ?;`,
-    [usage, costCenter, nature, period, fileResource],
+        AND FileResource = ?
+        AND IDSection = ?;`,
+    [usage, costCenter, nature, period, fileResource, dept],
   );
   return [rows, metadata];
 };
