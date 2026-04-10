@@ -9,7 +9,8 @@
     "baseUrl": ".",
     "paths": {
       "@scope/server-mysql": ["../server-mysql/mod.ts"],
-      "@scope/server-ssms": ["../server-ssms/mod.ts"]
+      "@scope/server-ssms": ["../server-ssms/mod.ts"],
+      "xlsx": ["https://cdn.sheetjs.com/xlsx-0.20.3/package/xlsx.mjs"]
     },
 
     "types": ["vite/client"],

@@ -1,6 +1,6 @@
-import type { TraceApproverPath } from "../../../server/models/TraceD.d.ts";
+import type { ApproverPath } from "@scope/server-mysql";
 
-export const getCurrentApproverLevel = (data: TraceApproverPath[]): number => {
+export const getCurrentApproverLevel = (data: ApproverPath[]): number => {
   const index = data.findIndex((item) => item.Result === "In Progress");
   const level = index + 1;
   return level;
