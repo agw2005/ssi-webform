@@ -429,7 +429,7 @@ export const getRequestIds = async (
     Nature: item.Nature,
     Periode: item.IDBudget.substring(0, 8),
     NetPrice: item.NetPrice,
-    FileResource: item.IDBudget.substring(0, 13),
+    FileResource: item.IDBudget.substring(13),
     Department: item.NoPR.substring(0, 3),
   }));
 

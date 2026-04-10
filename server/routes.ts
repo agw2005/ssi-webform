@@ -455,7 +455,6 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
         payload.firstStep.fileResource,
         payload.firstStep.department,
       );
-      console.log(payload.firstStep.department);
 
       const [currentNatureInfo] = await singleBalance(
         connection,
@@ -910,7 +909,7 @@ export const deleteRequest = async (ctx: RouterContext<"/admin/:traceId">) => {
     await Promise.all(requestItems.map(async (item) => {
       await patchRequestBudget(
         connection,
-        -item.NetPrice,
+        -item.NetPrice, //
         item.CostCenter,
         item.Nature,
         item.Periode,
