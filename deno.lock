@@ -2047,7 +2047,15 @@
           ]
         }
       },
-      "server": {
+      "server-mysql": {
+        "dependencies": [
+          "jsr:@oak/oak@^17.2.0",
+          "jsr:@std/encoding@^1.0.10",
+          "jsr:@zaubrik/djwt@^3.0.2",
+          "npm:mysql2@^3.17.2"
+        ]
+      },
+      "server-ssms": {
         "dependencies": [
           "jsr:@oak/oak@^17.2.0",
           "jsr:@std/encoding@^1.0.10",

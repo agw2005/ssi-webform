@@ -1,0 +1,141 @@
+import type mysql from "mysql2/promise";
+import type {
+  PRNumberIncrement,
+  RequestItemsAtBudgetView,
+} from "../models/FrmPRH.d.ts";
+import type { ResultSetHeader } from "mysql2/promise.js";
+
+export const getRequestItemForBudgetView = async (
+  pool: mysql.Pool,
+  nature: string | null,
+  costCenter: string | null,
+  startDate: string | null,
+  endDate: string | null,
+) => {
+  const [rows, metadata] = await pool.query<RequestItemsAtBudgetView[]>(
+    `SELECT
+      Trace.IDTrace,
+      frm_PR_D.IDItem AS ItemId,
+      frm_PR_D.NoPR,
+      frm_PR_D.AcctAssgCategory,
+      frm_PR_D.CostCenter,
+      frm_PR_D.Nature,
+      frm_PR_D.Description,
+      frm_PR_D.Qty,
+      frm_PR_D.Measure,
+      frm_PR_D.UnitPrice,
+      frm_PR_D.Currency,
+      frm_PR_D.EstimationDeliveryDate,
+      frm_PR_D.Vendor,
+      frm_PR_D.Reason,
+      frm_PR_D.StatusItem,
+      frm_PR_D.RejectedBy,
+      frm_PR_D.Supplier,
+      frm_PR_D.NetPrice,
+      frm_PR_D.DeliveryDate,
+      frm_PR_D.NoPO,
+      frm_PR_D.Rate,
+      frm_PR_D.IDBudget,
+      Trace.SubmitDate
+    FROM frm_PR_H
+    INNER JOIN frm_PR_D
+	    ON frm_PR_D.NoPR = frm_PR_H.NoPR
+    INNER JOIN Trace
+	    ON frm_PR_H.NoForm = Trace.NoForm
+    WHERE frm_PR_D.Nature = ?
+      AND frm_PR_D.CostCenter = ?
+      AND Trace.SubmitDate
+        BETWEEN ? AND ?;`,
+    [nature, costCenter, startDate, endDate],
+  );
+  return [rows, metadata];
+};
+
+export const provisionPRNumber = async (
+  pool: mysql.PoolConnection,
+  dept: string,
+): Promise<string> => {
+  const now = new Date();
+
+  const monthLetter = String.fromCharCode(65 + now.getMonth());
+  // January = A
+  // February = B
+  // ...
+  // December = L
+
+  const year = now.getFullYear().toString().slice(-2);
+
+  const [rows] = await pool.query<PRNumberIncrement[]>(
+    `SELECT
+      MAX(
+        CAST(
+          SUBSTRING(NoPR, 7)
+        AS UNSIGNED)
+      ) AS Increment
+      FROM frm_PR_H
+      WHERE SUBSTRING(NoPR, 4, 1) = ?
+      AND SUBSTRING(NoPR, 5, 2) = ?;`,
+    [monthLetter, year],
+  );
+
+  const nextIncrement = (rows[0].Increment || 0) + 1;
+
+  return `${dept}${monthLetter}${year}${nextIncrement}`;
+};
+
+export const postRequestInformation = async (
+  pool: mysql.PoolConnection,
+  noForm: string,
+  requestorName: string,
+  requestorNrp: string,
+  requestorSection: string,
+  noPR: string,
+  requestSubject: string,
+  requestAmount: number,
+  requestReturnOnOutgoing: string,
+  remarks: string,
+): Promise<number> => {
+  const [rows, _metadata] = await pool.query<ResultSetHeader>(
+    `INSERT INTO 
+      frm_PR_H (NoForm, Requestor, NRP, Section, NoPR, Subject, Amount, ReturnOnOutgoing, Remarks) 
+      VALUES (? , ? , ? , ? , ? , ? , ROUND( ? , 2 ) , ? , ?);`,
+    [
+      noForm,
+      requestorName,
+      requestorNrp,
+      requestorSection,
+      noPR,
+      requestSubject,
+      requestAmount,
+      requestReturnOnOutgoing,
+      remarks,
+    ],
+  );
+
+  const newId = rows.insertId;
+  return newId;
+};
+
+export const patchRemarksOfRequest = async (
+  pool: mysql.Pool,
+  newRemarks: string,
+  noForm: string,
+) => {
+  await pool.query(
+    `UPDATE frm_PR_H
+      SET Remarks = ?
+      WHERE
+        NoForm = ?;`,
+    [newRemarks, noForm],
+  );
+};
+
+export const deleteRequestInformation = async (
+  pool: mysql.PoolConnection,
+  formId: number,
+) => {
+  await pool.query(
+    `DELETE FROM frm_PR_H WHERE ID = ?;`,
+    [formId],
+  );
+};

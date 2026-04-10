@@ -8,7 +8,7 @@
 
     "baseUrl": ".",
     "paths": {
-      "@scope/server": ["../server/mod.ts"]
+      "@scope/server": ["../server-mysql/mod.ts"]
     },
 
     "types": ["vite/client"],

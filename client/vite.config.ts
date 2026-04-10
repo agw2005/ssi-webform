@@ -17,7 +17,7 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
-      "@scope/server": path.resolve(__dirname, "../server/mod.ts"),
+      "@scope/server": path.resolve(__dirname, "../server-mysql/mod.ts"),
       "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/package/xlsx.mjs",
     },
   },
