@@ -50,8 +50,18 @@ const NATURES_URL = (
   }${deptId ? `&dept=${deptId}` : ""}${
     costCenter === "" ? `&costcenter=${costCenter}` : ""
   }`;
-const BALANCE_URL = (costCenter: string, period: string, nature: string) =>
-  `${serverDomain}/budget/nature/${costCenter}/${period}/${nature}`;
+const BALANCE_URL = (
+  costCenter: string,
+  period: string,
+  nature: string,
+  fileResource: string,
+  deptId: number,
+) =>
+  `${serverDomain}/budget/balance/${
+    costCenter ? `?costcenter=${costCenter}` : ""
+  }${period ? `&period=${period}` : ""}${nature ? `&nature=${nature}` : ""}${
+    fileResource ? `&fileresource=${fileResource}` : ""
+  }${fileResource ? `&dept=${deptId}` : ""}`;
 const USER_SECTION_MAPPINGS_URL = `${serverDomain}/section/users`;
 const SUBMIT_URL = `${serverDomain}/submit`;
 
@@ -273,12 +283,14 @@ const Submit = () => {
     costCenter: string,
     period: string,
     nature: string,
+    fileResource: string,
+    deptId: number,
   ) => {
     setIsBalanceLoading(true);
     setBalanceError(null);
     try {
       const balanceResponse = await fetch(
-        BALANCE_URL(costCenter, period, nature),
+        BALANCE_URL(costCenter, period, nature, fileResource, deptId),
       );
       if (!balanceResponse.ok) {
         throw new Error(`HTTP error! status: ${balanceResponse.status}`);
@@ -473,6 +485,7 @@ const Submit = () => {
               setActiveCostCenter={setActiveCostCenter}
               fetchBalanceHelper={fetchBalanceHelper}
               submitterDepartmentName={firstStepInputs.fileResource}
+              submitterDepartmentId={firstStepInputs.department}
             />
           )
           : (

@@ -103,8 +103,11 @@ interface ThirdStepProps {
     costCenter: string,
     period: string,
     nature: string,
+    fileResource: string,
+    deptId: number,
   ) => Promise<Balance[] | null>;
   submitterDepartmentName: string;
+  submitterDepartmentId: string;
   alertUnfilledForm: () => void;
   alertNoBudget: () => void;
   alertNoUsage: () => void;
@@ -121,6 +124,7 @@ const ThirdStep = ({
   setActiveCostCenter,
   fetchBalanceHelper,
   submitterDepartmentName,
+  submitterDepartmentId,
   alertUnfilledForm,
   alertNoBudget,
   alertNoUsage,
@@ -151,6 +155,8 @@ const ThirdStep = ({
       usageField.costCenter,
       getCurrentPeriod(),
       e.target.value,
+      submitterDepartmentName,
+      Number(submitterDepartmentId),
     );
 
     if (!balanceData || balanceData.length === 0) {

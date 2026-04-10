@@ -52,7 +52,7 @@ oakRouter.get("/budget/fileresources", getAllFileResources);
 oakRouter.get("/budget/years", getAvailableBudgetYears);
 oakRouter.get("/budget/periods", getAvailableBudgetPeriods);
 oakRouter.get("/budget/nature", getAllValidNatures);
-oakRouter.get("/budget/nature/:costcenter/:periode/:nature", getSingleBalance);
+oakRouter.get("/budget/balance", getSingleBalance);
 oakRouter.get("/budget", getBudgetViewInformation);
 oakRouter.get("/budget/report", getReportViewInformation);
 oakRouter.get("/budget/departments", getAllValidDepartments);

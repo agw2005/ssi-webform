@@ -136,16 +136,34 @@ export const getAllValidNatures = async (
 };
 
 export const getSingleBalance = async (
-  ctx: RouterContext<"/budget/nature/:costcenter/:periode/:nature">,
+  ctx: RouterContext<"/budget/balance">,
 ) => {
-  const costcenter = Number(ctx.params.costcenter);
-  const periode = String(ctx.params.periode);
-  const nature = String(ctx.params.nature);
+  const params = ctx.request.url.searchParams;
+
+  const costCenter = Number(params.get("costcenter")) || null;
+  const periode = params.get("period") || null;
+  const nature = params.get("nature") || null;
+  const fileResource = params.get("fileresource") || null;
+  const dept = Number(params.get("dept")) || null;
+
+  if (
+    !costCenter ||
+    !periode ||
+    !nature ||
+    !fileResource ||
+    !dept
+  ) {
+    ctx.response.status = 400;
+    return;
+  }
+
   const [rows, _metadata] = await singleBalance(
     databasePool,
-    costcenter,
+    costCenter,
     periode,
     nature,
+    fileResource,
+    dept,
   );
   ctx.response.status = 200;
   ctx.response.body = rows;
@@ -444,6 +462,8 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
         Number(usage.costCenter),
         usage.periode,
         usage.budgetOrNature,
+        payload.firstStep.fileResource,
+        Number(payload.firstStep.department),
       );
 
       const currentNatureBalance = Number(currentNatureInfo[0].Balance) || 0;

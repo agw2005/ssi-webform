@@ -90,14 +90,18 @@ export const singleBalance = async (
   costCenter: number,
   periode: string,
   nature: string,
+  fileResource: string,
+  departId: number,
 ): Promise<[BudgetBalance[], mysql.FieldPacket[]]> => {
   const [rows, metadata] = await pool.query<BudgetBalance[]>(
     `SELECT DISTINCT Balance
     FROM Budget
     WHERE CostCenter = ?
     AND Periode = ?
-    AND Nature = ?`,
-    [costCenter, periode, nature],
+    AND Nature = ?
+    AND FileResource = ?
+    AND IDSection = ?;`,
+    [costCenter, periode, nature, fileResource, departId],
   );
   return [rows, metadata];
 };
