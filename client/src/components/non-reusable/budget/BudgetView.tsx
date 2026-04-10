@@ -29,7 +29,7 @@ const THREE_COLSPAN_COLUMNS = [
 
 const TWO_ROWSPAN_COLUMNS = [
   "File Resource",
-  "Cost Center",
+  "Department",
   "Nature",
   "Description",
 ];
@@ -140,10 +140,10 @@ const BudgetView = ({ year, fileResource }: BudgetViewProps) => {
             return (
               <tr key={index}>
                 <td className="text-xs lg:text-sm xl:text-base | border p-2 whitespace-nowrap text-center">
-                  {rowFileResource} ({rowDepartment})
+                  {rowFileResource} ({rowCostCenter})
                 </td>
                 <td className="text-xs lg:text-sm xl:text-base | border p-2 whitespace-nowrap text-center">
-                  {rowCostCenter}
+                  {rowDepartment}
                 </td>
                 <td className="text-xs lg:text-sm xl:text-base | border p-2 whitespace-nowrap text-center">
                   {rowNature}
