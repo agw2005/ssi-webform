@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import type { SupervisorNames } from "@scope/server";
+import type { SupervisorNames } from "@scope/server-mysql";
 import capitalize from "../helper/capitalize.ts";
 
 export const useDuplicateSupervisors = (

@@ -1,8 +1,8 @@
 import { useMemo, useRef, useState } from "react";
 // @deno-types="https://cdn.sheetjs.com/xlsx-0.20.3/package/types/index.d.ts"
 import * as XLSX from "xlsx";
-import type { BudgetData } from "@scope/server";
-import { putBudgets } from "@scope/server";
+import type { BudgetData } from "@scope/server-mysql";
+import { putBudgets } from "@scope/server-mysql";
 import getCurrentPeriod from "../../../helper/getCurrentPeriod.ts";
 import TipBox from "../../reusable/TipBox.tsx";
 import Button from "../../reusable/Button.tsx";

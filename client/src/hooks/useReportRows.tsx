@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import type { Row } from "../pages/Report.tsx";
-import type { ReportResponse } from "@scope/server";
+import type { ReportResponse } from "@scope/server-mysql";
 
 export const useReportRows = (
   reportData: ReportResponse[] | null,

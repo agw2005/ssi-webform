@@ -21,7 +21,7 @@ import {
   type UserSection,
   type ValidCostCenter,
   type ValidDepartment,
-} from "@scope/server";
+} from "@scope/server-mysql";
 import useFetch from "../hooks/useFetch.tsx";
 import useForex from "../hooks/useForex.tsx";
 import serverDomain from "../helper/serverDomain.ts";

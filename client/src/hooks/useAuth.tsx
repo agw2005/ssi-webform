@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { verifySession } from "../helper/verifySession.ts";
-import type { VerifyResponse } from "@scope/server";
+import type { VerifyResponse } from "@scope/server-mysql";
 
 const useAuth = () => {
   const [isAuthorized, setIsAuthorized] = useState<boolean>(false);

@@ -1,4 +1,4 @@
-import type { SecondStepInputs } from "@scope/server";
+import type { SecondStepInputs } from "@scope/server-mysql";
 import { createGenericChangeHandler } from "../../../helper/genericInputHandler.ts";
 import TextAreaInput from "../../reusable/inputs/TextAreaInput.tsx";
 import TextInput from "../../reusable/inputs/TextInput.tsx";

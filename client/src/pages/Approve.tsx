@@ -3,7 +3,10 @@ import LoadingFallback from "../components/reusable/LoadingFallback.tsx";
 import Primitive from "../components/reusable/Primitive.tsx";
 import serverDomain from "../helper/serverDomain.ts";
 import useAuth from "../hooks/useAuth.tsx";
-import type { TraceApproveRequests, TraceRequestsCount } from "@scope/server";
+import type {
+  TraceApproveRequests,
+  TraceRequestsCount,
+} from "@scope/server-mysql";
 import { useReducer } from "react";
 import stringContainsRedLight from "../helper/stringContainsRedLight.ts";
 import formatNumberToString from "../helper/formatNumberToString.ts";

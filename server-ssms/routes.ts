@@ -74,7 +74,7 @@ import type {
   PatchRemarksPayload,
   SubmitPayload,
   SubmitResponse,
-} from "@scope/server";
+} from "@scope/server-ssms";
 import provisionFormNumber from "./helper/provisionFormNumber.ts";
 import type { ForexRates } from "./models/FrmPRH.d.ts";
 import addHours from "./helper/addHours.ts";
