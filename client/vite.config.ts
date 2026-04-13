@@ -22,4 +22,5 @@ export default defineConfig({
       "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/package/xlsx.mjs",
     },
   },
+  base: "/webform/",
 });
