@@ -4,6 +4,7 @@
   "exports": "./mod.ts",
   "tasks": {
     "dev": "deno run --watch --allow-env --env-file=.env --allow-net --allow-read main.ts",
+    "serve": "deno run --allow-env --env-file=.env --allow-net --allow-read main.ts",
     "keygen": "deno run --allow-read --allow-write ./auth/generateKey.ts"
   },
   "imports": {
