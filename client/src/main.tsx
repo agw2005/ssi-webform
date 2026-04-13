@@ -42,7 +42,9 @@ const router = createBrowserRouter([
     loader: adminLoader,
     hydrateFallbackElement: <LoadingFallback />,
   },
-]);
+], {
+  basename: "/webform",
+});
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
