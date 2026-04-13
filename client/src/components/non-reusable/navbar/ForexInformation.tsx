@@ -1,5 +1,9 @@
 import formatNumberToString from "../../../helper/formatNumberToString.ts";
 import useForex from "../../../hooks/useForex.tsx";
+import singapore from "../../../assets/images/flags/flag-of-singapore.png";
+import japan from "../../../assets/images/flags/flag-of-japan.png";
+import indonesia from "../../../assets/images/flags/flag-of-indonesia.png";
+import america from "../../../assets/images/flags/flag-of-america.png";
 
 const LOADING_MESSAGE = "(Loading)";
 const ERROR_MESSAGE = "(Error)";
@@ -15,7 +19,7 @@ const ForexInformation = () => {
     <>
       <div className="relative px-4 flex items-center">
         <img
-          src="/flag-of-singapore.png"
+          src={singapore}
           alt="singaporean flag"
           className="absolute inset-0 w-full h-full opacity-30 select-none"
         />
@@ -33,7 +37,7 @@ const ForexInformation = () => {
       </div>
       <div className="relative px-4 flex items-center">
         <img
-          src="/flag-of-japan.png"
+          src={japan}
           alt="japanese flag"
           className="absolute inset-0 w-full h-full opacity-30 select-none"
         />
@@ -51,7 +55,7 @@ const ForexInformation = () => {
       </div>
       <div className="relative px-4 flex items-center">
         <img
-          src="/flag-of-indonesia.png"
+          src={indonesia}
           alt="indonesian flag"
           className="absolute inset-0 w-full h-full opacity-30 select-none"
         />
@@ -69,7 +73,7 @@ const ForexInformation = () => {
       </div>
       <div className="relative px-4 flex items-center">
         <img
-          src="/flag-of-america.png"
+          src={america}
           alt="american flag"
           className="absolute inset-0 w-full h-full opacity-30 select-none"
         />
