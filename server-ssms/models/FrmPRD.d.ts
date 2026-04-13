@@ -1,6 +1,4 @@
-import type { RowDataPacket } from "mysql2";
-
-export interface FrmPRDTable extends RowDataPacket {
+export interface FrmPRDTable {
   IDItem: number;
   NoPR: string;
   AcctAssgCategory: string;
@@ -24,7 +22,7 @@ export interface FrmPRDTable extends RowDataPacket {
   IDBudget: string;
 }
 
-export interface FrmPRDRequestItem extends RowDataPacket {
+export interface FrmPRDRequestItem {
   IDItem: number;
   Description: string;
   Qty: number;

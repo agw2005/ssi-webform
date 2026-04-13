@@ -1,9 +1,4 @@
-import type { RowDataPacket } from "mysql2";
-
-/**
- * Interface of the `UserMaster` table.
- */
-export interface UserMasterTable extends RowDataPacket {
+export interface UserMasterTable {
   IDUser: number;
   UserName: string;
   Password: string;
@@ -15,19 +10,16 @@ export interface UserMasterTable extends RowDataPacket {
   LastLogin: string;
 }
 
-/**
- * Interface for the `UserMaster` table used to get the user names.
- */
-export interface UserMasterName extends RowDataPacket {
+export interface UserMasterName {
   NameUser: string;
   IDUser: number;
 }
 
-export interface UserIdByName extends RowDataPacket {
+export interface UserIdByName {
   IDUser: number;
 }
 
-export interface AuthInfo extends RowDataPacket {
+export interface AuthInfo {
   IDUser: number;
   UserName: string;
   Password: string;

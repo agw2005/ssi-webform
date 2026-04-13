@@ -66,7 +66,7 @@ import {
 import type { RouterContext } from "@oak/oak";
 import databasePool from "./dbpool.ts";
 import type {
-  BudgetData,
+  BudgetTable,
   ForexAPIResponse,
   LoginPayload,
   LoginResponse,
@@ -84,6 +84,7 @@ import getKey from "./auth/getKey.ts";
 import type { AuthInfo } from "./models/UserMaster.d.ts";
 import { onlyNumerics } from "./helper/onlyNumerics.ts";
 import { jsDateToMySQLDatetime } from "./helper/jsDateToMySQLDatetime.ts";
+import ssms from "mssql";
 
 export const healthCheck = (ctx: RouterContext<"/">) => {
   ctx.response.status = 200;
@@ -93,25 +94,33 @@ export const healthCheck = (ctx: RouterContext<"/">) => {
 export const getAllFileResources = async (
   ctx: RouterContext<"/budget/fileresources">,
 ) => {
-  const [rows, _metadata] = await allFileResources(databasePool);
+  const { rowsReturned, rowsAffected } = await allFileResources(
+    databasePool,
+  );
+
+  console.log(rowsAffected);
   ctx.response.status = 200;
-  ctx.response.body = rows;
+  ctx.response.body = rowsReturned;
 };
 
 export const getAvailableBudgetYears = async (
   ctx: RouterContext<"/budget/years">,
 ) => {
-  const [rows, _metadata] = await availableYears(databasePool);
+  const { rowsReturned, rowsAffected } = await availableYears(databasePool);
+
+  console.log(rowsAffected);
   ctx.response.status = 200;
-  ctx.response.body = rows;
+  ctx.response.body = rowsReturned;
 };
 
 export const getAvailableBudgetPeriods = async (
   ctx: RouterContext<"/budget/periods">,
 ) => {
-  const [rows, _metadata] = await availablePeriods(databasePool);
+  const { rowsReturned, rowsAffected } = await availablePeriods(databasePool);
+
+  console.log(rowsAffected);
   ctx.response.status = 200;
-  ctx.response.body = rows;
+  ctx.response.body = rowsReturned;
 };
 
 export const getAllValidNatures = async (
@@ -124,15 +133,17 @@ export const getAllValidNatures = async (
   const dept = Number(params.get("dept")) || null;
   const costCenter = params.get("costcenter") || null;
 
-  const [rows, _metadata] = await getValidNatures(
+  const { rowsReturned, rowsAffected } = await getValidNatures(
     databasePool,
     fullPeriode,
     fileResource,
     dept,
     costCenter,
   );
+
+  console.log(rowsAffected);
   ctx.response.status = 200;
-  ctx.response.body = rows;
+  ctx.response.body = rowsReturned;
 };
 
 export const getSingleBalance = async (
@@ -157,7 +168,7 @@ export const getSingleBalance = async (
     return;
   }
 
-  const [rows, _metadata] = await singleBalance(
+  const { rowsReturned, rowsAffected } = await singleBalance(
     databasePool,
     costCenter,
     periode,
@@ -165,8 +176,10 @@ export const getSingleBalance = async (
     fileResource,
     dept,
   );
+
+  console.log(rowsAffected);
   ctx.response.status = 200;
-  ctx.response.body = rows;
+  ctx.response.body = rowsReturned;
 };
 
 export const getBudgetViewInformation = async (
@@ -175,13 +188,15 @@ export const getBudgetViewInformation = async (
   const params = ctx.request.url.searchParams;
   const year = params.get("year") || null;
   const fileResource = params.get("fileresource") || null;
-  const [rows, _metadata] = await getBudgetsByYear(
+  const { rowsReturned, rowsAffected } = await getBudgetsByYear(
     databasePool,
     fileResource,
     year,
   );
+
+  console.log(rowsAffected);
   ctx.response.status = 200;
-  ctx.response.body = rows;
+  ctx.response.body = rowsReturned;
 };
 
 export const getReportViewInformation = async (
@@ -190,22 +205,29 @@ export const getReportViewInformation = async (
   const params = ctx.request.url.searchParams;
   const periode = params.get("periode") || null;
   const fileResource = params.get("fileresource") || null;
-  const [rows, _metadata] = await reportInformation(
+  const { rowsReturned, rowsAffected } = await reportInformation(
     databasePool,
     periode,
     fileResource,
   );
+
+  console.log(rowsAffected);
   ctx.response.status = 200;
-  ctx.response.body = rows;
+  ctx.response.body = rowsReturned;
 };
 
 export const getSpecificRequestItems = async (
   ctx: RouterContext<"/frmprd/request/:traceId">,
 ) => {
   const traceId = Number(ctx.params.traceId);
-  const [rows, _metadata] = await getAllRequestItems(databasePool, traceId);
+  const { rowsReturned, rowsAffected } = await getAllRequestItems(
+    databasePool,
+    traceId,
+  );
+
+  console.log(rowsAffected);
   ctx.response.status = 200;
-  ctx.response.body = rows;
+  ctx.response.body = rowsReturned;
 };
 
 export const getRequestsAtBudgetView = async (
@@ -217,27 +239,35 @@ export const getRequestsAtBudgetView = async (
   const startDate = params.get("startdate") || null;
   const endDate = params.get("enddate") || null;
 
-  const [rows, _metadata] = await getRequestItemForBudgetView(
+  const { rowsReturned, rowsAffected } = await getRequestItemForBudgetView(
     databasePool,
     nature,
     costCenter,
     startDate,
     endDate,
   );
+
+  console.log(rowsAffected);
   ctx.response.status = 200;
-  ctx.response.body = rows;
+  ctx.response.body = rowsReturned;
 };
 
 export const getSectionNames = async (ctx: RouterContext<"/section/names">) => {
-  const [rows, _metadata] = await sectionNames(databasePool);
+  const { rowsReturned, rowsAffected } = await sectionNames(databasePool);
+
+  console.log(rowsAffected);
   ctx.response.status = 200;
-  ctx.response.body = rows;
+  ctx.response.body = rowsReturned;
 };
 
 export const getSectionUsers = async (ctx: RouterContext<"/section/users">) => {
-  const [rows, _metadata] = await userSectionMappings(databasePool);
+  const { rowsReturned, rowsAffected } = await userSectionMappings(
+    databasePool,
+  );
+
+  console.log(rowsAffected);
   ctx.response.status = 200;
-  ctx.response.body = rows;
+  ctx.response.body = rowsReturned;
 };
 
 export const getRequests = async (ctx: RouterContext<"/trace/requests">) => {
@@ -262,7 +292,7 @@ export const getRequests = async (ctx: RouterContext<"/trace/requests">) => {
   const pagination = Number(params.get("pagination")) || 50;
   const page = Number(params.get("page")) || 1;
 
-  const [rows, _metadata] = await homeRequests(
+  const { rowsReturned, rowsAffected } = await homeRequests(
     databasePool,
     page,
     pagination,
@@ -273,8 +303,10 @@ export const getRequests = async (ctx: RouterContext<"/trace/requests">) => {
     endDate,
     search,
   );
+
+  console.log(rowsAffected);
   ctx.response.status = 200;
-  ctx.response.body = rows;
+  ctx.response.body = rowsReturned;
 };
 
 export const getRequestsCount = async (
@@ -298,7 +330,7 @@ export const getRequestsCount = async (
 
   const search = params.get("search") || null;
 
-  const [rows, _metadata] = await homeRequestsCount(
+  const { rowsReturned, rowsAffected } = await homeRequestsCount(
     databasePool,
     requestorSectionId,
     status,
@@ -307,8 +339,10 @@ export const getRequestsCount = async (
     endDate,
     search,
   );
+
+  console.log(rowsAffected);
   ctx.response.status = 200;
-  ctx.response.body = rows;
+  ctx.response.body = rowsReturned;
 };
 
 export const getSpecificRequest = async (
@@ -316,12 +350,14 @@ export const getSpecificRequest = async (
 ) => {
   const traceId = ctx.params.traceId;
 
-  const [rows, _metadata] = await specificRequest(
+  const { rowsReturned, rowsAffected } = await specificRequest(
     databasePool,
     Number(traceId),
   );
+
+  console.log(rowsAffected);
   ctx.response.status = 200;
-  ctx.response.body = rows;
+  ctx.response.body = rowsReturned;
 };
 
 export const getApproverPath = async (
@@ -329,32 +365,38 @@ export const getApproverPath = async (
 ) => {
   const traceId = Number(ctx.params.traceId);
 
-  const [rows, _metadata] = await getApproverPathInformation(
+  const { rowsReturned, rowsAffected } = await getApproverPathInformation(
     databasePool,
     traceId,
   );
+
+  console.log(rowsAffected);
   ctx.response.status = 200;
-  ctx.response.body = rows;
+  ctx.response.body = rowsReturned;
 };
 
 export const getUploadFiles = async (
   ctx: RouterContext<"/uploadfile/:traceId">,
 ) => {
   const traceId = ctx.params.traceId;
-  const [rows, _metadata] = await getMinimumFileInformation(
+  const { rowsReturned, rowsAffected } = await getMinimumFileInformation(
     databasePool,
     traceId,
   );
+
+  console.log(rowsAffected);
   ctx.response.status = 200;
-  ctx.response.body = rows;
+  ctx.response.body = rowsReturned;
 };
 
 export const getSupervisorNames = async (
   ctx: RouterContext<"/usermaster/names">,
 ) => {
-  const [rows, _metadata] = await supervisorNames(databasePool);
+  const { rowsReturned, rowsAffected } = await supervisorNames(databasePool);
+
+  console.log(rowsAffected);
   ctx.response.status = 200;
-  ctx.response.body = rows;
+  ctx.response.body = rowsReturned;
 };
 
 // POST to table frm_PR_D
@@ -400,15 +442,15 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
   const submissionDate = jsDateToMySQLDatetime(now);
   const emailDomain = "ssi.sharp-world.com";
 
-  const connection = await databasePool.getConnection();
+  const transaction = new ssms.Transaction(databasePool);
 
   try {
-    await connection.beginTransaction();
+    await transaction.begin();
 
     const noForm = provisionFormNumber();
     const [noPR, requestorSectionId] = await Promise.all([
-      provisionPRNumber(connection, payload.firstStep.department),
-      getSectionIdByName(connection, payload.firstStep.section),
+      provisionPRNumber(transaction, payload.firstStep.department),
+      getSectionIdByName(transaction, payload.firstStep.section),
     ]);
 
     let requestAmount = 0;
@@ -430,7 +472,7 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
       requestAmount += netPriceByCurrencyRate;
 
       await postUsage(
-        connection,
+        transaction,
         noPR,
         usage.costCenter,
         usage.budgetOrNature,
@@ -447,7 +489,7 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
       );
 
       patchRequestBudget(
-        connection,
+        transaction,
         netPriceByCurrencyRate,
         usage.costCenter,
         usage.budgetOrNature,
@@ -456,8 +498,8 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
         payload.firstStep.department,
       );
 
-      const [currentNatureInfo] = await singleBalance(
-        connection,
+      const { rowsReturned: natureBalance, rowsAffected } = await singleBalance(
+        transaction,
         Number(usage.costCenter),
         usage.periode,
         usage.budgetOrNature,
@@ -465,7 +507,9 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
         Number(payload.firstStep.department),
       );
 
-      const currentNatureBalance = Number(currentNatureInfo[0].Balance) || 0;
+      console.log(rowsAffected);
+
+      const currentNatureBalance = Number(natureBalance[0].Balance) || 0;
 
       if (!isRedLight && currentNatureBalance < netPriceByCurrencyRate) {
         isRedLight = true;
@@ -479,7 +523,7 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
     const initialRemarks = !isRedLight ? "" : "[RL]";
 
     await postRequestInformation(
-      connection,
+      transaction,
       noForm,
       payload.firstStep.name,
       payload.firstStep.nrp,
@@ -501,12 +545,12 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
     ];
 
     const initialSupervisorId = await getUserIdByName(
-      connection,
+      transaction,
       payload.fourthStep.approver[0],
     );
 
     const newTraceId = await postRequestTrace(
-      connection,
+      transaction,
       noForm,
       payload.firstStep.name,
       String(requestorSectionId),
@@ -521,11 +565,11 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
     await Promise.all(
       supervisorNames.map(async (supervisorName, index) => {
         const supervisorId = await getUserIdByName(
-          connection,
+          transaction,
           supervisorName.name,
         );
         await postRequestApproverPath(
-          connection,
+          transaction,
           newTraceId,
           supervisorId,
           supervisorName.type,
@@ -537,7 +581,7 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
     await Promise.all(
       payload.fifthStep.files.map((file) =>
         postRequestFiles(
-          connection,
+          transaction,
           noForm,
           payload.secondStep.subject,
           payload.firstStep.name,
@@ -547,7 +591,7 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
       ),
     );
 
-    await connection.commit();
+    await transaction.commit();
 
     const successResponse: SubmitResponse = {
       message: "Your purchasing request has been filed successfully!",
@@ -566,20 +610,20 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
       noPR: "",
       traceId: "",
     };
-    await connection.rollback();
+    if (transaction) await transaction.rollback();
     ctx.response.status = 500;
     ctx.response.body = failingResponse;
-  } finally {
-    connection.release();
   }
 };
 
 export const getAuthInformation = async (
   ctx: RouterContext<"/usermaster/auth">,
 ) => {
-  const [rows, _metadata] = await getAuthInfo(databasePool);
+  const { rowsReturned, rowsAffected } = await getAuthInfo(databasePool);
+
+  console.log(rowsAffected);
   ctx.response.status = 200;
-  ctx.response.body = rows;
+  ctx.response.body = rowsReturned;
 };
 
 export const requestJwt = async (ctx: RouterContext<"/jwt/request">) => {
@@ -683,7 +727,7 @@ export const getRequestsBySupervisorNrp = async (
   const page = Number(params.get("page")) || 1;
   const pagination = Number(params.get("pagination")) || 50;
 
-  const [rows, _metadata] = await approveRequests(
+  const { rowsReturned, rowsAffected } = await approveRequests(
     databasePool,
     formattedNrp,
     page,
@@ -693,8 +737,10 @@ export const getRequestsBySupervisorNrp = async (
     endDate,
     search,
   );
+
+  console.log(rowsAffected);
   ctx.response.status = 200;
-  ctx.response.body = rows;
+  ctx.response.body = rowsReturned;
 };
 
 export const getRequestsBySupervisorNrpCount = async (
@@ -713,7 +759,7 @@ export const getRequestsBySupervisorNrpCount = async (
   const supervisorNrp = params.get("nrp") || null;
   const formattedNrp = supervisorNrp ? onlyNumerics(supervisorNrp) : null;
 
-  const [rows, _metadata] = await approveRequestsCount(
+  const { rowsReturned, rowsAffected } = await approveRequestsCount(
     databasePool,
     formattedNrp,
     status,
@@ -721,8 +767,10 @@ export const getRequestsBySupervisorNrpCount = async (
     endDate,
     search,
   );
+
+  console.log(rowsAffected);
   ctx.response.status = 200;
-  ctx.response.body = rows;
+  ctx.response.body = rowsReturned;
 };
 
 export const patchRemarks = async (ctx: RouterContext<"/approve/remarks">) => {
@@ -736,38 +784,39 @@ export const patchRejectRequest = async (
   ctx: RouterContext<"/approve/reject">,
 ) => {
   const request: patchApprovalVerdict = await ctx.request.body.json();
-  const connection = await databasePool.getConnection();
+
+  const transaction = new ssms.Transaction(databasePool);
 
   try {
-    connection.beginTransaction();
+    await transaction.begin();
 
     const { formId: _formId, noForm: _noForm, noPr: _noPr, requestItems } =
       await getRequestIds(
-        connection,
+        transaction,
         request.traceId,
       );
 
     await patchTraceDVerdict(
-      connection,
+      transaction,
       "Rejected",
       request.traceId,
       request.supervisorLevel,
     );
 
     const { nextUserId, nextApproverLevel } = await getNextApprover(
-      connection,
+      transaction,
       request.traceId,
       request.supervisorId,
       request.supervisorLevel,
     );
 
     const { Maxxed: MaxApproverLevel, Summed: SumApproverLevel } =
-      await getOtherApproverInfo(connection, request.traceId);
+      await getOtherApproverInfo(transaction, request.traceId);
 
     // Return requested budget (all items)
     await Promise.all(requestItems.map(async (item) => {
       await patchRequestBudget(
-        connection,
+        transaction,
         -item.NetPrice,
         item.CostCenter,
         item.Nature,
@@ -778,7 +827,7 @@ export const patchRejectRequest = async (
     }));
 
     await patchTraceVerdict(
-      connection,
+      transaction,
       "Rejected",
       request.traceId,
       MaxApproverLevel,
@@ -789,19 +838,17 @@ export const patchRejectRequest = async (
 
     await Promise.all(
       request.rejectedItems.map(async (itemId) => {
-        await patchFrmPRDVerdict(connection, request.supervisorId, itemId);
+        await patchFrmPRDVerdict(transaction, request.supervisorId, itemId);
       }),
     );
 
-    await connection.commit();
+    await transaction.commit();
 
     ctx.response.status = 200;
   } catch (err) {
-    await connection.rollback();
+    if (transaction) await transaction.rollback();
     ctx.response.status = 500;
     console.error(err);
-  } finally {
-    connection.release();
   }
 };
 
@@ -851,7 +898,7 @@ export const patchAcceptRequest = async (
 export const putBudgets = async (
   ctx: RouterContext<"/admin/budget">,
 ) => {
-  const request: BudgetData[] = await ctx.request.body.json();
+  const request: BudgetTable[] = await ctx.request.body.json();
 
   if (request.length < 1) {
     ctx.response.status = 400;
@@ -859,14 +906,14 @@ export const putBudgets = async (
     return;
   }
 
-  const connection = await databasePool.getConnection();
+  const transaction = new ssms.Transaction(databasePool);
 
   try {
-    await connection.beginTransaction();
+    await transaction.begin();
 
     for (const budgetData of request) {
-      const potentialDuplicate: BudgetData = await getSpecificBudgetData(
-        connection,
+      const potentialDuplicate: BudgetTable = await getSpecificBudgetData(
+        transaction,
         budgetData.CostCenter,
         budgetData.Nature,
         budgetData.Periode,
@@ -874,7 +921,7 @@ export const putBudgets = async (
         budgetData.FileResource,
       );
 
-      let payload: BudgetData = {
+      let payload: BudgetTable = {
         CostCenter: budgetData.CostCenter,
         Nature: budgetData.Nature,
         Periode: budgetData.Periode,
@@ -895,52 +942,51 @@ export const putBudgets = async (
           Balance: Number(potentialDuplicate.Balance) + difference,
         };
 
-        await patchSpecificBudgetNewBudget(connection, payload);
+        await patchSpecificBudgetNewBudget(transaction, payload);
       } else {
-        await postBudget(connection, payload);
+        await postBudget(transaction, payload);
       }
     }
 
-    await connection.commit();
+    await transaction.commit();
     ctx.response.status = 200;
   } catch (err) {
-    await connection.rollback();
+    await transaction.rollback();
     const errMessage = err instanceof Error ? err.message : "";
     ctx.response.status = 500;
     ctx.response.body = errMessage;
-  } finally {
-    connection.release();
   }
 };
 
 export const deleteRequest = async (ctx: RouterContext<"/admin/:traceId">) => {
   const traceId = Number(ctx.params.traceId);
-  const connection = await databasePool.getConnection();
+
+  const transaction = new ssms.Transaction(databasePool);
 
   try {
-    connection.beginTransaction();
+    transaction.begin();
 
     const { formId, noForm, noPr, requestItems } = await getRequestIds(
-      connection,
+      transaction,
       traceId,
     );
 
     // POST to table UploadFile
-    await deleteRequestFiles(connection, noForm);
+    await deleteRequestFiles(transaction, noForm);
 
     // DELETE Trace_D
-    await deleteRequestApproverPath(connection, traceId);
+    await deleteRequestApproverPath(transaction, traceId);
 
     // DELETE Trace
-    await deleteRequestTrace(connection, noForm);
+    await deleteRequestTrace(transaction, noForm);
 
     // DELETE frm_PR_H
-    await deleteRequestInformation(connection, formId);
+    await deleteRequestInformation(transaction, formId);
 
     // PATCH Budget
     await Promise.all(requestItems.map(async (item) => {
       await patchRequestBudget(
-        connection,
+        transaction,
         -item.NetPrice,
         item.CostCenter,
         item.Nature,
@@ -951,17 +997,15 @@ export const deleteRequest = async (ctx: RouterContext<"/admin/:traceId">) => {
     }));
 
     // DELETE frm_PR_D
-    await deleteRequestItems(connection, noPr);
+    await deleteRequestItems(transaction, noPr);
 
-    await connection.commit();
+    await transaction.commit();
 
     ctx.response.status = 200;
   } catch (err) {
-    await connection.rollback();
+    await transaction.rollback();
     ctx.response.status = 500;
     console.error(err);
-  } finally {
-    connection.release();
   }
 };
 

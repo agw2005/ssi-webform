@@ -1,6 +1,4 @@
-import type { RowDataPacket } from "mysql2";
-
-export interface NatureTable extends RowDataPacket {
+export interface NatureTable {
   Nature: string;
   Description: string;
   DeptGroup: string;

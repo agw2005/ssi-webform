@@ -9,7 +9,8 @@
   "imports": {
     "@oak/oak": "jsr:@oak/oak@^17.2.0",
     "@std/encoding": "jsr:@std/encoding@^1.0.10",
+    "@types/mssql": "npm:@types/mssql@^9.1.11",
     "@zaubrik/djwt": "jsr:@zaubrik/djwt@^3.0.2",
-    "mysql2": "npm:mysql2@^3.17.2"
+    "mssql": "npm:mssql@^12.2.1"
   }
 }

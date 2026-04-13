@@ -1,5 +1,3 @@
-import type { BudgetData } from "./models/Budget.d.ts";
-
 export type { SectionName } from "./models/Section.d.ts";
 export type { UserSection } from "./models/Section.d.ts";
 export type { UserMasterName as SupervisorNames } from "./models/UserMaster.d.ts";
@@ -12,6 +10,7 @@ export type { BudgetBalance as Balance } from "./models/Budget.d.ts";
 export type { ReportViewInformation as ReportResponse } from "./models/Budget.d.ts";
 export type { ValidDepartment } from "./models/Budget.d.ts";
 export type { ValidCostCenter } from "./models/Budget.d.ts";
+export type { FrmPRDTable } from "./models/FrmPRD.d.ts";
 export type { TraceRequests as FormRequest } from "./models/Trace.d.ts";
 export type { TraceRequestOverview as RequestOverview } from "./models/Trace.d.ts";
 export type { TraceApproveRequests } from "./models/Trace.d.ts";
@@ -20,7 +19,7 @@ export type { UploadFileMinimalInformation as UploadedFile } from "./models/Uplo
 export type { TraceApproverPath as ApproverPath } from "./models/TraceD.d.ts";
 export type { RequestItemsAtBudgetView as BudgetUsages } from "./models/FrmPRH.d.ts";
 export type { ForexAPIResponse } from "./models/FrmPRH.d.ts";
-export type { BudgetData } from "./models/Budget.d.ts";
+export type { BudgetTable } from "./models/Budget.d.ts";
 export type {
   LoginPayload,
   LoginResponse,
@@ -121,10 +120,16 @@ export interface patchApprovalVerdict {
   supervisorLevel: number;
 }
 
-export const putBudgets = (payload: BudgetData[]) => {
+import type { BudgetTable } from "./models/Budget.d.ts";
+export const putBudgets = (payload: BudgetTable[]) => {
   const Request = {
     method: "PUT",
     body: JSON.stringify(payload),
   };
   return Request;
 };
+
+export interface MsSqlResponse<T> {
+  rowsReturned: T[];
+  rowsAffected: number[];
+}

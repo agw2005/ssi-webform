@@ -1,6 +1,4 @@
-import type { RowDataPacket } from "mysql2";
-
-export interface FormTable extends RowDataPacket {
+export interface FormTable {
   IDForm: number;
   KodeForm: string;
   FormName: string;

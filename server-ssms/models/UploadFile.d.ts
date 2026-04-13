@@ -1,6 +1,4 @@
-import type { RowDataPacket } from "mysql2";
-
-export interface UploadFileTable extends RowDataPacket {
+export interface UploadFileTable {
   IDUpload: number;
   NoForm: string;
   FormName: string;
@@ -9,7 +7,7 @@ export interface UploadFileTable extends RowDataPacket {
   DateUpload: string;
 }
 
-export interface UploadFileMinimalInformation extends RowDataPacket {
+export interface UploadFileMinimalInformation {
   Filename: string;
   DateUpload: string;
 }

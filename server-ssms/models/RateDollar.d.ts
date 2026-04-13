@@ -1,6 +1,4 @@
-import type { RowDataPacket } from "mysql2";
-
-export interface RateDollarTable extends RowDataPacket {
+export interface RateDollarTable {
   IDCur: string;
   CurrencyName: string;
   CurrencyValue: number;

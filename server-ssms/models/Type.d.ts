@@ -1,6 +1,4 @@
-import type { RowDataPacket } from "mysql2";
-
-export interface TypeTable extends RowDataPacket {
+export interface TypeTable {
   IDType: number;
   TypeName: string;
 }

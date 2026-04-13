@@ -1,6 +1,4 @@
-import type { RowDataPacket } from "mysql2";
-
-export interface FlowTable extends RowDataPacket {
+export interface FlowTable {
   IDFlow: number;
   IDForm: number;
   IDSection: number;

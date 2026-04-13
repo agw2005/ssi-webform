@@ -1,9 +1,4 @@
-import type { RowDataPacket } from "mysql2";
-
-/**
- * Interface of the `Budget` table.
- */
-export interface BudgetData {
+export interface BudgetTable {
   CostCenter: string;
   Nature: string;
   Periode: string;
@@ -13,33 +8,19 @@ export interface BudgetData {
   FileResource: string;
 }
 
-export interface BudgetTable extends BudgetData, RowDataPacket {}
-
-/**
- * Interface for the `Budget` table used to get the file resources.
- */
-export interface BudgetFileResource extends RowDataPacket {
+export interface BudgetFileResource {
   FileResource: string;
 }
 
-/**
- * Interface for the `Budget` table used to get the natures.
- */
-export interface BudgetNature extends RowDataPacket {
+export interface BudgetNature {
   Nature: string;
 }
 
-/**
- * Interface for the `Budget` table used to get the balance.
- */
-export interface BudgetBalance extends RowDataPacket {
+export interface BudgetBalance {
   Balance: string;
 }
 
-/**
- * Interface for the `Budget` table used to get the balance.
- */
-export interface BudgetViewInformation extends RowDataPacket {
+export interface BudgetViewInformation {
   DatabasePeriod: string;
   MonthIndex: number;
   PeriodYear: number;
@@ -52,10 +33,7 @@ export interface BudgetViewInformation extends RowDataPacket {
   Balance: number;
 }
 
-/**
- * Interface for the `Budget` table used for the report view of the Budget page.
- */
-export interface ReportViewInformation extends RowDataPacket {
+export interface ReportViewInformation {
   Periode: string;
   FileResource: string;
   ResourceName: string;
@@ -68,21 +46,21 @@ export interface ReportViewInformation extends RowDataPacket {
   Balance: number;
 }
 
-export interface BudgetYear extends RowDataPacket {
+export interface BudgetYear {
   Year: string;
 }
 
-export interface BudgetPeriod extends RowDataPacket {
+export interface BudgetPeriod {
   Period: string;
 }
 
-export interface ValidDepartment extends RowDataPacket {
+export interface ValidDepartment {
   Identifier: string;
   Description: string;
   Dept: string;
 }
 
-export interface ValidCostCenter extends RowDataPacket {
+export interface ValidCostCenter {
   Identifier: string;
   Description: string;
 }

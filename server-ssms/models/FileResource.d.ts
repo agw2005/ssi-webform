@@ -1,6 +1,4 @@
-import type { RowDataPacket } from "mysql2";
-
-export interface FileResourceTable extends RowDataPacket {
+export interface FileResourceTable {
   FileResource: string;
   Description: string;
 }

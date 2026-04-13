@@ -1,4 +1,3 @@
-import type mysql from "mysql2/promise";
 import type {
   PurchasingRequestIds,
   PurchasingRequestItemsInformation,
@@ -6,12 +5,14 @@ import type {
   TraceRequestOverview,
   TraceRequests,
   TraceRequestsCount,
+  TraceTable,
 } from "../models/Trace.d.ts";
-import type { ResultSetHeader } from "mysql2/promise.js";
 import { sum } from "../helper/sum.ts";
+import ssms from "mssql";
+import type { MsSqlResponse } from "@scope/server-ssms";
 
 export const homeRequests = async (
-  pool: mysql.Pool,
+  pool: ssms.ConnectionPool,
   page: number,
   pagination: number = 50,
   requestorSectionId: number | null,
@@ -20,127 +21,132 @@ export const homeRequests = async (
   startDate: string | null,
   endDate: string | null,
   search: string | null,
-) => {
-  const numRows = pagination;
+): Promise<MsSqlResponse<TraceRequests>> => {
+  const skip = (page - 1) * pagination;
   const searchPattern = search ? `%${search}%` : null;
-  const [rows, metadata] = await pool.query<TraceRequests[]>(
+  const request = pool.request();
+
+  request.input("requestorSectionId", ssms.Int, requestorSectionId);
+  request.input("status", ssms.NVarChar, status);
+  request.input("currentSupervisorId", ssms.Int, currentSupervisorId);
+  request.input("startDate", ssms.DateTime, startDate);
+  request.input("endDate", ssms.DateTime, endDate);
+  request.input("searchPattern", ssms.NVarChar, searchPattern);
+  request.input("skip", ssms.Int, skip);
+  request.input("take", ssms.Int, pagination);
+
+  const result = await pool.query<TraceRequests>(
     `SELECT 
-      Trace.IDTrace,
-      frm_PR_H.Subject,
-      frm_PR_H.Amount,
-      frm_PR_H.Requestor,
-      frm_PR_H.Section AS RequestorSection,
-      Trace.IDSection AS RequesterSectionId,
-      Trace.Status,
-      UserMaster.NameUser AS CurrentSupervisor,
-      UserMaster.IDUser AS CurrentSupervisorId,
-      Trace.SubmitDate,
-      Trace.Remarks
-    FROM Trace
-    INNER JOIN frm_PR_H
-    ON frm_PR_H.NoForm = Trace.NoForm
-    LEFT JOIN UserMaster
-    On Trace.ProcessedBy = UserMaster.IDUser
-    WHERE 
-      (? IS NULL OR Trace.IDSection = ?)
-    AND
-      (? IS NULL OR Trace.Status = ?)
-    AND
-      (? IS NULL OR UserMaster.IDUser = ?)
-    AND
-      (? IS NULL OR Trace.SubmitDate >= ?)
-    AND
-      (? IS NULL OR Trace.SubmitDate <= ?)
-    AND 
-      (? IS NULL OR (
-        frm_PR_H.Subject LIKE ? OR 
-        Trace.IDTrace LIKE ? OR 
-        frm_PR_H.Requestor LIKE ?
-      ))
-    AND
-      Trace.Status IN ('Final Approved', 'In Progress', 'Rejected', 'Cancelled', 'Expired')
-    ORDER BY SubmitDate DESC
-    LIMIT ? , ?;`,
-    [
-      requestorSectionId,
-      requestorSectionId,
-      status,
-      status,
-      currentSupervisorId,
-      currentSupervisorId,
-      startDate,
-      startDate,
-      endDate,
-      endDate,
-      searchPattern,
-      searchPattern,
-      searchPattern,
-      searchPattern,
-      (page - 1) * numRows,
-      numRows,
-    ],
+        Trace.IDTrace,
+        frm_PR_H.Subject,
+        frm_PR_H.Amount,
+        frm_PR_H.Requestor,
+        frm_PR_H.Section AS RequestorSection,
+        Trace.IDSection AS RequesterSectionId,
+        Trace.Status,
+        UserMaster.NameUser AS CurrentSupervisor,
+        UserMaster.IDUser AS CurrentSupervisorId,
+        Trace.SubmitDate,
+        Trace.Remarks
+      FROM Trace
+      INNER JOIN frm_PR_H
+        ON frm_PR_H.NoForm = Trace.NoForm
+      LEFT JOIN UserMaster
+        ON Trace.ProcessedBy = UserMaster.IDUser
+      WHERE 
+        (@requestorSectionId IS NULL OR Trace.IDSection = @requestorSectionId)
+      AND
+        (@status IS NULL OR Trace.Status = @status)
+      AND
+        (@currentSupervisorId IS NULL OR UserMaster.IDUser = @currentSupervisorId)
+      AND
+        (@startDate IS NULL OR Trace.SubmitDate >= @startDate)
+      AND
+        (@endDate IS NULL OR Trace.SubmitDate <= @endDate)
+      AND 
+        (@searchPattern IS NULL OR (
+          frm_PR_H.Subject LIKE @searchPattern OR 
+          CAST(Trace.IDTrace AS NVARCHAR) LIKE @searchPattern OR 
+          frm_PR_H.Requestor LIKE @searchPattern
+        ))
+      AND
+        Trace.Status IN ('Final Approved', 'In Progress', 'Rejected', 'Cancelled', 'Expired')
+      ORDER BY Trace.SubmitDate DESC
+      OFFSET @skip ROWS FETCH NEXT @take ROWS ONLY;`,
   );
-  return [rows, metadata];
+
+  const response: MsSqlResponse<TraceRequests> = {
+    rowsReturned: result.recordset,
+    rowsAffected: result.rowsAffected,
+  };
+
+  return response;
 };
 
 export const homeRequestsCount = async (
-  pool: mysql.Pool,
+  pool: ssms.ConnectionPool,
   requestorSectionId: number | null,
   status: string | null,
   currentSupervisorId: number | null,
   startDate: string | null,
   endDate: string | null,
   search: string | null,
-) => {
+): Promise<MsSqlResponse<TraceRequestsCount>> => {
   const searchPattern = search ? `%${search}%` : null;
-  const [rows, metadata] = await pool.query<TraceRequestsCount[]>(
-    `SELECT 
+  const request = pool.request();
+
+  request.input("requestorSectionId", ssms.Int, requestorSectionId);
+  request.input("status", ssms.NVarChar, status);
+  request.input("currentSupervisorId", ssms.Int, currentSupervisorId);
+  request.input("startDate", ssms.DateTime, startDate);
+  request.input("endDate", ssms.DateTime, endDate);
+  request.input("searchPattern", ssms.NVarChar, searchPattern);
+
+  const result = await pool.query<TraceRequestsCount>(`
+    SELECT 
       COUNT(*) AS Count
     FROM Trace
     INNER JOIN frm_PR_H
-    ON frm_PR_H.NoForm = Trace.NoForm
+      ON frm_PR_H.NoForm = Trace.NoForm
     LEFT JOIN UserMaster
-    On Trace.ProcessedBy = UserMaster.IDUser
+      ON Trace.ProcessedBy = UserMaster.IDUser
     WHERE 
-      (? IS NULL OR Trace.IDSection = ?)
+      (@requestorSectionId IS NULL OR Trace.IDSection = @requestorSectionId)
     AND
-      (? IS NULL OR Trace.Status = ?)
+      (@status IS NULL OR Trace.Status = @status)
     AND
-      (? IS NULL OR UserMaster.IDUser = ?)
+      (@currentSupervisorId IS NULL OR UserMaster.IDUser = @currentSupervisorId)
     AND
-      (? IS NULL OR Trace.SubmitDate >= ?)
+      (@startDate IS NULL OR Trace.SubmitDate >= @startDate)
     AND
-      (? IS NULL OR Trace.SubmitDate <= ?)
+      (@endDate IS NULL OR Trace.SubmitDate <= @endDate)
     AND 
-      (? IS NULL OR (
-        frm_PR_H.Subject LIKE ? OR 
-        Trace.IDTrace LIKE ? OR 
-        frm_PR_H.Requestor LIKE ?
+      (@searchPattern IS NULL OR (
+        frm_PR_H.Subject LIKE @searchPattern OR 
+        CAST(Trace.IDTrace AS NVARCHAR) LIKE @searchPattern OR 
+        frm_PR_H.Requestor LIKE @searchPattern
       ))
     AND
-      Trace.Status IN ('Final Approved', 'In Progress', 'Rejected', 'Cancelled', 'Expired');`,
-    [
-      requestorSectionId,
-      requestorSectionId,
-      status,
-      status,
-      currentSupervisorId,
-      currentSupervisorId,
-      startDate,
-      startDate,
-      endDate,
-      endDate,
-      searchPattern,
-      searchPattern,
-      searchPattern,
-      searchPattern,
-    ],
-  );
-  return [rows, metadata];
+      Trace.Status IN ('Final Approved', 'In Progress', 'Rejected', 'Cancelled', 'Expired');
+      `);
+
+  const response: MsSqlResponse<TraceRequestsCount> = {
+    rowsReturned: result.recordset,
+    rowsAffected: result.rowsAffected,
+  };
+
+  return response;
 };
 
-export const specificRequest = async (pool: mysql.Pool, traceId: number) => {
-  const [rows, metadata] = await pool.query<TraceRequestOverview[]>(
+export const specificRequest = async (
+  pool: ssms.ConnectionPool,
+  traceId: number,
+): Promise<MsSqlResponse<TraceRequestOverview>> => {
+  const request = pool.request();
+
+  request.input("traceId", ssms.Int, traceId);
+
+  const result = await request.query<TraceRequestOverview>(
     `SELECT DISTINCT
       frm_PR_H.ID AS FormID,
       frm_PR_H.NoForm,
@@ -161,14 +167,19 @@ export const specificRequest = async (pool: mysql.Pool, traceId: number) => {
 	    ON frm_PR_H.NoForm = Trace.NoForm
     INNER JOIN frm_PR_D
 	    ON frm_PR_D.NoPR = frm_PR_H.NoPR
-    WHERE Trace.IDTrace = ?;`,
-    [traceId],
+    WHERE Trace.IDTrace = @traceId;`,
   );
-  return [rows, metadata];
+
+  const response: MsSqlResponse<TraceRequestOverview> = {
+    rowsReturned: result.recordset,
+    rowsAffected: result.rowsAffected,
+  };
+
+  return response;
 };
 
 export const postRequestTrace = async (
-  pool: mysql.PoolConnection,
+  requestSource: ssms.Transaction,
   noForm: string,
   requestorName: string,
   requestorSectionId: string,
@@ -179,30 +190,32 @@ export const postRequestTrace = async (
   initialSupervisorId: number,
   remarks: string,
 ): Promise<number> => {
-  const [rows, _metadata] = await pool.query<ResultSetHeader>(
+  const request = requestSource.request();
+
+  request.input("noForm", ssms.VarChar, noForm);
+  request.input("requestorName", ssms.VarChar, requestorName);
+  request.input("requestorSectionId", ssms.VarChar, requestorSectionId);
+  request.input("requestorNrp", ssms.VarChar, requestorNrp);
+  request.input("ext", ssms.VarChar, requestorExtensionNumber);
+  request.input("email", ssms.VarChar, requestorEmail);
+  request.input("submitDate", ssms.VarChar, requestSubmissionDate);
+  request.input("processedBy", ssms.Int, initialSupervisorId);
+  request.input("remarks", ssms.VarChar, remarks);
+
+  const result = await request.query<Pick<TraceTable, "IDTrace">>(
     `INSERT INTO Trace
-	    (IDForm, FormTable, NoForm, Requestor, IDSection, NRP, Ext, EmailReq, Status, SubmitDate, ProcessedBy, ProcessedLevel, LevelProgress, Remarks)
+      (IDForm, FormTable, NoForm, Requestor, IDSection, NRP, Ext, EmailReq, Status, SubmitDate, ProcessedBy, ProcessedLevel, LevelProgress, Remarks)
+    OUTPUT INSERTED.IDTrace
     VALUES
-	    ('8', 'frm_PR_H', ? , ? , ? , ? , ? , ? , 'In Progress', ? , ? , 0 , 1 , ?);`,
-    [
-      noForm,
-      requestorName,
-      requestorSectionId,
-      requestorNrp,
-      requestorExtensionNumber,
-      requestorEmail,
-      requestSubmissionDate,
-      initialSupervisorId,
-      remarks,
-    ],
+      ('8', 'frm_PR_H', @noForm, @requestorName, @requestorSectionId, @requestorNrp, @ext, @email, 'In Progress', @submitDate, @processedBy, 0, 1, @remarks);`,
   );
 
-  const newIDTrace = rows.insertId;
+  const newIDTrace = result.recordset[0].IDTrace;
   return newIDTrace;
 };
 
 export const approveRequests = async (
-  pool: mysql.Pool,
+  pool: ssms.ConnectionPool,
   supervisorNrp: string | null,
   page: number,
   pagination: number = 50,
@@ -210,85 +223,96 @@ export const approveRequests = async (
   startDate: string | null,
   endDate: string | null,
   search: string | null,
-) => {
+): Promise<MsSqlResponse<TraceApproveRequests>> => {
   const supervisorNrpPattern = `%${supervisorNrp}%`;
   const searchPattern = search ? `%${search}%` : null;
-  const numRows = pagination;
-  const [rows, metadata] = await pool.query<TraceApproveRequests[]>(
+  const skip = (page - 1) * pagination;
+
+  const request = pool.request();
+
+  request.input("supervisorNrpPattern", ssms.NVarChar, supervisorNrpPattern);
+  request.input("status", ssms.NVarChar, status);
+  request.input("startDate", ssms.DateTime, startDate);
+  request.input("endDate", ssms.DateTime, endDate);
+  request.input("searchPattern", ssms.NVarChar, searchPattern);
+  request.input("skip", ssms.Int, skip);
+  request.input("take", ssms.Int, pagination);
+
+  const result = await request.query<TraceApproveRequests>(
     `SELECT 
-      Trace.IDTrace,
-      frm_PR_H.Subject,
-      frm_PR_H.Amount,
-      frm_PR_H.Requestor,
-      frm_PR_H.Section AS RequestorSection,
-      Trace.IDSection AS RequesterSectionId,
-      Trace_D.Result,
-      ProcessedByUser.NameUser AS CurrentSupervisor,
-      ProcessedByUser.IDUser AS CurrentSupervisorId,
-      Trace.SubmitDate,
-      Trace.Remarks,
-      Trace_D.ApproverLevel AS SupervisorStep,
-      Trace_D.ApproverType AS SupervisorType
-    FROM Trace
-    INNER JOIN frm_PR_H
-      ON frm_PR_H.NoForm = Trace.NoForm
-    LEFT JOIN UserMaster AS ProcessedByUser
-      ON Trace.ProcessedBy = ProcessedByUser.IDUser
-    INNER JOIN Trace_D
-      ON Trace_D.IDTrace = Trace.IDTrace
-    INNER JOIN UserMaster AS Supervisors
-      ON Trace_D.IDUser = Supervisors.IDUser
-    WHERE
-      Supervisors.NRP LIKE ?
-    AND
-      Trace_D.Result <> ''
-    AND
-      (? IS NULL OR Trace_D.Result = ?)
-    AND
-      (? IS NULL OR Trace.SubmitDate >= ?)
-    AND
-      (? IS NULL OR Trace.SubmitDate <= ?)
-    AND 
-      (? IS NULL OR (
-        frm_PR_H.Subject LIKE ? OR 
-        Trace.IDTrace LIKE ? OR 
-        frm_PR_H.Requestor LIKE ?
-      ))
-    AND
-      Trace_D.Result IN ('Approved', 'In Progress', '', 'Rejected')
-    ORDER BY SubmitDate DESC, Trace_D.ApproverLevel DESC
-    LIMIT ? , ?;`,
-    [
-      supervisorNrpPattern,
-      status,
-      status,
-      startDate,
-      startDate,
-      endDate,
-      endDate,
-      searchPattern,
-      searchPattern,
-      searchPattern,
-      searchPattern,
-      (page - 1) * numRows,
-      numRows,
-    ],
+        Trace.IDTrace,
+        frm_PR_H.Subject,
+        frm_PR_H.Amount,
+        frm_PR_H.Requestor,
+        frm_PR_H.Section AS RequestorSection,
+        Trace.IDSection AS RequesterSectionId,
+        Trace_D.Result,
+        ProcessedByUser.NameUser AS CurrentSupervisor,
+        ProcessedByUser.IDUser AS CurrentSupervisorId,
+        Trace.SubmitDate,
+        Trace.Remarks,
+        Trace_D.ApproverLevel AS SupervisorStep,
+        Trace_D.ApproverType AS SupervisorType
+      FROM Trace
+      INNER JOIN frm_PR_H
+        ON frm_PR_H.NoForm = Trace.NoForm
+      LEFT JOIN UserMaster AS ProcessedByUser
+        ON Trace.ProcessedBy = ProcessedByUser.IDUser
+      INNER JOIN Trace_D
+        ON Trace_D.IDTrace = Trace.IDTrace
+      INNER JOIN UserMaster AS Supervisors
+        ON Trace_D.IDUser = Supervisors.IDUser
+      WHERE
+        Supervisors.NRP LIKE @supervisorNrpPattern
+      AND
+        Trace_D.Result <> ''
+      AND
+        (@status IS NULL OR Trace_D.Result = @status)
+      AND
+        (@startDate IS NULL OR Trace.SubmitDate >= @startDate)
+      AND
+        (@endDate IS NULL OR Trace.SubmitDate <= @endDate)
+      AND 
+        (@searchPattern IS NULL OR (
+          frm_PR_H.Subject LIKE @searchPattern OR 
+          Trace.IDTrace LIKE @searchPattern OR 
+          frm_PR_H.Requestor LIKE @searchPattern
+        ))
+      AND
+        Trace_D.Result IN ('Approved', 'In Progress', '', 'Rejected')
+      ORDER BY Trace.SubmitDate DESC, Trace_D.ApproverLevel DESC
+      OFFSET @skip ROWS FETCH NEXT @take ROWS ONLY;`,
   );
-  return [rows, metadata];
+
+  const response: MsSqlResponse<TraceApproveRequests> = {
+    rowsReturned: result.recordset,
+    rowsAffected: result.rowsAffected,
+  };
+
+  return response;
 };
 
 export const approveRequestsCount = async (
-  pool: mysql.Pool,
+  pool: ssms.ConnectionPool,
   supervisorNrp: string | null,
   status: string | null,
   startDate: string | null,
   endDate: string | null,
   search: string | null,
-) => {
+): Promise<MsSqlResponse<TraceRequestsCount>> => {
   const supervisorNrpPattern = `%${supervisorNrp}%`;
   const searchPattern = search ? `%${search}%` : null;
-  const [rows, metadata] = await pool.query<TraceRequestsCount[]>(
-    `SELECT 
+
+  const request = pool.request();
+
+  request.input("supervisorNrpPattern", ssms.VarChar, supervisorNrpPattern);
+  request.input("status", ssms.VarChar, status);
+  request.input("startDate", ssms.DateTime, startDate);
+  request.input("endDate", ssms.DateTime, endDate);
+  request.input("searchPattern", ssms.VarChar, searchPattern);
+
+  const result = await request.query<TraceRequestsCount>(`
+    SELECT 
       COUNT(*) AS Count
     FROM Trace
     INNER JOIN frm_PR_H
@@ -300,56 +324,53 @@ export const approveRequestsCount = async (
     INNER JOIN UserMaster AS Supervisors
       ON Trace_D.IDUser = Supervisors.IDUser
     WHERE
-      Supervisors.NRP LIKE ?
+      Supervisors.NRP LIKE @supervisorNrpPattern
     AND
       Trace_D.Result <> ''
     AND
-      (? IS NULL OR Trace_D.Result = ?)
+      (@status IS NULL OR Trace_D.Result = @status)
     AND
-      (? IS NULL OR Trace.SubmitDate >= ?)
+      (@startDate IS NULL OR Trace.SubmitDate >= @startDate)
     AND
-      (? IS NULL OR Trace.SubmitDate <= ?)
+      (@endDate IS NULL OR Trace.SubmitDate <= @endDate)
     AND 
-      (? IS NULL OR (
-        frm_PR_H.Subject LIKE ? OR 
-        Trace.IDTrace LIKE ? OR 
-        frm_PR_H.Requestor LIKE ?
+      (@searchPattern IS NULL OR (
+        frm_PR_H.Subject LIKE @searchPattern OR 
+        Trace.IDTrace LIKE @searchPattern OR 
+        frm_PR_H.Requestor LIKE @searchPattern
       ))
     AND
-      Trace_D.Result IN ('Approved', 'In Progress', '', 'Rejected');`,
-    [
-      supervisorNrpPattern,
-      status,
-      status,
-      startDate,
-      startDate,
-      endDate,
-      endDate,
-      searchPattern,
-      searchPattern,
-      searchPattern,
-      searchPattern,
-    ],
-  );
-  return [rows, metadata];
+      Trace_D.Result IN ('Approved', 'In Progress', '', 'Rejected');
+  `);
+
+  const response: MsSqlResponse<TraceRequestsCount> = {
+    rowsReturned: result.recordset,
+    rowsAffected: result.rowsAffected,
+  };
+
+  return response;
 };
 
 export const patchRemarksOfTrace = async (
-  pool: mysql.Pool,
+  pool: ssms.ConnectionPool,
   newRemarks: string,
   noForm: string,
 ) => {
-  await pool.query(
+  const request = pool.request();
+
+  request.input("newRemarks", ssms.NVarChar, newRemarks);
+  request.input("noForm", ssms.VarChar, noForm);
+
+  await request.query(
     `UPDATE Trace
       SET Remarks = ?
       WHERE
         NoForm = ?;`,
-    [newRemarks, noForm],
   );
 };
 
 export const patchTraceVerdict = async (
-  pool: mysql.Pool | mysql.PoolConnection,
+  requestSource: ssms.Transaction | ssms.ConnectionPool,
   verdict: "Rejected" | "Approved",
   traceId: number,
   maxApproverLevel: number,
@@ -357,16 +378,21 @@ export const patchTraceVerdict = async (
   nextApproverId: number | null,
   nextApproverLevel: number | null,
 ) => {
+  const request = requestSource.request();
+
   if (verdict === "Rejected") {
-    await pool.query(
+    request.input("maxApproverLevel", ssms.Int, maxApproverLevel);
+    request.input("sumApproverLevel", ssms.Int, sumApproverLevel);
+    request.input("traceId", ssms.Int, traceId);
+
+    await request.query(
       `UPDATE Trace
         SET
           Trace.Status = 'Rejected',
           Trace.ProcessedBy = 0,
-          Trace.ProcessedLevel = ?,
-          Trace.LevelProgress = ?
-        WHERE Trace.IDTrace = ?;`,
-      [maxApproverLevel, sumApproverLevel, traceId],
+          Trace.ProcessedLevel = @maxApproverLevel,
+          Trace.LevelProgress = @sumApproverLevel
+        WHERE Trace.IDTrace = @traceId;`,
     );
   } else {
     const isLastSupervisor = nextApproverLevel === null &&
@@ -383,22 +409,27 @@ export const patchTraceVerdict = async (
       ? maxApproverLevel
       : nextApproverLevel;
 
-    await pool.query(
+    request.input("newStatus", ssms.Int, newStatus);
+    request.input("newProcessedBy", ssms.Int, newProcessedBy);
+    request.input("newProcessedLevel", ssms.Int, newProcessedLevel);
+    request.input("newLevelProgress", ssms.Int, newLevelProgress);
+    request.input("traceId", ssms.Int, traceId);
+
+    await request.query(
       `UPDATE Trace
         SET
-          Trace.Status = ?,
-          Trace.ProcessedBy = ?,
-          Trace.ProcessedLevel = ?,
-          Trace.LevelProgress = ?
-        WHERE Trace.IDTrace = ?;`,
-      [newStatus, newProcessedBy, newProcessedLevel, newLevelProgress, traceId],
+          Trace.Status = @newStatus,
+          Trace.ProcessedBy = @newProcessedBy,
+          Trace.ProcessedLevel = @newProcessedLevel,
+          Trace.LevelProgress = @newLevelProgress
+        WHERE Trace.IDTrace = @traceId;`,
     );
   }
   return void 0;
 };
 
 export const getRequestIds = async (
-  pool: mysql.PoolConnection,
+  pool: ssms.ConnectionPool | ssms.Transaction,
   idTrace: number,
 ): Promise<{
   formId: number;
@@ -406,25 +437,33 @@ export const getRequestIds = async (
   noPr: string;
   requestItems: PurchasingRequestItemsInformation[];
 }> => {
-  const [row, _metadata] = await pool.query<PurchasingRequestIds[]>(
-    `SELECT DISTINCT
-        frm_PR_H.ID AS FormID,
-        frm_PR_H.NoForm,
-        frm_PR_H.NoPR,
-        frm_PR_D.CostCenter,
-        frm_PR_D.Nature,
-        frm_PR_D.IDBudget,
-        frm_PR_D.NetPrice
-      FROM Trace
-      INNER JOIN frm_PR_H
-        ON frm_PR_H.NoForm = Trace.NoForm
-      INNER JOIN frm_PR_D
-        ON frm_PR_D.NoPR = frm_PR_H.NoPR
-      WHERE Trace.IDTrace = ?;`,
-    [idTrace],
-  );
+  const request = pool.request();
 
-  const items: PurchasingRequestItemsInformation[] = row.map((item) => ({
+  request.input("idTrace", ssms.Int, idTrace);
+
+  const result = await request.query<PurchasingRequestIds>(`
+    SELECT DISTINCT
+      frm_PR_H.ID AS FormID,
+      frm_PR_H.NoForm,
+      frm_PR_H.NoPR,
+      frm_PR_D.CostCenter,
+      frm_PR_D.Nature,
+      frm_PR_D.IDBudget,
+      frm_PR_D.NetPrice
+    FROM Trace
+    INNER JOIN frm_PR_H
+      ON frm_PR_H.NoForm = Trace.NoForm
+    INNER JOIN frm_PR_D
+      ON frm_PR_D.NoPR = frm_PR_H.NoPR
+    WHERE Trace.IDTrace = @idTrace;`);
+
+  const rows = result.recordset;
+
+  if (rows.length === 0) {
+    throw new Error(`No request found for IDTrace: ${idTrace}`);
+  }
+
+  const items: PurchasingRequestItemsInformation[] = rows.map((item) => ({
     CostCenter: item.CostCenter,
     Nature: item.Nature,
     Periode: item.IDBudget.substring(0, 8),
@@ -434,16 +473,22 @@ export const getRequestIds = async (
   }));
 
   return {
-    formId: row[0].FormID,
-    noForm: row[0].NoForm,
-    noPr: row[0].NoPR,
+    formId: rows[0].FormID,
+    noForm: rows[0].NoForm,
+    noPr: rows[0].NoPR,
     requestItems: items,
   };
 };
 
 export const deleteRequestTrace = async (
-  pool: mysql.PoolConnection,
+  requestSource: ssms.Transaction,
   noForm: string,
 ) => {
-  await pool.query(`DELETE FROM Trace WHERE NoForm = ?;`, [noForm]);
+  const request = requestSource.request();
+
+  request.input("noForm", ssms.Int, noForm);
+
+  await request.query(`DELETE FROM Trace WHERE NoForm = @noForm;`);
+
+  return null;
 };

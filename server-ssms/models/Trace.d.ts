@@ -1,6 +1,4 @@
-import type { RowDataPacket } from "mysql2";
-
-export interface TraceTable extends RowDataPacket {
+export interface TraceTable {
   IDTrace: number;
   IDForm: number;
   FormTable: string;
@@ -18,7 +16,7 @@ export interface TraceTable extends RowDataPacket {
   Remarks: string;
 }
 
-export interface TraceRequests extends RowDataPacket {
+export interface TraceRequests {
   IDTrace: number;
   Subject: string;
   Amount: number;
@@ -32,11 +30,11 @@ export interface TraceRequests extends RowDataPacket {
   Remarks: string;
 }
 
-export interface TraceRequestsCount extends RowDataPacket {
+export interface TraceRequestsCount {
   Count: number;
 }
 
-export interface TraceRequestOverview extends RowDataPacket {
+export interface TraceRequestOverview {
   FormID: string;
   NoForm: string;
   Requestor: string;
@@ -53,7 +51,7 @@ export interface TraceRequestOverview extends RowDataPacket {
   Rate: number;
 }
 
-export interface TraceApproveRequests extends RowDataPacket {
+export interface TraceApproveRequests {
   IDTrace: number;
   Subject: string;
   Amount: number;
@@ -69,7 +67,7 @@ export interface TraceApproveRequests extends RowDataPacket {
   SupervisorType: string;
 }
 
-export interface PurchasingRequestIds extends RowDataPacket {
+export interface PurchasingRequestIds {
   FormID: number;
   NoForm: string;
   NoPR: string;

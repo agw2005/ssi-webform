@@ -1,31 +1,20 @@
-import type { RowDataPacket } from "mysql2";
-
-/**
- * Interface of the `Section` table.
- */
-export interface SectionTable extends RowDataPacket {
+export interface SectionTable {
   IDSection: number;
   SectionName: string;
   FileResource: string;
 }
 
-/**
- * Interface for the `Section` table used to get the section names.
- */
-export interface SectionName extends RowDataPacket {
+export interface SectionName {
   IDSection: number;
   SectionName: string;
 }
 
-/**
- * Interface for the `Section` table used to get the username and section mappings.
- */
-export interface UserSection extends RowDataPacket {
+export interface UserSection {
   IDSection: number;
   SectionName: string;
   NameUser: string;
 }
 
-export interface SectionId extends RowDataPacket {
+export interface SectionId {
   IDSection: number;
 }

@@ -1,45 +1,55 @@
-import type mysql from "mysql2/promise";
 import type {
   SectionId,
   SectionName,
   UserSection,
 } from "../models/Section.d.ts";
+import ssms from "mssql";
+import type { MsSqlResponse } from "@scope/server-ssms";
 
-/**
- * GET all instance names and its identifier.
- * @param pool An instance of mysql2 database pool
- * @returns An array of section, containing its section name and identifier, and a metadata variable
- */
-export const sectionNames = async (pool: mysql.Pool) => {
-  const [rows, metadata] = await pool.query<SectionName[]>(
+export const sectionNames = async (
+  pool: ssms.ConnectionPool,
+): Promise<MsSqlResponse<SectionName>> => {
+  const result = await pool.request().query<SectionName>(
     `SELECT IDSection, SectionName
-    FROM Section`,
+      FROM Section`,
   );
-  return [rows, metadata];
+
+  const response: MsSqlResponse<SectionName> = {
+    rowsReturned: result.recordset,
+    rowsAffected: result.rowsAffected,
+  };
+
+  return response;
 };
 
-/**
- * GET all instance of section name and the user name.
- * @param pool An instance of mysql2 database pool
- * @returns An array of section, containing its section name and the user name, and a metadata variable
- */
-export const userSectionMappings = async (pool: mysql.Pool) => {
-  const [rows, metadata] = await pool.query<UserSection[]>(
+export const userSectionMappings = async (
+  pool: ssms.ConnectionPool,
+): Promise<MsSqlResponse<UserSection>> => {
+  const result = await pool.query<UserSection>(
     `SELECT Section.SectionName, UserMaster.NameUser
-    FROM Section
-    INNER JOIN UserMaster
-    ON Section.IDSection = UserMaster.IDSection;`,
+      FROM Section
+      INNER JOIN UserMaster
+        ON Section.IDSection = UserMaster.IDSection;`,
   );
-  return [rows, metadata];
+
+  const response: MsSqlResponse<UserSection> = {
+    rowsReturned: result.recordset,
+    rowsAffected: result.rowsAffected,
+  };
+
+  return response;
 };
 
 export const getSectionIdByName = async (
-  pool: mysql.PoolConnection,
+  requestSource: ssms.Transaction,
   sectionName: string,
 ): Promise<number> => {
-  const [rows, _metadata] = await pool.query<SectionId[]>(
-    `SELECT IDSection FROM Section WHERE SectionName LIKE ?;`,
-    [sectionName],
+  const request = requestSource.request();
+
+  request.input("monthLetter", ssms.NVarChar, sectionName);
+
+  const result = await new ssms.Request(requestSource).query<SectionId>(
+    `SELECT IDSection FROM Section WHERE SectionName LIKE @sectionName;`,
   );
-  return rows[0].IDSection;
+  return result.recordset[0].IDSection;
 };

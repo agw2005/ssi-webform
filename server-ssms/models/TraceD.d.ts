@@ -1,6 +1,4 @@
-import type { RowDataPacket } from "mysql2";
-
-export interface TraceDTable extends RowDataPacket {
+export interface TraceDTable {
   IDTrace: number;
   IDUser: number;
   Result: string;
@@ -9,7 +7,7 @@ export interface TraceDTable extends RowDataPacket {
   ApproverLevel: number;
 }
 
-export interface TraceApproverPath extends RowDataPacket {
+export interface TraceApproverPath {
   Result: string;
   ApproverType: string;
   DateApprove: string;
@@ -17,12 +15,12 @@ export interface TraceApproverPath extends RowDataPacket {
   NameUser: string;
 }
 
-export interface NextApproverPath extends RowDataPacket {
+export interface NextApproverPath {
   NextIDUser: number | null;
   NextApproverLevel: number | null;
 }
 
-export interface OtherApproverPathInfo extends RowDataPacket {
+export interface OtherApproverPathInfo {
   Summed: number;
   Maxxed: number;
 }

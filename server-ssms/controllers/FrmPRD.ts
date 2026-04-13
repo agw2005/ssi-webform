@@ -1,9 +1,16 @@
-import type mysql from "mysql2/promise";
+import type { FrmPRDTable, MsSqlResponse } from "@scope/server-ssms";
 import type { FrmPRDRequestItem } from "../models/FrmPRD.d.ts";
-import type { ResultSetHeader } from "mysql2/promise.js";
+import * as ssms from "mssql";
 
-export const getAllRequestItems = async (pool: mysql.Pool, traceId: number) => {
-  const [rows, metadata] = await pool.query<FrmPRDRequestItem[]>(
+export const getAllRequestItems = async (
+  pool: ssms.ConnectionPool,
+  traceId: number,
+): Promise<MsSqlResponse<FrmPRDRequestItem>> => {
+  const request = pool.request();
+
+  request.input("traceId", ssms.NVarChar, traceId);
+
+  const result = await request.query<FrmPRDRequestItem>(
     `SELECT
       frm_PR_D.IDItem,
       frm_PR_D.Description,
@@ -23,14 +30,20 @@ export const getAllRequestItems = async (pool: mysql.Pool, traceId: number) => {
 	    ON frm_PR_H.NoPR = frm_PR_D.NoPR
     INNER JOIN Trace
 	    ON Trace.NoForm = frm_PR_H.NoForm
-    WHERE Trace.IDTrace = ?;`,
-    [traceId],
+    WHERE Trace.IDTrace = @traceId;
+    `,
   );
-  return [rows, metadata];
+
+  const response: MsSqlResponse<FrmPRDRequestItem> = {
+    rowsReturned: result.recordset,
+    rowsAffected: result.rowsAffected,
+  };
+
+  return response;
 };
 
 export const postUsage = async (
-  pool: mysql.PoolConnection,
+  requestSource: ssms.Transaction,
   noPR: string,
   costCenter: string,
   nature: string,
@@ -45,57 +58,72 @@ export const postUsage = async (
   rateByCurrency: number,
   budgetId: string,
 ): Promise<number> => {
-  const NetPrice = (quantity * unitPrice) / rateByCurrency;
+  const netPrice = (quantity * unitPrice) / rateByCurrency;
 
-  const [rows, _metadata] = await pool.execute<ResultSetHeader>(
-    `INSERT INTO frm_PR_D 
-      (NoPR, AcctAssgCategory, CostCenter, Nature, Description, Qty, Measure, UnitPrice, Currency, EstimationDeliveryDate, Vendor, Reason, StatusItem, RejectedBy, Supplier, NetPrice, DeliveryDate, NoPO, Rate, IDBudget)
-      VALUES (? , '' , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , 'False' , '' , '' , ROUND( ? , 2 ) , NULL , '' , ? , ?);
-    `,
-    [
-      noPR,
-      costCenter,
-      nature,
-      description,
-      quantity,
-      measure,
-      unitPrice,
-      currency,
-      estimatedDeliveryDate,
-      vendor,
-      reason,
-      NetPrice,
-      rateByCurrency,
-      budgetId,
-    ],
-  );
+  const request = new ssms.Request(requestSource);
 
-  const newIdItem = rows.insertId;
+  request.input("noPR", ssms.NVarChar, noPR);
+  request.input("costCenter", ssms.NVarChar, costCenter);
+  request.input("nature", ssms.NVarChar, nature);
+  request.input("description", ssms.NVarChar, description);
+  request.input("quantity", ssms.Int, quantity);
+  request.input("measure", ssms.NVarChar, measure);
+  request.input("unitPrice", ssms.Decimal(18, 2), unitPrice);
+  request.input("currency", ssms.NVarChar, currency);
+  request.input("estimatedDeliveryDate", ssms.DateTime, estimatedDeliveryDate);
+  request.input("vendor", ssms.NVarChar, vendor);
+  request.input("reason", ssms.NVarChar, reason);
+  request.input("netPrice", ssms.Decimal(18, 2), netPrice);
+  request.input("rate", ssms.Decimal(18, 2), rateByCurrency);
+  request.input("budgetId", ssms.NVarChar, budgetId);
+
+  const result = await request.query<Pick<FrmPRDTable, "IDItem">>(`
+    INSERT INTO frm_PR_D 
+        (NoPR, AcctAssgCategory, CostCenter, Nature, Description, Qty, Measure, 
+         UnitPrice, Currency, EstimationDeliveryDate, Vendor, Reason, StatusItem, 
+         RejectedBy, Supplier, NetPrice, DeliveryDate, NoPO, Rate, IDBudget)
+      OUTPUT INSERTED.IDItem
+      VALUES 
+        (@noPR, '', @costCenter, @nature, @description, @quantity, @measure, 
+         @unitPrice, @currency, @estimatedDeliveryDate, @vendor, @reason, 'False', 
+         '', '', ROUND(@netPrice, 2), NULL, '', @rate, @budgetId);
+    `);
+
+  const newIdItem = result.recordset[0].IDItem;
   return newIdItem;
 };
 
 export const patchFrmPRDVerdict = async (
-  pool: mysql.Pool | mysql.PoolConnection,
+  requestSource: ssms.Transaction,
   supervisorId: number,
   itemId: number,
 ) => {
-  await pool.query(
+  const request = new ssms.Request(requestSource);
+
+  request.input("supervisorId", ssms.NVarChar, supervisorId);
+  request.input("itemId", ssms.NVarChar, itemId);
+
+  await request.query(
     `UPDATE frm_PR_D
       SET
         StatusItem = 'True',
-        RejectedBy = ?
-      WHERE IDItem = ?;`,
-    [supervisorId, itemId],
+        RejectedBy = @supervisorId
+      WHERE IDItem = @itemId;`,
   );
   return void 0;
 };
 
 export const deleteRequestItems = async (
-  pool: mysql.PoolConnection,
+  requestSource: ssms.Transaction,
   noPr: string,
-): Promise<void> => {
-  await pool.query(
-    `DELETE FROM frm_PR_D WHERE NoPR = ?;`,
-    [noPr],
+) => {
+  const request = new ssms.Request(requestSource);
+
+  request.input("supervisorId", ssms.NVarChar, noPr);
+
+  await request.query(
+    `DELETE FROM frm_PR_D WHERE NoPR = @noPr;`,
   );
+
+  return null;
 };

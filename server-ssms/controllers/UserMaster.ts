@@ -1,46 +1,51 @@
-import type mysql from "mysql2/promise";
 import type {
   AuthInfo,
   UserIdByName,
   UserMasterName,
 } from "../models/UserMaster.d.ts";
-import type { FieldPacket } from "mysql2/promise.js";
+import ssms from "mssql";
+import type { MsSqlResponse } from "@scope/server-ssms";
 
-/**
- * GET all instance NRP and password.
- * @param pool An instance of mysql2 database pool
- * @returns An array of usermaster, containing its NRP and password, and a metadata variable
- */
-export const supervisorNames = async (pool: mysql.Pool) => {
-  const [rows, metadata] = await pool.query<UserMasterName[]>(
+export const supervisorNames = async (
+  pool: ssms.ConnectionPool,
+): Promise<MsSqlResponse<UserMasterName>> => {
+  const result = await pool.request().query<UserMasterName>(
     `SELECT NameUser, IDUser
     FROM UserMaster
     ORDER BY NameUser ASC`,
   );
-  return [rows, metadata];
+
+  const response: MsSqlResponse<UserMasterName> = {
+    rowsReturned: result.recordset,
+    rowsAffected: result.rowsAffected,
+  };
+
+  return response;
 };
 
 export const getUserIdByName = async (
-  pool: mysql.PoolConnection,
+  requestSource: ssms.Transaction,
   nameUser: string,
 ): Promise<number> => {
-  const [rows] = await pool.query<UserIdByName[]>(
-    `SELECT IDUser
-    FROM UserMaster
-    WHERE NameUser LIKE ?
-    ORDER BY LENGTH(NRP) DESC
-    LIMIT 1;`,
-    [`%${nameUser}%`],
+  const request = requestSource.request();
+  request.input("nameUser", ssms.NVarChar, `%${nameUser}%`);
+
+  const result = await request.query<UserIdByName>(
+    `SELECT TOP 1 IDUser
+      FROM UserMaster
+      WHERE NameUser LIKE @nameUser
+      ORDER BY LEN(NRP) DESC;`,
   );
-  const userId = rows[0].IDUser || 0;
+
+  const userId = result.recordset[0].IDUser;
 
   return userId;
 };
 
 export const getAuthInfo = async (
-  pool: mysql.Pool,
-): Promise<[AuthInfo[], FieldPacket[]]> => {
-  const [rows, metadata] = await pool.query<AuthInfo[]>(
+  pool: ssms.ConnectionPool,
+): Promise<MsSqlResponse<AuthInfo>> => {
+  const result = await pool.request().query<AuthInfo>(
     `SELECT 
         IDUser,
         UserName,
@@ -48,16 +53,22 @@ export const getAuthInfo = async (
         NameUser,
         NRP
       FROM UserMaster;`,
-    [],
   );
 
-  return [rows, metadata];
+  const response: MsSqlResponse<AuthInfo> = {
+    rowsReturned: result.recordset,
+    rowsAffected: result.rowsAffected,
+  };
+
+  return response;
 };
 
 export const patchNewLogin = async (
-  pool: mysql.Pool,
+  pool: ssms.ConnectionPool,
   userId: number,
 ): Promise<null> => {
+  const request = pool.request();
+
   const now = new Date();
   const month = now.getMonth() + 1;
   const date = now.getDate();
@@ -70,12 +81,14 @@ export const patchNewLogin = async (
   const formattedNow =
     `${month}/${date}/${year} ${hours}:${minutes}:${seconds} ${cycle}`;
 
-  await pool.query(
+  request.input("now", ssms.NVarChar, formattedNow);
+  request.input("userId", ssms.Int, userId);
+
+  await request.query(
     `UPDATE UserMaster
-      SET LastLogin = ?
+      SET LastLogin = @now
       WHERE
-        IDUser = ?;`,
-    [formattedNow, userId],
+        IDUser = @userId;`,
   );
 
   return null;

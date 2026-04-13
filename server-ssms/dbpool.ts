@@ -1,11 +1,17 @@
-import mysql from "mysql2/promise";
+import ssms from "mssql";
 
-const databasePool = mysql.createPool({
-  host: Deno.env.get("DB_HOST"),
+const config: ssms.config = {
+  server: Deno.env.get("DB_HOST") || "127.0.0.1",
   port: Number(Deno.env.get("DB_PORT")),
   user: Deno.env.get("DB_USER"),
   password: Deno.env.get("DB_PASSWORD"),
   database: Deno.env.get("DB_NAME"),
-});
+  options: {
+    encrypt: true,
+    trustServerCertificate: false,
+  },
+};
+
+const databasePool = await new ssms.ConnectionPool(config).connect();
 
 export default databasePool;

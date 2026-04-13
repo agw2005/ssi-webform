@@ -1,18 +1,26 @@
-import type mysql from "mysql2/promise";
 import type {
+  FrmPRHTable,
   PRNumberIncrement,
   RequestItemsAtBudgetView,
 } from "../models/FrmPRH.d.ts";
-import type { ResultSetHeader } from "mysql2/promise.js";
+import * as ssms from "mssql";
+import type { MsSqlResponse } from "@scope/server-ssms";
 
 export const getRequestItemForBudgetView = async (
-  pool: mysql.Pool,
+  pool: ssms.ConnectionPool,
   nature: string | null,
   costCenter: string | null,
   startDate: string | null,
   endDate: string | null,
-) => {
-  const [rows, metadata] = await pool.query<RequestItemsAtBudgetView[]>(
+): Promise<MsSqlResponse<RequestItemsAtBudgetView>> => {
+  const request = pool.request();
+
+  request.input("nature", ssms.NVarChar, nature);
+  request.input("costCenter", ssms.NVarChar, costCenter);
+  request.input("startDate", ssms.NVarChar, startDate);
+  request.input("endDate", ssms.NVarChar, endDate);
+
+  const result = await request.query<RequestItemsAtBudgetView>(
     `SELECT
       Trace.IDTrace,
       frm_PR_D.IDItem AS ItemId,
@@ -42,49 +50,49 @@ export const getRequestItemForBudgetView = async (
 	    ON frm_PR_D.NoPR = frm_PR_H.NoPR
     INNER JOIN Trace
 	    ON frm_PR_H.NoForm = Trace.NoForm
-    WHERE frm_PR_D.Nature = ?
-      AND frm_PR_D.CostCenter = ?
-      AND Trace.SubmitDate
-        BETWEEN ? AND ?;`,
-    [nature, costCenter, startDate, endDate],
+    WHERE frm_PR_D.Nature = @nature
+    AND frm_PR_D.CostCenter = @costCenter
+    AND Trace.SubmitDate
+      BETWEEN @startDate AND @endDate;`,
   );
-  return [rows, metadata];
+
+  const response: MsSqlResponse<RequestItemsAtBudgetView> = {
+    rowsReturned: result.recordset,
+    rowsAffected: result.rowsAffected,
+  };
+
+  return response;
 };
 
 export const provisionPRNumber = async (
-  pool: mysql.PoolConnection,
+  requestSource: ssms.Transaction,
   dept: string,
 ): Promise<string> => {
-  const now = new Date();
+  const request = requestSource.request();
 
-  const monthLetter = String.fromCharCode(65 + now.getMonth());
-  // January = A
-  // February = B
-  // ...
-  // December = L
-
-  const year = now.getFullYear().toString().slice(-2);
-
-  const [rows] = await pool.query<PRNumberIncrement[]>(
-    `SELECT
-      MAX(
-        CAST(
-          SUBSTRING(NoPR, 7)
-        AS UNSIGNED)
-      ) AS Increment
+  const result = await request.query<PRNumberIncrement>(`
+    SELECT
+        ISNULL(MAX(
+          CAST(
+            SUBSTRING(NoPR, 7, LEN(NoPR)) 
+          AS INT)
+        ), 0) AS Increment
       FROM frm_PR_H
-      WHERE SUBSTRING(NoPR, 4, 1) = ?
-      AND SUBSTRING(NoPR, 5, 2) = ?;`,
-    [monthLetter, year],
-  );
+      WITH (UPDLOCK, HOLDLOCK)
+      WHERE SUBSTRING(NoPR, 4, 1) = CHAR(65 + MONTH(GETDATE()) - 1)
+      AND SUBSTRING(NoPR, 5, 2) = RIGHT(CAST(YEAR(GETDATE()) AS VARCHAR), 2);
+    `);
 
-  const nextIncrement = (rows[0].Increment || 0) + 1;
+  const now = new Date();
+  const monthLetter = String.fromCharCode(65 + now.getMonth());
+  const year = now.getFullYear().toString().slice(-2);
+  const nextIncrement = result.recordset[0]?.Increment + 1;
 
   return `${dept}${monthLetter}${year}${nextIncrement}`;
 };
 
 export const postRequestInformation = async (
-  pool: mysql.PoolConnection,
+  requestSource: ssms.Transaction,
   noForm: string,
   requestorName: string,
   requestorNrp: string,
@@ -95,47 +103,61 @@ export const postRequestInformation = async (
   requestReturnOnOutgoing: string,
   remarks: string,
 ): Promise<number> => {
-  const [rows, _metadata] = await pool.query<ResultSetHeader>(
+  const request = requestSource.request();
+
+  request.input("noForm", ssms.NVarChar, noForm);
+  request.input("requestorName", ssms.NVarChar, requestorName);
+  request.input("requestorNrp", ssms.NVarChar, requestorNrp);
+  request.input("requestorSection", ssms.NVarChar, requestorSection);
+  request.input("noPR", ssms.NVarChar, noPR);
+  request.input("requestSubject", ssms.NVarChar, requestSubject);
+  request.input("requestAmount", ssms.Numeric(18, 2), requestAmount);
+  request.input(
+    "requestReturnOnOutgoing",
+    ssms.NVarChar,
+    requestReturnOnOutgoing,
+  );
+  request.input("remarks", ssms.NVarChar, remarks);
+
+  const result = await request.query<Pick<FrmPRHTable, "ID">>(
     `INSERT INTO 
       frm_PR_H (NoForm, Requestor, NRP, Section, NoPR, Subject, Amount, ReturnOnOutgoing, Remarks) 
-      VALUES (? , ? , ? , ? , ? , ? , ROUND( ? , 2 ) , ? , ?);`,
-    [
-      noForm,
-      requestorName,
-      requestorNrp,
-      requestorSection,
-      noPR,
-      requestSubject,
-      requestAmount,
-      requestReturnOnOutgoing,
-      remarks,
-    ],
+      VALUES (@noForm , @requestorName , @requestorNrp , @requestorSection , @noPR , @requestSubject , ROUND( @requestAmount , 2 ) , @requestReturnOnOutgoing , @remarks);`,
   );
 
-  const newId = rows.insertId;
+  const newId = result.recordset[0].ID;
   return newId;
 };
 
 export const patchRemarksOfRequest = async (
-  pool: mysql.Pool,
+  pool: ssms.ConnectionPool,
   newRemarks: string,
   noForm: string,
 ) => {
-  await pool.query(
+  const request = pool.request();
+
+  request.input("newRemarks", ssms.NVarChar, newRemarks);
+  request.input("noForm", ssms.VarChar, noForm);
+
+  await request.query(
     `UPDATE frm_PR_H
       SET Remarks = ?
       WHERE
         NoForm = ?;`,
-    [newRemarks, noForm],
   );
 };
 
 export const deleteRequestInformation = async (
-  pool: mysql.PoolConnection,
+  pool: ssms.Transaction,
   formId: number,
 ) => {
-  await pool.query(
-    `DELETE FROM frm_PR_H WHERE ID = ?;`,
-    [formId],
+  const request = pool.request();
+
+  request.input("formId", ssms.Int, formId);
+
+  await request.query(
+    `DELETE FROM frm_PR_H WHERE ID = @formId;`,
   );
+
+  return null;
 };
