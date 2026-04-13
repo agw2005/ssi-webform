@@ -5,7 +5,7 @@
   "tasks": {
     "dev": "deno run --watch --allow-env --env-file=.env --allow-net --allow-read main.ts",
     "serve": "deno run --allow-env --env-file=.env --allow-net --allow-read main.ts",
-    "build": "deno compile --allow-env --env-file=.env --allow-net --allow-read --output webform-oak-server main.ts",
+    "build": "deno compile --allow-env --env-file=.env --allow-net --allow-read --target x86_64-unknown-linux-gnu --output webform-oak-server main.ts",
     "keygen": "deno run --allow-read --allow-write ./auth/generateKey.ts"
   },
   "imports": {
