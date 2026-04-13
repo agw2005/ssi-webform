@@ -93,9 +93,7 @@ if (import.meta.main) {
     }`,
   );
   console.log(
-    `CORS available for client http://${Deno.env.get("CLIENT_HOST")}:${
-      Deno.env.get("CLIENT_PORT")
-    }`,
+    `CORS available for client ${Deno.env.get("CLIENT_URL")}`,
   );
   await oakApp.listen({ port: Number(Deno.env.get("SERVER_PORT")) });
 }

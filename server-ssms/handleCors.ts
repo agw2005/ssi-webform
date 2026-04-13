@@ -7,7 +7,7 @@ import type { Context } from "@oak/oak/context";
 export const handleCors = (ctx: Context) => {
   ctx.response.headers.set(
     "Access-Control-Allow-Origin",
-    `http://${Deno.env.get("CLIENT_HOST")}:${Deno.env.get("CLIENT_PORT")}`,
+    `${Deno.env.get("CLIENT_URL")}`,
   );
   ctx.response.headers.set(
     "Access-Control-Allow-Methods",
