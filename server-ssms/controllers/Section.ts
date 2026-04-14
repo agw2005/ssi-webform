@@ -6,6 +6,12 @@ import type {
 import ssms from "mssql";
 import type { MsSqlResponse } from "@scope/server-ssms";
 
+export const SectionSSMSTypes = {
+  IDSection: ssms.Int(),
+  SectionName: ssms.VarChar(50),
+  FileResource: ssms.VarChar(50),
+};
+
 export const sectionNames = async (
   pool: ssms.ConnectionPool,
 ): Promise<MsSqlResponse<SectionName>> => {
@@ -25,7 +31,7 @@ export const sectionNames = async (
 export const userSectionMappings = async (
   pool: ssms.ConnectionPool,
 ): Promise<MsSqlResponse<UserSection>> => {
-  const result = await pool.query<UserSection>(
+  const result = await pool.request().query<UserSection>(
     `SELECT Section.SectionName, UserMaster.NameUser
       FROM Section
       INNER JOIN UserMaster
@@ -46,7 +52,7 @@ export const getSectionIdByName = async (
 ): Promise<number> => {
   const request = requestSource.request();
 
-  request.input("monthLetter", ssms.NVarChar, sectionName);
+  request.input("monthLetter", SectionSSMSTypes.IDSection, sectionName);
 
   const result = await new ssms.Request(requestSource).query<SectionId>(
     `SELECT IDSection FROM Section WHERE SectionName LIKE @sectionName;`,

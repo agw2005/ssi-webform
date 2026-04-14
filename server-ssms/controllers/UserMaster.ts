@@ -5,6 +5,19 @@ import type {
 } from "../models/UserMaster.d.ts";
 import ssms from "mssql";
 import type { MsSqlResponse } from "@scope/server-ssms";
+import { SectionSSMSTypes } from "./Section.ts";
+
+export const UserMasterSSMSTypes = {
+  IDUser: ssms.Int(),
+  UserName: ssms.VarChar(50),
+  Password: ssms.VarChar(50),
+  NameUser: ssms.VarChar(50),
+  NRP: ssms.VarChar(50),
+  IDSection: SectionSSMSTypes.IDSection,
+  IDTitle: ssms.Int(),
+  Email: ssms.VarChar(50),
+  LastLogin: ssms.VarChar(50),
+};
 
 export const supervisorNames = async (
   pool: ssms.ConnectionPool,
@@ -28,7 +41,8 @@ export const getUserIdByName = async (
   nameUser: string,
 ): Promise<number> => {
   const request = requestSource.request();
-  request.input("nameUser", ssms.NVarChar, `%${nameUser}%`);
+
+  request.input("nameUser", UserMasterSSMSTypes.NameUser, `%${nameUser}%`);
 
   const result = await request.query<UserIdByName>(
     `SELECT TOP 1 IDUser
@@ -81,8 +95,8 @@ export const patchNewLogin = async (
   const formattedNow =
     `${month}/${date}/${year} ${hours}:${minutes}:${seconds} ${cycle}`;
 
-  request.input("now", ssms.NVarChar, formattedNow);
-  request.input("userId", ssms.Int, userId);
+  request.input("now", UserMasterSSMSTypes.LastLogin, formattedNow);
+  request.input("userId", UserMasterSSMSTypes.IDUser, userId);
 
   await request.query(
     `UPDATE UserMaster

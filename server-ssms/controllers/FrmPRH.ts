@@ -5,6 +5,21 @@ import type {
 } from "../models/FrmPRH.d.ts";
 import * as ssms from "mssql";
 import type { MsSqlResponse } from "@scope/server-ssms";
+import { FrmPRDSSMSTypes } from "./FrmPRD.ts";
+import { TraceSSMSTypes } from "./Trace.ts";
+
+export const FrmPRHSSMSTypes = {
+  ID: ssms.Int(),
+  NoForm: ssms.VarChar(50),
+  Requestor: ssms.VarChar(50),
+  NRP: ssms.VarChar(50),
+  Section: ssms.VarChar(50),
+  NoPR: ssms.VarChar(50),
+  Subject: ssms.VarChar(500),
+  Amount: ssms.Numeric(18, 2),
+  ReturnOnOutgoing: ssms.VarChar(500),
+  Remarks: ssms.VarChar(500),
+};
 
 export const getRequestItemForBudgetView = async (
   pool: ssms.ConnectionPool,
@@ -15,10 +30,10 @@ export const getRequestItemForBudgetView = async (
 ): Promise<MsSqlResponse<RequestItemsAtBudgetView>> => {
   const request = pool.request();
 
-  request.input("nature", ssms.NVarChar, nature);
-  request.input("costCenter", ssms.NVarChar, costCenter);
-  request.input("startDate", ssms.NVarChar, startDate);
-  request.input("endDate", ssms.NVarChar, endDate);
+  request.input("nature", FrmPRDSSMSTypes.Nature, nature);
+  request.input("costCenter", FrmPRDSSMSTypes.CostCenter, costCenter);
+  request.input("startDate", TraceSSMSTypes.SubmitDate, startDate);
+  request.input("endDate", TraceSSMSTypes.SubmitDate, endDate);
 
   const result = await request.query<RequestItemsAtBudgetView>(
     `SELECT
@@ -105,19 +120,19 @@ export const postRequestInformation = async (
 ): Promise<number> => {
   const request = requestSource.request();
 
-  request.input("noForm", ssms.NVarChar, noForm);
-  request.input("requestorName", ssms.NVarChar, requestorName);
-  request.input("requestorNrp", ssms.NVarChar, requestorNrp);
-  request.input("requestorSection", ssms.NVarChar, requestorSection);
-  request.input("noPR", ssms.NVarChar, noPR);
-  request.input("requestSubject", ssms.NVarChar, requestSubject);
-  request.input("requestAmount", ssms.Numeric(18, 2), requestAmount);
+  request.input("noForm", FrmPRHSSMSTypes.NoForm, noForm);
+  request.input("requestorName", FrmPRHSSMSTypes.Requestor, requestorName);
+  request.input("requestorNrp", FrmPRHSSMSTypes.NRP, requestorNrp);
+  request.input("requestorSection", FrmPRHSSMSTypes.Section, requestorSection);
+  request.input("noPR", FrmPRHSSMSTypes.NoPR, noPR);
+  request.input("requestSubject", FrmPRHSSMSTypes.Subject, requestSubject);
+  request.input("requestAmount", FrmPRHSSMSTypes.Amount, requestAmount);
   request.input(
     "requestReturnOnOutgoing",
-    ssms.NVarChar,
+    FrmPRHSSMSTypes.ReturnOnOutgoing,
     requestReturnOnOutgoing,
   );
-  request.input("remarks", ssms.NVarChar, remarks);
+  request.input("remarks", FrmPRHSSMSTypes.Remarks, remarks);
 
   const result = await request.query<Pick<FrmPRHTable, "ID">>(
     `INSERT INTO 
@@ -136,8 +151,8 @@ export const patchRemarksOfRequest = async (
 ) => {
   const request = pool.request();
 
-  request.input("newRemarks", ssms.NVarChar, newRemarks);
-  request.input("noForm", ssms.VarChar, noForm);
+  request.input("newRemarks", FrmPRHSSMSTypes.Remarks, newRemarks);
+  request.input("noForm", FrmPRHSSMSTypes.NoForm, noForm);
 
   await request.query(
     `UPDATE frm_PR_H
@@ -153,7 +168,7 @@ export const deleteRequestInformation = async (
 ) => {
   const request = pool.request();
 
-  request.input("formId", ssms.Int, formId);
+  request.input("formId", FrmPRHSSMSTypes.ID, formId);
 
   await request.query(
     `DELETE FROM frm_PR_H WHERE ID = @formId;`,

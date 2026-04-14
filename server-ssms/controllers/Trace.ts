@@ -10,6 +10,26 @@ import type {
 import { sum } from "../helper/sum.ts";
 import ssms from "mssql";
 import type { MsSqlResponse } from "@scope/server-ssms";
+import { UserMasterSSMSTypes } from "./UserMaster.ts";
+import { TraceDSSMSTypes } from "./TraceD.ts";
+
+export const TraceSSMSTypes = {
+  IDTrace: ssms.Int(),
+  IDForm: ssms.Int(),
+  FormTable: ssms.VarChar(50),
+  NoForm: ssms.VarChar(50),
+  Requestor: ssms.VarChar(50),
+  IDSection: ssms.Int(),
+  NRP: ssms.VarChar(50),
+  Ext: ssms.VarChar(50),
+  EmailReq: ssms.VarChar(50),
+  Status: ssms.VarChar(50),
+  SubmitDate: ssms.DateTime2(),
+  ProcessedBy: ssms.Int(),
+  ProcessedLevel: ssms.Int(),
+  LevelProgress: ssms.Int(),
+  Remarks: ssms.NVarChar(4000),
+};
 
 export const homeRequests = async (
   pool: ssms.ConnectionPool,
@@ -26,12 +46,20 @@ export const homeRequests = async (
   const searchPattern = search ? `%${search}%` : null;
   const request = pool.request();
 
-  request.input("requestorSectionId", ssms.Int, requestorSectionId);
-  request.input("status", ssms.NVarChar, status);
-  request.input("currentSupervisorId", ssms.Int, currentSupervisorId);
-  request.input("startDate", ssms.DateTime, startDate);
-  request.input("endDate", ssms.DateTime, endDate);
-  request.input("searchPattern", ssms.NVarChar, searchPattern);
+  request.input(
+    "requestorSectionId",
+    TraceSSMSTypes.IDSection,
+    requestorSectionId,
+  );
+  request.input("status", TraceSSMSTypes.Status, status);
+  request.input(
+    "currentSupervisorId",
+    UserMasterSSMSTypes.IDUser,
+    currentSupervisorId,
+  );
+  request.input("startDate", TraceSSMSTypes.SubmitDate, startDate);
+  request.input("endDate", TraceSSMSTypes.SubmitDate, endDate);
+  request.input("searchPattern", ssms.VarChar(500), searchPattern);
   request.input("skip", ssms.Int, skip);
   request.input("take", ssms.Int, pagination);
 
@@ -66,7 +94,7 @@ export const homeRequests = async (
       AND 
         (@searchPattern IS NULL OR (
           frm_PR_H.Subject LIKE @searchPattern OR 
-          CAST(Trace.IDTrace AS NVARCHAR) LIKE @searchPattern OR 
+          CAST(Trace.IDTrace AS VARCHAR) LIKE @searchPattern OR 
           frm_PR_H.Requestor LIKE @searchPattern
         ))
       AND
@@ -95,12 +123,20 @@ export const homeRequestsCount = async (
   const searchPattern = search ? `%${search}%` : null;
   const request = pool.request();
 
-  request.input("requestorSectionId", ssms.Int, requestorSectionId);
-  request.input("status", ssms.NVarChar, status);
-  request.input("currentSupervisorId", ssms.Int, currentSupervisorId);
-  request.input("startDate", ssms.DateTime, startDate);
-  request.input("endDate", ssms.DateTime, endDate);
-  request.input("searchPattern", ssms.NVarChar, searchPattern);
+  request.input(
+    "requestorSectionId",
+    TraceSSMSTypes.IDSection,
+    requestorSectionId,
+  );
+  request.input("status", TraceSSMSTypes.Status, status);
+  request.input(
+    "currentSupervisorId",
+    UserMasterSSMSTypes.IDUser,
+    currentSupervisorId,
+  );
+  request.input("startDate", TraceSSMSTypes.SubmitDate, startDate);
+  request.input("endDate", TraceSSMSTypes.SubmitDate, endDate);
+  request.input("searchPattern", ssms.VarChar(500), searchPattern);
 
   const result = await pool.query<TraceRequestsCount>(`
     SELECT 
@@ -123,7 +159,7 @@ export const homeRequestsCount = async (
     AND 
       (@searchPattern IS NULL OR (
         frm_PR_H.Subject LIKE @searchPattern OR 
-        CAST(Trace.IDTrace AS NVARCHAR) LIKE @searchPattern OR 
+        CAST(Trace.IDTrace AS VARCHAR) LIKE @searchPattern OR 
         frm_PR_H.Requestor LIKE @searchPattern
       ))
     AND
@@ -144,7 +180,7 @@ export const specificRequest = async (
 ): Promise<MsSqlResponse<TraceRequestOverview>> => {
   const request = pool.request();
 
-  request.input("traceId", ssms.Int, traceId);
+  request.input("traceId", TraceSSMSTypes.IDTrace, traceId);
 
   const result = await request.query<TraceRequestOverview>(
     `SELECT DISTINCT
@@ -192,15 +228,19 @@ export const postRequestTrace = async (
 ): Promise<number> => {
   const request = requestSource.request();
 
-  request.input("noForm", ssms.VarChar, noForm);
-  request.input("requestorName", ssms.VarChar, requestorName);
-  request.input("requestorSectionId", ssms.VarChar, requestorSectionId);
-  request.input("requestorNrp", ssms.VarChar, requestorNrp);
-  request.input("ext", ssms.VarChar, requestorExtensionNumber);
-  request.input("email", ssms.VarChar, requestorEmail);
-  request.input("submitDate", ssms.VarChar, requestSubmissionDate);
-  request.input("processedBy", ssms.Int, initialSupervisorId);
-  request.input("remarks", ssms.VarChar, remarks);
+  request.input("noForm", TraceSSMSTypes.NoForm, noForm);
+  request.input("requestorName", TraceSSMSTypes.Requestor, requestorName);
+  request.input(
+    "requestorSectionId",
+    TraceSSMSTypes.IDSection,
+    requestorSectionId,
+  );
+  request.input("requestorNrp", TraceSSMSTypes.NRP, requestorNrp);
+  request.input("ext", TraceSSMSTypes.Ext, requestorExtensionNumber);
+  request.input("email", TraceSSMSTypes.EmailReq, requestorEmail);
+  request.input("submitDate", TraceSSMSTypes.SubmitDate, requestSubmissionDate);
+  request.input("processedBy", TraceSSMSTypes.ProcessedBy, initialSupervisorId);
+  request.input("remarks", TraceSSMSTypes.Remarks, remarks);
 
   const result = await request.query<Pick<TraceTable, "IDTrace">>(
     `INSERT INTO Trace
@@ -230,13 +270,17 @@ export const approveRequests = async (
 
   const request = pool.request();
 
-  request.input("supervisorNrpPattern", ssms.NVarChar, supervisorNrpPattern);
-  request.input("status", ssms.NVarChar, status);
-  request.input("startDate", ssms.DateTime, startDate);
-  request.input("endDate", ssms.DateTime, endDate);
-  request.input("searchPattern", ssms.NVarChar, searchPattern);
-  request.input("skip", ssms.Int, skip);
-  request.input("take", ssms.Int, pagination);
+  request.input(
+    "supervisorNrpPattern",
+    UserMasterSSMSTypes.NRP,
+    supervisorNrpPattern,
+  );
+  request.input("status", TraceDSSMSTypes.Result, status);
+  request.input("startDate", TraceSSMSTypes.SubmitDate, startDate);
+  request.input("endDate", TraceSSMSTypes.SubmitDate, endDate);
+  request.input("searchPattern", ssms.VarChar(500), searchPattern);
+  request.input("skip", ssms.Int(), skip);
+  request.input("take", ssms.Int(), pagination);
 
   const result = await request.query<TraceApproveRequests>(
     `SELECT 
@@ -275,7 +319,7 @@ export const approveRequests = async (
       AND 
         (@searchPattern IS NULL OR (
           frm_PR_H.Subject LIKE @searchPattern OR 
-          Trace.IDTrace LIKE @searchPattern OR 
+          CAST(Trace.IDTrace AS VARCHAR) LIKE @searchPattern OR 
           frm_PR_H.Requestor LIKE @searchPattern
         ))
       AND
@@ -305,11 +349,15 @@ export const approveRequestsCount = async (
 
   const request = pool.request();
 
-  request.input("supervisorNrpPattern", ssms.VarChar, supervisorNrpPattern);
-  request.input("status", ssms.VarChar, status);
-  request.input("startDate", ssms.DateTime, startDate);
-  request.input("endDate", ssms.DateTime, endDate);
-  request.input("searchPattern", ssms.VarChar, searchPattern);
+  request.input(
+    "supervisorNrpPattern",
+    UserMasterSSMSTypes.NRP,
+    supervisorNrpPattern,
+  );
+  request.input("status", TraceDSSMSTypes.Result, status);
+  request.input("startDate", TraceSSMSTypes.SubmitDate, startDate);
+  request.input("endDate", TraceSSMSTypes.SubmitDate, endDate);
+  request.input("searchPattern", ssms.VarChar(500), searchPattern);
 
   const result = await request.query<TraceRequestsCount>(`
     SELECT 
@@ -336,7 +384,7 @@ export const approveRequestsCount = async (
     AND 
       (@searchPattern IS NULL OR (
         frm_PR_H.Subject LIKE @searchPattern OR 
-        Trace.IDTrace LIKE @searchPattern OR 
+        CAST(Trace.IDTrace AS VARCHAR) LIKE @searchPattern OR 
         frm_PR_H.Requestor LIKE @searchPattern
       ))
     AND
@@ -358,8 +406,8 @@ export const patchRemarksOfTrace = async (
 ) => {
   const request = pool.request();
 
-  request.input("newRemarks", ssms.NVarChar, newRemarks);
-  request.input("noForm", ssms.VarChar, noForm);
+  request.input("newRemarks", TraceSSMSTypes.Remarks, newRemarks);
+  request.input("noForm", TraceSSMSTypes.NoForm, noForm);
 
   await request.query(
     `UPDATE Trace
@@ -381,9 +429,17 @@ export const patchTraceVerdict = async (
   const request = requestSource.request();
 
   if (verdict === "Rejected") {
-    request.input("maxApproverLevel", ssms.Int, maxApproverLevel);
-    request.input("sumApproverLevel", ssms.Int, sumApproverLevel);
-    request.input("traceId", ssms.Int, traceId);
+    request.input(
+      "maxApproverLevel",
+      TraceSSMSTypes.ProcessedLevel,
+      maxApproverLevel,
+    );
+    request.input(
+      "sumApproverLevel",
+      TraceSSMSTypes.LevelProgress,
+      sumApproverLevel,
+    );
+    request.input("traceId", TraceSSMSTypes.IDTrace, traceId);
 
     await request.query(
       `UPDATE Trace
@@ -409,11 +465,19 @@ export const patchTraceVerdict = async (
       ? maxApproverLevel
       : nextApproverLevel;
 
-    request.input("newStatus", ssms.Int, newStatus);
-    request.input("newProcessedBy", ssms.Int, newProcessedBy);
-    request.input("newProcessedLevel", ssms.Int, newProcessedLevel);
-    request.input("newLevelProgress", ssms.Int, newLevelProgress);
-    request.input("traceId", ssms.Int, traceId);
+    request.input("newStatus", TraceSSMSTypes.Status, newStatus);
+    request.input("newProcessedBy", TraceSSMSTypes.ProcessedBy, newProcessedBy);
+    request.input(
+      "newProcessedLevel",
+      TraceSSMSTypes.ProcessedLevel,
+      newProcessedLevel,
+    );
+    request.input(
+      "newLevelProgress",
+      TraceSSMSTypes.LevelProgress,
+      newLevelProgress,
+    );
+    request.input("traceId", TraceSSMSTypes.IDTrace, traceId);
 
     await request.query(
       `UPDATE Trace
@@ -439,7 +503,7 @@ export const getRequestIds = async (
 }> => {
   const request = pool.request();
 
-  request.input("idTrace", ssms.Int, idTrace);
+  request.input("idTrace", TraceSSMSTypes.IDTrace, idTrace);
 
   const result = await request.query<PurchasingRequestIds>(`
     SELECT DISTINCT
@@ -486,7 +550,7 @@ export const deleteRequestTrace = async (
 ) => {
   const request = requestSource.request();
 
-  request.input("noForm", ssms.Int, noForm);
+  request.input("noForm", TraceSSMSTypes.NoForm, noForm);
 
   await request.query(`DELETE FROM Trace WHERE NoForm = @noForm;`);
 

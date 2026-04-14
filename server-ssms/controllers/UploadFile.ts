@@ -4,6 +4,16 @@ import type {
 } from "../models/UploadFile.d.ts";
 import ssms from "mssql";
 import type { MsSqlResponse } from "@scope/server-ssms";
+import { TraceSSMSTypes } from "./Trace.ts";
+
+export const UploadFileSSMSTypes = {
+  IDUpload: ssms.Int(),
+  NoForm: ssms.VarChar(500),
+  FormName: ssms.VarChar(500),
+  Requestor: ssms.VarChar(500),
+  Filename: ssms.VarChar(500),
+  DateUpload: ssms.DateTime2(),
+};
 
 export const getMinimumFileInformation = async (
   pool: ssms.ConnectionPool,
@@ -11,7 +21,7 @@ export const getMinimumFileInformation = async (
 ): Promise<MsSqlResponse<UploadFileMinimalInformation>> => {
   const request = pool.request();
 
-  request.input("traceId", ssms.Int, traceId);
+  request.input("traceId", TraceSSMSTypes.IDTrace, traceId);
 
   const result = await request.query<UploadFileMinimalInformation>(
     `SELECT Filename,DateUpload
@@ -39,11 +49,11 @@ export const postRequestFiles = async (
 ): Promise<number> => {
   const request = requestSource.request();
 
-  request.input("noForm", ssms.VarChar, noForm);
-  request.input("requestSubject", ssms.VarChar, requestSubject);
-  request.input("requestorName", ssms.VarChar, requestorName);
-  request.input("filename", ssms.VarChar, filename);
-  request.input("uploadDate", ssms.VarChar, uploadDate);
+  request.input("noForm", UploadFileSSMSTypes.NoForm, noForm);
+  request.input("requestSubject", UploadFileSSMSTypes.FormName, requestSubject);
+  request.input("requestorName", UploadFileSSMSTypes.Requestor, requestorName);
+  request.input("filename", UploadFileSSMSTypes.Filename, filename);
+  request.input("uploadDate", UploadFileSSMSTypes.DateUpload, uploadDate);
 
   const result = await request.query<Pick<UploadFileTable, "IDUpload">>(
     `INSERT INTO UploadFile
@@ -61,7 +71,7 @@ export const deleteRequestFiles = async (
 ) => {
   const request = requestSource.request();
 
-  request.input("noForm", ssms.VarChar, noForm);
+  request.input("noForm", UploadFileSSMSTypes.NoForm, noForm);
 
   await requestSource.request().query(
     `DELETE FROM UploadFile WHERE NoForm = @noForm`,

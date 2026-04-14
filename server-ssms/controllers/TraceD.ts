@@ -5,6 +5,17 @@ import type {
 } from "../models/TraceD.d.ts";
 import ssms from "mssql";
 import type { MsSqlResponse } from "@scope/server-ssms";
+import { TraceSSMSTypes } from "./Trace.ts";
+import { UserMasterSSMSTypes } from "./UserMaster.ts";
+
+export const TraceDSSMSTypes = {
+  IDTrace: TraceSSMSTypes.IDTrace,
+  IDUser: UserMasterSSMSTypes.IDUser,
+  Result: ssms.VarChar(50),
+  DateApprove: ssms.DateTime2(),
+  ApproverType: ssms.VarChar(50),
+  ApproverLevel: ssms.Int(),
+};
 
 export const getApproverPathInformation = async (
   pool: ssms.ConnectionPool,
@@ -12,7 +23,7 @@ export const getApproverPathInformation = async (
 ): Promise<MsSqlResponse<TraceApproverPath>> => {
   const request = pool.request();
 
-  request.input("traceId", ssms.Int, traceId);
+  request.input("traceId", TraceDSSMSTypes.IDTrace, traceId);
 
   const result = await request.query<TraceApproverPath>(
     `SELECT
@@ -47,11 +58,11 @@ export const postRequestApproverPath = async (
 
   const request = requestSource.request();
 
-  request.input("traceId", ssms.VarChar, traceId);
-  request.input("userId", ssms.VarChar, userId);
-  request.input("result", ssms.VarChar, result);
-  request.input("approverType", ssms.VarChar, approverType);
-  request.input("approverStep", ssms.VarChar, approverStep);
+  request.input("traceId", TraceDSSMSTypes.IDTrace, traceId);
+  request.input("userId", TraceDSSMSTypes.IDUser, userId);
+  request.input("result", TraceDSSMSTypes.Result, result);
+  request.input("approverType", TraceDSSMSTypes.ApproverType, approverType);
+  request.input("approverStep", TraceDSSMSTypes.ApproverLevel, approverStep);
 
   await request.query(
     `INSERT INTO Trace_D
@@ -70,9 +81,13 @@ export const patchTraceDVerdict = async (
 ) => {
   const request = requestSource.request();
 
-  request.input("verdict", ssms.Int, verdict);
-  request.input("traceId", ssms.Int, traceId);
-  request.input("currentApproverLevel", ssms.Int, currentApproverLevel);
+  request.input("verdict", TraceDSSMSTypes.Result, verdict);
+  request.input("traceId", TraceDSSMSTypes.IDTrace, traceId);
+  request.input(
+    "currentApproverLevel",
+    TraceDSSMSTypes.ApproverLevel,
+    currentApproverLevel,
+  );
 
   await request.query(
     `UPDATE Trace_D
@@ -96,9 +111,9 @@ export const getNextApprover = async (
 }> => {
   const request = requestSource.request();
 
-  request.input("traceId", ssms.Int, traceId);
-  request.input("idUser", ssms.Int, idUser);
-  request.input("currentLevel", ssms.Int, currentLevel);
+  request.input("traceId", TraceDSSMSTypes.IDTrace, traceId);
+  request.input("idUser", TraceDSSMSTypes.IDUser, idUser);
+  request.input("currentLevel", TraceDSSMSTypes.ApproverLevel, currentLevel);
 
   const results = await request.query<NextApproverPath[]>(
     `WITH SequentialApprovers AS (
@@ -133,7 +148,7 @@ export const getOtherApproverInfo = async (
 ) => {
   const request = requestSource.request();
 
-  request.input("traceId", ssms.Int, traceId);
+  request.input("traceId", TraceDSSMSTypes.IDTrace, traceId);
 
   const result = await request.query<OtherApproverPathInfo[]>(
     `SELECT
@@ -155,8 +170,8 @@ export const patchApproverToActiveApproving = async (
 ) => {
   const request = pool.request();
 
-  request.input("traceId", ssms.Int, traceId);
-  request.input("approverLevel", ssms.Int, approverLevel);
+  request.input("traceId", TraceDSSMSTypes.IDTrace, traceId);
+  request.input("approverLevel", TraceDSSMSTypes.ApproverLevel, approverLevel);
 
   await pool.query(
     `UPDATE Trace_D
@@ -174,7 +189,7 @@ export const deleteRequestApproverPath = async (
 ) => {
   const request = requestSource.request();
 
-  request.input("traceId", ssms.Int, traceId);
+  request.input("traceId", TraceDSSMSTypes.IDTrace, traceId);
 
   await request.query(
     `DELETE FROM Trace_D WHERE IDTrace = @traceId;`,

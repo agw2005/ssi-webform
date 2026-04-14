@@ -1,6 +1,31 @@
 import type { FrmPRDTable, MsSqlResponse } from "@scope/server-ssms";
 import type { FrmPRDRequestItem } from "../models/FrmPRD.d.ts";
 import * as ssms from "mssql";
+import { TraceSSMSTypes } from "./Trace.ts";
+
+export const FrmPRDSSMSTypes = {
+  IDItem: ssms.Int(),
+  NoPR: ssms.VarChar(50),
+  AcctAssgCategory: ssms.VarChar(50),
+  CostCenter: ssms.VarChar(50),
+  Nature: ssms.VarChar(50),
+  Description: ssms.VarChar(500),
+  Qty: ssms.Numeric(18, 2),
+  Measure: ssms.VarChar(50),
+  UnitPrice: ssms.Numeric(18, 2),
+  Currency: ssms.VarChar(50),
+  EstimationDeliveryDate: ssms.VarChar(50),
+  Vendor: ssms.VarChar(500),
+  Reason: ssms.VarChar(5000),
+  StatusItem: ssms.VarChar(50),
+  RejectedBy: ssms.VarChar(500),
+  Supplier: ssms.VarChar(500),
+  NetPrice: ssms.Numeric(18, 2),
+  DeliveryDate: ssms.Date(),
+  NoPO: ssms.VarChar(50),
+  Rate: ssms.Numeric(18, 2),
+  IDBudget: ssms.VarChar(50),
+};
 
 export const getAllRequestItems = async (
   pool: ssms.ConnectionPool,
@@ -8,7 +33,7 @@ export const getAllRequestItems = async (
 ): Promise<MsSqlResponse<FrmPRDRequestItem>> => {
   const request = pool.request();
 
-  request.input("traceId", ssms.NVarChar, traceId);
+  request.input("traceId", TraceSSMSTypes.IDTrace, traceId);
 
   const result = await request.query<FrmPRDRequestItem>(
     `SELECT
@@ -62,20 +87,24 @@ export const postUsage = async (
 
   const request = new ssms.Request(requestSource);
 
-  request.input("noPR", ssms.NVarChar, noPR);
-  request.input("costCenter", ssms.NVarChar, costCenter);
-  request.input("nature", ssms.NVarChar, nature);
-  request.input("description", ssms.NVarChar, description);
-  request.input("quantity", ssms.Int, quantity);
-  request.input("measure", ssms.NVarChar, measure);
-  request.input("unitPrice", ssms.Decimal(18, 2), unitPrice);
-  request.input("currency", ssms.NVarChar, currency);
-  request.input("estimatedDeliveryDate", ssms.DateTime, estimatedDeliveryDate);
-  request.input("vendor", ssms.NVarChar, vendor);
-  request.input("reason", ssms.NVarChar, reason);
-  request.input("netPrice", ssms.Decimal(18, 2), netPrice);
-  request.input("rate", ssms.Decimal(18, 2), rateByCurrency);
-  request.input("budgetId", ssms.NVarChar, budgetId);
+  request.input("noPR", FrmPRDSSMSTypes.NoPR, noPR);
+  request.input("costCenter", FrmPRDSSMSTypes.CostCenter, costCenter);
+  request.input("nature", FrmPRDSSMSTypes.Nature, nature);
+  request.input("description", FrmPRDSSMSTypes.Description, description);
+  request.input("quantity", FrmPRDSSMSTypes.Qty, quantity);
+  request.input("measure", FrmPRDSSMSTypes.Measure, measure);
+  request.input("unitPrice", FrmPRDSSMSTypes.UnitPrice, unitPrice);
+  request.input("currency", FrmPRDSSMSTypes.Currency, currency);
+  request.input(
+    "estimatedDeliveryDate",
+    FrmPRDSSMSTypes.EstimationDeliveryDate,
+    estimatedDeliveryDate,
+  );
+  request.input("vendor", FrmPRDSSMSTypes.Vendor, vendor);
+  request.input("reason", FrmPRDSSMSTypes.Reason, reason);
+  request.input("netPrice", FrmPRDSSMSTypes.NetPrice, netPrice);
+  request.input("rate", FrmPRDSSMSTypes.Rate, rateByCurrency);
+  request.input("budgetId", FrmPRDSSMSTypes.IDBudget, budgetId);
 
   const result = await request.query<Pick<FrmPRDTable, "IDItem">>(`
     INSERT INTO frm_PR_D 
@@ -100,8 +129,8 @@ export const patchFrmPRDVerdict = async (
 ) => {
   const request = new ssms.Request(requestSource);
 
-  request.input("supervisorId", ssms.NVarChar, supervisorId);
-  request.input("itemId", ssms.NVarChar, itemId);
+  request.input("supervisorId", FrmPRDSSMSTypes.RejectedBy, supervisorId);
+  request.input("itemId", FrmPRDSSMSTypes.IDItem, itemId);
 
   await request.query(
     `UPDATE frm_PR_D
@@ -119,7 +148,7 @@ export const deleteRequestItems = async (
 ) => {
   const request = new ssms.Request(requestSource);
 
-  request.input("supervisorId", ssms.NVarChar, noPr);
+  request.input("supervisorId", FrmPRDSSMSTypes.NoPR, noPr);
 
   await request.query(
     `DELETE FROM frm_PR_D WHERE NoPR = @noPr;`,

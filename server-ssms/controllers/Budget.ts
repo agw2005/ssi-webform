@@ -12,6 +12,16 @@ import type {
 } from "../models/Budget.d.ts";
 import * as ssms from "mssql";
 
+export const BudgetSSMSTypes = {
+  CostCenter: ssms.VarChar(50),
+  Nature: ssms.VarChar(50),
+  Periode: ssms.VarChar(50),
+  Budget: ssms.Numeric(18, 2),
+  Balance: ssms.Numeric(18, 2),
+  IDSection: ssms.Int(),
+  FileResource: ssms.VarChar(50),
+};
+
 export const allFileResources = async (
   pool: ssms.ConnectionPool,
 ): Promise<MsSqlResponse<BudgetTable>> => {
@@ -33,7 +43,7 @@ export const availableYears = async (
   pool: ssms.ConnectionPool,
 ): Promise<MsSqlResponse<BudgetYear>> => {
   const result = await pool.request().query<BudgetYear>(`
-    SELECT DISTINCT SUBSTRING(Periode, 1, 4) AS [Year]
+    SELECT DISTINCT SUBSTRING(Periode, 1, 4) AS Year
     FROM Budget
     WHERE Periode IS NOT NULL
     AND Periode <> '';`);
@@ -72,10 +82,10 @@ export const getValidNatures = async (
 ): Promise<MsSqlResponse<BudgetNature>> => {
   const request = pool.request();
 
-  request.input("fullPeriode", ssms.NVarChar, fullPeriode);
-  request.input("fileResource", ssms.NVarChar, fileResource);
-  request.input("deptId", ssms.Int, deptId);
-  request.input("costCenter", ssms.NVarChar, costCenter);
+  request.input("fullPeriode", BudgetSSMSTypes.Periode, fullPeriode);
+  request.input("fileResource", BudgetSSMSTypes.FileResource, fileResource);
+  request.input("deptId", BudgetSSMSTypes.IDSection, deptId);
+  request.input("costCenter", BudgetSSMSTypes.CostCenter, costCenter);
 
   const result = await request.query<BudgetNature>(`
     SELECT DISTINCT Nature
@@ -106,11 +116,11 @@ export const singleBalance = async (
 ): Promise<MsSqlResponse<BudgetBalance>> => {
   const request = pool.request();
 
-  request.input("costCenter", ssms.Int, costCenter);
-  request.input("periode", ssms.NVarChar, periode);
-  request.input("nature", ssms.NVarChar, nature);
-  request.input("fileResource", ssms.NVarChar, fileResource);
-  request.input("departId", ssms.Int, departId);
+  request.input("costCenter", BudgetSSMSTypes.CostCenter, costCenter);
+  request.input("periode", BudgetSSMSTypes.Periode, periode);
+  request.input("nature", BudgetSSMSTypes.Nature, nature);
+  request.input("fileResource", BudgetSSMSTypes.FileResource, fileResource);
+  request.input("departId", BudgetSSMSTypes.IDSection, departId);
 
   const result = await request.query<BudgetBalance>(`
     SELECT DISTINCT Balance
@@ -137,8 +147,8 @@ export const getBudgetsByYear = async (
 ): Promise<MsSqlResponse<BudgetViewInformation>> => {
   const request = pool.request();
 
-  request.input("fileResource", ssms.NVarChar, fileResource);
-  request.input("year", ssms.Int, year ? parseInt(year, 10) : null);
+  request.input("fileResource", BudgetSSMSTypes.FileResource, fileResource);
+  request.input("year", ssms.Int(), year ? parseInt(year, 10) : null);
 
   const result = await request.query<BudgetViewInformation>(`
     WITH CalculatedBudget AS (
@@ -182,8 +192,8 @@ export const reportInformation = async (
 ): Promise<MsSqlResponse<ReportViewInformation>> => {
   const request = requestSource.request();
 
-  request.input("periode", ssms.NVarChar, periode);
-  request.input("fileResource", ssms.NVarChar, fileResource);
+  request.input("periode", BudgetSSMSTypes.Periode, periode);
+  request.input("fileResource", BudgetSSMSTypes.FileResource, fileResource);
 
   const result = await request.query<ReportViewInformation>(`
     SELECT
@@ -225,12 +235,12 @@ export const patchRequestBudget = async (
 ): Promise<MsSqlResponse<null>> => {
   const request = new ssms.Request(requestSource);
 
-  request.input("usage", ssms.Int, usage);
-  request.input("costCenter", ssms.NVarChar, costCenter);
-  request.input("nature", ssms.NVarChar, nature);
-  request.input("period", ssms.NVarChar, period);
-  request.input("fileResource", ssms.NVarChar, fileResource);
-  request.input("dept", ssms.NVarChar, dept);
+  request.input("usage", BudgetSSMSTypes.Budget, usage);
+  request.input("costCenter", BudgetSSMSTypes.CostCenter, costCenter);
+  request.input("nature", BudgetSSMSTypes.Nature, nature);
+  request.input("period", BudgetSSMSTypes.Periode, period);
+  request.input("fileResource", BudgetSSMSTypes.FileResource, fileResource);
+  request.input("dept", BudgetSSMSTypes.IDSection, dept);
 
   const result = await request.query(
     `UPDATE Budget
@@ -261,11 +271,11 @@ export const getSpecificBudgetData = async (
 ) => {
   const request = new ssms.Request(requestSource);
 
-  request.input("costCenter", ssms.Int, costCenter);
-  request.input("nature", ssms.NVarChar, nature);
-  request.input("periode", ssms.NVarChar, periode);
-  request.input("idSection", ssms.NVarChar, idSection);
-  request.input("fileResource", ssms.NVarChar, fileResource);
+  request.input("costCenter", BudgetSSMSTypes.CostCenter, costCenter);
+  request.input("nature", BudgetSSMSTypes.Nature, nature);
+  request.input("periode", BudgetSSMSTypes.Periode, periode);
+  request.input("idSection", BudgetSSMSTypes.IDSection, idSection);
+  request.input("fileResource", BudgetSSMSTypes.FileResource, fileResource);
 
   const result = await request.query<BudgetTable>(
     `SELECT *
@@ -292,13 +302,17 @@ export const patchSpecificBudgetNewBudget = async (
 ) => {
   const request = new ssms.Request(requestSource);
 
-  request.input("Budget", ssms.Int, data.Budget);
-  request.input("Balance", ssms.NVarChar, data.Balance);
-  request.input("CostCenter", ssms.Int, data.CostCenter);
-  request.input("Nature", ssms.NVarChar, data.Nature);
-  request.input("Periode", ssms.Int, data.Periode);
-  request.input("IDSection", ssms.NVarChar, data.IDSection);
-  request.input("FileResource", ssms.Int, data.FileResource);
+  request.input("Budget", BudgetSSMSTypes.Budget, data.Budget);
+  request.input("Balance", BudgetSSMSTypes.Balance, data.Balance);
+  request.input("CostCenter", BudgetSSMSTypes.CostCenter, data.CostCenter);
+  request.input("Nature", BudgetSSMSTypes.Nature, data.Nature);
+  request.input("Periode", BudgetSSMSTypes.Periode, data.Periode);
+  request.input("IDSection", BudgetSSMSTypes.IDSection, data.IDSection);
+  request.input(
+    "FileResource",
+    BudgetSSMSTypes.FileResource,
+    data.FileResource,
+  );
 
   await request.query(
     `UPDATE Budget
@@ -322,13 +336,17 @@ export const postBudget = async (
 ) => {
   const request = new ssms.Request(requestSource);
 
-  request.input("CostCenter", ssms.Int, data.CostCenter);
-  request.input("Nature", ssms.NVarChar, data.Nature);
-  request.input("Periode", ssms.Int, data.Periode);
-  request.input("Budget", ssms.NVarChar, data.Budget);
-  request.input("Balance", ssms.Int, data.Balance);
-  request.input("IDSection", ssms.NVarChar, data.IDSection);
-  request.input("FileResource", ssms.Int, data.FileResource);
+  request.input("CostCenter", BudgetSSMSTypes.CostCenter, data.CostCenter);
+  request.input("Nature", BudgetSSMSTypes.Nature, data.Nature);
+  request.input("Periode", BudgetSSMSTypes.Periode, data.Periode);
+  request.input("Budget", BudgetSSMSTypes.Budget, data.Budget);
+  request.input("Balance", BudgetSSMSTypes.Balance, data.Balance);
+  request.input("IDSection", BudgetSSMSTypes.IDSection, data.IDSection);
+  request.input(
+    "FileResource",
+    BudgetSSMSTypes.FileResource,
+    data.FileResource,
+  );
 
   await request.query(
     `INSERT INTO Budget
@@ -347,8 +365,8 @@ export const getValidDepartments = async (
 ) => {
   const request = pool.request();
 
-  request.input("fullPeriode", ssms.NVarChar, fullPeriode);
-  request.input("fileResource", ssms.NVarChar, fileResource);
+  request.input("fullPeriode", BudgetSSMSTypes.Periode, fullPeriode);
+  request.input("fileResource", BudgetSSMSTypes.FileResource, fileResource);
 
   const result = await pool.query<ValidDepartment>(
     `SELECT DISTINCT
@@ -380,9 +398,9 @@ export const getValidCostCenters = async (
 ) => {
   const request = pool.request();
 
-  request.input("fullPeriode", ssms.NVarChar, fullPeriode);
-  request.input("fileResource", ssms.NVarChar, fileResource);
-  request.input("deptId", ssms.NVarChar, deptId);
+  request.input("fullPeriode", BudgetSSMSTypes.Periode, fullPeriode);
+  request.input("fileResource", BudgetSSMSTypes.FileResource, fileResource);
+  request.input("deptId", BudgetSSMSTypes.IDSection, deptId);
 
   const result = await pool.query<ValidCostCenter>(
     `SELECT DISTINCT
