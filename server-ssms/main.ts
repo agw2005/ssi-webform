@@ -86,7 +86,7 @@ rootRouter.use("/traced", traceDRouter.routes(), traceDRouter.allowedMethods());
 rootRouter.use("/frmprh", frmPrHRouter.routes(), frmPrHRouter.allowedMethods());
 rootRouter.use("/jwt", jwtRouter.routes(), jwtRouter.allowedMethods());
 rootRouter.use(
-  "/approve ",
+  "/approve",
   approverRouter.routes(),
   approverRouter.allowedMethods(),
 );
@@ -94,7 +94,18 @@ rootRouter.use("/admin", adminRouter.routes(), adminRouter.allowedMethods());
 
 oakApp.use(async (ctx, next) => {
   const isPreflight = handleCors(ctx);
-  if (!isPreflight) await next();
+  if (isPreflight) return;
+
+  try {
+    await next();
+  } catch (err) {
+    if (err instanceof Error) {
+      ctx.response.status = 500;
+      ctx.response.body = {
+        error: err.message || "Internal Server Error",
+      };
+    }
+  }
 });
 
 oakApp.use(rootRouter.routes());
