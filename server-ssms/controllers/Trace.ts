@@ -8,27 +8,29 @@ import type {
   TraceTable,
 } from "../models/Trace.d.ts";
 import { sum } from "../helper/sum.ts";
-import ssms from "mssql";
 import type { MsSqlResponse } from "@scope/server-ssms";
 import { UserMasterSSMSTypes } from "./UserMaster.ts";
 import { TraceDSSMSTypes } from "./TraceD.ts";
+import ssms from "mssql";
+
+const { Int, VarChar, DateTime2, NVarChar } = ssms;
 
 export const TraceSSMSTypes = {
-  IDTrace: ssms.Int(),
-  IDForm: ssms.Int(),
-  FormTable: ssms.VarChar(50),
-  NoForm: ssms.VarChar(50),
-  Requestor: ssms.VarChar(50),
-  IDSection: ssms.Int(),
-  NRP: ssms.VarChar(50),
-  Ext: ssms.VarChar(50),
-  EmailReq: ssms.VarChar(50),
-  Status: ssms.VarChar(50),
-  SubmitDate: ssms.DateTime2(),
-  ProcessedBy: ssms.Int(),
-  ProcessedLevel: ssms.Int(),
-  LevelProgress: ssms.Int(),
-  Remarks: ssms.NVarChar(4000),
+  IDTrace: Int(),
+  IDForm: Int(),
+  FormTable: VarChar(50),
+  NoForm: VarChar(50),
+  Requestor: VarChar(50),
+  IDSection: Int(),
+  NRP: VarChar(50),
+  Ext: VarChar(50),
+  EmailReq: VarChar(50),
+  Status: VarChar(50),
+  SubmitDate: DateTime2(),
+  ProcessedBy: Int(),
+  ProcessedLevel: Int(),
+  LevelProgress: Int(),
+  Remarks: NVarChar(4000),
 };
 
 export const homeRequests = async (

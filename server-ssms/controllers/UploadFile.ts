@@ -2,17 +2,19 @@ import type {
   UploadFileMinimalInformation,
   UploadFileTable,
 } from "../models/UploadFile.d.ts";
-import ssms from "mssql";
 import type { MsSqlResponse } from "@scope/server-ssms";
 import { TraceSSMSTypes } from "./Trace.ts";
+import ssms from "mssql";
+
+const { Int, VarChar, DateTime2 } = ssms;
 
 export const UploadFileSSMSTypes = {
-  IDUpload: ssms.Int(),
-  NoForm: ssms.VarChar(500),
-  FormName: ssms.VarChar(500),
-  Requestor: ssms.VarChar(500),
-  Filename: ssms.VarChar(500),
-  DateUpload: ssms.DateTime2(),
+  IDUpload: Int(),
+  NoForm: VarChar(500),
+  FormName: VarChar(500),
+  Requestor: VarChar(500),
+  Filename: VarChar(500),
+  DateUpload: DateTime2(),
 };
 
 export const getMinimumFileInformation = async (

@@ -3,22 +3,24 @@ import type {
   PRNumberIncrement,
   RequestItemsAtBudgetView,
 } from "../models/FrmPRH.d.ts";
-import * as ssms from "mssql";
 import type { MsSqlResponse } from "@scope/server-ssms";
 import { FrmPRDSSMSTypes } from "./FrmPRD.ts";
 import { TraceSSMSTypes } from "./Trace.ts";
+import ssms from "mssql";
+
+const { Int, VarChar, Numeric } = ssms;
 
 export const FrmPRHSSMSTypes = {
-  ID: ssms.Int(),
-  NoForm: ssms.VarChar(50),
-  Requestor: ssms.VarChar(50),
-  NRP: ssms.VarChar(50),
-  Section: ssms.VarChar(50),
-  NoPR: ssms.VarChar(50),
-  Subject: ssms.VarChar(500),
-  Amount: ssms.Numeric(18, 2),
-  ReturnOnOutgoing: ssms.VarChar(500),
-  Remarks: ssms.VarChar(500),
+  ID: Int(),
+  NoForm: VarChar(50),
+  Requestor: VarChar(50),
+  NRP: VarChar(50),
+  Section: VarChar(50),
+  NoPR: VarChar(50),
+  Subject: VarChar(500),
+  Amount: Numeric(18, 2),
+  ReturnOnOutgoing: VarChar(500),
+  Remarks: VarChar(500),
 };
 
 export const getRequestItemForBudgetView = async (

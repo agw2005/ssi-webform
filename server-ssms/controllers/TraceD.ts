@@ -3,18 +3,19 @@ import type {
   OtherApproverPathInfo,
   TraceApproverPath,
 } from "../models/TraceD.d.ts";
-import ssms from "mssql";
 import type { MsSqlResponse } from "@scope/server-ssms";
-import { TraceSSMSTypes } from "./Trace.ts";
-import { UserMasterSSMSTypes } from "./UserMaster.ts";
+
+import ssms from "mssql";
+
+const { Int, VarChar, DateTime2 } = ssms;
 
 export const TraceDSSMSTypes = {
-  IDTrace: TraceSSMSTypes.IDTrace,
-  IDUser: UserMasterSSMSTypes.IDUser,
-  Result: ssms.VarChar(50),
-  DateApprove: ssms.DateTime2(),
-  ApproverType: ssms.VarChar(50),
-  ApproverLevel: ssms.Int(),
+  IDTrace: Int(),
+  IDUser: Int(),
+  Result: VarChar(50),
+  DateApprove: DateTime2(),
+  ApproverType: VarChar(50),
+  ApproverLevel: Int(),
 };
 
 export const getApproverPathInformation = async (

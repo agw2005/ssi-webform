@@ -3,13 +3,15 @@ import type {
   SectionName,
   UserSection,
 } from "../models/Section.d.ts";
-import ssms from "mssql";
 import type { MsSqlResponse } from "@scope/server-ssms";
+import ssms from "mssql";
+
+const { Int, VarChar } = ssms;
 
 export const SectionSSMSTypes = {
-  IDSection: ssms.Int(),
-  SectionName: ssms.VarChar(50),
-  FileResource: ssms.VarChar(50),
+  IDSection: Int(),
+  SectionName: VarChar(50),
+  FileResource: VarChar(50),
 };
 
 export const sectionNames = async (

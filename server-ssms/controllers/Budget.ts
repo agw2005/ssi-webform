@@ -10,16 +10,18 @@ import type {
   ValidCostCenter,
   ValidDepartment,
 } from "../models/Budget.d.ts";
-import * as ssms from "mssql";
+import ssms from "mssql";
+
+const { VarChar, Numeric, Int } = ssms;
 
 export const BudgetSSMSTypes = {
-  CostCenter: ssms.VarChar(50),
-  Nature: ssms.VarChar(50),
-  Periode: ssms.VarChar(50),
-  Budget: ssms.Numeric(18, 2),
-  Balance: ssms.Numeric(18, 2),
-  IDSection: ssms.Int(),
-  FileResource: ssms.VarChar(50),
+  CostCenter: VarChar(50),
+  Nature: VarChar(50),
+  Periode: VarChar(50),
+  Budget: Numeric(18, 2),
+  Balance: Numeric(18, 2),
+  IDSection: Int(),
+  FileResource: VarChar(50),
 };
 
 export const allFileResources = async (

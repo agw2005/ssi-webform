@@ -1,30 +1,32 @@
 import type { FrmPRDTable, MsSqlResponse } from "@scope/server-ssms";
 import type { FrmPRDRequestItem } from "../models/FrmPRD.d.ts";
-import * as ssms from "mssql";
 import { TraceSSMSTypes } from "./Trace.ts";
+import ssms from "mssql";
+
+const { Int, VarChar, Numeric } = ssms;
 
 export const FrmPRDSSMSTypes = {
-  IDItem: ssms.Int(),
-  NoPR: ssms.VarChar(50),
-  AcctAssgCategory: ssms.VarChar(50),
-  CostCenter: ssms.VarChar(50),
-  Nature: ssms.VarChar(50),
-  Description: ssms.VarChar(500),
-  Qty: ssms.Numeric(18, 2),
-  Measure: ssms.VarChar(50),
-  UnitPrice: ssms.Numeric(18, 2),
-  Currency: ssms.VarChar(50),
-  EstimationDeliveryDate: ssms.VarChar(50),
-  Vendor: ssms.VarChar(500),
-  Reason: ssms.VarChar(5000),
-  StatusItem: ssms.VarChar(50),
-  RejectedBy: ssms.VarChar(500),
-  Supplier: ssms.VarChar(500),
-  NetPrice: ssms.Numeric(18, 2),
-  DeliveryDate: ssms.Date(),
-  NoPO: ssms.VarChar(50),
-  Rate: ssms.Numeric(18, 2),
-  IDBudget: ssms.VarChar(50),
+  IDItem: Int(),
+  NoPR: VarChar(50),
+  AcctAssgCategory: VarChar(50),
+  CostCenter: VarChar(50),
+  Nature: VarChar(50),
+  Description: VarChar(500),
+  Qty: Numeric(18, 2),
+  Measure: VarChar(50),
+  UnitPrice: Numeric(18, 2),
+  Currency: VarChar(50),
+  EstimationDeliveryDate: VarChar(50),
+  Vendor: VarChar(500),
+  Reason: VarChar(5000),
+  StatusItem: VarChar(50),
+  RejectedBy: VarChar(500),
+  Supplier: VarChar(500),
+  NetPrice: Numeric(18, 2),
+  DeliveryDate: Date(),
+  NoPO: VarChar(50),
+  Rate: Numeric(18, 2),
+  IDBudget: VarChar(50),
 };
 
 export const getAllRequestItems = async (

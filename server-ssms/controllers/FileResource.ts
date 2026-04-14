@@ -1,6 +1,8 @@
-import * as ssms from "mssql";
+import ssms from "mssql";
+
+const { NVarChar } = ssms;
 
 export const FileResourceSSMSTypes = {
-  FileResource: ssms.NVarChar(50),
-  Description: ssms.NVarChar(50),
+  FileResource: NVarChar(50),
+  Description: NVarChar(50),
 };

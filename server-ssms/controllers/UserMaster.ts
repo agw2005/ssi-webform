@@ -3,20 +3,21 @@ import type {
   UserIdByName,
   UserMasterName,
 } from "../models/UserMaster.d.ts";
-import ssms from "mssql";
 import type { MsSqlResponse } from "@scope/server-ssms";
-import { SectionSSMSTypes } from "./Section.ts";
+import ssms from "mssql";
+
+const { Int, VarChar } = ssms;
 
 export const UserMasterSSMSTypes = {
-  IDUser: ssms.Int(),
-  UserName: ssms.VarChar(50),
-  Password: ssms.VarChar(50),
-  NameUser: ssms.VarChar(50),
-  NRP: ssms.VarChar(50),
-  IDSection: SectionSSMSTypes.IDSection,
-  IDTitle: ssms.Int(),
-  Email: ssms.VarChar(50),
-  LastLogin: ssms.VarChar(50),
+  IDUser: Int(),
+  UserName: VarChar(50),
+  Password: VarChar(50),
+  NameUser: VarChar(50),
+  NRP: VarChar(50),
+  IDSection: Int(),
+  IDTitle: Int(),
+  Email: VarChar(50),
+  LastLogin: VarChar(50),
 };
 
 export const supervisorNames = async (
