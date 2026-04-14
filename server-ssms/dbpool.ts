@@ -8,7 +8,7 @@ const config: ssms.config = {
   database: Deno.env.get("DB_NAME"),
   options: {
     encrypt: true,
-    trustServerCertificate: false,
+    trustServerCertificate: true,
   },
 };
 
