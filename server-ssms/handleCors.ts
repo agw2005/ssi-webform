@@ -21,6 +21,7 @@ export const handleCors = (ctx: Context) => {
 
   if (ctx.request.method === "OPTIONS") {
     ctx.response.status = 204;
-    return;
+    return true;
   }
+  return false;
 };

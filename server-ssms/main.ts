@@ -93,8 +93,8 @@ rootRouter.use(
 rootRouter.use("/admin", adminRouter.routes(), adminRouter.allowedMethods());
 
 oakApp.use(async (ctx, next) => {
-  handleCors(ctx);
-  await next();
+  const isPreflight = handleCors(ctx);
+  if (!isPreflight) await next();
 });
 
 oakApp.use(rootRouter.routes());
