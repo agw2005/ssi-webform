@@ -1,8 +1,8 @@
 import { useMemo, useRef, useState } from "react";
 // @deno-types="https://cdn.sheetjs.com/xlsx-0.20.3/package/types/index.d.ts"
 import * as XLSX from "xlsx";
-import type { BudgetData } from "@scope/server-mysql";
-import { putBudgets } from "@scope/server-mysql";
+import type { BudgetTable } from "@scope/server-ssms";
+import { putBudgets } from "@scope/server-ssms";
 import getCurrentPeriod from "../../../helper/getCurrentPeriod.ts";
 import TipBox from "../../reusable/TipBox.tsx";
 import Button from "../../reusable/Button.tsx";
@@ -73,7 +73,7 @@ const AddView = ({ toggleDialog }: AddViewProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [budgetFile, setBudgetFile] = useState<File | null>(null);
   const [isDragging, setIsDragging] = useState(false);
-  const [budgetData, currentBudgetData] = useState<BudgetData[]>([]);
+  const [budgetData, currentBudgetData] = useState<BudgetTable[]>([]);
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [submissionIsLoading, setSubmissionIsLoading] = useState(false);
   const [submissionIsError, setSubmissionIsError] = useState<Error | null>(
@@ -189,7 +189,7 @@ const AddView = ({ toggleDialog }: AddViewProps) => {
           mainSheet["!data"]?.[row]?.[column].v,
         );
         const budget = isNaN(cellBudgetValue) ? 0 : cellBudgetValue;
-        const newBudgetEntry: BudgetData = {
+        const newBudgetEntry: BudgetTable = {
           CostCenter: costCenter,
           Nature: nature,
           Periode: getCurrentPeriod(selectedYear, column - 3),

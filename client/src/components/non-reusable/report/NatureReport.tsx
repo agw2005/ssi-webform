@@ -2,7 +2,7 @@ import React from "react";
 import type { Row } from "../../../pages/Report.tsx";
 import formatNegativeNumber from "../../../helper/formatNegativeNumber.ts";
 import capitalize from "../../../helper/capitalize.ts";
-import type { ReportResponse } from "@scope/server-mysql";
+import type { ReportResponse } from "@scope/server-ssms";
 
 interface NatureReportProps {
   SubMonthIndex: string[];

@@ -1,5 +1,5 @@
 import MultifileInput from "../../reusable/inputs/MultifileInput.tsx";
-import type { FifthStepInputs } from "@scope/server-mysql";
+import type { FifthStepInputs } from "@scope/server-ssms";
 
 interface FifthStepProps {
   fifthStepInputsGetter: FifthStepInputs;

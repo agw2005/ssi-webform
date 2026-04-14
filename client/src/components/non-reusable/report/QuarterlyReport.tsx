@@ -7,7 +7,7 @@ import extractYearFromFullPeriode from "../../../helper/extractYearFromFullPerio
 import formatNumberToString from "../../../helper/formatNumberToString.ts";
 import formatNegativeNumber from "../../../helper/formatNegativeNumber.ts";
 import React from "react";
-import type { ReportResponse } from "@scope/server-mysql";
+import type { ReportResponse } from "@scope/server-ssms";
 
 interface QuarterlyReportProps {
   Months: string[];

@@ -8,8 +8,8 @@ import type {
   RequestItem,
   RequestOverview,
   UploadedFile,
-} from "@scope/server-mysql";
-import { onlyNumerics } from "@scope/server-mysql";
+} from "@scope/server-ssms";
+import { onlyNumerics } from "@scope/server-ssms";
 import capitalize from "../helper/capitalize.ts";
 import formatNumberToString from "../helper/formatNumberToString.ts";
 import serverDomain from "../helper/serverDomain.ts";

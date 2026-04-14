@@ -13,7 +13,7 @@ import type {
   Nature,
   ThirdStepInputs,
   ValidCostCenter,
-} from "@scope/server-mysql";
+} from "@scope/server-ssms";
 import type { ForexAPIResponse, ForexRates } from "../../../hooks/useForex.tsx";
 import formatNumberToString from "../../../helper/formatNumberToString.ts";
 import formatStringToNumber from "../../../helper/formatStringToNumber.ts";

@@ -1,4 +1,4 @@
-import type { UserSection } from "@scope/server-mysql";
+import type { UserSection } from "@scope/server-ssms";
 
 interface ReducedValue {
   domain: string;

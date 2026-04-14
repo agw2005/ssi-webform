@@ -6,7 +6,7 @@ import useAuth from "../hooks/useAuth.tsx";
 import type {
   TraceApproveRequests,
   TraceRequestsCount,
-} from "@scope/server-mysql";
+} from "@scope/server-ssms";
 import { useReducer } from "react";
 import stringContainsRedLight from "../helper/stringContainsRedLight.ts";
 import formatNumberToString from "../helper/formatNumberToString.ts";

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import serverDomain from "../helper/serverDomain.ts";
-import type { ReportResponse } from "@scope/server-mysql";
+import type { ReportResponse } from "@scope/server-ssms";
 
 const REPORT_URL = `${serverDomain}/budget/report`;
 

@@ -9,7 +9,7 @@ import type {
   FirstStepInputs,
   SectionName,
   ValidDepartment,
-} from "@scope/server-mysql";
+} from "@scope/server-ssms";
 
 const FORMS = ["PR", "Cash Advance", "Fixed Asset"];
 const STEP = 1;

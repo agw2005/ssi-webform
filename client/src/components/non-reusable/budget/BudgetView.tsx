@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import LoadingFallback from "../../reusable/LoadingFallback.tsx";
 import formatNumberToString from "../../../helper/formatNumberToString.ts";
 import { Link } from "react-router-dom";
-import type { BudgetViewAtYear } from "@scope/server-mysql";
+import type { BudgetViewAtYear } from "@scope/server-ssms";
 import useBudgets from "../../../hooks/useBudgets.tsx";
 
 interface BudgetViewProps {

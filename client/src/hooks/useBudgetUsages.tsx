@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import serverDomain from "../helper/serverDomain.ts";
-import type { BudgetUsages } from "@scope/server-mysql";
+import type { BudgetUsages } from "@scope/server-ssms";
 
 const REQUEST_SPECIFIC_URL = `${serverDomain}/frmprh`;
 

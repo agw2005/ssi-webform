@@ -2,7 +2,7 @@ import type {
   FormRequest,
   SupervisorNames,
   TraceRequestsCount,
-} from "@scope/server-mysql";
+} from "@scope/server-ssms";
 import { useDuplicateSupervisors } from "../../../hooks/useDuplicateSupervisors.tsx";
 import useFetch from "../../../hooks/useFetch.tsx";
 import Button from "../../reusable/Button.tsx";

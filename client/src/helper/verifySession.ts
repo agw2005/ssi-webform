@@ -1,6 +1,6 @@
 import serverDomain from "./serverDomain.ts";
-import { verifyJwtPayload } from "@scope/server-mysql";
-import type { VerifyResponse } from "@scope/server-mysql";
+import { verifyJwtPayload } from "@scope/server-ssms";
+import type { VerifyResponse } from "@scope/server-ssms";
 
 const VERIFY_JWT_URL = `${serverDomain}/jwt/verify`;
 

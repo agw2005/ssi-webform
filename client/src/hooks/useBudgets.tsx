@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import serverDomain from "../helper/serverDomain.ts";
-import type { BudgetViewAtYear } from "@scope/server-mysql";
+import type { BudgetViewAtYear } from "@scope/server-ssms";
 
 const BUDGET_VIEW_URL = `${serverDomain}/budget`;
 
