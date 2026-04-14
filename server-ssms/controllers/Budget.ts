@@ -370,7 +370,7 @@ export const getValidDepartments = async (
   request.input("fullPeriode", BudgetSSMSTypes.Periode, fullPeriode);
   request.input("fileResource", BudgetSSMSTypes.FileResource, fileResource);
 
-  const result = await pool.query<ValidDepartment>(
+  const result = await request.query<ValidDepartment>(
     `SELECT DISTINCT
         Budget.IDSection AS Identifier,
         frm_PR_NoPR.Description,
@@ -404,7 +404,7 @@ export const getValidCostCenters = async (
   request.input("fileResource", BudgetSSMSTypes.FileResource, fileResource);
   request.input("deptId", BudgetSSMSTypes.IDSection, deptId);
 
-  const result = await pool.query<ValidCostCenter>(
+  const result = await request.query<ValidCostCenter>(
     `SELECT DISTINCT
         Budget.CostCenter AS Identifier,
         Description

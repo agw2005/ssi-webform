@@ -65,7 +65,7 @@ export const homeRequests = async (
   request.input("skip", ssms.Int, skip);
   request.input("take", ssms.Int, pagination);
 
-  const result = await pool.query<TraceRequests>(
+  const result = await request.query<TraceRequests>(
     `SELECT 
         Trace.IDTrace,
         frm_PR_H.Subject,
@@ -140,7 +140,7 @@ export const homeRequestsCount = async (
   request.input("endDate", TraceSSMSTypes.SubmitDate, endDate);
   request.input("searchPattern", ssms.VarChar(500), searchPattern);
 
-  const result = await pool.query<TraceRequestsCount>(`
+  const result = await request.query<TraceRequestsCount>(`
     SELECT 
       COUNT(*) AS Count
     FROM Trace
