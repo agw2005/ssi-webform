@@ -1,90 +1,49 @@
 import { Application, Router } from "@oak/oak";
-import {
-  deleteRequest,
-  getAllFileResources,
-  getAllValidCostCenters,
-  getAllValidDepartments,
-  getAllValidNatures,
-  getApproverPath,
-  getAuthInformation,
-  getAvailableBudgetPeriods,
-  getAvailableBudgetYears,
-  getBudgetViewInformation,
-  getReportViewInformation,
-  getRequests,
-  getRequestsAtBudgetView,
-  getRequestsBySupervisorNrp,
-  getRequestsBySupervisorNrpCount,
-  getRequestsCount,
-  getSectionNames,
-  getSectionUsers,
-  getSingleBalance,
-  getSpecificRequest,
-  getSpecificRequestItems,
-  getSupervisorNames,
-  getUploadFiles,
-  healthCheck,
-  patchAcceptRequest,
-  patchRejectRequest,
-  patchRemarks,
-  putBudgets,
-  requestJwt,
-  submitRequest,
-} from "./routes.ts";
+import * as handlers from "./routes.ts";
 import { handleCors } from "./handleCors.ts";
 import { verifyJwt } from "./auth/verifyJwt.ts";
 
 const oakApp = new Application();
-const oakRouter = new Router();
+
+const rootRouter = new Router();
+const budgetRouter = new Router();
+const traceRouter = new Router();
+const adminRouter = new Router();
+
+budgetRouter
+  .get("/fileresources", handlers.getAllFileResources)
+  .get("/years", handlers.getAvailableBudgetYears)
+  .get("/periods", handlers.getAvailableBudgetPeriods)
+  .get("/nature", handlers.getAllValidNatures)
+  .get("/balance", handlers.getSingleBalance)
+  .get("/", handlers.getBudgetViewInformation)
+  .get("/report", handlers.getReportViewInformation)
+  .get("/departments", handlers.getAllValidDepartments)
+  .get("/costcenters", handlers.getAllValidCostCenters);
+
+traceRouter
+  .get("/requests", handlers.getRequests)
+  .get("/requests/count", handlers.getRequestsCount)
+  .get("/request/:traceId", handlers.getSpecificRequest)
+  .get("/approve", handlers.getRequestsBySupervisorNrp)
+  .get("/approve/count", handlers.getRequestsBySupervisorNrpCount);
+
+adminRouter.get("/jwt/verify", verifyJwt)
+  .put("/budget", handlers.putBudgets)
+  .delete("/:traceId", handlers.deleteRequest);
+
+rootRouter.get("/", handlers.healthCheck);
+rootRouter.use("/budget", budgetRouter.routes(), budgetRouter.allowedMethods());
+rootRouter.use("/trace", traceRouter.routes(), traceRouter.allowedMethods());
+rootRouter.use("/admin", adminRouter.routes(), adminRouter.allowedMethods());
 
 oakApp.use(async (ctx, next) => {
   handleCors(ctx);
   await next();
 });
 
-oakRouter.get("/", healthCheck);
-
-// Specific GET
-oakRouter.get("/section/names", getSectionNames);
-oakRouter.get("/section/users", getSectionUsers);
-oakRouter.get("/usermaster/names", getSupervisorNames);
-oakRouter.get("/budget/fileresources", getAllFileResources);
-oakRouter.get("/budget/years", getAvailableBudgetYears);
-oakRouter.get("/budget/periods", getAvailableBudgetPeriods);
-oakRouter.get("/budget/nature", getAllValidNatures);
-oakRouter.get("/budget/balance", getSingleBalance);
-oakRouter.get("/budget", getBudgetViewInformation);
-oakRouter.get("/budget/report", getReportViewInformation);
-oakRouter.get("/budget/departments", getAllValidDepartments);
-oakRouter.get("/budget/costcenters", getAllValidCostCenters);
-oakRouter.get("/trace/requests", getRequests);
-oakRouter.get("/trace/requests/count", getRequestsCount);
-oakRouter.get("/trace/request/:traceId", getSpecificRequest);
-oakRouter.get("/trace/approve", getRequestsBySupervisorNrp);
-oakRouter.get("/trace/approve/count", getRequestsBySupervisorNrpCount);
-oakRouter.get("/frmprd/request/:traceId", getSpecificRequestItems);
-oakRouter.get("/uploadfile/:traceId", getUploadFiles);
-oakRouter.get("/traced/:traceId", getApproverPath);
-oakRouter.get("/frmprh", getRequestsAtBudgetView);
-
-// Submit request
-oakRouter.post("/submit", submitRequest);
-
-// Auth
-oakRouter.get("/usermaster/auth", getAuthInformation);
-oakRouter.post("/jwt/request", requestJwt);
-oakRouter.get("/jwt/verify", verifyJwt);
-
-// Limited access
-oakRouter.patch("/approve/remarks", patchRemarks);
-oakRouter.patch("/approve/reject", patchRejectRequest);
-oakRouter.patch("/approve/accept", patchAcceptRequest);
-oakRouter.put("/admin/budget", putBudgets);
-oakRouter.delete("/admin/:traceId", deleteRequest);
-
-// Rest of the code
-oakApp.use(oakRouter.routes());
-oakApp.use(oakRouter.allowedMethods());
+oakApp.use(rootRouter.routes());
+oakApp.use(rootRouter.allowedMethods());
 
 if (import.meta.main) {
   console.log(

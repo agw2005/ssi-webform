@@ -92,7 +92,7 @@ export const healthCheck = (ctx: RouterContext<"/">) => {
 };
 
 export const getAllFileResources = async (
-  ctx: RouterContext<"/budget/fileresources">,
+  ctx: RouterContext<"/fileresources">,
 ) => {
   const { rowsReturned, rowsAffected } = await allFileResources(
     databasePool,
@@ -104,7 +104,7 @@ export const getAllFileResources = async (
 };
 
 export const getAvailableBudgetYears = async (
-  ctx: RouterContext<"/budget/years">,
+  ctx: RouterContext<"/years">,
 ) => {
   const { rowsReturned, rowsAffected } = await availableYears(databasePool);
 
@@ -114,7 +114,7 @@ export const getAvailableBudgetYears = async (
 };
 
 export const getAvailableBudgetPeriods = async (
-  ctx: RouterContext<"/budget/periods">,
+  ctx: RouterContext<"/periods">,
 ) => {
   const { rowsReturned, rowsAffected } = await availablePeriods(databasePool);
 
@@ -124,7 +124,7 @@ export const getAvailableBudgetPeriods = async (
 };
 
 export const getAllValidNatures = async (
-  ctx: RouterContext<"/budget/nature">,
+  ctx: RouterContext<"/nature">,
 ) => {
   const params = ctx.request.url.searchParams;
 
@@ -147,7 +147,7 @@ export const getAllValidNatures = async (
 };
 
 export const getSingleBalance = async (
-  ctx: RouterContext<"/budget/balance">,
+  ctx: RouterContext<"/balance">,
 ) => {
   const params = ctx.request.url.searchParams;
 
@@ -183,7 +183,7 @@ export const getSingleBalance = async (
 };
 
 export const getBudgetViewInformation = async (
-  ctx: RouterContext<"/budget">,
+  ctx: RouterContext<"/">,
 ) => {
   const params = ctx.request.url.searchParams;
   const year = params.get("year") || null;
@@ -200,7 +200,7 @@ export const getBudgetViewInformation = async (
 };
 
 export const getReportViewInformation = async (
-  ctx: RouterContext<"/budget/report">,
+  ctx: RouterContext<"/report">,
 ) => {
   const params = ctx.request.url.searchParams;
   const periode = params.get("periode") || null;
@@ -270,7 +270,7 @@ export const getSectionUsers = async (ctx: RouterContext<"/section/users">) => {
   ctx.response.body = rowsReturned;
 };
 
-export const getRequests = async (ctx: RouterContext<"/trace/requests">) => {
+export const getRequests = async (ctx: RouterContext<"/requests">) => {
   const params = ctx.request.url.searchParams;
 
   const requestorSectionId = params.has("requestorsectionid")
@@ -310,7 +310,7 @@ export const getRequests = async (ctx: RouterContext<"/trace/requests">) => {
 };
 
 export const getRequestsCount = async (
-  ctx: RouterContext<"/trace/requests/count">,
+  ctx: RouterContext<"/requests/count">,
 ) => {
   const params = ctx.request.url.searchParams;
 
@@ -346,7 +346,7 @@ export const getRequestsCount = async (
 };
 
 export const getSpecificRequest = async (
-  ctx: RouterContext<"/trace/request/:traceId">,
+  ctx: RouterContext<"/request/:traceId">,
 ) => {
   const traceId = ctx.params.traceId;
 
@@ -709,7 +709,7 @@ export const requestJwt = async (ctx: RouterContext<"/jwt/request">) => {
 };
 
 export const getRequestsBySupervisorNrp = async (
-  ctx: RouterContext<"/trace/approve">,
+  ctx: RouterContext<"/approve">,
 ) => {
   const params = ctx.request.url.searchParams;
 
@@ -744,7 +744,7 @@ export const getRequestsBySupervisorNrp = async (
 };
 
 export const getRequestsBySupervisorNrpCount = async (
-  ctx: RouterContext<"/trace/approve/count">,
+  ctx: RouterContext<"/approve/count">,
 ) => {
   const params = ctx.request.url.searchParams;
 
@@ -896,7 +896,7 @@ export const patchAcceptRequest = async (
 };
 
 export const putBudgets = async (
-  ctx: RouterContext<"/admin/budget">,
+  ctx: RouterContext<"/budget">,
 ) => {
   const request: BudgetTable[] = await ctx.request.body.json();
 
@@ -958,7 +958,7 @@ export const putBudgets = async (
   }
 };
 
-export const deleteRequest = async (ctx: RouterContext<"/admin/:traceId">) => {
+export const deleteRequest = async (ctx: RouterContext<"/:traceId">) => {
   const traceId = Number(ctx.params.traceId);
 
   const transaction = new ssms.Transaction(databasePool);
@@ -1010,7 +1010,7 @@ export const deleteRequest = async (ctx: RouterContext<"/admin/:traceId">) => {
 };
 
 export const getAllValidDepartments = async (
-  ctx: RouterContext<"/budget/departments">,
+  ctx: RouterContext<"/departments">,
 ) => {
   const params = ctx.request.url.searchParams;
 
@@ -1027,7 +1027,7 @@ export const getAllValidDepartments = async (
 };
 
 export const getAllValidCostCenters = async (
-  ctx: RouterContext<"/budget/costcenters">,
+  ctx: RouterContext<"/costcenters">,
 ) => {
   const params = ctx.request.url.searchParams;
 
