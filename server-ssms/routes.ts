@@ -217,7 +217,7 @@ export const getReportViewInformation = async (
 };
 
 export const getSpecificRequestItems = async (
-  ctx: RouterContext<"/frmprd/request/:traceId">,
+  ctx: RouterContext<"/request/:traceId">,
 ) => {
   const traceId = Number(ctx.params.traceId);
   const { rowsReturned, rowsAffected } = await getAllRequestItems(
@@ -231,7 +231,7 @@ export const getSpecificRequestItems = async (
 };
 
 export const getRequestsAtBudgetView = async (
-  ctx: RouterContext<"/frmprh">,
+  ctx: RouterContext<"/">,
 ) => {
   const params = ctx.request.url.searchParams;
   const nature = params.get("nature") || null;
@@ -252,7 +252,7 @@ export const getRequestsAtBudgetView = async (
   ctx.response.body = rowsReturned;
 };
 
-export const getSectionNames = async (ctx: RouterContext<"/section/names">) => {
+export const getSectionNames = async (ctx: RouterContext<"/names">) => {
   const { rowsReturned, rowsAffected } = await sectionNames(databasePool);
 
   console.log(rowsAffected);
@@ -260,7 +260,7 @@ export const getSectionNames = async (ctx: RouterContext<"/section/names">) => {
   ctx.response.body = rowsReturned;
 };
 
-export const getSectionUsers = async (ctx: RouterContext<"/section/users">) => {
+export const getSectionUsers = async (ctx: RouterContext<"/users">) => {
   const { rowsReturned, rowsAffected } = await userSectionMappings(
     databasePool,
   );
@@ -361,7 +361,7 @@ export const getSpecificRequest = async (
 };
 
 export const getApproverPath = async (
-  ctx: RouterContext<"/traced/:traceId">,
+  ctx: RouterContext<"/:traceId">,
 ) => {
   const traceId = Number(ctx.params.traceId);
 
@@ -376,7 +376,7 @@ export const getApproverPath = async (
 };
 
 export const getUploadFiles = async (
-  ctx: RouterContext<"/uploadfile/:traceId">,
+  ctx: RouterContext<"/:traceId">,
 ) => {
   const traceId = ctx.params.traceId;
   const { rowsReturned, rowsAffected } = await getMinimumFileInformation(
@@ -390,7 +390,7 @@ export const getUploadFiles = async (
 };
 
 export const getSupervisorNames = async (
-  ctx: RouterContext<"/usermaster/names">,
+  ctx: RouterContext<"/names">,
 ) => {
   const { rowsReturned, rowsAffected } = await supervisorNames(databasePool);
 
@@ -617,7 +617,7 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
 };
 
 export const getAuthInformation = async (
-  ctx: RouterContext<"/usermaster/auth">,
+  ctx: RouterContext<"/auth">,
 ) => {
   const { rowsReturned, rowsAffected } = await getAuthInfo(databasePool);
 
@@ -626,7 +626,7 @@ export const getAuthInformation = async (
   ctx.response.body = rowsReturned;
 };
 
-export const requestJwt = async (ctx: RouterContext<"/jwt/request">) => {
+export const requestJwt = async (ctx: RouterContext<"/request">) => {
   const authorizedMessage = "Valid credentials";
   const unauthorizedMessage = "Invalid credentials";
   const generationErrMessage = "There was an error in generating the token";
@@ -773,7 +773,7 @@ export const getRequestsBySupervisorNrpCount = async (
   ctx.response.body = rowsReturned;
 };
 
-export const patchRemarks = async (ctx: RouterContext<"/approve/remarks">) => {
+export const patchRemarks = async (ctx: RouterContext<"/remarks">) => {
   const request: PatchRemarksPayload = await ctx.request.body.json();
   await patchRemarksOfTrace(databasePool, request.newRemarks, request.noForm);
   await patchRemarksOfRequest(databasePool, request.newRemarks, request.noForm);
@@ -781,7 +781,7 @@ export const patchRemarks = async (ctx: RouterContext<"/approve/remarks">) => {
 };
 
 export const patchRejectRequest = async (
-  ctx: RouterContext<"/approve/reject">,
+  ctx: RouterContext<"/reject">,
 ) => {
   const request: patchApprovalVerdict = await ctx.request.body.json();
 
@@ -853,7 +853,7 @@ export const patchRejectRequest = async (
 };
 
 export const patchAcceptRequest = async (
-  ctx: RouterContext<"/approve/accept">,
+  ctx: RouterContext<"/accept">,
 ) => {
   const request: patchApprovalVerdict = await ctx.request.body.json();
 

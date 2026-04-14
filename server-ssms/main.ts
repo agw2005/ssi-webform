@@ -6,9 +6,25 @@ import { verifyJwt } from "./auth/verifyJwt.ts";
 const oakApp = new Application();
 
 const rootRouter = new Router();
+const sectionRouter = new Router();
+const userMasterRouter = new Router();
 const budgetRouter = new Router();
+const frmPrDRouter = new Router();
 const traceRouter = new Router();
+const uploadFileRouter = new Router();
+const traceDRouter = new Router();
+const frmPrHRouter = new Router();
+const jwtRouter = new Router();
+const approverRouter = new Router();
 const adminRouter = new Router();
+
+sectionRouter.get("/names", handlers.getSectionNames)
+  .get("/users", handlers.getSectionUsers);
+
+userMasterRouter.get("/names", handlers.getSupervisorNames).get(
+  "/auth",
+  handlers.getAuthInformation,
+);
 
 budgetRouter
   .get("/fileresources", handlers.getAllFileResources)
@@ -28,13 +44,52 @@ traceRouter
   .get("/approve", handlers.getRequestsBySupervisorNrp)
   .get("/approve/count", handlers.getRequestsBySupervisorNrpCount);
 
-adminRouter.get("/jwt/verify", verifyJwt)
+frmPrDRouter.get("/request/:traceId", handlers.getSpecificRequestItems);
+
+uploadFileRouter.get("/:traceId", handlers.getUploadFiles);
+
+traceDRouter.get("/:traceId", handlers.getApproverPath);
+
+frmPrHRouter.get("/", handlers.getRequestsAtBudgetView);
+
+jwtRouter.post("/request", handlers.requestJwt).get("/verify", verifyJwt);
+
+approverRouter.patch("/remarks", handlers.patchRemarks)
+  .patch("/reject", handlers.patchRejectRequest)
+  .patch("/accept", handlers.patchAcceptRequest);
+
+adminRouter
   .put("/budget", handlers.putBudgets)
   .delete("/:traceId", handlers.deleteRequest);
 
 rootRouter.get("/", handlers.healthCheck);
+rootRouter.post("/submit", handlers.submitRequest);
+rootRouter.use(
+  "/section",
+  sectionRouter.routes(),
+  sectionRouter.allowedMethods(),
+);
+rootRouter.use(
+  "/usermaster",
+  userMasterRouter.routes(),
+  userMasterRouter.allowedMethods(),
+);
 rootRouter.use("/budget", budgetRouter.routes(), budgetRouter.allowedMethods());
+rootRouter.use("/frmprd", frmPrDRouter.routes(), frmPrDRouter.allowedMethods());
 rootRouter.use("/trace", traceRouter.routes(), traceRouter.allowedMethods());
+rootRouter.use(
+  "/uploadfile",
+  uploadFileRouter.routes(),
+  uploadFileRouter.allowedMethods(),
+);
+rootRouter.use("/traced", traceDRouter.routes(), traceDRouter.allowedMethods());
+rootRouter.use("/frmprh", frmPrHRouter.routes(), frmPrHRouter.allowedMethods());
+rootRouter.use("/jwt", jwtRouter.routes(), jwtRouter.allowedMethods());
+rootRouter.use(
+  "/approve ",
+  approverRouter.routes(),
+  approverRouter.allowedMethods(),
+);
 rootRouter.use("/admin", adminRouter.routes(), adminRouter.allowedMethods());
 
 oakApp.use(async (ctx, next) => {

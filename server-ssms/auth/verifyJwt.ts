@@ -3,7 +3,7 @@ import getKey from "./getKey.ts";
 import { verify } from "@zaubrik/djwt";
 import type { VerifyResponse } from "./type.d.ts";
 
-export const verifyJwt = async (ctx: RouterContext<"/jwt/verify">) => {
+export const verifyJwt = async (ctx: RouterContext<"/verify">) => {
   const jwtKey = await getKey();
   const headers: Headers = ctx.request.headers;
   const authHeader = headers.get("Authorization");
