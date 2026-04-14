@@ -656,7 +656,7 @@ export const requestJwt = async (ctx: RouterContext<"/request">) => {
     validCredentials = adminCredentials;
   } else {
     for (const credential of credentials) {
-      const validNRP = credential.NRP = request.nrp;
+      const validNRP = credential.NRP === request.nrp;
       const validPassword = credential.Password === request.password;
       if (validNRP && validPassword) {
         validCredentials = credential;

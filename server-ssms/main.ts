@@ -95,17 +95,7 @@ rootRouter.use("/admin", adminRouter.routes(), adminRouter.allowedMethods());
 oakApp.use(async (ctx, next) => {
   const isPreflight = handleCors(ctx);
   if (isPreflight) return;
-
-  try {
-    await next();
-  } catch (err) {
-    if (err instanceof Error) {
-      ctx.response.status = 500;
-      ctx.response.body = {
-        error: err.message || "Internal Server Error",
-      };
-    }
-  }
+  await next();
 });
 
 oakApp.use(rootRouter.routes());
