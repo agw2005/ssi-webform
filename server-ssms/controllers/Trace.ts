@@ -65,8 +65,9 @@ export const homeRequests = async (
   request.input("skip", ssms.Int, skip);
   request.input("take", ssms.Int, pagination);
 
-  const result = await request.query<TraceRequests>(
-    `SELECT 
+  const result = await request.query<TraceRequests>(`
+    WITH RawResults AS (
+      SELECT 
         Trace.IDTrace,
         frm_PR_H.Subject,
         frm_PR_H.Amount,
@@ -77,7 +78,8 @@ export const homeRequests = async (
         UserMaster.NameUser AS CurrentSupervisor,
         UserMaster.IDUser AS CurrentSupervisorId,
         Trace.SubmitDate,
-        Trace.Remarks
+        Trace.Remarks,
+        ROW_NUMBER() OVER (ORDER BY Trace.SubmitDate DESC) AS RowNum
       FROM Trace
       INNER JOIN frm_PR_H
         ON frm_PR_H.NoForm = Trace.NoForm
@@ -101,9 +103,14 @@ export const homeRequests = async (
         ))
       AND
         Trace.Status IN ('Final Approved', 'In Progress', 'Rejected', 'Cancelled', 'Expired')
-      ORDER BY Trace.SubmitDate DESC
-      OFFSET @skip ROWS FETCH NEXT @take ROWS ONLY;`,
-  );
+    )
+    SELECT 
+      IDTrace, Subject, Amount, Requestor, RequestorSection, 
+      RequesterSectionId, Status, CurrentSupervisor, 
+      CurrentSupervisorId, SubmitDate, Remarks
+    FROM RawResults
+    WHERE RowNum > @skip AND RowNum <= (@skip + @take)
+    ORDER BY RowNum ASC;`);
 
   const response: MsSqlResponse<TraceRequests> = {
     rowsReturned: result.recordset,
