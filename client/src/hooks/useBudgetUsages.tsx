@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
-import serverDomain from "../helper/serverDomain.ts";
 import type { BudgetUsages } from "@scope/server-ssms";
-
-const REQUEST_SPECIFIC_URL = `${serverDomain}/frmprh`;
+import { webformAPI } from "../helper/apis.ts";
 
 const useBudgetUsages = (
   queryString: string,
@@ -17,7 +15,7 @@ const useBudgetUsages = (
   const refetch = () => setTrigger((prev) => prev + 1);
 
   useEffect(() => {
-    const requestUrl = new URL(REQUEST_SPECIFIC_URL);
+    const requestUrl = new URL(webformAPI.Usages);
     requestUrl.search = queryString;
     const abortController = new AbortController();
     setUsagesIsLoading(true);

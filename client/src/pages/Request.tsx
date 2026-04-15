@@ -12,7 +12,6 @@ import type {
 import { onlyNumerics } from "@scope/server-ssms";
 import capitalize from "../helper/capitalize.ts";
 import formatNumberToString from "../helper/formatNumberToString.ts";
-import serverDomain from "../helper/serverDomain.ts";
 import mysqlDateIsoStringToJSString from "../helper/mysqlDateIsoStringToJSString.ts";
 import useAuth from "../hooks/useAuth.tsx";
 import Button from "../components/reusable/Button.tsx";
@@ -20,6 +19,7 @@ import { useEffect, useRef, useState } from "react";
 import Dialog, { toggleDialog } from "../components/reusable/Dialog.tsx";
 import { getCurrentApproverLevel } from "../helper/getCurrentApproverLevel.ts";
 import generateRequestPdf from "../helper/generateRequestPdf.ts";
+import { webformAPI } from "../helper/apis.ts";
 
 export interface Overview {
   "Form ID": string;
@@ -35,14 +35,6 @@ export interface Overview {
   "ID Budget": string;
   Attachment: string;
 }
-
-const REQUEST_OVERVIEW_URL = `${serverDomain}/trace/request`;
-const REQUEST_ITEMS_URL = `${serverDomain}/frmprd/request`;
-const REQUEST_FILES_URL = `${serverDomain}/uploadfile`;
-const REQUEST_APPROVER_PATH_URL = `${serverDomain}/traced`;
-const PATCH_REMARKS_URL = `${serverDomain}/approve/remarks`;
-const VERDICT_URL = (verdict: "accept" | "reject") =>
-  `${serverDomain}/approve/${verdict}`;
 
 const ITEMS_COLUMNS = [
   "ID",
@@ -116,7 +108,7 @@ const Request = () => {
     isLoading: isRequestOverviewDataLoading,
     isError: isRequestOverviewDataError,
   } = useFetch<RequestOverview>(
-    REQUEST_OVERVIEW_URL,
+    webformAPI.RequestOverview,
     reactRouterParams.requestId,
   );
 
@@ -124,13 +116,19 @@ const Request = () => {
     data: requestItemsData,
     isLoading: isRequestItemsDataLoading,
     isError: isRequestItemsDataError,
-  } = useFetch<RequestItem>(REQUEST_ITEMS_URL, reactRouterParams.requestId);
+  } = useFetch<RequestItem>(
+    webformAPI.RequestItems,
+    reactRouterParams.requestId,
+  );
 
   const {
     data: requestFilesData,
     isLoading: isRequestFilesDataLoading,
     isError: isRequestFilesDataError,
-  } = useFetch<UploadedFile>(REQUEST_FILES_URL, reactRouterParams.requestId);
+  } = useFetch<UploadedFile>(
+    webformAPI.RequestAttachments,
+    reactRouterParams.requestId,
+  );
 
   const {
     data: requestApproverPathData,
@@ -138,7 +136,7 @@ const Request = () => {
     isError: isRequestApproverPathDataError,
     refetch: refetchApproverPath,
   } = useFetch<ApproverPath>(
-    REQUEST_APPROVER_PATH_URL,
+    webformAPI.ApproverPath,
     reactRouterParams.requestId,
   );
 
@@ -189,7 +187,7 @@ const Request = () => {
     payload: patchApprovalVerdict,
   ) => {
     try {
-      const response = await fetch(VERDICT_URL(verdict), {
+      const response = await fetch(webformAPI.PostVerdict(verdict), {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -309,13 +307,16 @@ const Request = () => {
                             noForm: requestOverviewData[0].NoForm,
                           };
                           try {
-                            const response = await fetch(PATCH_REMARKS_URL, {
-                              method: "PATCH",
-                              headers: {
-                                "Content-Type": "application/json",
+                            const response = await fetch(
+                              webformAPI.PatchRemarks,
+                              {
+                                method: "PATCH",
+                                headers: {
+                                  "Content-Type": "application/json",
+                                },
+                                body: JSON.stringify(payload),
                               },
-                              body: JSON.stringify(payload),
-                            });
+                            );
                             if (!response.ok) {
                               console.error(
                                 "There was a problem in saving the new remarks",

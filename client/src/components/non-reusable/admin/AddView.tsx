@@ -6,11 +6,9 @@ import { putBudgets } from "@scope/server-ssms";
 import getCurrentPeriod from "../../../helper/getCurrentPeriod.ts";
 import TipBox from "../../reusable/TipBox.tsx";
 import Button from "../../reusable/Button.tsx";
-import serverDomain from "../../../helper/serverDomain.ts";
 import LoadingFallback from "../../reusable/LoadingFallback.tsx";
 import ErrorFallback from "../../reusable/ErrorFallback.tsx";
-
-const SUBMIT_URL = `${serverDomain}/admin/budget`;
+import { webformAPI } from "../../../helper/apis.ts";
 
 interface AddViewProps {
   toggleDialog: (
@@ -84,7 +82,10 @@ const AddView = ({ toggleDialog }: AddViewProps) => {
     setSubmissionIsLoading(true);
     setSubmissionIsError(null);
     try {
-      const response = await fetch(SUBMIT_URL, putBudgets(budgetData));
+      const response = await fetch(
+        webformAPI.SubmitBudget,
+        putBudgets(budgetData),
+      );
       if (response.ok) {
         toggleDialog("success");
       }
@@ -312,7 +313,7 @@ const AddView = ({ toggleDialog }: AddViewProps) => {
           <p>
             Use the following{" "}
             <a
-              href={`${serverDomain}/admin/template`}
+              href={webformAPI.Template}
               target="_blank"
               className="text-blue-700"
             >

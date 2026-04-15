@@ -24,46 +24,10 @@ import {
 } from "@scope/server-ssms";
 import useFetch from "../hooks/useFetch.tsx";
 import useForex from "../hooks/useForex.tsx";
-import serverDomain from "../helper/serverDomain.ts";
 import { useNavigate } from "react-router-dom";
 import Dialog, { toggleDialog } from "../components/reusable/Dialog.tsx";
 import Button from "../components/reusable/Button.tsx";
-import getCurrentPeriod from "../helper/getCurrentPeriod.ts";
-
-const SECTION_NAMES_URL = `${serverDomain}/section/names`;
-const FILE_RESOURCES_URL = `${serverDomain}/budget/fileresources`;
-const DEPARTMENTS_URL = (fileResource: string) =>
-  `${serverDomain}/budget/departments?period=${getCurrentPeriod()}${
-    fileResource ? `&fileresource=${fileResource}` : ""
-  }`;
-const COST_CENTERS_URL = (fileResource: string, deptId: number | null) =>
-  `${serverDomain}/budget/costcenters?period=${getCurrentPeriod()}${
-    fileResource ? `&fileresource=${fileResource}` : ""
-  }${deptId ? `&dept=${deptId}` : ""}`;
-const NATURES_URL = (
-  fileResource: string,
-  deptId: number | null,
-  costCenter: string | null,
-) =>
-  `${serverDomain}/budget/nature?period=${getCurrentPeriod()}${
-    fileResource ? `&fileresource=${fileResource}` : ""
-  }${deptId ? `&dept=${deptId}` : ""}${
-    costCenter === "" ? `&costcenter=${costCenter}` : ""
-  }`;
-const BALANCE_URL = (
-  costCenter: string,
-  period: string,
-  nature: string,
-  fileResource: string,
-  deptId: number,
-) =>
-  `${serverDomain}/budget/balance/${
-    costCenter ? `?costcenter=${costCenter}` : ""
-  }${period ? `&period=${period}` : ""}${nature ? `&nature=${nature}` : ""}${
-    fileResource ? `&fileresource=${fileResource}` : ""
-  }${fileResource ? `&dept=${deptId}` : ""}`;
-const USER_SECTION_MAPPINGS_URL = `${serverDomain}/section/users`;
-const SUBMIT_URL = `${serverDomain}/submit`;
+import { webformAPI } from "../helper/apis.ts";
 
 const PROGRESS_CONSTRAINT = {
   FIRST_STEP: [1],
@@ -144,26 +108,28 @@ const Submit = () => {
     data: sectionNames,
     isLoading: isSectionLoading,
     isError: isSectionError,
-  } = useFetch<SectionName>(SECTION_NAMES_URL);
+  } = useFetch<SectionName>(webformAPI.SectionNames);
 
   const {
     data: fileResources,
     isLoading: isFileResourcesLoading,
     isError: isFileResourcesError,
-  } = useFetch<FileResource>(FILE_RESOURCES_URL);
+  } = useFetch<FileResource>(webformAPI.FileResources);
 
   const {
     data: departments,
     isLoading: isDepartmentsLoading,
     isError: isDepartmentsError,
-  } = useFetch<ValidDepartment>(DEPARTMENTS_URL(firstStepInputs.fileResource));
+  } = useFetch<ValidDepartment>(
+    webformAPI.Departments(firstStepInputs.fileResource),
+  );
 
   const {
     data: costCenters,
     isLoading: isCostCentersLoading,
     isError: isCostCentersError,
   } = useFetch<ValidCostCenter>(
-    COST_CENTERS_URL(
+    webformAPI.CostCenters(
       firstStepInputs.fileResource,
       firstStepInputs.department === DEFAULT_VALUES.firstStep.department
         ? null
@@ -175,7 +141,7 @@ const Submit = () => {
     data: natures,
     isLoading: _isNaturesLoading,
     isError: isNaturesError,
-  } = useFetch<Nature>(NATURES_URL(
+  } = useFetch<Nature>(webformAPI.Natures(
     firstStepInputs.fileResource,
     firstStepInputs.department === DEFAULT_VALUES.firstStep.department
       ? null
@@ -187,7 +153,7 @@ const Submit = () => {
     data: userSectionMappings,
     isLoading: isUserSectionMappingsLoading,
     isError: isUserSectionMappingsError,
-  } = useFetch<UserSection>(USER_SECTION_MAPPINGS_URL);
+  } = useFetch<UserSection>(webformAPI.SectionUserMappings);
 
   const {
     forexInformation,
@@ -290,7 +256,7 @@ const Submit = () => {
     setBalanceError(null);
     try {
       const balanceResponse = await fetch(
-        BALANCE_URL(costCenter, period, nature, fileResource, deptId),
+        webformAPI.Balance(fileResource, deptId, costCenter, nature, period),
       );
       if (!balanceResponse.ok) {
         throw new Error(`HTTP error! status: ${balanceResponse.status}`);
@@ -362,7 +328,10 @@ const Submit = () => {
     };
     try {
       console.log(payload);
-      const submitResponse = await fetch(SUBMIT_URL, submitRequest(payload));
+      const submitResponse = await fetch(
+        webformAPI.SubmitRequest,
+        submitRequest(payload),
+      );
       const submitResponseBody: SubmitResponse = await submitResponse.json();
       if (submitResponse.ok) {
         setProgress([]);

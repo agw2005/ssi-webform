@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
-import serverDomain from "../helper/serverDomain.ts";
 import type { BudgetViewAtYear } from "@scope/server-ssms";
-
-const BUDGET_VIEW_URL = `${serverDomain}/budget`;
+import { webformAPI } from "../helper/apis.ts";
 
 const useBudgets = (
   year: string,
@@ -17,7 +15,7 @@ const useBudgets = (
   const refetch = () => setTrigger((prev) => prev + 1);
 
   useEffect(() => {
-    const requestUrl = new URL(BUDGET_VIEW_URL);
+    const requestUrl = new URL(webformAPI.Budget);
     requestUrl.search = queryString;
     const abortController = new AbortController();
     setBudgetIsError(null);

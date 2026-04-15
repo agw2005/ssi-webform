@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
-import serverDomain from "../helper/serverDomain.ts";
 import type { ReportResponse } from "@scope/server-ssms";
-
-const REPORT_URL = `${serverDomain}/budget/report`;
+import { webformAPI } from "../helper/apis.ts";
 
 const useReport = (
   reportType: "" | "general" | "byquarter" | "bysection" | "bynature" | "empty",
@@ -24,7 +22,7 @@ const useReport = (
     let ignore = false;
 
     const fetchData = async () => {
-      const requestUrl = new URL(REPORT_URL);
+      const requestUrl = new URL(webformAPI.Report);
       requestUrl.search = queryString;
 
       try {

@@ -13,7 +13,6 @@ import LoadingFallback from "../../reusable/LoadingFallback.tsx";
 import PagingButton from "../../reusable/PagingButton.tsx";
 import { useReducer, useState } from "react";
 import { useDebounce } from "../../../hooks/useDebounce.tsx";
-import serverDomain from "../../../helper/serverDomain.ts";
 import usePurchasingRequests from "../../../hooks/usePurchasingRequests.tsx";
 import stringContainsRedLight from "../../../helper/stringContainsRedLight.ts";
 import { Link } from "react-router-dom";
@@ -22,10 +21,7 @@ import capitalize from "../../../helper/capitalize.ts";
 import { statusStyling } from "../../../helper/statusStyling.ts";
 import { formatDate } from "../../../helper/formatDate.ts";
 import TipBox from "../../reusable/TipBox.tsx";
-
-const REQUESTS_URL = `${serverDomain}/trace/requests`;
-const REQUESTS_COUNT_URL = `${serverDomain}/trace/requests/count`;
-const SUPERVISOR_NAMES_URL = `${serverDomain}/usermaster/names`;
+import { webformAPI } from "../../../helper/apis.ts";
 
 interface ModifyViewProps {
   toggleDialog: (
@@ -104,8 +100,8 @@ const ModifyView = ({ toggleDialog }: ModifyViewProps) => {
     requests,
     refetch: refetchRequest,
   } = usePurchasingRequests<FormRequest, TraceRequestsCount>(
-    REQUESTS_URL,
-    REQUESTS_COUNT_URL,
+    webformAPI.Request,
+    webformAPI.RequestCount,
     params.toString(),
   );
 
@@ -114,7 +110,7 @@ const ModifyView = ({ toggleDialog }: ModifyViewProps) => {
     isLoading: _isSupervisorLoading,
     isError: _supervisorError,
     refetch: refetchSupervisor,
-  } = useFetch<SupervisorNames>(SUPERVISOR_NAMES_URL);
+  } = useFetch<SupervisorNames>(webformAPI.SupervisorNames);
 
   const totalPages = Math.max(
     1,
@@ -135,7 +131,7 @@ const ModifyView = ({ toggleDialog }: ModifyViewProps) => {
     const abortController = new AbortController();
     try {
       const response = await fetch(
-        `${serverDomain}/admin/${traceId}`,
+        webformAPI.DeleteRequest(traceId),
         { method: "DELETE", signal: abortController.signal },
       );
       if (response.ok) {

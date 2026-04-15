@@ -8,8 +8,7 @@ import { useState } from "react";
 import type { LoginPayload, LoginResponse } from "@scope/server-ssms";
 import { jwtRequestPayload } from "@scope/server-ssms";
 import { createGenericChangeHandler } from "../helper/genericInputHandler.ts";
-import serverDomain from "../helper/serverDomain.ts";
-const JWT_REQUEST_URL = `${serverDomain}/jwt/request`;
+import { webformAPI } from "../helper/apis.ts";
 
 const DEFAULT_FORM_CONTENT: LoginPayload = {
   nrp: "",
@@ -43,7 +42,7 @@ const Login = () => {
       setLoginIsLoading(true);
       try {
         const response = await fetch(
-          JWT_REQUEST_URL,
+          webformAPI.RequestToken,
           jwtRequestPayload(loginInformation),
         );
 

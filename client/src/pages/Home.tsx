@@ -19,11 +19,11 @@ import Button from "../components/reusable/Button.tsx";
 import stringContainsRedLight from "../helper/stringContainsRedLight.ts";
 import formatNumberToString from "../helper/formatNumberToString.ts";
 import { useDebounce } from "../hooks/useDebounce.tsx";
-import serverDomain from "../helper/serverDomain.ts";
 import { formatDate } from "../helper/formatDate.ts";
 import { statusStyling } from "../helper/statusStyling.ts";
 import usePurchasingRequests from "../hooks/usePurchasingRequests.tsx";
 import { useDuplicateSupervisors } from "../hooks/useDuplicateSupervisors.tsx";
+import { webformAPI } from "../helper/apis.ts";
 
 interface SectionInfo {
   IDSection: number;
@@ -72,10 +72,6 @@ const STATUSES = [
   "Expired",
 ];
 const SELECT_ALL_INDEX = -99;
-const SECTION_NAMES_URL = `${serverDomain}/section/names`;
-const SUPERVISOR_NAMES_URL = `${serverDomain}/usermaster/names`;
-const REQUESTS_URL = `${serverDomain}/trace/requests`;
-const REQUESTS_COUNT_URL = `${serverDomain}/trace/requests/count`;
 
 const DEFAULT_FILTERS: Filters = {
   section: { IDSection: SELECT_ALL_INDEX, SectionName: "" },
@@ -113,13 +109,13 @@ const Home = () => {
     data: sectionNames,
     isLoading: isSectionLoading,
     isError: sectionError,
-  } = useFetch<SectionName>(SECTION_NAMES_URL);
+  } = useFetch<SectionName>(webformAPI.SectionNames);
 
   const {
     data: supervisorNames,
     isLoading: isSupervisorLoading,
     isError: supervisorError,
-  } = useFetch<SupervisorNames>(SUPERVISOR_NAMES_URL);
+  } = useFetch<SupervisorNames>(webformAPI.SupervisorNames);
 
   const duplicateSupervisorNames = useDuplicateSupervisors(
     supervisorNames,
@@ -153,8 +149,8 @@ const Home = () => {
     totalRequestsAtDatabase,
     requests,
   } = usePurchasingRequests<FormRequest, TraceRequestsCount>(
-    REQUESTS_URL,
-    REQUESTS_COUNT_URL,
+    webformAPI.Request,
+    webformAPI.RequestCount,
     params.toString(),
   );
 

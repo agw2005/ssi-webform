@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
 import LoadingFallback from "../components/reusable/LoadingFallback.tsx";
 import Primitive from "../components/reusable/Primitive.tsx";
-import serverDomain from "../helper/serverDomain.ts";
 import useAuth from "../hooks/useAuth.tsx";
 import type {
   TraceApproveRequests,
@@ -21,9 +20,7 @@ import DateRangeInput from "../components/reusable/inputs/DateRangeInput.tsx";
 import SelectionInput from "../components/reusable/inputs/SelectionInput.tsx";
 import { useDebounce } from "../hooks/useDebounce.tsx";
 import usePurchasingRequests from "../hooks/usePurchasingRequests.tsx";
-
-const REQUESTS_URL = `${serverDomain}/trace/approve`;
-const REQUESTS_COUNT_URL = `${serverDomain}/trace/approve/count`;
+import { webformAPI } from "../helper/apis.ts";
 
 const COLUMNS = [
   "ID Trace",
@@ -116,8 +113,8 @@ const Approve = () => {
     totalRequestsAtDatabase,
     requests,
   } = usePurchasingRequests<TraceApproveRequests, TraceRequestsCount>(
-    REQUESTS_URL,
-    REQUESTS_COUNT_URL,
+    webformAPI.ApproversRequest,
+    webformAPI.ApproversRequestCount,
     params.toString(),
   );
 

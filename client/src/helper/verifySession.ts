@@ -1,8 +1,6 @@
-import serverDomain from "./serverDomain.ts";
 import { verifyJwtPayload } from "@scope/server-ssms";
 import type { VerifyResponse } from "@scope/server-ssms";
-
-const VERIFY_JWT_URL = `${serverDomain}/jwt/verify`;
+import { webformAPI } from "./apis.ts";
 
 export const verifySession = async (): Promise<VerifyResponse | null> => {
   const storedToken = sessionStorage.getItem("session_token");
@@ -10,7 +8,10 @@ export const verifySession = async (): Promise<VerifyResponse | null> => {
   if (!storedToken) return null;
 
   try {
-    const response = await fetch(VERIFY_JWT_URL, verifyJwtPayload(storedToken));
+    const response = await fetch(
+      webformAPI.VerifyToken,
+      verifyJwtPayload(storedToken),
+    );
     const responseJson: VerifyResponse = await response.json();
 
     if (response.ok) {
