@@ -721,7 +721,9 @@ export const getRequestsBySupervisorNrp = async (
   const status = params.get("status") || null;
 
   const supervisorNrp = params.get("nrp") || null;
-  const formattedNrp = supervisorNrp ? onlyNumerics(supervisorNrp) : null;
+  const formattedNrp = supervisorNrp && supervisorNrp !== "null"
+    ? onlyNumerics(supervisorNrp)
+    : null;
 
   const page = Number(params.get("page")) || 1;
   const pagination = Number(params.get("pagination")) || 50;
@@ -756,7 +758,9 @@ export const getRequestsBySupervisorNrpCount = async (
   const status = params.get("status") || null;
 
   const supervisorNrp = params.get("nrp") || null;
-  const formattedNrp = supervisorNrp ? onlyNumerics(supervisorNrp) : null;
+  const formattedNrp = supervisorNrp && supervisorNrp !== "null"
+    ? onlyNumerics(supervisorNrp)
+    : null;
 
   const { rowsReturned, rowsAffected } = await approveRequestsCount(
     databasePool,
