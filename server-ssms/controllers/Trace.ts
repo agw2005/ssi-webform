@@ -275,7 +275,8 @@ export const approveRequests = async (
 ): Promise<MsSqlResponse<TraceApproveRequests>> => {
   const supervisorNrpPattern = `%${supervisorNrp}%`;
   const searchPattern = search ? `%${search}%` : null;
-  const skip = (page - 1) * pagination;
+  const startRow = (page - 1) * pagination + 1;
+  const endRow = page * pagination;
 
   const request = pool.request();
 
@@ -288,11 +289,12 @@ export const approveRequests = async (
   request.input("startDate", TraceSSMSTypes.SubmitDate, startDate);
   request.input("endDate", TraceSSMSTypes.SubmitDate, endDate);
   request.input("searchPattern", ssms.VarChar(500), searchPattern);
-  request.input("skip", ssms.Int(), skip);
-  request.input("take", ssms.Int(), pagination);
+  request.input("startRow", ssms.Int(), startRow);
+  request.input("endRow", ssms.Int(), endRow);
 
-  const result = await request.query<TraceApproveRequests>(
-    `SELECT 
+  const result = await request.query<TraceApproveRequests>(`
+    WITH OrderedRequests AS (
+      SELECT 
         Trace.IDTrace,
         frm_PR_H.Subject,
         frm_PR_H.Amount,
@@ -305,7 +307,10 @@ export const approveRequests = async (
         Trace.SubmitDate,
         Trace.Remarks,
         Trace_D.ApproverLevel AS SupervisorStep,
-        Trace_D.ApproverType AS SupervisorType
+        Trace_D.ApproverType AS SupervisorType,
+        ROW_NUMBER() OVER (
+          ORDER BY Trace.SubmitDate DESC, Trace_D.ApproverLevel DESC
+        ) AS RowNum
       FROM Trace
       INNER JOIN frm_PR_H
         ON frm_PR_H.NoForm = Trace.NoForm
@@ -315,27 +320,22 @@ export const approveRequests = async (
         ON Trace_D.IDTrace = Trace.IDTrace
       INNER JOIN UserMaster AS Supervisors
         ON Trace_D.IDUser = Supervisors.IDUser
-      WHERE
-        Supervisors.NRP LIKE @supervisorNrpPattern
-      AND
-        Trace_D.Result <> ''
-      AND
-        (@status IS NULL OR Trace_D.Result = @status)
-      AND
-        (@startDate IS NULL OR Trace.SubmitDate >= @startDate)
-      AND
-        (@endDate IS NULL OR Trace.SubmitDate <= @endDate)
+      WHERE Supervisors.NRP LIKE @supervisorNrpPattern
+      AND Trace_D.Result <> ''
+      AND (@status IS NULL OR Trace_D.Result = @status)
+      AND (@startDate IS NULL OR Trace.SubmitDate >= @startDate)
+      AND (@endDate IS NULL OR Trace.SubmitDate <= @endDate)
       AND 
         (@searchPattern IS NULL OR (
           frm_PR_H.Subject LIKE @searchPattern OR 
           CAST(Trace.IDTrace AS VARCHAR) LIKE @searchPattern OR 
           frm_PR_H.Requestor LIKE @searchPattern
         ))
-      AND
-        Trace_D.Result IN ('Approved', 'In Progress', '', 'Rejected')
-      ORDER BY Trace.SubmitDate DESC, Trace_D.ApproverLevel DESC
-      OFFSET @skip ROWS FETCH NEXT @take ROWS ONLY;`,
-  );
+      AND Trace_D.Result IN ('Approved', 'In Progress', '', 'Rejected')
+    )
+    SELECT * FROM OrderedRequests 
+    WHERE RowNum BETWEEN @startRow AND @endRow
+    ORDER BY RowNum;`);
 
   const response: MsSqlResponse<TraceApproveRequests> = {
     rowsReturned: result.recordset,
