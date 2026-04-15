@@ -128,7 +128,7 @@ const Approve = () => {
 
   return (
     <Primitive
-      isLoading={[requestIsLoading, authIsLoading]}
+      isLoading={[authIsLoading]}
       isErr={[requestIsError]}
       componentName="Approve.tsx"
       pageTitle="Approval Menu"
