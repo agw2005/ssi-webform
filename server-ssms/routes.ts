@@ -489,7 +489,7 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
         budgetId,
       );
 
-      patchRequestBudget(
+      await patchRequestBudget(
         transaction,
         netPriceByCurrencyRate,
         usage.costCenter,
