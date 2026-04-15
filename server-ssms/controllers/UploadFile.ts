@@ -2,7 +2,7 @@ import type {
   UploadFileMinimalInformation,
   UploadFileTable,
 } from "../models/UploadFile.d.ts";
-import type { MsSqlResponse } from "@scope/server-ssms";
+import type { MsSqlResponse, TraceTable } from "@scope/server-ssms";
 import { TraceSSMSTypes } from "./Trace.ts";
 import ssms from "mssql";
 
@@ -19,7 +19,7 @@ export const UploadFileSSMSTypes = {
 
 export const getMinimumFileInformation = async (
   pool: ssms.ConnectionPool,
-  traceId: string,
+  traceId: TraceTable["IDTrace"],
 ): Promise<MsSqlResponse<UploadFileMinimalInformation>> => {
   const request = pool.request();
 
@@ -43,11 +43,11 @@ export const getMinimumFileInformation = async (
 
 export const postRequestFiles = async (
   requestSource: ssms.Transaction,
-  noForm: string,
-  requestSubject: string,
-  requestorName: string,
-  filename: string,
-  uploadDate: string,
+  noForm: UploadFileTable["NoForm"],
+  requestSubject: UploadFileTable["FormName"],
+  requestorName: UploadFileTable["Requestor"],
+  filename: UploadFileTable["Filename"],
+  uploadDate: UploadFileTable["DateUpload"],
 ): Promise<number> => {
   const request = requestSource.request();
 
@@ -69,7 +69,7 @@ export const postRequestFiles = async (
 
 export const deleteRequestFiles = async (
   requestSource: ssms.Transaction,
-  noForm: string,
+  noForm: UploadFileTable["NoForm"],
 ) => {
   const request = requestSource.request();
 

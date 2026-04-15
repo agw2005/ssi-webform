@@ -152,7 +152,7 @@ export const getSingleBalance = async (
 ) => {
   const params = ctx.request.url.searchParams;
 
-  const costCenter = Number(params.get("costcenter")) || null;
+  const costCenter = params.get("costcenter") || null;
   const periode = params.get("period") || null;
   const nature = params.get("nature") || null;
   const fileResource = params.get("fileresource") || null;
@@ -275,7 +275,7 @@ export const getRequests = async (ctx: RouterContext<"/requests">) => {
   const params = ctx.request.url.searchParams;
 
   const requestorSectionId = params.has("requestorsectionid")
-    ? Number(params.get("requestorsectionid"))
+    ? params.get("requestorsectionid")
     : null;
 
   const status = params.get("status") || null;
@@ -316,7 +316,7 @@ export const getRequestsCount = async (
   const params = ctx.request.url.searchParams;
 
   const requestorSectionId = params.has("requestorsectionid")
-    ? Number(params.get("requestorsectionid"))
+    ? params.get("requestorsectionid")
     : null;
 
   const status = params.get("status") || null;
@@ -382,7 +382,7 @@ export const getUploadFiles = async (
   const traceId = ctx.params.traceId;
   const { rowsReturned, rowsAffected } = await getMinimumFileInformation(
     databasePool,
-    traceId,
+    Number(traceId),
   );
 
   console.log(rowsAffected);
@@ -496,12 +496,12 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
         usage.budgetOrNature,
         usage.periode,
         payload.firstStep.fileResource,
-        payload.firstStep.department,
+        Number(payload.firstStep.department),
       );
 
       const { rowsReturned: natureBalance, rowsAffected } = await singleBalance(
         transaction,
-        Number(usage.costCenter),
+        usage.costCenter,
         usage.periode,
         usage.budgetOrNature,
         payload.firstStep.fileResource,
@@ -825,7 +825,7 @@ export const patchRejectRequest = async (
         item.Nature,
         item.Periode,
         item.FileResource,
-        item.Department,
+        Number(item.Department),
       );
     }));
 
@@ -841,7 +841,11 @@ export const patchRejectRequest = async (
 
     await Promise.all(
       request.rejectedItems.map(async (itemId) => {
-        await patchFrmPRDVerdict(transaction, request.supervisorId, itemId);
+        await patchFrmPRDVerdict(
+          transaction,
+          String(request.supervisorId),
+          itemId,
+        );
       }),
     );
 
@@ -995,7 +999,7 @@ export const deleteRequest = async (ctx: RouterContext<"/:traceId">) => {
         item.Nature,
         item.Periode,
         item.FileResource,
-        item.Department,
+        Number(item.Department),
       );
     }));
 

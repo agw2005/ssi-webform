@@ -2,6 +2,7 @@ import type {
   AuthInfo,
   UserIdByName,
   UserMasterName,
+  UserMasterTable,
 } from "../models/UserMaster.d.ts";
 import type { MsSqlResponse } from "@scope/server-ssms";
 import ssms from "mssql";
@@ -39,7 +40,7 @@ export const supervisorNames = async (
 
 export const getUserIdByName = async (
   requestSource: ssms.Transaction,
-  nameUser: string,
+  nameUser: UserMasterTable["NameUser"],
 ): Promise<number> => {
   const request = requestSource.request();
 
@@ -80,7 +81,7 @@ export const getAuthInfo = async (
 
 export const patchNewLogin = async (
   pool: ssms.ConnectionPool,
-  userId: number,
+  userId: UserMasterTable["IDUser"],
 ): Promise<null> => {
   const request = pool.request();
 

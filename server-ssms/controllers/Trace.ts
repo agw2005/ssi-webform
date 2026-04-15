@@ -12,6 +12,9 @@ import type { MsSqlResponse } from "@scope/server-ssms";
 import { UserMasterSSMSTypes } from "./UserMaster.ts";
 import { TraceDSSMSTypes } from "./TraceD.ts";
 import ssms from "mssql";
+import type { UserMasterTable } from "../models/UserMaster.d.ts";
+import type { TraceDTable } from "../models/TraceD.d.ts";
+import type { FrmPRHTable } from "../models/FrmPRH.d.ts";
 
 const { Int, VarChar, DateTime2, NVarChar } = ssms;
 
@@ -37,11 +40,11 @@ export const homeRequests = async (
   pool: ssms.ConnectionPool,
   page: number,
   pagination: number = 50,
-  requestorSectionId: number | null,
-  status: string | null,
-  currentSupervisorId: number | null,
-  startDate: string | null,
-  endDate: string | null,
+  requestorSectionId: TraceTable["IDSection"] | null,
+  status: TraceTable["Status"] | null,
+  currentSupervisorId: UserMasterTable["IDUser"] | null,
+  startDate: TraceTable["SubmitDate"] | null,
+  endDate: TraceTable["SubmitDate"] | null,
   search: string | null,
 ): Promise<MsSqlResponse<TraceRequests>> => {
   const skip = (page - 1) * pagination;
@@ -122,11 +125,11 @@ export const homeRequests = async (
 
 export const homeRequestsCount = async (
   pool: ssms.ConnectionPool,
-  requestorSectionId: number | null,
-  status: string | null,
-  currentSupervisorId: number | null,
-  startDate: string | null,
-  endDate: string | null,
+  requestorSectionId: TraceTable["IDSection"] | null,
+  status: TraceTable["Status"] | null,
+  currentSupervisorId: UserMasterTable["IDUser"] | null,
+  startDate: TraceTable["SubmitDate"] | null,
+  endDate: TraceTable["SubmitDate"] | null,
   search: string | null,
 ): Promise<MsSqlResponse<TraceRequestsCount>> => {
   const searchPattern = search ? `%${search}%` : null;
@@ -185,7 +188,7 @@ export const homeRequestsCount = async (
 
 export const specificRequest = async (
   pool: ssms.ConnectionPool,
-  traceId: number,
+  traceId: TraceTable["IDTrace"],
 ): Promise<MsSqlResponse<TraceRequestOverview>> => {
   const request = pool.request();
 
@@ -225,15 +228,15 @@ export const specificRequest = async (
 
 export const postRequestTrace = async (
   requestSource: ssms.Transaction,
-  noForm: string,
-  requestorName: string,
-  requestorSectionId: string,
-  requestorNrp: string,
-  requestorExtensionNumber: string,
-  requestorEmail: string,
-  requestSubmissionDate: string,
-  initialSupervisorId: number,
-  remarks: string,
+  noForm: TraceTable["NoForm"],
+  requestorName: TraceTable["Requestor"],
+  requestorSectionId: TraceTable["IDSection"],
+  requestorNrp: TraceTable["NRP"],
+  requestorExtensionNumber: TraceTable["NRP"],
+  requestorEmail: TraceTable["EmailReq"],
+  requestSubmissionDate: TraceTable["SubmitDate"],
+  initialSupervisorId: TraceTable["ProcessedBy"],
+  remarks: TraceTable["Remarks"],
 ): Promise<number> => {
   const request = requestSource.request();
 
@@ -265,12 +268,12 @@ export const postRequestTrace = async (
 
 export const approveRequests = async (
   pool: ssms.ConnectionPool,
-  supervisorNrp: string | null,
+  supervisorNrp: UserMasterTable["NRP"] | null,
   page: number,
   pagination: number = 50,
-  status: string | null,
-  startDate: string | null,
-  endDate: string | null,
+  status: TraceDTable["Result"] | null,
+  startDate: TraceTable["SubmitDate"] | null,
+  endDate: TraceTable["SubmitDate"] | null,
   search: string | null,
 ): Promise<MsSqlResponse<TraceApproveRequests>> => {
   const supervisorNrpPattern = `%${supervisorNrp}%`;
@@ -347,10 +350,10 @@ export const approveRequests = async (
 
 export const approveRequestsCount = async (
   pool: ssms.ConnectionPool,
-  supervisorNrp: string | null,
-  status: string | null,
-  startDate: string | null,
-  endDate: string | null,
+  supervisorNrp: UserMasterTable["NRP"] | null,
+  status: TraceDTable["Result"] | null,
+  startDate: TraceTable["SubmitDate"] | null,
+  endDate: TraceTable["SubmitDate"] | null,
   search: string | null,
 ): Promise<MsSqlResponse<TraceRequestsCount>> => {
   const supervisorNrpPattern = `%${supervisorNrp}%`;
@@ -410,8 +413,8 @@ export const approveRequestsCount = async (
 
 export const patchRemarksOfTrace = async (
   pool: ssms.ConnectionPool,
-  newRemarks: string,
-  noForm: string,
+  newRemarks: TraceTable["Remarks"],
+  noForm: TraceTable["NoForm"],
 ) => {
   const request = pool.request();
 
@@ -429,11 +432,11 @@ export const patchRemarksOfTrace = async (
 export const patchTraceVerdict = async (
   requestSource: ssms.Transaction | ssms.ConnectionPool,
   verdict: "Rejected" | "Approved",
-  traceId: number,
-  maxApproverLevel: number,
-  sumApproverLevel: number,
-  nextApproverId: number | null,
-  nextApproverLevel: number | null,
+  traceId: TraceTable["IDTrace"],
+  maxApproverLevel: TraceTable["ProcessedLevel"],
+  sumApproverLevel: TraceTable["LevelProgress"],
+  nextApproverId: TraceTable["ProcessedBy"] | null,
+  nextApproverLevel: TraceTable["LevelProgress"] | null,
 ) => {
   const request = requestSource.request();
 
@@ -464,12 +467,14 @@ export const patchTraceVerdict = async (
       nextApproverId === null;
 
     const newStatus = isLastSupervisor ? "Final Approved" : "In Progress";
-    const newProcessedBy = isLastSupervisor ? 0 : nextApproverId;
+    const newProcessedBy: TraceTable["ProcessedBy"] | null = isLastSupervisor
+      ? 0
+      : nextApproverId;
     const newProcessedLevel = isLastSupervisor
-      ? sum(maxApproverLevel)
+      ? sum(Number(maxApproverLevel))
       : nextApproverLevel !== null
       ? sum(nextApproverLevel)
-      : sum(maxApproverLevel);
+      : sum(Number(maxApproverLevel));
     const newLevelProgress = isLastSupervisor
       ? maxApproverLevel
       : nextApproverLevel;
@@ -503,11 +508,11 @@ export const patchTraceVerdict = async (
 
 export const getRequestIds = async (
   pool: ssms.ConnectionPool | ssms.Transaction,
-  idTrace: number,
+  idTrace: TraceTable["IDTrace"],
 ): Promise<{
-  formId: number;
-  noForm: string;
-  noPr: string;
+  formId: FrmPRHTable["ID"];
+  noForm: FrmPRHTable["NoForm"];
+  noPr: FrmPRHTable["NoPR"];
   requestItems: PurchasingRequestItemsInformation[];
 }> => {
   const request = pool.request();
@@ -555,7 +560,7 @@ export const getRequestIds = async (
 
 export const deleteRequestTrace = async (
   requestSource: ssms.Transaction,
-  noForm: string,
+  noForm: FrmPRHTable["NoForm"],
 ) => {
   const request = requestSource.request();
 

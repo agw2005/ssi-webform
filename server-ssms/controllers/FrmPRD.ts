@@ -1,4 +1,8 @@
-import type { FrmPRDTable, MsSqlResponse } from "@scope/server-ssms";
+import type {
+  FrmPRDTable,
+  MsSqlResponse,
+  TraceTable,
+} from "@scope/server-ssms";
 import type { FrmPRDRequestItem } from "../models/FrmPRD.d.ts";
 import { TraceSSMSTypes } from "./Trace.ts";
 import ssms from "mssql";
@@ -31,7 +35,7 @@ export const FrmPRDSSMSTypes = {
 
 export const getAllRequestItems = async (
   pool: ssms.ConnectionPool,
-  traceId: number,
+  traceId: TraceTable["IDTrace"],
 ): Promise<MsSqlResponse<FrmPRDRequestItem>> => {
   const request = pool.request();
 
@@ -71,19 +75,19 @@ export const getAllRequestItems = async (
 
 export const postUsage = async (
   requestSource: ssms.Transaction,
-  noPR: string,
-  costCenter: string,
-  nature: string,
-  description: string,
-  quantity: number,
-  measure: string,
-  unitPrice: number,
-  currency: string,
-  estimatedDeliveryDate: string,
-  vendor: string,
-  reason: string,
-  rateByCurrency: number,
-  budgetId: string,
+  noPR: FrmPRDTable["NoPR"],
+  costCenter: FrmPRDTable["CostCenter"],
+  nature: FrmPRDTable["Nature"],
+  description: FrmPRDTable["Description"],
+  quantity: FrmPRDTable["Qty"],
+  measure: FrmPRDTable["Measure"],
+  unitPrice: FrmPRDTable["UnitPrice"],
+  currency: FrmPRDTable["Currency"],
+  estimatedDeliveryDate: FrmPRDTable["EstimationDeliveryDate"],
+  vendor: FrmPRDTable["Vendor"],
+  reason: FrmPRDTable["Reason"],
+  rateByCurrency: FrmPRDTable["Rate"],
+  budgetId: FrmPRDTable["IDBudget"],
 ): Promise<number> => {
   const netPrice = (quantity * unitPrice) / rateByCurrency;
 
@@ -126,8 +130,8 @@ export const postUsage = async (
 
 export const patchFrmPRDVerdict = async (
   requestSource: ssms.Transaction,
-  supervisorId: number,
-  itemId: number,
+  supervisorId: FrmPRDTable["RejectedBy"],
+  itemId: FrmPRDTable["IDItem"],
 ) => {
   const request = new ssms.Request(requestSource);
 
@@ -146,7 +150,7 @@ export const patchFrmPRDVerdict = async (
 
 export const deleteRequestItems = async (
   requestSource: ssms.Transaction,
-  noPr: string,
+  noPr: FrmPRDTable["NoPR"],
 ) => {
   const request = new ssms.Request(requestSource);
 

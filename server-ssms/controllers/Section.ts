@@ -1,6 +1,7 @@
 import type {
   SectionId,
   SectionName,
+  SectionTable,
   UserSection,
 } from "../models/Section.d.ts";
 import type { MsSqlResponse } from "@scope/server-ssms";
@@ -50,7 +51,7 @@ export const userSectionMappings = async (
 
 export const getSectionIdByName = async (
   requestSource: ssms.Transaction,
-  sectionName: string,
+  sectionName: SectionTable["SectionName"],
 ): Promise<number> => {
   const request = requestSource.request();
 

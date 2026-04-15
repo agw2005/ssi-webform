@@ -2,6 +2,7 @@ import type {
   NextApproverPath,
   OtherApproverPathInfo,
   TraceApproverPath,
+  TraceDTable,
 } from "../models/TraceD.d.ts";
 import type { MsSqlResponse } from "@scope/server-ssms";
 
@@ -20,7 +21,7 @@ export const TraceDSSMSTypes = {
 
 export const getApproverPathInformation = async (
   pool: ssms.ConnectionPool,
-  traceId: number,
+  traceId: TraceDTable["IDTrace"],
 ): Promise<MsSqlResponse<TraceApproverPath>> => {
   const request = pool.request();
 
@@ -50,10 +51,10 @@ export const getApproverPathInformation = async (
 
 export const postRequestApproverPath = async (
   requestSource: ssms.Transaction,
-  traceId: number,
-  userId: number,
-  approverType: string,
-  approverStep: number,
+  traceId: TraceDTable["IDTrace"],
+  userId: TraceDTable["IDUser"],
+  approverType: TraceDTable["ApproverType"],
+  approverStep: TraceDTable["ApproverLevel"],
 ) => {
   const result = approverStep === 1 ? "In Progress" : "";
 
@@ -77,8 +78,8 @@ export const postRequestApproverPath = async (
 export const patchTraceDVerdict = async (
   requestSource: ssms.Transaction | ssms.ConnectionPool,
   verdict: "Rejected" | "Approved",
-  traceId: number,
-  currentApproverLevel: number,
+  traceId: TraceDTable["IDTrace"],
+  currentApproverLevel: TraceDTable["ApproverLevel"],
 ) => {
   const request = requestSource.request();
 
@@ -103,9 +104,9 @@ export const patchTraceDVerdict = async (
 
 export const getNextApprover = async (
   requestSource: ssms.Transaction | ssms.ConnectionPool,
-  traceId: number,
-  idUser: number,
-  currentLevel: number,
+  traceId: TraceDTable["IDTrace"],
+  idUser: TraceDTable["IDUser"],
+  currentLevel: TraceDTable["ApproverLevel"],
 ): Promise<{
   nextUserId: number | null;
   nextApproverLevel: number | null;
@@ -145,7 +146,7 @@ export const getNextApprover = async (
 
 export const getOtherApproverInfo = async (
   requestSource: ssms.Transaction | ssms.ConnectionPool,
-  traceId: number,
+  traceId: TraceDTable["IDTrace"],
 ) => {
   const request = requestSource.request();
 
@@ -166,8 +167,8 @@ export const getOtherApproverInfo = async (
 
 export const patchApproverToActiveApproving = async (
   pool: ssms.ConnectionPool,
-  traceId: number,
-  approverLevel: number,
+  traceId: TraceDTable["IDTrace"],
+  approverLevel: TraceDTable["ApproverLevel"],
 ) => {
   const request = pool.request();
 
@@ -186,7 +187,7 @@ export const patchApproverToActiveApproving = async (
 
 export const deleteRequestApproverPath = async (
   requestSource: ssms.Transaction,
-  traceId: number,
+  traceId: TraceDTable["IDTrace"],
 ) => {
   const request = requestSource.request();
 

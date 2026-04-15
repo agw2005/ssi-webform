@@ -77,10 +77,10 @@ export const availablePeriods = async (
 
 export const getValidNatures = async (
   pool: ssms.ConnectionPool,
-  fullPeriode: string | null,
-  fileResource: string | null,
-  deptId: number | null,
-  costCenter: string | null,
+  fullPeriode: BudgetTable["Periode"] | null,
+  fileResource: BudgetTable["FileResource"] | null,
+  deptId: BudgetTable["IDSection"] | null,
+  costCenter: BudgetTable["CostCenter"] | null,
 ): Promise<MsSqlResponse<BudgetNature>> => {
   const request = pool.request();
 
@@ -110,11 +110,11 @@ export const getValidNatures = async (
 
 export const singleBalance = async (
   pool: ssms.ConnectionPool | ssms.Transaction,
-  costCenter: number,
-  periode: string,
-  nature: string,
-  fileResource: string,
-  departId: number,
+  costCenter: BudgetTable["CostCenter"],
+  periode: BudgetTable["Periode"],
+  nature: BudgetTable["Nature"],
+  fileResource: BudgetTable["FileResource"],
+  departId: BudgetTable["IDSection"],
 ): Promise<MsSqlResponse<BudgetBalance>> => {
   const request = pool.request();
 
@@ -144,7 +144,7 @@ export const singleBalance = async (
 
 export const getBudgetsByYear = async (
   pool: ssms.ConnectionPool,
-  fileResource: string | null,
+  fileResource: BudgetTable["FileResource"] | null,
   year: string | null,
 ): Promise<MsSqlResponse<BudgetViewInformation>> => {
   const request = pool.request();
@@ -189,8 +189,8 @@ export const getBudgetsByYear = async (
 
 export const reportInformation = async (
   requestSource: ssms.Transaction | ssms.ConnectionPool,
-  periode: string | null,
-  fileResource: string | null,
+  periode: BudgetTable["Periode"] | null,
+  fileResource: BudgetTable["FileResource"] | null,
 ): Promise<MsSqlResponse<ReportViewInformation>> => {
   const request = requestSource.request();
 
@@ -228,12 +228,12 @@ export const reportInformation = async (
 
 export const patchRequestBudget = async (
   requestSource: ssms.Transaction,
-  usage: number,
-  costCenter: string,
-  nature: string,
-  period: string,
-  fileResource: string,
-  dept: string,
+  usage: BudgetTable["Balance"],
+  costCenter: BudgetTable["CostCenter"],
+  nature: BudgetTable["Nature"],
+  period: BudgetTable["Periode"],
+  fileResource: BudgetTable["FileResource"],
+  dept: BudgetTable["IDSection"],
 ): Promise<MsSqlResponse<null>> => {
   const request = new ssms.Request(requestSource);
 
@@ -265,11 +265,11 @@ export const patchRequestBudget = async (
 
 export const getSpecificBudgetData = async (
   requestSource: ssms.Transaction,
-  costCenter: string,
-  nature: string,
-  periode: string,
-  idSection: number,
-  fileResource: string,
+  costCenter: BudgetTable["CostCenter"],
+  nature: BudgetTable["Nature"],
+  periode: BudgetTable["Periode"],
+  idSection: BudgetTable["IDSection"],
+  fileResource: BudgetTable["FileResource"],
 ) => {
   const request = new ssms.Request(requestSource);
 
@@ -362,8 +362,8 @@ export const postBudget = async (
 
 export const getValidDepartments = async (
   pool: ssms.ConnectionPool,
-  fullPeriode: string | null,
-  fileResource: string | null,
+  fullPeriode: BudgetTable["Periode"] | null,
+  fileResource: BudgetTable["FileResource"] | null,
 ) => {
   const request = pool.request();
 
@@ -394,9 +394,9 @@ export const getValidDepartments = async (
 
 export const getValidCostCenters = async (
   pool: ssms.ConnectionPool,
-  fullPeriode: string | null,
-  fileResource: string | null,
-  deptId: number | null,
+  fullPeriode: BudgetTable["Periode"] | null,
+  fileResource: BudgetTable["FileResource"] | null,
+  deptId: BudgetTable["IDSection"] | null,
 ) => {
   const request = pool.request();
 

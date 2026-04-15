@@ -3,7 +3,11 @@ import type {
   PRNumberIncrement,
   RequestItemsAtBudgetView,
 } from "../models/FrmPRH.d.ts";
-import type { MsSqlResponse } from "@scope/server-ssms";
+import type {
+  FrmPRDTable,
+  MsSqlResponse,
+  TraceTable,
+} from "@scope/server-ssms";
 import { FrmPRDSSMSTypes } from "./FrmPRD.ts";
 import { TraceSSMSTypes } from "./Trace.ts";
 import ssms from "mssql";
@@ -25,10 +29,10 @@ export const FrmPRHSSMSTypes = {
 
 export const getRequestItemForBudgetView = async (
   pool: ssms.ConnectionPool,
-  nature: string | null,
-  costCenter: string | null,
-  startDate: string | null,
-  endDate: string | null,
+  nature: FrmPRDTable["Nature"] | null,
+  costCenter: FrmPRDTable["CostCenter"] | null,
+  startDate: TraceTable["SubmitDate"] | null,
+  endDate: TraceTable["SubmitDate"] | null,
 ): Promise<MsSqlResponse<RequestItemsAtBudgetView>> => {
   const request = pool.request();
 
@@ -110,15 +114,15 @@ export const provisionPRNumber = async (
 
 export const postRequestInformation = async (
   requestSource: ssms.Transaction,
-  noForm: string,
-  requestorName: string,
-  requestorNrp: string,
-  requestorSection: string,
-  noPR: string,
-  requestSubject: string,
-  requestAmount: number,
-  requestReturnOnOutgoing: string,
-  remarks: string,
+  noForm: FrmPRHTable["NoForm"],
+  requestorName: FrmPRHTable["Requestor"],
+  requestorNrp: FrmPRHTable["NRP"],
+  requestorSection: FrmPRHTable["Section"],
+  noPR: FrmPRHTable["NoPR"],
+  requestSubject: FrmPRHTable["Subject"],
+  requestAmount: FrmPRHTable["Amount"],
+  requestReturnOnOutgoing: FrmPRHTable["ReturnOnOutgoing"],
+  remarks: FrmPRHTable["Remarks"],
 ): Promise<number> => {
   const request = requestSource.request();
 
@@ -148,8 +152,8 @@ export const postRequestInformation = async (
 
 export const patchRemarksOfRequest = async (
   pool: ssms.ConnectionPool,
-  newRemarks: string,
-  noForm: string,
+  newRemarks: FrmPRHTable["Remarks"],
+  noForm: FrmPRHTable["NoForm"],
 ) => {
   const request = pool.request();
 
@@ -166,7 +170,7 @@ export const patchRemarksOfRequest = async (
 
 export const deleteRequestInformation = async (
   pool: ssms.Transaction,
-  formId: number,
+  formId: FrmPRHTable["ID"],
 ) => {
   const request = pool.request();
 

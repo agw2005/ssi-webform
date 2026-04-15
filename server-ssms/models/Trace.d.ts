@@ -10,9 +10,9 @@ export interface TraceTable {
   EmailReq: string;
   Status: string;
   SubmitDate: string;
-  ProcessedBy: string;
-  ProcessedLevel: string;
-  LevelProgress: string;
+  ProcessedBy: number;
+  ProcessedLevel: number;
+  LevelProgress: number;
   Remarks: string;
 }
 

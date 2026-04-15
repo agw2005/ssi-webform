@@ -29,6 +29,7 @@ export { jwtRequestPayload } from "./auth/jwtRequestPayload.ts";
 export { verifyJwtPayload } from "./auth/verifyJwtPayload.ts";
 export type { TraceRequestsCount } from "./models/Trace.d.ts";
 export { onlyNumerics } from "./helper/onlyNumerics.ts";
+export type { TraceTable } from "./models/Trace.d.ts";
 
 export interface FirstStepInputs {
   name: string;
