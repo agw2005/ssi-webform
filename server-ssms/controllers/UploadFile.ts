@@ -64,6 +64,7 @@ export const postRequestFiles = async (
         (@noForm , @requestSubject , @requestorName , @filename , @uploadDate)`,
   );
   const newUploadId = result.recordset[0].IDUpload;
+  console.log(newUploadId);
   return newUploadId;
 };
 

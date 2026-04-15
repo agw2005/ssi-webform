@@ -445,14 +445,28 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
 
   const transaction = new ssms.Transaction(databasePool);
 
+  transaction.on("error", (err) => {
+    console.error("Internal transaction error caught by listener:", err);
+  });
+
   try {
     await transaction.begin();
 
     const noForm = provisionFormNumber();
-    const [noPR, requestorSectionId] = await Promise.all([
-      provisionPRNumber(transaction, payload.firstStep.department),
-      getSectionIdByName(transaction, payload.firstStep.section),
-    ]);
+    console.log("No. Form");
+    console.log(noForm);
+    const noPR = await provisionPRNumber(
+      transaction,
+      payload.firstStep.department,
+    );
+    console.log("No. PR");
+    console.log(noPR);
+    const requestorSectionId = await getSectionIdByName(
+      transaction,
+      payload.firstStep.section,
+    );
+    console.log("Requestor Section ID");
+    console.log(requestorSectionId);
 
     let requestAmount = 0;
     let isRedLight = false;
@@ -463,15 +477,26 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
         : Number(
           forexData.rates[usage.currency as keyof ForexRates].toFixed(2),
         );
+      console.log("Currency Rate");
+      console.log(currencyRate);
 
       const budgetId =
         `${usage.periode}-${usage.costCenter}-${payload.firstStep.section}`;
+      console.log("Budget ID");
+      console.log(budgetId);
       const quantity = Number(usage.quantity);
+      console.log("Quantity");
+      console.log(quantity);
       const pricePerUnit = Number(usage.unitPrice);
+      console.log("Price Per Unit");
+      console.log(pricePerUnit);
       const netPriceByCurrencyRate = (quantity * pricePerUnit) / currencyRate;
+      console.log("Net Price By Curreny Rate");
+      console.log(netPriceByCurrencyRate);
 
       requestAmount += netPriceByCurrencyRate;
 
+      console.log("New Items ID");
       await postUsage(
         transaction,
         noPR,
@@ -489,6 +514,7 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
         budgetId,
       );
 
+      console.log("Patching Request Budget");
       await patchRequestBudget(
         transaction,
         netPriceByCurrencyRate,
@@ -498,31 +524,40 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
         payload.firstStep.fileResource,
         Number(payload.firstStep.department),
       );
+      console.log("Patched Request Budget");
 
-      const { rowsReturned: natureBalance, rowsAffected } = await singleBalance(
-        transaction,
-        usage.costCenter,
-        usage.periode,
-        usage.budgetOrNature,
-        payload.firstStep.fileResource,
-        Number(payload.firstStep.department),
-      );
+      const { rowsReturned: natureBalance, rowsAffected: _ } =
+        await singleBalance(
+          transaction,
+          usage.costCenter,
+          usage.periode,
+          usage.budgetOrNature,
+          payload.firstStep.fileResource,
+          Number(payload.firstStep.department),
+        );
+      console.log("Initial Balance");
+      console.log("natureBalance");
 
-      console.log(rowsAffected);
-
-      const currentNatureBalance = Number(natureBalance[0].Balance) || 0;
+      const currentNatureBalance = Number(natureBalance[0].Balance);
 
       if (!isRedLight && currentNatureBalance < netPriceByCurrencyRate) {
         isRedLight = true;
       }
+      console.log("Is Red Light?");
+      console.log(isRedLight);
     }
 
     const requestSubject = !isRedLight
       ? payload.secondStep.subject
       : `[RL] ${payload.secondStep.subject}`;
+    console.log("Request Subject");
+    console.log(requestSubject);
 
     const initialRemarks = !isRedLight ? "" : "[RL]";
+    console.log("Initial Remarks");
+    console.log(initialRemarks);
 
+    console.log("New frm_PR_H ID");
     await postRequestInformation(
       transaction,
       noForm,
@@ -544,11 +579,15 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
         type: "ADM",
       })),
     ];
+    console.log("Supervisors");
+    console.log(supervisorNames);
 
     const initialSupervisorId = await getUserIdByName(
       transaction,
       payload.fourthStep.approver[0],
     );
+    console.log("Intial Supervisor ID");
+    console.log(initialSupervisorId);
 
     const newTraceId = await postRequestTrace(
       transaction,
@@ -562,15 +601,21 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
       initialSupervisorId,
       initialRemarks,
     );
+    console.log("Trace ID");
+    console.log(newTraceId);
 
     {
       let approverStep = 0;
       for (const supervisorName of supervisorNames) {
+        console.log(`Start iteration : ${approverStep}`);
         const supervisorId = await getUserIdByName(
           transaction,
           supervisorName.name,
         );
+        console.log("Current Supervisor ID");
+        console.log(supervisorId);
 
+        console.log("Posting to approver path");
         await postRequestApproverPath(
           transaction,
           newTraceId,
@@ -578,11 +623,14 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
           supervisorName.type,
           approverStep + 1,
         );
+        console.log("Posted to approver path");
 
+        console.log(`Finished iteration : ${approverStep}`);
         approverStep += 1;
       }
     }
 
+    console.log("Upload File IDs");
     for (const file of payload.fifthStep.files) {
       await postRequestFiles(
         transaction,
@@ -605,20 +653,21 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
 
     ctx.response.status = 200;
     ctx.response.body = successResponse;
-  } catch (err) {
-    const errMessage = err instanceof Error ? err.message : "";
-    const failingResponse: SubmitResponse = {
-      message: errMessage,
-      noForm: "",
-      noPR: "",
-      traceId: "",
-    };
+  } catch (_) {
     try {
       await transaction.rollback();
     } catch (rollbackErr) {
+      const errMessage = rollbackErr instanceof Error
+        ? rollbackErr.message
+        : "Failed to rollback transaction completely.";
+      const failingResponse: SubmitResponse = {
+        message: errMessage,
+        noForm: "",
+        noPR: "",
+        traceId: "",
+      };
       ctx.response.status = 500;
       ctx.response.body = failingResponse;
-      console.error(rollbackErr);
     }
   }
 };

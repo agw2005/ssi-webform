@@ -91,7 +91,7 @@ export const postUsage = async (
 ): Promise<number> => {
   const netPrice = (quantity * unitPrice) / rateByCurrency;
 
-  const request = new ssms.Request(requestSource);
+  const request = requestSource.request();
 
   request.input("noPR", FrmPRDSSMSTypes.NoPR, noPR);
   request.input("costCenter", FrmPRDSSMSTypes.CostCenter, costCenter);
@@ -125,6 +125,7 @@ export const postUsage = async (
     `);
 
   const newIdItem = result.recordset[0].IDItem;
+  console.log(newIdItem);
   return newIdItem;
 };
 
