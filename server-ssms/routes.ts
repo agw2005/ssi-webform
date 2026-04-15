@@ -1053,7 +1053,7 @@ export const getUploadBudgetTemplate = async (
 ) => {
   const filename = "upload_budget_template.xlsx";
   const options: ContextSendOptions = {
-    root: `${Deno.cwd}/public`,
+    root: `${Deno.cwd()}/public`,
     path: filename,
   };
 
