@@ -563,34 +563,36 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
       initialRemarks,
     );
 
-    await Promise.all(
-      supervisorNames.map(async (supervisorName, index) => {
+    {
+      let approverStep = 0;
+      for (const supervisorName of supervisorNames) {
         const supervisorId = await getUserIdByName(
           transaction,
           supervisorName.name,
         );
+
         await postRequestApproverPath(
           transaction,
           newTraceId,
           supervisorId,
           supervisorName.type,
-          index + 1,
+          approverStep + 1,
         );
-      }),
-    );
 
-    await Promise.all(
-      payload.fifthStep.files.map((file) =>
-        postRequestFiles(
-          transaction,
-          noForm,
-          payload.secondStep.subject,
-          payload.firstStep.name,
-          file.name,
-          submissionDate,
-        )
-      ),
-    );
+        approverStep += 1;
+      }
+    }
+
+    for (const file of payload.fifthStep.files) {
+      await postRequestFiles(
+        transaction,
+        noForm,
+        payload.secondStep.subject,
+        payload.firstStep.name,
+        file.name,
+        submissionDate,
+      );
+    }
 
     await transaction.commit();
 
@@ -611,9 +613,13 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
       noPR: "",
       traceId: "",
     };
-    if (transaction) await transaction.rollback();
-    ctx.response.status = 500;
-    ctx.response.body = failingResponse;
+    try {
+      await transaction.rollback();
+    } catch (rollbackErr) {
+      ctx.response.status = 500;
+      ctx.response.body = failingResponse;
+      console.error(rollbackErr);
+    }
   }
 };
 
