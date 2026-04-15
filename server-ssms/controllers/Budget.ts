@@ -389,7 +389,7 @@ export const getValidDepartments = async (
     rowsAffected: result.rowsAffected,
   };
 
-  return response.rowsReturned;
+  return response;
 };
 
 export const getValidCostCenters = async (
@@ -423,5 +423,5 @@ export const getValidCostCenters = async (
     rowsAffected: result.rowsAffected,
   };
 
-  return response.rowsReturned;
+  return response;
 };

@@ -1015,13 +1015,15 @@ export const getAllValidDepartments = async (
   const fullPeriode = params.get("period") || null;
   const fileResource = params.get("fileresource") || null;
 
-  const [rows, _metadata] = await getValidDepartments(
+  const { rowsReturned, rowsAffected } = await getValidDepartments(
     databasePool,
     fullPeriode,
     fileResource,
   );
+
+  console.log(rowsAffected);
   ctx.response.status = 200;
-  ctx.response.body = rows;
+  ctx.response.body = rowsReturned;
 };
 
 export const getAllValidCostCenters = async (
@@ -1033,12 +1035,14 @@ export const getAllValidCostCenters = async (
   const fileResource = params.get("fileresource") || null;
   const dept = Number(params.get("dept")) || null;
 
-  const [rows, _metadata] = await getValidCostCenters(
+  const { rowsReturned, rowsAffected } = await getValidCostCenters(
     databasePool,
     fullPeriode,
     fileResource,
     dept,
   );
+
+  console.log(rowsAffected);
   ctx.response.status = 200;
-  ctx.response.body = rows;
+  ctx.response.body = rowsReturned;
 };
