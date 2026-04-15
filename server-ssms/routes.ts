@@ -530,7 +530,6 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
 
     const initialRemarks = !isRedLight ? "" : "[RL]";
 
-    console.log("New frm_PR_H ID");
     await postRequestInformation(
       transaction,
       noForm,
@@ -552,15 +551,11 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
         type: "ADM",
       })),
     ];
-    console.log("Supervisors");
-    console.log(supervisorNames);
 
     const initialSupervisorId = await getUserIdByName(
       transaction,
       payload.fourthStep.approver[0],
     );
-    console.log("Intial Supervisor ID");
-    console.log(initialSupervisorId);
 
     const newTraceId = await postRequestTrace(
       transaction,
@@ -574,8 +569,6 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
       initialSupervisorId,
       initialRemarks,
     );
-    console.log("Trace ID");
-    console.log(newTraceId);
 
     {
       let approverStep = 0;
@@ -585,10 +578,7 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
           transaction,
           supervisorName.name,
         );
-        console.log("Current Supervisor ID");
-        console.log(supervisorId);
 
-        console.log("Posting to approver path");
         await postRequestApproverPath(
           transaction,
           newTraceId,
@@ -596,9 +586,7 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
           supervisorName.type,
           approverStep + 1,
         );
-        console.log("Posted to approver path");
 
-        console.log(`Finished iteration : ${approverStep}`);
         approverStep += 1;
       }
     }

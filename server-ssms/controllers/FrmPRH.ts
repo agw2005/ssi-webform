@@ -148,7 +148,6 @@ export const postRequestInformation = async (
   );
 
   const newId = result.recordset[0].ID;
-  console.log(newId);
   return newId;
 };
 

@@ -60,11 +60,11 @@ export const postRequestFiles = async (
   const result = await request.query<Pick<UploadFileTable, "IDUpload">>(
     `INSERT INTO UploadFile
         (NoForm, FormName, Requestor, Filename, DateUpload)
+      OUTPUT INSERTED.IDUpload
       VALUES
         (@noForm , @requestSubject , @requestorName , @filename , @uploadDate)`,
   );
   const newUploadId = result.recordset[0].IDUpload;
-  console.log(newUploadId);
   return newUploadId;
 };
 
