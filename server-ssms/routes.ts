@@ -636,12 +636,10 @@ export const requestJwt = async (ctx: RouterContext<"/request">) => {
   const nineHourExpiration = getNumericDate(60 * 60 * 9);
 
   const request: LoginPayload = await ctx.request.body.json();
-  const response = await fetch(
-    `http://${Deno.env.get("SERVER_HOST")}:${
-      Deno.env.get("SERVER_PORT")
-    }/usermaster/auth`,
+
+  const { rowsReturned: credentials, rowsAffected: _ } = await getAuthInfo(
+    databasePool,
   );
-  const credentials: AuthInfo[] = await response.json();
 
   let validCredentials: AuthInfo | null = null;
 
