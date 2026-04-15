@@ -97,7 +97,8 @@ const stringIsEmpty = (str: string) => {
   return str === "" || str === "null" ? "-" : str;
 };
 
-const approverIsAuthorized = (data: ApproverPath[], nrp: string) => {
+const approverIsAuthorized = (data: ApproverPath[], nrp: string | null) => {
+  if (nrp === "null" || nrp === null) return false;
   return data.some(
     (approver) =>
       onlyNumerics(approver.NRP) === onlyNumerics(nrp) &&
