@@ -111,5 +111,10 @@ if (import.meta.main) {
   console.log(
     `CORS available for client ${Deno.env.get("CLIENT_URL")}`,
   );
-  await oakApp.listen({ port: Number(Deno.env.get("SERVER_PORT")) });
+  await oakApp.listen({
+    port: Number(Deno.env.get("SERVER_PORT")),
+    secure: true,
+    cert: Deno.readTextFileSync(Deno.env.get("SSL_CERT") || "./cert.pem"),
+    key: Deno.readTextFileSync(Deno.env.get("SSL_CERT_KEY") || "./key.pem"),
+  });
 }
