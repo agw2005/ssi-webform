@@ -143,6 +143,7 @@ export const postRequestInformation = async (
   const result = await request.query<Pick<FrmPRHTable, "ID">>(
     `INSERT INTO 
       frm_PR_H (NoForm, Requestor, NRP, Section, NoPR, Subject, Amount, ReturnOnOutgoing, Remarks) 
+      OUTPUT INSERTED.ID
       VALUES (@noForm , @requestorName , @requestorNrp , @requestorSection , @noPR , @requestSubject , ROUND( @requestAmount , 2 ) , @requestReturnOnOutgoing , @remarks);`,
   );
 
