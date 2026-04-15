@@ -453,20 +453,14 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
     await transaction.begin();
 
     const noForm = provisionFormNumber();
-    console.log("No. Form");
-    console.log(noForm);
     const noPR = await provisionPRNumber(
       transaction,
       payload.firstStep.department,
     );
-    console.log("No. PR");
-    console.log(noPR);
     const requestorSectionId = await getSectionIdByName(
       transaction,
       payload.firstStep.section,
     );
-    console.log("Requestor Section ID");
-    console.log(requestorSectionId);
 
     let requestAmount = 0;
     let isRedLight = false;
@@ -477,26 +471,15 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
         : Number(
           forexData.rates[usage.currency as keyof ForexRates].toFixed(2),
         );
-      console.log("Currency Rate");
-      console.log(currencyRate);
 
       const budgetId =
         `${usage.periode}-${usage.costCenter}-${payload.firstStep.section}`;
-      console.log("Budget ID");
-      console.log(budgetId);
       const quantity = Number(usage.quantity);
-      console.log("Quantity");
-      console.log(quantity);
       const pricePerUnit = Number(usage.unitPrice);
-      console.log("Price Per Unit");
-      console.log(pricePerUnit);
       const netPriceByCurrencyRate = (quantity * pricePerUnit) / currencyRate;
-      console.log("Net Price By Curreny Rate");
-      console.log(netPriceByCurrencyRate);
 
       requestAmount += netPriceByCurrencyRate;
 
-      console.log("New Items ID");
       await postUsage(
         transaction,
         noPR,
@@ -514,7 +497,6 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
         budgetId,
       );
 
-      console.log("Patching Request Budget");
       await patchRequestBudget(
         transaction,
         netPriceByCurrencyRate,
@@ -524,7 +506,6 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
         payload.firstStep.fileResource,
         Number(payload.firstStep.department),
       );
-      console.log("Patched Request Budget");
 
       const { rowsReturned: natureBalance, rowsAffected: _ } =
         await singleBalance(
@@ -535,27 +516,19 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
           payload.firstStep.fileResource,
           Number(payload.firstStep.department),
         );
-      console.log("Initial Balance");
-      console.log("natureBalance");
 
       const currentNatureBalance = Number(natureBalance[0].Balance);
 
       if (!isRedLight && currentNatureBalance < netPriceByCurrencyRate) {
         isRedLight = true;
       }
-      console.log("Is Red Light?");
-      console.log(isRedLight);
     }
 
     const requestSubject = !isRedLight
       ? payload.secondStep.subject
       : `[RL] ${payload.secondStep.subject}`;
-    console.log("Request Subject");
-    console.log(requestSubject);
 
     const initialRemarks = !isRedLight ? "" : "[RL]";
-    console.log("Initial Remarks");
-    console.log(initialRemarks);
 
     console.log("New frm_PR_H ID");
     await postRequestInformation(

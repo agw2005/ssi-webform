@@ -125,7 +125,6 @@ export const postUsage = async (
     `);
 
   const newIdItem = result.recordset[0].IDItem;
-  console.log(newIdItem);
   return newIdItem;
 };
 

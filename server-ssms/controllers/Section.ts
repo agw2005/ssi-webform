@@ -57,8 +57,14 @@ export const getSectionIdByName = async (
 
   request.input("monthLetter", SectionSSMSTypes.IDSection, sectionName);
 
-  const result = await new ssms.Request(requestSource).query<SectionId>(
+  const result = await request.query<SectionId>(
     `SELECT IDSection FROM Section WHERE SectionName LIKE @sectionName;`,
   );
-  return result.recordset[0].IDSection;
+
+  const response: MsSqlResponse<SectionId> = {
+    rowsReturned: result.recordset,
+    rowsAffected: result.rowsAffected,
+  };
+
+  return response.rowsReturned[0].IDSection;
 };
