@@ -59,6 +59,7 @@ approverRouter.patch("/remarks", handlers.patchRemarks)
   .patch("/accept", handlers.patchAcceptRequest);
 
 adminRouter
+  .get("/template", handlers.getUploadBudgetTemplate)
   .put("/budget", handlers.putBudgets)
   .delete("/:traceId", handlers.deleteRequest);
 

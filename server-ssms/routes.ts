@@ -85,6 +85,7 @@ import type { AuthInfo } from "./models/UserMaster.d.ts";
 import { onlyNumerics } from "./helper/onlyNumerics.ts";
 import { jsDateToMySQLDatetime } from "./helper/jsDateToMySQLDatetime.ts";
 import ssms from "mssql";
+import type { ContextSendOptions } from "@oak/oak/context";
 
 export const healthCheck = (ctx: RouterContext<"/">) => {
   ctx.response.status = 200;
@@ -1045,4 +1046,21 @@ export const getAllValidCostCenters = async (
   console.log(rowsAffected);
   ctx.response.status = 200;
   ctx.response.body = rowsReturned;
+};
+
+export const getUploadBudgetTemplate = async (
+  ctx: RouterContext<"/template">,
+) => {
+  const filename = "upload_budget_template.xlsx";
+  const options: ContextSendOptions = {
+    root: `${Deno.cwd}/public`,
+    path: filename,
+  };
+
+  ctx.response.headers.set(
+    "Content-Disposition",
+    `attachment; filename="${filename}"`,
+  );
+
+  await ctx.send(options);
 };

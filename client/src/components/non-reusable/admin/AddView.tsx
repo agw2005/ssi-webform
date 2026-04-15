@@ -310,8 +310,14 @@ const AddView = ({ toggleDialog }: AddViewProps) => {
         </div>
         {!budgetFile && (
           <p>
-            Use the following <a href="#" className="text-blue-700">template</a>
-            {" "}
+            Use the following{" "}
+            <a
+              href={`${serverDomain}/admin/template`}
+              target="_blank"
+              className="text-blue-700"
+            >
+              template
+            </a>{" "}
             as the base.
           </p>
         )}
