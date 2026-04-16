@@ -76,7 +76,7 @@ export const deleteRequestFiles = async (
 
   request.input("noForm", UploadFileSSMSTypes.NoForm, noForm);
 
-  await requestSource.request().query(
+  await request.query(
     `DELETE FROM UploadFile WHERE NoForm = @noForm`,
   );
 

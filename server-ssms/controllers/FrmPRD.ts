@@ -154,7 +154,7 @@ export const deleteRequestItems = async (
 ) => {
   const request = new ssms.Request(requestSource);
 
-  request.input("supervisorId", FrmPRDSSMSTypes.NoPR, noPr);
+  request.input("noPr", FrmPRDSSMSTypes.NoPR, noPr);
 
   await request.query(
     `DELETE FROM frm_PR_D WHERE NoPR = @noPr;`,
