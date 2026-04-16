@@ -987,7 +987,7 @@ export const deleteRequest = async (ctx: RouterContext<"/:traceId">) => {
   const transaction = new ssms.Transaction(databasePool);
 
   try {
-    transaction.begin();
+    await transaction.begin();
 
     const { formId, noForm, noPr, requestItems } = await getRequestIds(
       transaction,
