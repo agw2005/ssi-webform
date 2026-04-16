@@ -47,7 +47,7 @@ const RateView = () => {
   }, [dbForex]);
 
   return (
-    <div className="flex flex-col gap-8">
+    <div className="mt-4 flex flex-col gap-8">
       <table className="table-auto border-collapse min-w-full max-w-full">
         <thead>
           <tr>

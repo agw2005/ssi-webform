@@ -7,6 +7,7 @@ import Button from "../components/reusable/Button.tsx";
 import Multiswitch, {
   type SwitchOption,
 } from "../components/reusable/Multiswitch.tsx";
+import RateView from "../components/non-reusable/admin/RateView.tsx";
 
 const options: SwitchOption<string>[] = [
   { value: "Modify", label: "Modify PR" },
@@ -101,7 +102,7 @@ const Admin = () => {
       {viewMode === options[1]["value"] && (
         <AddView toggleDialog={toggleGeneralModal} />
       )}
-      {viewMode === options[2]["value"] && <p>Change Rate Dollar Here</p>}
+      {viewMode === options[2]["value"] && <RateView />}
       <Dialog
         toggle={() => toggleDialog(generalModal)}
         ref={generalModal}

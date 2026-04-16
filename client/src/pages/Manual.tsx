@@ -14,7 +14,6 @@ import step3Approver from "../assets/images/manual/step3-approver.png";
 import step4Approver from "../assets/images/manual/step4-approver.png";
 import step5Approver from "../assets/images/manual/step5-approver.png";
 import step6Approver from "../assets/images/manual/step6-approver.png";
-import RateView from "../components/non-reusable/admin/RateView.tsx";
 
 const Manual = () => {
   return (
@@ -25,9 +24,6 @@ const Manual = () => {
       pageTitle="Manual"
     >
       <div className="flex flex-col gap-32">
-        <div>
-          <RateView />
-        </div>
         <section className="flex flex-col gap-2">
           <h2 className="font-black text-4xl underline underline-offset-4">
             Table of Contents
