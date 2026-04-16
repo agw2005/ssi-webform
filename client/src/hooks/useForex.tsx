@@ -35,7 +35,7 @@ const EU_FOREX_API_URL =
  *
  * @returns The forex information, loading state, errors, and manual refetch trigger.
  */
-export const useForex = (mode: "Eu" | "Db") => {
+export const useForex = (mode: "Eu" | "Db", tempDb: boolean = false) => {
   const [forexInformation, setForexInformation] = useState<
     UseForexResponse | null
   >(null);
@@ -49,7 +49,7 @@ export const useForex = (mode: "Eu" | "Db") => {
     try {
       const response = mode === "Eu"
         ? await fetch(EU_FOREX_API_URL)
-        : await fetch(webformAPI.Forex);
+        : await fetch(tempDb ? webformAPI.ForexTemp : webformAPI.Forex);
       if (!response.ok) {
         throw new Error(
           `Error when fetching forex information: ${response.status} (useForex.tsx)`,

@@ -61,12 +61,12 @@ approverRouter.patch("/remarks", handlers.patchRemarks)
 adminRouter
   .get("/template", handlers.getUploadBudgetTemplate)
   .put("/budget", handlers.putBudgets)
-  .delete("/:traceId", handlers.deleteRequest);
+  .delete("/:traceId", handlers.deleteRequest)
+  .patch("/ratedollartemp", handlers.patchForex);
 
 rootRouter.get("/", handlers.healthCheck);
 rootRouter.post("/submit", handlers.submitRequest);
 rootRouter.get("/forex", handlers.getForex);
-rootRouter.patch("/ratedollartemp", handlers.patchForex);
 rootRouter.use(
   "/section",
   sectionRouter.routes(),

@@ -4,7 +4,8 @@ const prefix = "webform-api";
 
 export const webformAPI = {
   Forex: `/${prefix}/forex`,
-  NewForex: `/${prefix}/ratedollartemp`,
+  ForexTemp: `/${prefix}/forextemp`,
+  NewForex: `/${prefix}/admin/ratedollartemp`,
   SubmitBudget: `/${prefix}/admin/budget`,
   SubmitRequest: `/${prefix}/submit`,
   Template: `/${prefix}/admin/template`,

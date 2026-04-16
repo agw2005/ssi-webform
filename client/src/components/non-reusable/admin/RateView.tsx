@@ -28,6 +28,13 @@ const RateView = () => {
     refetchForex: DbRefetch,
   } = useForex("Db");
 
+  const {
+    forexInformation: dbTempForex,
+    isLoading: _DbTempIsLoading,
+    error: _DbTempIsErr,
+    refetchForex: DbTempRefetch,
+  } = useForex("Db", true);
+
   const [currentInputRates, setCurrentInputRates] = useState<InputRates>({
     IDR: dbForex?.rates.IDR || 0,
     JPY: dbForex?.rates.JPY || 0,
@@ -59,6 +66,9 @@ const RateView = () => {
             <th className="text-xs lg:text-sm xl:text-base | whitespace-nowrap border p-2 bg-blue-800 text-white border-black">
               Webform Database Dollar Rates
             </th>
+            <th className="text-xs lg:text-sm xl:text-base | whitespace-nowrap border p-2 bg-blue-800 text-white border-black">
+              Webform Database Dollar Rates (Temporary)
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -88,6 +98,17 @@ const RateView = () => {
                     ? formatNumberToString(Number(dbForex?.rates.SGD))
                     : forex === forexes[3]
                     ? formatNumberToString(Number(dbForex?.rates.USD))
+                    : ""}
+                </td>
+                <td className="text-xs lg:text-sm xl:text-base | whitespace-nowrap text-center border break-all p-2">
+                  {forex === forexes[0]
+                    ? formatNumberToString(Number(dbTempForex?.rates.IDR))
+                    : forex === forexes[1]
+                    ? formatNumberToString(Number(dbTempForex?.rates.JPY))
+                    : forex === forexes[2]
+                    ? formatNumberToString(Number(dbTempForex?.rates.SGD))
+                    : forex === forexes[3]
+                    ? formatNumberToString(Number(dbTempForex?.rates.USD))
                     : ""}
                 </td>
               </tr>
@@ -193,6 +214,7 @@ const RateView = () => {
             }
 
             await DbRefetch();
+            await DbTempRefetch();
           }}
         >
           <Button id="submit-new-rate-dollar" variant="black" label="Update" />
