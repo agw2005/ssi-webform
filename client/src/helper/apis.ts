@@ -71,7 +71,7 @@ export const webformAPI = {
     costCenter?: string | null,
   ) => {
     const url = new URL(
-      `/${prefix}/budget/costcenters`,
+      `/${prefix}/budget/nature`,
       globalThis.location.origin,
     );
 
@@ -95,7 +95,7 @@ export const webformAPI = {
     period?: string,
   ) => {
     const url = new URL(
-      `/${prefix}/budget/costcenters`,
+      `/${prefix}/budget/balance`,
       globalThis.location.origin,
     );
 

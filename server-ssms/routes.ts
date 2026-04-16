@@ -67,7 +67,6 @@ import type { RouterContext } from "@oak/oak";
 import databasePool from "./dbpool.ts";
 import type {
   BudgetTable,
-  ForexAPIResponse,
   LoginPayload,
   LoginResponse,
   patchApprovalVerdict,
@@ -76,7 +75,6 @@ import type {
   SubmitResponse,
 } from "@scope/server-ssms";
 import provisionFormNumber from "./helper/provisionFormNumber.ts";
-import type { ForexRates } from "./models/FrmPRH.d.ts";
 import addHours from "./helper/addHours.ts";
 import { create, getNumericDate } from "@zaubrik/djwt";
 import type { Header, Payload } from "@zaubrik/djwt";
@@ -434,6 +432,7 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
     SubmitPayload,
     "fifthStep"
   >;
+
   const payload: SubmitPayload = {
     ...parsedPayload,
     fifthStep: {
@@ -441,10 +440,9 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
     },
   };
 
-  const FOREX_API_URL =
-    "https://api.frankfurter.dev/v1/latest?symbols=IDR,JPY,SGD&base=USD";
-  const forexResponse = await fetch(FOREX_API_URL);
-  const forexData: ForexAPIResponse = await forexResponse.json();
+  const { rowsReturned: rates, rowsAffected: _ } = await getCurrentRateDollar(
+    databasePool,
+  );
 
   const indonesiaUtc = 7;
   const now = addHours(new Date(), indonesiaUtc);
@@ -474,11 +472,13 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
     let isRedLight = false;
 
     for (const usage of payload.thirdStep.usages) {
-      const currencyRate = usage.currency === "USD"
-        ? Number(forexData.amount.toFixed(2))
-        : Number(
-          forexData.rates[usage.currency as keyof ForexRates].toFixed(2),
-        );
+      const currencyRate = usage.currency === "JPY"
+        ? rates.find((rate) => rate.Currency === "YEN")?.Valuation
+        : rates.find((rate) => rate.Currency === usage.currency)?.Valuation;
+
+      if (!currencyRate) {
+        throw new Error("Unable to fetch RateDollar values");
+      }
 
       const budgetId =
         `${usage.periode}-${usage.costCenter}-${payload.firstStep.section}`;
