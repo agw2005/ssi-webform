@@ -20,8 +20,11 @@ const usePurchasingRequests = <T, U extends { Count: number }>(
     let ignore = false;
 
     const fetchData = async () => {
-      const requestUrlParameterized = new URL(requestUrl);
-      const requestCountUrlParameterized = new URL(requestCountUrl);
+      const base = globalThis.location.origin;
+
+      const requestUrlParameterized = new URL(requestUrl, base);
+      const requestCountUrlParameterized = new URL(requestCountUrl, base);
+
       requestUrlParameterized.search = queryString;
       requestCountUrlParameterized.search = queryString;
 

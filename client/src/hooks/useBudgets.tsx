@@ -15,7 +15,7 @@ const useBudgets = (
   const refetch = () => setTrigger((prev) => prev + 1);
 
   useEffect(() => {
-    const requestUrl = new URL(webformAPI.Budget);
+    const requestUrl = new URL(webformAPI.Budget, globalThis.location.origin);
     requestUrl.search = queryString;
     const abortController = new AbortController();
     setBudgetIsError(null);

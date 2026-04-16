@@ -22,7 +22,7 @@ const useReport = (
     let ignore = false;
 
     const fetchData = async () => {
-      const requestUrl = new URL(webformAPI.Report);
+      const requestUrl = new URL(webformAPI.Report, globalThis.location.origin);
       requestUrl.search = queryString;
 
       try {

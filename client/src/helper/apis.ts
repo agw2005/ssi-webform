@@ -30,7 +30,10 @@ export const webformAPI = {
   PostVerdict: (verdict: "accept" | "reject") =>
     `/${prefix}/approve/${verdict}`,
   Departments: (fileResource?: string) => {
-    const url = new URL(`/${prefix}/budget/departments`);
+    const url = new URL(
+      `/${prefix}/budget/departments`,
+      globalThis.location.origin,
+    );
 
     const params = new URLSearchParams({ period: getCurrentPeriod() });
 
@@ -44,7 +47,10 @@ export const webformAPI = {
     fileResource?: string,
     deptId?: number | null,
   ) => {
-    const url = new URL(`/${prefix}/budget/costcenters`);
+    const url = new URL(
+      `/${prefix}/budget/costcenters`,
+      globalThis.location.origin,
+    );
 
     const params = new URLSearchParams({ period: getCurrentPeriod() });
 
@@ -61,7 +67,10 @@ export const webformAPI = {
     deptId?: number | null,
     costCenter?: string | null,
   ) => {
-    const url = new URL(`/${prefix}/budget/costcenters`);
+    const url = new URL(
+      `/${prefix}/budget/costcenters`,
+      globalThis.location.origin,
+    );
 
     const params = new URLSearchParams({ period: getCurrentPeriod() });
 
@@ -82,7 +91,10 @@ export const webformAPI = {
     nature?: string,
     period?: string,
   ) => {
-    const url = new URL(`/${prefix}/budget/costcenters`);
+    const url = new URL(
+      `/${prefix}/budget/costcenters`,
+      globalThis.location.origin,
+    );
 
     const params = new URLSearchParams({ period: getCurrentPeriod() });
 
