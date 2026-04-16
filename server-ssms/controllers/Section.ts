@@ -55,7 +55,7 @@ export const getSectionIdByName = async (
 ): Promise<number> => {
   const request = requestSource.request();
 
-  request.input("sectionName", SectionSSMSTypes.IDSection, sectionName);
+  request.input("sectionName", SectionSSMSTypes.SectionName, sectionName);
 
   const result = await request.query<SectionId>(
     `SELECT IDSection FROM Section WHERE SectionName LIKE @sectionName;`,
