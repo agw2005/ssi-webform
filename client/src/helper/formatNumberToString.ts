@@ -1,7 +1,10 @@
-const formatNumberToString = (n: number): string => {
+const formatNumberToString = (
+  n: number,
+  trailingDecimal: number = 2,
+): string => {
   const formattedNumber = new Intl.NumberFormat("en-US", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
+    minimumFractionDigits: trailingDecimal,
+    maximumFractionDigits: trailingDecimal,
   }).format(n);
   return formattedNumber;
 };

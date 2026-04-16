@@ -80,35 +80,35 @@ const RateView = () => {
                 </td>
                 <td className="text-xs lg:text-sm xl:text-base | whitespace-nowrap text-center border break-all p-2">
                   {forex === forexes[0]
-                    ? formatNumberToString(Number(euForex?.rates.IDR))
+                    ? formatNumberToString(Number(euForex?.rates.IDR), 6)
                     : forex === forexes[1]
-                    ? formatNumberToString(Number(euForex?.rates.JPY))
+                    ? formatNumberToString(Number(euForex?.rates.JPY), 6)
                     : forex === forexes[2]
-                    ? formatNumberToString(Number(euForex?.rates.SGD))
+                    ? formatNumberToString(Number(euForex?.rates.SGD), 6)
                     : forex === forexes[3]
-                    ? formatNumberToString(Number(euForex?.rates.USD))
+                    ? formatNumberToString(Number(euForex?.rates.USD), 6)
                     : ""}
                 </td>
                 <td className="text-xs lg:text-sm xl:text-base | whitespace-nowrap text-center border break-all p-2">
                   {forex === forexes[0]
-                    ? formatNumberToString(Number(dbForex?.rates.IDR))
+                    ? formatNumberToString(Number(dbForex?.rates.IDR), 6)
                     : forex === forexes[1]
-                    ? formatNumberToString(Number(dbForex?.rates.JPY))
+                    ? formatNumberToString(Number(dbForex?.rates.JPY), 6)
                     : forex === forexes[2]
-                    ? formatNumberToString(Number(dbForex?.rates.SGD))
+                    ? formatNumberToString(Number(dbForex?.rates.SGD), 6)
                     : forex === forexes[3]
-                    ? formatNumberToString(Number(dbForex?.rates.USD))
+                    ? formatNumberToString(Number(dbForex?.rates.USD), 6)
                     : ""}
                 </td>
                 <td className="text-xs lg:text-sm xl:text-base | whitespace-nowrap text-center border break-all p-2">
                   {forex === forexes[0]
-                    ? formatNumberToString(Number(dbTempForex?.rates.IDR))
+                    ? formatNumberToString(Number(dbTempForex?.rates.IDR), 6)
                     : forex === forexes[1]
-                    ? formatNumberToString(Number(dbTempForex?.rates.JPY))
+                    ? formatNumberToString(Number(dbTempForex?.rates.JPY), 6)
                     : forex === forexes[2]
-                    ? formatNumberToString(Number(dbTempForex?.rates.SGD))
+                    ? formatNumberToString(Number(dbTempForex?.rates.SGD), 6)
                     : forex === forexes[3]
-                    ? formatNumberToString(Number(dbTempForex?.rates.USD))
+                    ? formatNumberToString(Number(dbTempForex?.rates.USD), 6)
                     : ""}
                 </td>
               </tr>
