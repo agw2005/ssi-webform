@@ -87,7 +87,10 @@ import { jsDateToMySQLDatetime } from "./helper/jsDateToMySQLDatetime.ts";
 import ssms from "mssql";
 import type { ContextSendOptions } from "@oak/oak/context";
 import { getCurrentRateDollar } from "./controllers/RateDollar.ts";
-import { patchRateDollarTemp } from "./controllers/RateDollarTemp.ts";
+import {
+  getCurrentRateDollarTemp,
+  patchRateDollarTemp,
+} from "./controllers/RateDollarTemp.ts";
 
 export const healthCheck = (ctx: RouterContext<"/">) => {
   ctx.response.status = 200;
@@ -1135,4 +1138,16 @@ export const patchForex = async (
   );
 
   ctx.response.status = 200;
+};
+
+export const getForexTemp = async (
+  ctx: RouterContext<"/forextemp">,
+) => {
+  const { rowsReturned, rowsAffected } = await getCurrentRateDollarTemp(
+    databasePool,
+  );
+
+  console.log(rowsAffected);
+  ctx.response.status = 200;
+  ctx.response.body = rowsReturned;
 };

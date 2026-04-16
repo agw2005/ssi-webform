@@ -64,9 +64,12 @@ adminRouter
   .delete("/:traceId", handlers.deleteRequest)
   .patch("/ratedollartemp", handlers.patchForex);
 
-rootRouter.get("/", handlers.healthCheck);
-rootRouter.post("/submit", handlers.submitRequest);
-rootRouter.get("/forex", handlers.getForex);
+rootRouter
+  .get("/", handlers.healthCheck)
+  .post("/submit", handlers.submitRequest)
+  .get("/forex", handlers.getForex)
+  .get("/forextemp", handlers.getForexTemp);
+
 rootRouter.use(
   "/section",
   sectionRouter.routes(),
