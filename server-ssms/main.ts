@@ -2,6 +2,14 @@ import { Application, Router } from "@oak/oak";
 import * as handlers from "./routes.ts";
 import { handleCors } from "./handleCors.ts";
 import { verifyJwt } from "./auth/verifyJwt.ts";
+import { updateRates } from "./jobs.ts";
+
+Deno.cron("start-of-each-month", "0 0 1 * *", async () => {
+  console.log((new Date()).toISOString());
+  console.log("Started copying RateDollarTemp to RateDollar");
+  await updateRates();
+  console.log("Finished copying RateDollarTemp to RateDollar");
+});
 
 const oakApp = new Application();
 

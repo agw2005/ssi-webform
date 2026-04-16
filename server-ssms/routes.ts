@@ -86,7 +86,10 @@ import { onlyNumerics } from "./helper/onlyNumerics.ts";
 import { jsDateToMySQLDatetime } from "./helper/jsDateToMySQLDatetime.ts";
 import ssms from "mssql";
 import type { ContextSendOptions } from "@oak/oak/context";
-import { getCurrentRateDollar } from "./controllers/RateDollar.ts";
+import {
+  getCurrentRateDollar,
+  renewRateDollar,
+} from "./controllers/RateDollar.ts";
 import {
   getCurrentRateDollarTemp,
   patchRateDollarTemp,
@@ -1151,3 +1154,5 @@ export const getForexTemp = async (
   ctx.response.status = 200;
   ctx.response.body = rowsReturned;
 };
+
+export const patchRateDollar = async () => await renewRateDollar(databasePool);

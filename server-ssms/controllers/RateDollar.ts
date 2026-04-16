@@ -26,3 +26,18 @@ export const getCurrentRateDollar = async (
 
   return response;
 };
+
+export const renewRateDollar = async (
+  pool: ssms.ConnectionPool,
+): Promise<null> => {
+  await pool.request().query(`
+    UPDATE RateDollar
+    SET
+      RateDollar.CurrencyValue = RateDollarTemp.CurrencyValue
+    FROM RateDollar
+    INNER JOIN RateDollarTemp
+      ON RateDollar.IDCur = RateDollarTemp.IDCur;
+    `);
+
+  return null;
+};
