@@ -1,13 +1,23 @@
 import { useRef, useState } from "react";
 import Primitive from "../components/reusable/Primitive.tsx";
-import Switch from "../components/reusable/Switch.tsx";
 import ModifyView from "../components/non-reusable/admin/ModifyView.tsx";
 import AddView from "../components/non-reusable/admin/AddView.tsx";
 import Dialog, { toggleDialog } from "../components/reusable/Dialog.tsx";
 import Button from "../components/reusable/Button.tsx";
+import Multiswitch, {
+  SwitchOption,
+} from "../components/reusable/Multiswitch.tsx";
+
+const options: SwitchOption<string>[] = [
+  { value: "Modify", label: "Modify PR" },
+  { value: "Add", label: "Add Budget" },
+  { value: "Rate", label: "Renew Rates" },
+] as const;
+type ViewMode = typeof options[number]["value"];
 
 const Admin = () => {
-  const [viewMode, setViewMode] = useState<"Modify" | "Add">("Modify");
+  const [viewMode, setViewMode] = useState<ViewMode>(options[0]["value"]);
+
   const generalModal = useRef<HTMLDialogElement>(null);
   const [generalModalContent, setGeneralModalContent] = useState<
     React.ReactNode
@@ -76,22 +86,22 @@ const Admin = () => {
       componentName="Admin.tsx"
       pageTitle="Admin"
     >
-      <Switch
+      <Multiswitch
         id="admin-view-switch"
         variant="black"
-        onValue="Modify"
-        offValue="Add"
-        onLabel="Modify PR"
-        offLabel="Add Budget"
+        value={viewMode}
         setter={setViewMode}
-        getter={viewMode}
+        options={options}
       />
-      {viewMode === "Modify" && (
+      {viewMode === options[0]["value"] && (
         <ModifyView
           toggleDialog={toggleGeneralModal}
         />
       )}
-      {viewMode === "Add" && <AddView toggleDialog={toggleGeneralModal} />}
+      {viewMode === options[1]["value"] && (
+        <AddView toggleDialog={toggleGeneralModal} />
+      )}
+      {viewMode === options[2]["value"] && <p>Change Rate Dollar Here</p>}
       <Dialog
         toggle={() => toggleDialog(generalModal)}
         ref={generalModal}
