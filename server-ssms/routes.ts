@@ -444,6 +444,9 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
     databasePool,
   );
 
+  console.log("Rates");
+  console.log(rates);
+
   const indonesiaUtc = 7;
   const now = addHours(new Date(), indonesiaUtc);
   const submissionDate = jsDateToMySQLDatetime(now);
@@ -472,9 +475,14 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
     let isRedLight = false;
 
     for (const usage of payload.thirdStep.usages) {
+      console.log("Usage");
+      console.log(usage);
       const currencyRate = usage.currency === "JPY"
         ? rates.find((rate) => rate.Currency === "YEN")?.Valuation
         : rates.find((rate) => rate.Currency === usage.currency)?.Valuation;
+
+      console.log("currencyRate");
+      console.log(currencyRate);
 
       if (!currencyRate) {
         throw new Error("Unable to fetch RateDollar values");
@@ -482,11 +490,21 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
 
       const budgetId =
         `${usage.periode}-${usage.costCenter}-${payload.firstStep.section}`;
+      console.log("budgetId");
+      console.log(budgetId);
       const quantity = Number(usage.quantity);
+      console.log("quantity");
+      console.log(quantity);
       const pricePerUnit = Number(usage.unitPrice);
+      console.log("pricePerUnit");
+      console.log(pricePerUnit);
       const netPriceByCurrencyRate = (quantity * pricePerUnit) / currencyRate;
+      console.log("netPriceByCurrencyRate");
+      console.log(netPriceByCurrencyRate);
 
       requestAmount += netPriceByCurrencyRate;
+
+      console.log("Posting usage");
 
       await postUsage(
         transaction,
@@ -505,6 +523,9 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
         budgetId,
       );
 
+      console.log("Usage posted");
+
+      console.log("Patching budget");
       await patchRequestBudget(
         transaction,
         netPriceByCurrencyRate,
@@ -514,6 +535,7 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
         payload.firstStep.fileResource,
         Number(payload.firstStep.department),
       );
+      console.log("Budget patched");
 
       const { rowsReturned: natureBalance, rowsAffected: _ } =
         await singleBalance(
@@ -524,8 +546,12 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
           payload.firstStep.fileResource,
           Number(payload.firstStep.department),
         );
+      console.log("natureBalance");
+      console.log(natureBalance);
 
       const currentNatureBalance = Number(natureBalance[0].Balance);
+      console.log("currentNatureBalance");
+      console.log(currentNatureBalance);
 
       if (!isRedLight && currentNatureBalance < netPriceByCurrencyRate) {
         isRedLight = true;
@@ -538,6 +564,7 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
 
     const initialRemarks = !isRedLight ? "" : "[RL]";
 
+    console.log("Posting request info");
     await postRequestInformation(
       transaction,
       noForm,
@@ -550,6 +577,7 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
       payload.secondStep.returnOnOutgoing,
       initialRemarks,
     );
+    console.log("Info request posted");
 
     const supervisorNames = [
       ...payload.fourthStep.approver.map((name) => ({ name, type: "A" })),
@@ -560,11 +588,14 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
       })),
     ];
 
+    console.log("Initial Supervisor ID");
     const initialSupervisorId = await getUserIdByName(
       transaction,
       payload.fourthStep.approver[0],
     );
+    console.log(initialSupervisorId);
 
+    console.log("New Trace ID");
     const newTraceId = await postRequestTrace(
       transaction,
       noForm,
@@ -577,9 +608,11 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
       initialSupervisorId,
       initialRemarks,
     );
+    console.log(newTraceId);
 
     {
       let approverStep = 0;
+      console.log(`Post Approver ${approverStep}`);
       for (const supervisorName of supervisorNames) {
         console.log(`Start iteration : ${approverStep}`);
         const supervisorId = await getUserIdByName(
@@ -598,6 +631,7 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
         approverStep += 1;
       }
     }
+    console.log("Posten all approvers");
 
     console.log("Upload File IDs");
     for (const file of payload.fifthStep.files) {
@@ -610,6 +644,7 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
         submissionDate,
       );
     }
+    console.log("File IDs uploaded");
 
     await transaction.commit();
 
