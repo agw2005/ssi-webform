@@ -9,7 +9,7 @@ const LOADING_MESSAGE = "(Loading)";
 const ERROR_MESSAGE = "(Error)";
 
 const ForexInformation = () => {
-  const { forexInformation, isLoading, error } = useForex();
+  const { forexInformation, isLoading, error } = useForex("Db");
 
   if (error) {
     console.error(error);
@@ -83,8 +83,8 @@ const ForexInformation = () => {
             : error
             ? ERROR_MESSAGE
             : `${
-              forexInformation?.amount &&
-              formatNumberToString(forexInformation.amount)
+              forexInformation?.rates.USD &&
+              formatNumberToString(forexInformation.rates.USD)
             } `}
           <strong>USD</strong>
         </p>

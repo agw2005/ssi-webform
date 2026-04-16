@@ -134,3 +134,8 @@ export interface MsSqlResponse<T> {
   rowsReturned: T[];
   rowsAffected: number[];
 }
+
+export interface WebformDBForexResponse {
+  Currency: string;
+  Valuation: number;
+}

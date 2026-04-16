@@ -86,6 +86,8 @@ import { onlyNumerics } from "./helper/onlyNumerics.ts";
 import { jsDateToMySQLDatetime } from "./helper/jsDateToMySQLDatetime.ts";
 import ssms from "mssql";
 import type { ContextSendOptions } from "@oak/oak/context";
+import { getCurrentRateDollar } from "./controllers/RateDollar.ts";
+import { patchRateDollarTemp } from "./controllers/RateDollarTemp.ts";
 
 export const healthCheck = (ctx: RouterContext<"/">) => {
   ctx.response.status = 200;
@@ -1087,4 +1089,50 @@ export const getUploadBudgetTemplate = async (
   );
 
   await ctx.send(options);
+};
+
+export const getForex = async (
+  ctx: RouterContext<"/forex">,
+) => {
+  const { rowsReturned, rowsAffected } = await getCurrentRateDollar(
+    databasePool,
+  );
+
+  console.log(rowsAffected);
+  ctx.response.status = 200;
+  ctx.response.body = rowsReturned;
+};
+
+export const patchForex = async (
+  ctx: RouterContext<"/ratedollartemp">,
+) => {
+  const params = ctx.request.url.searchParams;
+  const currency = params.get("currency");
+  const newValue = params.get("value");
+
+  if (currency === null || newValue === null) {
+    ctx.response.status = 400;
+    ctx.response.body = "Invalid parameters!";
+    return;
+  }
+
+  if (isNaN(Number(newValue))) {
+    ctx.response.status = 400;
+    ctx.response.body = "Invalid parameters!";
+    return;
+  }
+
+  if (!["IDR", "JPY", "SGD", "USD"].includes(currency)) {
+    ctx.response.status = 400;
+    ctx.response.body = "Invalid parameters!";
+    return;
+  }
+
+  await patchRateDollarTemp(
+    databasePool,
+    currency as "IDR" | "JPY" | "SGD" | "USD",
+    Number(newValue),
+  );
+
+  ctx.response.status = 200;
 };

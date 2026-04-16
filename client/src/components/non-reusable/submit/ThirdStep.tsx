@@ -14,7 +14,10 @@ import type {
   ThirdStepInputs,
   ValidCostCenter,
 } from "@scope/server-ssms";
-import type { ForexAPIResponse, ForexRates } from "../../../hooks/useForex.tsx";
+import type {
+  FrankfurterForexRates,
+  UseForexResponse,
+} from "../../../hooks/useForex.tsx";
 import formatNumberToString from "../../../helper/formatNumberToString.ts";
 import formatStringToNumber from "../../../helper/formatStringToNumber.ts";
 import getCurrentPeriod from "../../../helper/getCurrentPeriod.ts";
@@ -95,7 +98,7 @@ interface ThirdStepProps {
     React.SetStateAction<ThirdStepInputs>
   >;
   thirdStepInputsDefaultValue: ThirdStepInputs;
-  forexInformation: ForexAPIResponse | null;
+  forexInformation: UseForexResponse | null;
   costCenters: ValidCostCenter[] | null;
   natures: Nature[] | null;
   setActiveCostCenter: React.Dispatch<React.SetStateAction<string>>;
@@ -185,7 +188,8 @@ const ThirdStep = ({
 
         const forexRate = usage.currency === "USD" ? 1 : formatStringToNumber(
           (
-            forexInformation?.rates[usage.currency as keyof ForexRates] ||
+            forexInformation
+              ?.rates[usage.currency as keyof FrankfurterForexRates] ||
             1
           ).toFixed(2),
         );
@@ -468,7 +472,10 @@ const ThirdStep = ({
                             (Number(usage.unitPrice) * Number(usage.quantity)) /
                               Number(
                                 forexInformation
-                                  ?.rates[usage.currency as keyof ForexRates] ||
+                                  ?.rates[
+                                    usage
+                                      .currency as keyof FrankfurterForexRates
+                                  ] ||
                                   1,
                               ),
                           )

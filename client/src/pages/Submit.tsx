@@ -159,7 +159,7 @@ const Submit = () => {
     forexInformation,
     isLoading: _forexIsLoading,
     error: _forexIsError,
-  } = useForex();
+  } = useForex("Db");
 
   const generalModal = useRef<HTMLDialogElement>(null);
 

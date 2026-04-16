@@ -5,7 +5,7 @@ import AddView from "../components/non-reusable/admin/AddView.tsx";
 import Dialog, { toggleDialog } from "../components/reusable/Dialog.tsx";
 import Button from "../components/reusable/Button.tsx";
 import Multiswitch, {
-  SwitchOption,
+  type SwitchOption,
 } from "../components/reusable/Multiswitch.tsx";
 
 const options: SwitchOption<string>[] = [

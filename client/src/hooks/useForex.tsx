@@ -1,19 +1,33 @@
 import { useCallback, useEffect, useState } from "react";
+import { webformAPI } from "../helper/apis.ts";
+import { type WebformDBForexResponse } from "@scope/server-ssms";
 
-export interface ForexRates {
+interface Forexes {
+  IDR: number;
+  JPY: number;
+  SGD: number;
+  USD: number;
+}
+
+export interface FrankfurterForexRates {
   IDR: number;
   JPY: number;
   SGD: number;
 }
 
-export interface ForexAPIResponse {
+export interface FrankfurterForexAPIResponse {
   amount: number;
   base: string;
   date: string;
-  rates: ForexRates;
+  rates: FrankfurterForexRates;
 }
 
-const FOREX_API_URL =
+export interface UseForexResponse {
+  date: string;
+  rates: Forexes;
+}
+
+const EU_FOREX_API_URL =
   "https://api.frankfurter.dev/v1/latest?symbols=IDR,JPY,SGD&base=USD";
 
 /**
@@ -21,25 +35,57 @@ const FOREX_API_URL =
  *
  * @returns The forex information, loading state, errors, and manual refetch trigger.
  */
-export const useForex = () => {
+export const useForex = (mode: "Eu" | "Db") => {
   const [forexInformation, setForexInformation] = useState<
-    ForexAPIResponse | null
+    UseForexResponse | null
   >(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchForexInformation = useCallback(async () => {
+  const fetchData = useCallback(async () => {
     setIsLoading(true);
     setError(null);
+
     try {
-      const response = await fetch(FOREX_API_URL);
+      const response = mode === "Eu"
+        ? await fetch(EU_FOREX_API_URL)
+        : await fetch(webformAPI.Forex);
       if (!response.ok) {
         throw new Error(
           `Error when fetching forex information: ${response.status} (useForex.tsx)`,
         );
       }
-      const data: ForexAPIResponse = await response.json();
-      setForexInformation(data);
+
+      if (mode === "Eu") {
+        const frankfuterData: FrankfurterForexAPIResponse = await response
+          .json();
+
+        const hookData: UseForexResponse = {
+          date: (new Date()).toString(),
+          rates: {
+            IDR: frankfuterData.rates.IDR,
+            JPY: frankfuterData.rates.JPY,
+            SGD: frankfuterData.rates.SGD,
+            USD: frankfuterData.amount,
+          },
+        };
+
+        setForexInformation(hookData);
+      } else {
+        const dbData: WebformDBForexResponse[] = await response.json();
+
+        const hookData: UseForexResponse = {
+          date: (new Date()).toString(),
+          rates: {
+            IDR: dbData.find((data) => data.Currency === "IDR")?.Valuation || 0,
+            JPY: dbData.find((data) => data.Currency === "YEN")?.Valuation || 0,
+            SGD: dbData.find((data) => data.Currency === "SGD")?.Valuation || 0,
+            USD: dbData.find((data) => data.Currency === "USD")?.Valuation || 0,
+          },
+        };
+
+        setForexInformation(hookData);
+      }
     } catch (err: unknown) {
       if (err instanceof Error) {
         setError(err.message);
@@ -52,14 +98,14 @@ export const useForex = () => {
   }, []);
 
   useEffect(() => {
-    fetchForexInformation();
-  }, []);
+    fetchData();
+  }, [mode]);
 
   return {
     forexInformation,
     isLoading,
     error,
-    refetchForex: fetchForexInformation,
+    refetchForex: fetchData,
   };
 };
 export default useForex;

@@ -65,6 +65,8 @@ adminRouter
 
 rootRouter.get("/", handlers.healthCheck);
 rootRouter.post("/submit", handlers.submitRequest);
+rootRouter.get("/forex", handlers.getForex);
+rootRouter.patch("/ratedollartemp", handlers.patchForex);
 rootRouter.use(
   "/section",
   sectionRouter.routes(),

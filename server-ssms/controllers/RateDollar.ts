@@ -1,0 +1,28 @@
+import ssms from "mssql";
+import type { MsSqlResponse, WebformDBForexResponse } from "@scope/server-ssms";
+
+const { VarChar, Decimal } = ssms;
+
+const _RateDollarTypes = {
+  IDCur: VarChar(50),
+  CurrencyName: VarChar(50),
+  CurrencyValue: Decimal(18, 6),
+};
+
+export const getCurrentRateDollar = async (
+  pool: ssms.ConnectionPool,
+): Promise<MsSqlResponse<WebformDBForexResponse>> => {
+  const result = await pool.request().query<WebformDBForexResponse>(`
+    SELECT
+      IDCur AS Currency,
+      CurrencyValue AS Valuation
+    FROM RateDollar;
+    `);
+
+  const response: MsSqlResponse<WebformDBForexResponse> = {
+    rowsReturned: result.recordset,
+    rowsAffected: result.rowsAffected,
+  };
+
+  return response;
+};
