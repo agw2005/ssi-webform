@@ -440,13 +440,6 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
     },
   };
 
-  const { rowsReturned: rates, rowsAffected: _ } = await getCurrentRateDollar(
-    databasePool,
-  );
-
-  console.log("Rates");
-  console.log(rates);
-
   const indonesiaUtc = 7;
   const now = addHours(new Date(), indonesiaUtc);
   const submissionDate = jsDateToMySQLDatetime(now);
@@ -458,18 +451,31 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
     console.error("Internal transaction error caught by listener:", err);
   });
 
+  const { rowsReturned: rates, rowsAffected: _ } = await getCurrentRateDollar(
+    databasePool,
+  );
+
+  console.log("Rates");
+  console.log(rates);
+
   try {
     await transaction.begin();
 
+    console.log("noForm");
     const noForm = provisionFormNumber();
+    console.log(noForm);
+    console.log("noPR");
     const noPR = await provisionPRNumber(
       transaction,
       payload.firstStep.department,
     );
+    console.log(noPR);
+    console.log("requestorSectionId");
     const requestorSectionId = await getSectionIdByName(
       transaction,
       payload.firstStep.section,
     );
+    console.log(requestorSectionId);
 
     let requestAmount = 0;
     let isRedLight = false;
