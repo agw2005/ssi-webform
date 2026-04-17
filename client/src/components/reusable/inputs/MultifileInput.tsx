@@ -68,7 +68,8 @@ const MultifileInput = ({ uploads, onUploadsChange }: MultifileInputProps) => {
       </div>
       <RemovableSelections
         variant="purple"
-        array={uploads}
+        removableSelections={uploads}
+        unremovableSelections={[]}
         arraySetter={onUploadsChange}
         getLabel={(inputFile) => inputFile.name}
       />
