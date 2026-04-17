@@ -42,10 +42,10 @@ const adminRouter = new Router();
 sectionRouter.get("/names", handlers.getSectionNames)
   .get("/users", handlers.getSectionUsers);
 
-userMasterRouter.get("/names", handlers.getSupervisorNames).get(
-  "/auth",
-  handlers.getAuthInformation,
-);
+userMasterRouter
+  .get("/names", handlers.getSupervisorNames)
+  .get("/auth", handlers.getAuthInformation)
+  .post("/nrp", handlers.getUserByNRP);
 
 budgetRouter
   .get("/fileresources", handlers.getAllFileResources)

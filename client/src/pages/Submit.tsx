@@ -28,6 +28,8 @@ import { useNavigate } from "react-router-dom";
 import Dialog, { toggleDialog } from "../components/reusable/Dialog.tsx";
 import Button from "../components/reusable/Button.tsx";
 import { webformAPI } from "../helper/apis.ts";
+import useDefaultSupervisor from "../hooks/useDefaultSupervisor.tsx";
+import { defaultSupervisorsNRP } from "../helper/defaultSupervisor.ts";
 
 const PROGRESS_CONSTRAINT = {
   FIRST_STEP: [1],
@@ -92,6 +94,24 @@ const Submit = () => {
 
   const [fifthStepInputs, setFifthStepInputs] = useState<FifthStepInputs>(
     DEFAULT_VALUES.fifthStep,
+  );
+
+  const {
+    supervisors: fixedApprovers,
+  } = useDefaultSupervisor(
+    defaultSupervisorsNRP.approver,
+  );
+
+  const {
+    supervisors: fixedReleasers,
+  } = useDefaultSupervisor(
+    defaultSupervisorsNRP.releaser,
+  );
+
+  const {
+    supervisors: fixedAdministrators,
+  } = useDefaultSupervisor(
+    defaultSupervisorsNRP.administrator,
   );
 
   const [activeCostCenter, setActiveCostCenter] = useState<string>("");
@@ -323,7 +343,14 @@ const Submit = () => {
       firstStep: firstStepInputs,
       secondStep: secondStepInputs,
       thirdStep: thirdStepInputs,
-      fourthStep: fourthStepInputs,
+      fourthStep: {
+        approver: [...(fixedApprovers ?? []), ...fourthStepInputs.approver],
+        releaser: [...(fixedReleasers ?? []), ...fourthStepInputs.releaser],
+        administrator: [
+          ...(fixedAdministrators ?? []),
+          ...fourthStepInputs.administrator,
+        ],
+      },
       fifthStep: fifthStepInputs,
     };
     try {
@@ -475,6 +502,9 @@ const Submit = () => {
                 fourthStepInputsSetter={setFourthStepInputs}
                 fourthStepInputsDefaultValue={DEFAULT_VALUES.fourthStep}
                 userSectionMappings={userSectionMappings}
+                unremovableApprovers={fixedApprovers ?? []}
+                unremovableReleasers={fixedReleasers ?? []}
+                unremovableAdministrators={fixedAdministrators ?? []}
               />
             )
             : (

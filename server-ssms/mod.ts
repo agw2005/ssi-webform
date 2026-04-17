@@ -145,3 +145,9 @@ export interface WebformDBForexResponse {
   Currency: string;
   Valuation: number;
 }
+
+export interface SupervisorNRPs {
+  approver: string[];
+  releaser: string[];
+  administrator: string[];
+}

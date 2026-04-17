@@ -14,6 +14,9 @@ interface FifthStepProps {
   fourthStepInputsDefaultValue: FourthStepInputs;
   userSectionMappings: UserSection[] | null;
   alertUnfilledForm: () => void;
+  unremovableApprovers: string[];
+  unremovableReleasers: string[];
+  unremovableAdministrators: string[];
 }
 
 const FourthStep = ({
@@ -23,6 +26,9 @@ const FourthStep = ({
   fourthStepInputsDefaultValue,
   userSectionMappings,
   alertUnfilledForm,
+  unremovableApprovers,
+  unremovableReleasers,
+  unremovableAdministrators,
 }: FifthStepProps) => {
   const onChangeHandler =
     (field: keyof FourthStepInputs) => (newSelections: string[]) => {
@@ -42,10 +48,12 @@ const FourthStep = ({
   return (
     <div className="rounded-2xl bg-green-100 p-8 flex flex-col gap-4 flex-1 w-full">
       <h1 className="text-3xl font-bold text-green-600">Step 4</h1>
-      <TipBox
+      {
+        /* <TipBox
         label={`Special Releaser will available if you have \"Red Light\"`}
         variant="green"
-      />
+      /> */
+      }
       <TipBox
         label={`Check again your approver before you submit your PR Form`}
         variant="green"
@@ -68,6 +76,7 @@ const FourthStep = ({
             subfilters: mapping.subdomain,
           }))}
         selections={fourthStepInputsGetter.approver}
+        defaultSelections={unremovableApprovers}
         onSelectionsChange={onChangeHandler("approver")}
       />
       <MultiselectionInputTwoFilter
@@ -88,6 +97,7 @@ const FourthStep = ({
             subfilters: mapping.subdomain,
           }))}
         selections={fourthStepInputsGetter.releaser}
+        defaultSelections={unremovableReleasers}
         onSelectionsChange={onChangeHandler("releaser")}
       />
       <MultiselectionInputTwoFilter
@@ -108,6 +118,7 @@ const FourthStep = ({
             subfilters: mapping.subdomain,
           }))}
         selections={fourthStepInputsGetter.administrator}
+        defaultSelections={unremovableAdministrators}
         onSelectionsChange={onChangeHandler("administrator")}
       />
       <div className="flex gap-2">

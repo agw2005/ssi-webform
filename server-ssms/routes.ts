@@ -60,6 +60,7 @@ import {
 import {
   getAuthInfo,
   getUserIdByName,
+  getUserInfoByNRP,
   patchNewLogin,
   supervisorNames,
 } from "./controllers/UserMaster.ts";
@@ -819,6 +820,38 @@ export const getSupervisorNames = async (
 
   logger.trace(
     `Finished running function supervisorNames()`,
+  );
+  logger.debug(
+    `${rowsAffected[0]} rows affected`,
+  );
+
+  ctx.response.status = 200;
+  ctx.response.body = rowsReturned;
+};
+
+export const getUserByNRP = async (
+  ctx: RouterContext<"/nrp">,
+) => {
+  logger.info(
+    `User accessed route "/nrp"`,
+  );
+
+  const request: string[] = await ctx.request.body.json();
+  logger.debug(
+    `Value of request is {value}`,
+    { request },
+  );
+
+  logger.trace(
+    `Running function getUserInfoByNRP()`,
+  );
+  const { rowsReturned, rowsAffected } = await getUserInfoByNRP(
+    databasePool,
+    request,
+  );
+
+  logger.trace(
+    `Finished running function getUserInfoByNRP()`,
   );
   logger.debug(
     `${rowsAffected[0]} rows affected`,

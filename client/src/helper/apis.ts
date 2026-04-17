@@ -12,6 +12,7 @@ export const webformAPI = {
   Request: `/${prefix}/trace/requests`,
   RequestCount: `/${prefix}/trace/requests/count`,
   SupervisorNames: `/${prefix}/usermaster/names`,
+  SupervisorNrp: `/${prefix}/usermaster/nrp`,
   DeleteRequest: (traceId: string | number) => `/${prefix}/admin/${traceId}`,
   VerifyToken: `/${prefix}/jwt/verify`,
   Budget: `/${prefix}/budget`,

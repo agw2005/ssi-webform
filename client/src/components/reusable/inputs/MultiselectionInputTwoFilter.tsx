@@ -19,6 +19,7 @@ interface MultiselectionInputTwoFilterProps {
   revealedFilterDefaultValue: string;
   mappings: TwoFilterStringToStringMapping[];
   selections: string[];
+  defaultSelections: string[];
   onSelectionsChange: (newSelections: string[]) => void;
 }
 
@@ -35,6 +36,7 @@ const MultiselectionInputTwoFilter = ({
   revealedFilterDefaultValue,
   mappings,
   selections,
+  defaultSelections,
   onSelectionsChange,
 }: MultiselectionInputTwoFilterProps) => {
   const [defaultFilter, setDefaultFilter] = useState<string | undefined>(
@@ -107,7 +109,8 @@ const MultiselectionInputTwoFilter = ({
       </div>
       <RemovableSelections
         variant="green"
-        array={selections}
+        removableSelections={selections}
+        unremovableSelections={defaultSelections}
         arraySetter={onSelectionsChange}
         getLabel={(inputString) => inputString}
       />

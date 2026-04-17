@@ -38,6 +38,37 @@ export const supervisorNames = async (
   return response;
 };
 
+export const getUserInfoByNRP = async (
+  pool: ssms.ConnectionPool,
+  nrp: UserMasterTable["NRP"][],
+): Promise<MsSqlResponse<UserMasterName>> => {
+  const request = pool.request();
+
+  const paramNames: UserMasterTable["NRP"][] = [];
+
+  nrp.forEach((value, i) => {
+    const paramName = `nrp${i}`;
+    request.input(paramName, VarChar(50), value);
+    paramNames.push(`@${paramName}`);
+  });
+
+  const params = paramNames.join(", ");
+
+  const result = await pool.request().query<UserMasterName>(
+    `SELECT NameUser, IDUser
+    FROM UserMaster
+    WHERE NRP IN (${params})
+    ORDER BY IDUser DESC`,
+  );
+
+  const response: MsSqlResponse<UserMasterName> = {
+    rowsReturned: result.recordset,
+    rowsAffected: result.rowsAffected,
+  };
+
+  return response;
+};
+
 export const getUserIdByName = async (
   requestSource: ssms.Transaction,
   nameUser: UserMasterTable["NameUser"],
