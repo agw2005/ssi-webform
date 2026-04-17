@@ -46,7 +46,7 @@ export const getUserInfoByNRP = async (
 
   request.input("nrp", UserMasterSSMSTypes.NRP, nrp);
 
-  const result = await pool.request().query<UserMasterName>(
+  const result = await request.query<UserMasterName>(
     `SELECT NameUser, IDUser
     FROM UserMaster
     WHERE NRP = @nrp
