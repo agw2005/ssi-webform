@@ -20,14 +20,19 @@ const useDefaultSupervisor = (
     const abortController = new AbortController();
     setIsLoading(true);
 
+    console.log(url);
     const fetchData = async () => {
       try {
         const response = await fetch(url, {
           signal: abortController.signal,
           cache: "no-cache",
           method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
           body: JSON.stringify(supervisorNRPs),
         });
+        console.log(response);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -53,7 +58,7 @@ const useDefaultSupervisor = (
     return () => {
       abortController.abort();
     };
-  }, [url, trigger]);
+  }, [url, trigger, supervisorNRPs]);
 
   return { supervisors, isLoading, isError, refetch };
 };
