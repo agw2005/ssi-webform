@@ -45,7 +45,7 @@ sectionRouter.get("/names", handlers.getSectionNames)
 userMasterRouter
   .get("/names", handlers.getSupervisorNames)
   .get("/auth", handlers.getAuthInformation)
-  .post("/nrp", handlers.getUserByNRP);
+  .get("/:nrp", handlers.getUserByNRP);
 
 budgetRouter
   .get("/fileresources", handlers.getAllFileResources)

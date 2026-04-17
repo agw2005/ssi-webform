@@ -20,26 +20,26 @@ const useDefaultSupervisor = (
     const abortController = new AbortController();
     setIsLoading(true);
 
-    console.log(url);
     const fetchData = async () => {
       try {
-        const response = await fetch(url, {
-          signal: abortController.signal,
-          cache: "no-cache",
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(supervisorNRPs),
-        });
-        console.log(response);
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+        for (const supervisorNrp of supervisorNRPs) {
+          const response = await fetch(`${url}/${supervisorNrp}`, {
+            signal: abortController.signal,
+          });
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+
+          const responseJson: SupervisorNames[] = await response.json();
+          const newNames = responseJson.map((supervisor) =>
+            supervisor.NameUser
+          );
+
+          setSupervisors((prev) => [
+            ...(prev ?? []),
+            ...newNames,
+          ]);
         }
-        const responseJson: SupervisorNames[] = await response.json();
-        setSupervisors(
-          responseJson.map((supervisor) => supervisor.NameUser),
-        );
       } catch (err) {
         if (err instanceof Error && err.name === "AbortError") {
           return;

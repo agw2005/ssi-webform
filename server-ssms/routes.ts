@@ -830,16 +830,15 @@ export const getSupervisorNames = async (
 };
 
 export const getUserByNRP = async (
-  ctx: RouterContext<"/nrp">,
+  ctx: RouterContext<"/:nrp">,
 ) => {
   logger.info(
     `User accessed route "/nrp"`,
   );
 
-  const request: string[] = await ctx.request.body.json();
+  const nrp = ctx.params.nrp;
   logger.debug(
-    `Value of request is {value}`,
-    { request },
+    `Value of nrp is ${nrp}`,
   );
 
   logger.trace(
@@ -847,7 +846,7 @@ export const getUserByNRP = async (
   );
   const { rowsReturned, rowsAffected } = await getUserInfoByNRP(
     databasePool,
-    request,
+    nrp,
   );
 
   logger.trace(
