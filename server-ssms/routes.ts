@@ -94,9 +94,7 @@ import {
 } from "./controllers/RateDollarTemp.ts";
 import { getLogger } from "@logtape/logtape";
 import { loggerDate } from "./helper/loggerDate.ts";
-import { setupLogger } from "./logger.ts";
 
-await setupLogger();
 const logger = getLogger("webform-oak-server");
 
 export const healthCheck = (ctx: RouterContext<"/">) => {
