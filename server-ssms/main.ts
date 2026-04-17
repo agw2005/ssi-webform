@@ -5,7 +5,9 @@ import { verifyJwt } from "./auth/verifyJwt.ts";
 import { updateRates } from "./jobs.ts";
 import { getLogger } from "@logtape/logtape";
 import { loggerDate } from "./helper/loggerDate.ts";
+import { setupLogger } from "./logger.ts";
 
+await setupLogger();
 const logger = getLogger("webform-oak-server");
 
 Deno.cron("start-of-each-month", "0 0 1 * *", async () => {
