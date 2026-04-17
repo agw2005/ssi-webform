@@ -16,5 +16,3 @@ export const loggerDate = (date: Date = new Date()) => {
 
   return `${y}-${m}-${d} ${h}:${min}:${sec}:${millSec} (TZ${sign}${offH}:${offM})`;
 };
-
-console.log(loggerDate());

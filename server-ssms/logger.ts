@@ -1,5 +1,20 @@
 import { getFileSink } from "@logtape/file";
-import { configure, type LogRecord } from "@logtape/logtape";
+import { configure, getConsoleSink, type LogRecord } from "@logtape/logtape";
+import { loggerDate } from "./helper/loggerDate.ts";
+
+const webformLogFormatter = (record: LogRecord): string => {
+  const levelMap: Record<string, string> = {
+    "trace": "TRC",
+    "debug": "DBG",
+    "info": "INF",
+    "warn": "WRN",
+    "error": "ERR",
+    "fatal": "FTL",
+  };
+  const level = levelMap[record.level] || record.level.toUpperCase();
+
+  return `[${level}] ${loggerDate()}=> ${record.message}\n`;
+};
 
 export async function setupLogger() {
   await configure({
@@ -9,10 +24,12 @@ export async function setupLogger() {
         bufferSize: 8192,
         flushInterval: 5000,
         nonBlocking: true,
+        formatter: webformLogFormatter,
       }),
-      console: (record: LogRecord) => {
-        console.log(`[${record.level}] ${record.message}`);
-      },
+      console: getConsoleSink({
+        nonBlocking: true,
+        formatter: webformLogFormatter,
+      }),
     },
     loggers: [
       {

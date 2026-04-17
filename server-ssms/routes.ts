@@ -93,13 +93,12 @@ import {
   patchRateDollarTemp,
 } from "./controllers/RateDollarTemp.ts";
 import { getLogger } from "@logtape/logtape";
-import { loggerDate } from "./helper/loggerDate.ts";
 
 const logger = getLogger("webform-oak-server");
 
 export const healthCheck = (ctx: RouterContext<"/">) => {
   logger.info(
-    `${loggerDate()} : User accessed route "/"`,
+    `User accessed route "/"`,
   );
   ctx.response.status = 200;
   ctx.response.body = "Healthy";
@@ -109,10 +108,10 @@ export const getAllFileResources = async (
   ctx: RouterContext<"/fileresources">,
 ) => {
   logger.info(
-    `${loggerDate()} : User accessed route "/budget/fileresources"`,
+    `User accessed route "/budget/fileresources"`,
   );
   logger.trace(
-    `${loggerDate()} : Running function allFileResources()`,
+    `Running function allFileResources()`,
   );
 
   const { rowsReturned, rowsAffected } = await allFileResources(
@@ -120,10 +119,10 @@ export const getAllFileResources = async (
   );
 
   logger.trace(
-    `${loggerDate()} : Finished running function allFileResources()`,
+    `Finished running function allFileResources()`,
   );
   logger.debug(
-    `${loggerDate()} : ${rowsAffected[0]} rows affected"`,
+    `${rowsAffected[0]} rows affected`,
   );
 
   ctx.response.status = 200;
@@ -134,19 +133,19 @@ export const getAvailableBudgetYears = async (
   ctx: RouterContext<"/years">,
 ) => {
   logger.info(
-    `${loggerDate()} : User accessed route "/budget/years"`,
+    `User accessed route "/budget/years"`,
   );
   logger.trace(
-    `${loggerDate()} : Running function availableYears()`,
+    `Running function availableYears()`,
   );
 
   const { rowsReturned, rowsAffected } = await availableYears(databasePool);
 
   logger.trace(
-    `${loggerDate()} : Finished running function availableYears()`,
+    `Finished running function availableYears()`,
   );
   logger.debug(
-    `${loggerDate()} : ${rowsAffected[0]} rows affected"`,
+    `${rowsAffected[0]} rows affected`,
   );
 
   ctx.response.status = 200;
@@ -157,19 +156,19 @@ export const getAvailableBudgetPeriods = async (
   ctx: RouterContext<"/periods">,
 ) => {
   logger.info(
-    `${loggerDate()} : User accessed route "/budget/periods"`,
+    `User accessed route "/budget/periods"`,
   );
   logger.trace(
-    `${loggerDate()} : Running function availablePeriods()`,
+    `Running function availablePeriods()`,
   );
 
   const { rowsReturned, rowsAffected } = await availablePeriods(databasePool);
 
   logger.trace(
-    `${loggerDate()} : Finished running function availablePeriods()`,
+    `Finished running function availablePeriods()`,
   );
   logger.debug(
-    `${loggerDate()} : ${rowsAffected[0]} rows affected"`,
+    `${rowsAffected[0]} rows affected`,
   );
 
   ctx.response.status = 200;
@@ -180,11 +179,11 @@ export const getAllValidNatures = async (
   ctx: RouterContext<"/nature">,
 ) => {
   logger.info(
-    `${loggerDate()} : User accessed route "/budget/nature"`,
+    `User accessed route "/budget/nature"`,
   );
 
   logger.trace(
-    `${loggerDate()} : Started searching route parameters`,
+    `Started searching route parameters`,
   );
 
   const params = ctx.request.url.searchParams;
@@ -195,24 +194,24 @@ export const getAllValidNatures = async (
   const costCenter = params.get("costcenter") || null;
 
   logger.trace(
-    `${loggerDate()} : Finished searching route parameters`,
+    `Finished searching route parameters`,
   );
 
   logger.debug(
-    `${loggerDate()} : Value of fullPeriode is ${fullPeriode}`,
+    `Value of fullPeriode is ${fullPeriode}`,
   );
   logger.debug(
-    `${loggerDate()} : Value of fileResource is ${fileResource}`,
+    `Value of fileResource is ${fileResource}`,
   );
   logger.debug(
-    `${loggerDate()} : Value of dept is ${dept}`,
+    `Value of dept is ${dept}`,
   );
   logger.debug(
-    `${loggerDate()} : Value of costCenter is ${costCenter}`,
+    `Value of costCenter is ${costCenter}`,
   );
 
   logger.trace(
-    `${loggerDate()} : Running function getValidNatures()`,
+    `Running function getValidNatures()`,
   );
 
   const { rowsReturned, rowsAffected } = await getValidNatures(
@@ -224,10 +223,10 @@ export const getAllValidNatures = async (
   );
 
   logger.trace(
-    `${loggerDate()} : Finished running function getValidNatures()`,
+    `Finished running function getValidNatures()`,
   );
   logger.debug(
-    `${loggerDate()} : ${rowsAffected[0]} rows affected"`,
+    `${rowsAffected[0]} rows affected`,
   );
 
   ctx.response.status = 200;
@@ -238,17 +237,17 @@ export const getSingleBalance = async (
   ctx: RouterContext<"/balance">,
 ) => {
   logger.info(
-    `${loggerDate()} : User accessed route "/budget/balance"`,
+    `User accessed route "/budget/balance"`,
   );
 
   logger.trace(
-    `${loggerDate()} : Started searching route parameters`,
+    `Started searching route parameters`,
   );
 
   const params = ctx.request.url.searchParams;
 
   logger.trace(
-    `${loggerDate()} : Finished searching route parameters`,
+    `Finished searching route parameters`,
   );
 
   const costCenter = params.get("costcenter") || null;
@@ -258,19 +257,19 @@ export const getSingleBalance = async (
   const dept = Number(params.get("dept")) || null;
 
   logger.debug(
-    `${loggerDate()} : Value of costCenter is ${costCenter}`,
+    `Value of costCenter is ${costCenter}`,
   );
   logger.debug(
-    `${loggerDate()} : Value of periode is ${periode}`,
+    `Value of periode is ${periode}`,
   );
   logger.debug(
-    `${loggerDate()} : Value of nature is ${nature}`,
+    `Value of nature is ${nature}`,
   );
   logger.debug(
-    `${loggerDate()} : Value of fileResource is ${fileResource}`,
+    `Value of fileResource is ${fileResource}`,
   );
   logger.debug(
-    `${loggerDate()} : Value of dept is ${dept}`,
+    `Value of dept is ${dept}`,
   );
 
   if (
@@ -281,14 +280,14 @@ export const getSingleBalance = async (
     !dept
   ) {
     logger.info(
-      `${loggerDate()} : At least 1 parameter was empty when all was required (400 Bad Request)`,
+      `At least 1 parameter was empty when all was required (400 Bad Request)`,
     );
     ctx.response.status = 400;
     return;
   }
 
   logger.trace(
-    `${loggerDate()} : Running function singleBalance()`,
+    `Running function singleBalance()`,
   );
 
   const { rowsReturned, rowsAffected } = await singleBalance(
@@ -301,10 +300,10 @@ export const getSingleBalance = async (
   );
 
   logger.trace(
-    `${loggerDate()} : Finished running function singleBalance()`,
+    `Finished running function singleBalance()`,
   );
   logger.debug(
-    `${loggerDate()} : ${rowsAffected[0]} rows affected"`,
+    `${rowsAffected[0]} rows affected`,
   );
 
   ctx.response.status = 200;
@@ -315,31 +314,31 @@ export const getBudgetViewInformation = async (
   ctx: RouterContext<"/">,
 ) => {
   logger.info(
-    `${loggerDate()} : User accessed route "/budget/"`,
+    `User accessed route "/budget/"`,
   );
 
   logger.trace(
-    `${loggerDate()} : Started searching route parameters`,
+    `Started searching route parameters`,
   );
 
   const params = ctx.request.url.searchParams;
 
   logger.trace(
-    `${loggerDate()} : Finished searching route parameters`,
+    `Finished searching route parameters`,
   );
 
   const year = params.get("year") || null;
   const fileResource = params.get("fileresource") || null;
 
   logger.debug(
-    `${loggerDate()} : Value of year is ${year}`,
+    `Value of year is ${year}`,
   );
   logger.debug(
-    `${loggerDate()} : Value of fileResource is ${fileResource}`,
+    `Value of fileResource is ${fileResource}`,
   );
 
   logger.trace(
-    `${loggerDate()} : Running function getBudgetsByYear()`,
+    `Running function getBudgetsByYear()`,
   );
 
   const { rowsReturned, rowsAffected } = await getBudgetsByYear(
@@ -349,10 +348,10 @@ export const getBudgetViewInformation = async (
   );
 
   logger.trace(
-    `${loggerDate()} : Finished running function getBudgetsByYear()`,
+    `Finished running function getBudgetsByYear()`,
   );
   logger.debug(
-    `${loggerDate()} : ${rowsAffected[0]} rows affected"`,
+    `${rowsAffected[0]} rows affected`,
   );
 
   ctx.response.status = 200;
@@ -363,31 +362,31 @@ export const getReportViewInformation = async (
   ctx: RouterContext<"/report">,
 ) => {
   logger.info(
-    `${loggerDate()} : User accessed route "/budget/report"`,
+    `User accessed route "/budget/report"`,
   );
 
   logger.trace(
-    `${loggerDate()} : Started searching route parameters`,
+    `Started searching route parameters`,
   );
 
   const params = ctx.request.url.searchParams;
 
   logger.trace(
-    `${loggerDate()} : Finished searching route parameters`,
+    `Finished searching route parameters`,
   );
 
   const periode = params.get("periode") || null;
   const fileResource = params.get("fileresource") || null;
 
   logger.debug(
-    `${loggerDate()} : Value of periode is ${periode}`,
+    `Value of periode is ${periode}`,
   );
   logger.debug(
-    `${loggerDate()} : Value of fileResource is ${fileResource}`,
+    `Value of fileResource is ${fileResource}`,
   );
 
   logger.trace(
-    `${loggerDate()} : Running function reportInformation()`,
+    `Running function reportInformation()`,
   );
 
   const { rowsReturned, rowsAffected } = await reportInformation(
@@ -397,10 +396,10 @@ export const getReportViewInformation = async (
   );
 
   logger.trace(
-    `${loggerDate()} : Finished running function reportInformation()`,
+    `Finished running function reportInformation()`,
   );
   logger.debug(
-    `${loggerDate()} : ${rowsAffected[0]} rows affected"`,
+    `${rowsAffected[0]} rows affected`,
   );
 
   ctx.response.status = 200;
@@ -411,17 +410,17 @@ export const getSpecificRequestItems = async (
   ctx: RouterContext<"/request/:traceId">,
 ) => {
   logger.info(
-    `${loggerDate()} : User accessed route "/frmprd/request"`,
+    `User accessed route "/frmprd/request"`,
   );
 
   const traceId = Number(ctx.params.traceId);
 
   logger.debug(
-    `${loggerDate()} : Value of traceId is ${traceId}`,
+    `Value of traceId is ${traceId}`,
   );
 
   logger.trace(
-    `${loggerDate()} : Running function getAllRequestItems()`,
+    `Running function getAllRequestItems()`,
   );
 
   const { rowsReturned, rowsAffected } = await getAllRequestItems(
@@ -430,10 +429,10 @@ export const getSpecificRequestItems = async (
   );
 
   logger.trace(
-    `${loggerDate()} : Finished running function getAllRequestItems()`,
+    `Finished running function getAllRequestItems()`,
   );
   logger.debug(
-    `${loggerDate()} : ${rowsAffected[0]} rows affected"`,
+    `${rowsAffected[0]} rows affected`,
   );
 
   ctx.response.status = 200;
@@ -444,17 +443,17 @@ export const getRequestsAtBudgetView = async (
   ctx: RouterContext<"/">,
 ) => {
   logger.info(
-    `${loggerDate()} : User accessed route "/frmprh/"`,
+    `User accessed route "/frmprh/"`,
   );
 
   logger.trace(
-    `${loggerDate()} : Started searching route parameters`,
+    `Started searching route parameters`,
   );
 
   const params = ctx.request.url.searchParams;
 
   logger.trace(
-    `${loggerDate()} : Finished searching route parameters`,
+    `Finished searching route parameters`,
   );
 
   const nature = params.get("nature") || null;
@@ -463,20 +462,20 @@ export const getRequestsAtBudgetView = async (
   const endDate = params.get("enddate") || null;
 
   logger.debug(
-    `${loggerDate()} : Value of nature is ${nature}`,
+    `Value of nature is ${nature}`,
   );
   logger.debug(
-    `${loggerDate()} : Value of costCenter is ${costCenter}`,
+    `Value of costCenter is ${costCenter}`,
   );
   logger.debug(
-    `${loggerDate()} : Value of startDate is ${startDate}`,
+    `Value of startDate is ${startDate}`,
   );
   logger.debug(
-    `${loggerDate()} : Value of endDate is ${endDate}`,
+    `Value of endDate is ${endDate}`,
   );
 
   logger.trace(
-    `${loggerDate()} : Running function getRequestItemForBudgetView()`,
+    `Running function getRequestItemForBudgetView()`,
   );
 
   const { rowsReturned, rowsAffected } = await getRequestItemForBudgetView(
@@ -488,10 +487,10 @@ export const getRequestsAtBudgetView = async (
   );
 
   logger.trace(
-    `${loggerDate()} : Finished running function getRequestItemForBudgetView()`,
+    `Finished running function getRequestItemForBudgetView()`,
   );
   logger.debug(
-    `${loggerDate()} : ${rowsAffected[0]} rows affected"`,
+    `${rowsAffected[0]} rows affected`,
   );
 
   ctx.response.status = 200;
@@ -499,20 +498,33 @@ export const getRequestsAtBudgetView = async (
 };
 
 export const getSectionNames = async (ctx: RouterContext<"/names">) => {
+  logger.info(
+    `User accessed route "/section/names"`,
+  );
+
+  logger.trace(
+    `Running function userSectionMappings()`,
+  );
   const { rowsReturned, rowsAffected } = await sectionNames(databasePool);
 
-  console.log(rowsAffected);
+  logger.trace(
+    `Finished running function userSectionMappings()`,
+  );
+  logger.debug(
+    `${rowsAffected[0]} rows affected`,
+  );
+
   ctx.response.status = 200;
   ctx.response.body = rowsReturned;
 };
 
 export const getSectionUsers = async (ctx: RouterContext<"/users">) => {
   logger.info(
-    `${loggerDate()} : User accessed route "/section/users"`,
+    `User accessed route "/section/users"`,
   );
 
   logger.trace(
-    `${loggerDate()} : Running function userSectionMappings()`,
+    `Running function userSectionMappings()`,
   );
 
   const { rowsReturned, rowsAffected } = await userSectionMappings(
@@ -520,10 +532,10 @@ export const getSectionUsers = async (ctx: RouterContext<"/users">) => {
   );
 
   logger.trace(
-    `${loggerDate()} : Finished running function userSectionMappings()`,
+    `Finished running function userSectionMappings()`,
   );
   logger.debug(
-    `${loggerDate()} : ${rowsAffected[0]} rows affected"`,
+    `${rowsAffected[0]} rows affected`,
   );
 
   ctx.response.status = 200;
@@ -532,17 +544,17 @@ export const getSectionUsers = async (ctx: RouterContext<"/users">) => {
 
 export const getRequests = async (ctx: RouterContext<"/requests">) => {
   logger.info(
-    `${loggerDate()} : User accessed route "/trace/requests"`,
+    `User accessed route "/trace/requests"`,
   );
 
   logger.trace(
-    `${loggerDate()} : Started searching route parameters`,
+    `Started searching route parameters`,
   );
 
   const params = ctx.request.url.searchParams;
 
   logger.trace(
-    `${loggerDate()} : Finished searching route parameters`,
+    `Finished searching route parameters`,
   );
 
   const requestorSectionId = params.has("requestorsectionid")
@@ -565,32 +577,32 @@ export const getRequests = async (ctx: RouterContext<"/requests">) => {
   const page = Number(params.get("page")) || 1;
 
   logger.debug(
-    `${loggerDate()} : Value of requestorSectionId is ${requestorSectionId}`,
+    `Value of requestorSectionId is ${requestorSectionId}`,
   );
   logger.debug(
-    `${loggerDate()} : Value of status is ${status}`,
+    `Value of status is ${status}`,
   );
   logger.debug(
-    `${loggerDate()} : Value of currentSupervisorId is ${currentSupervisorId}`,
+    `Value of currentSupervisorId is ${currentSupervisorId}`,
   );
   logger.debug(
-    `${loggerDate()} : Value of startDate is ${startDate}`,
+    `Value of startDate is ${startDate}`,
   );
   logger.debug(
-    `${loggerDate()} : Value of endDate is ${endDate}`,
+    `Value of endDate is ${endDate}`,
   );
   logger.debug(
-    `${loggerDate()} : Value of search is ${search}`,
+    `Value of search is ${search}`,
   );
   logger.debug(
-    `${loggerDate()} : Value of pagination is ${pagination}`,
+    `Value of pagination is ${pagination}`,
   );
   logger.debug(
-    `${loggerDate()} : Value of page is ${page}`,
+    `Value of page is ${page}`,
   );
 
   logger.trace(
-    `${loggerDate()} : Running function homeRequests()`,
+    `Running function homeRequests()`,
   );
 
   const { rowsReturned, rowsAffected } = await homeRequests(
@@ -606,10 +618,10 @@ export const getRequests = async (ctx: RouterContext<"/requests">) => {
   );
 
   logger.trace(
-    `${loggerDate()} : Finished running function homeRequests()`,
+    `Finished running function homeRequests()`,
   );
   logger.debug(
-    `${loggerDate()} : ${rowsAffected[0]} rows affected"`,
+    `${rowsAffected[0]} rows affected`,
   );
 
   ctx.response.status = 200;
@@ -620,17 +632,17 @@ export const getRequestsCount = async (
   ctx: RouterContext<"/requests/count">,
 ) => {
   logger.info(
-    `${loggerDate()} : User accessed route "/trace/requests/count"`,
+    `User accessed route "/trace/requests/count"`,
   );
 
   logger.trace(
-    `${loggerDate()} : Started searching route parameters`,
+    `Started searching route parameters`,
   );
 
   const params = ctx.request.url.searchParams;
 
   logger.trace(
-    `${loggerDate()} : Finished searching route parameters`,
+    `Finished searching route parameters`,
   );
 
   const requestorSectionId = params.has("requestorsectionid")
@@ -650,26 +662,26 @@ export const getRequestsCount = async (
   const search = params.get("search") || null;
 
   logger.debug(
-    `${loggerDate()} : Value of requestorSectionId is ${requestorSectionId}`,
+    `Value of requestorSectionId is ${requestorSectionId}`,
   );
   logger.debug(
-    `${loggerDate()} : Value of status is ${status}`,
+    `Value of status is ${status}`,
   );
   logger.debug(
-    `${loggerDate()} : Value of currentSupervisorId is ${currentSupervisorId}`,
+    `Value of currentSupervisorId is ${currentSupervisorId}`,
   );
   logger.debug(
-    `${loggerDate()} : Value of startDate is ${startDate}`,
+    `Value of startDate is ${startDate}`,
   );
   logger.debug(
-    `${loggerDate()} : Value of endDate is ${endDate}`,
+    `Value of endDate is ${endDate}`,
   );
   logger.debug(
-    `${loggerDate()} : Value of search is ${search}`,
+    `Value of search is ${search}`,
   );
 
   logger.trace(
-    `${loggerDate()} : Running function homeRequestsCount()`,
+    `Running function homeRequestsCount()`,
   );
 
   const { rowsReturned, rowsAffected } = await homeRequestsCount(
@@ -683,10 +695,10 @@ export const getRequestsCount = async (
   );
 
   logger.trace(
-    `${loggerDate()} : Finished running function homeRequestsCount()`,
+    `Finished running function homeRequestsCount()`,
   );
   logger.debug(
-    `${loggerDate()} : ${rowsAffected[0]} rows affected"`,
+    `${rowsAffected[0]} rows affected`,
   );
 
   ctx.response.status = 200;
@@ -697,17 +709,17 @@ export const getSpecificRequest = async (
   ctx: RouterContext<"/request/:traceId">,
 ) => {
   logger.info(
-    `${loggerDate()} : User accessed route "/trace/request"`,
+    `User accessed route "/trace/request"`,
   );
 
   const traceId = Number(ctx.params.traceId);
 
   logger.debug(
-    `${loggerDate()} : Value of traceId is ${traceId}`,
+    `Value of traceId is ${traceId}`,
   );
 
   logger.trace(
-    `${loggerDate()} : Running function specificRequest()`,
+    `Running function specificRequest()`,
   );
 
   const { rowsReturned, rowsAffected } = await specificRequest(
@@ -716,10 +728,10 @@ export const getSpecificRequest = async (
   );
 
   logger.trace(
-    `${loggerDate()} : Finished running function specificRequest()`,
+    `Finished running function specificRequest()`,
   );
   logger.debug(
-    `${loggerDate()} : ${rowsAffected[0]} rows affected"`,
+    `${rowsAffected[0]} rows affected`,
   );
 
   ctx.response.status = 200;
@@ -730,17 +742,17 @@ export const getApproverPath = async (
   ctx: RouterContext<"/:traceId">,
 ) => {
   logger.info(
-    `${loggerDate()} : User accessed route "/traced"`,
+    `User accessed route "/traced"`,
   );
 
   const traceId = Number(ctx.params.traceId);
 
   logger.debug(
-    `${loggerDate()} : Value of traceId is ${traceId}`,
+    `Value of traceId is ${traceId}`,
   );
 
   logger.trace(
-    `${loggerDate()} : Running function getApproverPathInformation()`,
+    `Running function getApproverPathInformation()`,
   );
 
   const { rowsReturned, rowsAffected } = await getApproverPathInformation(
@@ -749,10 +761,10 @@ export const getApproverPath = async (
   );
 
   logger.trace(
-    `${loggerDate()} : Finished running function getApproverPathInformation()`,
+    `Finished running function getApproverPathInformation()`,
   );
   logger.debug(
-    `${loggerDate()} : ${rowsAffected[0]} rows affected"`,
+    `${rowsAffected[0]} rows affected`,
   );
 
   ctx.response.status = 200;
@@ -763,17 +775,17 @@ export const getUploadFiles = async (
   ctx: RouterContext<"/:traceId">,
 ) => {
   logger.info(
-    `${loggerDate()} : User accessed route "/uploadfile"`,
+    `User accessed route "/uploadfile"`,
   );
 
   const traceId = Number(ctx.params.traceId);
 
   logger.debug(
-    `${loggerDate()} : Value of traceId is ${traceId}`,
+    `Value of traceId is ${traceId}`,
   );
 
   logger.trace(
-    `${loggerDate()} : Running function getMinimumFileInformation()`,
+    `Running function getMinimumFileInformation()`,
   );
 
   const { rowsReturned, rowsAffected } = await getMinimumFileInformation(
@@ -782,10 +794,10 @@ export const getUploadFiles = async (
   );
 
   logger.trace(
-    `${loggerDate()} : Finished running function getMinimumFileInformation()`,
+    `Finished running function getMinimumFileInformation()`,
   );
   logger.debug(
-    `${loggerDate()} : ${rowsAffected[0]} rows affected"`,
+    `${rowsAffected[0]} rows affected`,
   );
 
   ctx.response.status = 200;
@@ -796,20 +808,20 @@ export const getSupervisorNames = async (
   ctx: RouterContext<"/names">,
 ) => {
   logger.info(
-    `${loggerDate()} : User accessed route "/usermaster/names"`,
+    `User accessed route "/usermaster/names"`,
   );
 
   logger.trace(
-    `${loggerDate()} : Running function supervisorNames()`,
+    `Running function supervisorNames()`,
   );
 
   const { rowsReturned, rowsAffected } = await supervisorNames(databasePool);
 
   logger.trace(
-    `${loggerDate()} : Finished running function supervisorNames()`,
+    `Finished running function supervisorNames()`,
   );
   logger.debug(
-    `${loggerDate()} : ${rowsAffected[0]} rows affected"`,
+    `${rowsAffected[0]} rows affected`,
   );
 
   ctx.response.status = 200;
@@ -824,13 +836,13 @@ export const getSupervisorNames = async (
 // POST to table UploadFile
 export const submitRequest = async (ctx: RouterContext<"/submit">) => {
   logger.info(
-    `${loggerDate()} : User accessed route "/submit"`,
+    `User accessed route "/submit"`,
   );
 
   const formDataRequest: FormData = await ctx.request.body.formData();
 
   logger.debug(
-    `${loggerDate()} : User FormData = {value}`,
+    `User FormData = {value}`,
     { formDataRequest },
   );
 
@@ -838,7 +850,7 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
   const rawPayload = formDataRequest.get("payload");
   if (typeof rawPayload !== "string") {
     logger.info(
-      `${loggerDate()} : typeof rawPayload !== "string" evaluated to true`,
+      `typeof rawPayload !== "string" evaluated to true`,
     );
     const failResponse: SubmitResponse = {
       message: "Invalid payload. Request submission denied.",
@@ -869,89 +881,89 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
   const emailDomain = "ssi.sharp-world.com";
 
   logger.debug(
-    `${loggerDate()} : Value of submissionDate is ${submissionDate}`,
+    `Value of submissionDate is ${submissionDate}`,
   );
 
   const transaction = new ssms.Transaction(databasePool);
 
   transaction.on("error", (err) => {
     logger.error(
-      `${loggerDate()} : Internal transaction error caught by listener = {value}`,
+      `Internal transaction error caught by listener = {value}`,
       { err },
     );
   });
 
   logger.trace(
-    `${loggerDate()} : Running function getCurrentRateDollar()`,
+    `Running function getCurrentRateDollar()`,
   );
   const { rowsReturned: rates, rowsAffected: ratesRowAffected } =
     await getCurrentRateDollar(
       databasePool,
     );
   logger.trace(
-    `${loggerDate()} : Finished running function getCurrentRateDollar()`,
+    `Finished running function getCurrentRateDollar()`,
   );
   logger.debug(
-    `${loggerDate()} : ${ratesRowAffected[0]} rows affected"`,
+    `${ratesRowAffected[0]} rows affected`,
   );
 
   logger.debug(
-    `${loggerDate()} : Value of rates is ${rates}`,
+    `Value of rates is ${rates}`,
   );
 
   logger.info(
-    `${loggerDate()} : Beginning transaction`,
+    `Beginning transaction`,
   );
 
   try {
     await transaction.begin();
 
     logger.trace(
-      `${loggerDate()} : Running function provisionFormNumber()`,
+      `Running function provisionFormNumber()`,
     );
     const noForm = provisionFormNumber();
     logger.trace(
-      `${loggerDate()} : Finished running function provisionFormNumber()`,
+      `Finished running function provisionFormNumber()`,
     );
     logger.debug(
-      `${loggerDate()} : Value of noForm is ${noForm}`,
+      `Value of noForm is ${noForm}`,
     );
     logger.trace(
-      `${loggerDate()} : Running function provisionPRNumber()`,
+      `Running function provisionPRNumber()`,
     );
     const noPR = await provisionPRNumber(
       transaction,
       payload.firstStep.department,
     );
     logger.trace(
-      `${loggerDate()} : Finished running function provisionPRNumber()`,
+      `Finished running function provisionPRNumber()`,
     );
     logger.debug(
-      `${loggerDate()} : Value of noPR is ${noPR}`,
+      `Value of noPR is ${noPR}`,
     );
     logger.trace(
-      `${loggerDate()} : Running function getSectionIdByName()`,
+      `Running function getSectionIdByName()`,
     );
     const requestorSectionId = await getSectionIdByName(
       transaction,
       payload.firstStep.section,
     );
     logger.trace(
-      `${loggerDate()} : Finished running function getSectionIdByName()`,
+      `Finished running function getSectionIdByName()`,
     );
     logger.debug(
-      `${loggerDate()} : Value of requestorSectionId is ${requestorSectionId}`,
+      `Value of requestorSectionId is ${requestorSectionId}`,
     );
 
     let requestAmount = 0;
     let isRedLight = false;
 
     logger.trace(
-      `${loggerDate()} : Started looping "payload.thirdStep.usages"`,
+      `Started looping "payload.thirdStep.usages"`,
     );
     for (const usage of payload.thirdStep.usages) {
       logger.debug(
-        `${loggerDate()} : Current usage = {value}`,
+        `Current usage = {value}`,
         { usage },
       );
       const currencyRate = usage.currency === "JPY"
@@ -959,12 +971,12 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
         : rates.find((rate) => rate.Currency === usage.currency)?.Valuation;
 
       logger.debug(
-        `${loggerDate()} : Value of currencyRate is ${currencyRate}`,
+        `Value of currencyRate is ${currencyRate}`,
       );
 
       if (!currencyRate) {
         logger.error(
-          `${loggerDate()} : currencyRate does not exist!`,
+          `currencyRate does not exist!`,
         );
         throw new Error("Unable to fetch RateDollar values");
       }
@@ -972,25 +984,25 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
       const budgetId =
         `${usage.periode}-${usage.costCenter}-${payload.firstStep.section}`;
       logger.debug(
-        `${loggerDate()} : Value of budgetId is ${budgetId}`,
+        `Value of budgetId is ${budgetId}`,
       );
       const quantity = Number(usage.quantity);
       logger.debug(
-        `${loggerDate()} : Value of quantity is ${quantity}`,
+        `Value of quantity is ${quantity}`,
       );
       const pricePerUnit = Number(usage.unitPrice);
       logger.debug(
-        `${loggerDate()} : Value of pricePerUnit is ${pricePerUnit}`,
+        `Value of pricePerUnit is ${pricePerUnit}`,
       );
       const netPriceByCurrencyRate = (quantity * pricePerUnit) / currencyRate;
       logger.debug(
-        `${loggerDate()} : Value of netPriceByCurrencyRate is ${netPriceByCurrencyRate}`,
+        `Value of netPriceByCurrencyRate is ${netPriceByCurrencyRate}`,
       );
 
       requestAmount += netPriceByCurrencyRate;
 
       logger.trace(
-        `${loggerDate()} : Running function postUsage()`,
+        `Running function postUsage()`,
       );
 
       const { rowsAffected: usageRowsAffected, newUsageId } = await postUsage(
@@ -1011,17 +1023,17 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
       );
 
       logger.trace(
-        `${loggerDate()} : Finished running function postUsage()`,
+        `Finished running function postUsage()`,
       );
       logger.debug(
-        `${loggerDate()} : ${usageRowsAffected[0]} rows affected"`,
+        `${usageRowsAffected[0]} rows affected`,
       );
       logger.debug(
-        `${loggerDate()} : Value of newUsageId is ${newUsageId}`,
+        `Value of newUsageId is ${newUsageId}`,
       );
 
       logger.trace(
-        `${loggerDate()} : Running function patchRequestBudget()`,
+        `Running function patchRequestBudget()`,
       );
       const {
         rowsAffected: patchReqBudgetRowsAffected,
@@ -1036,14 +1048,14 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
         Number(payload.firstStep.department),
       );
       logger.trace(
-        `${loggerDate()} : Finished running function patchRequestBudget()`,
+        `Finished running function patchRequestBudget()`,
       );
       logger.debug(
-        `${loggerDate()} : ${patchReqBudgetRowsAffected[0]} rows affected"`,
+        `${patchReqBudgetRowsAffected[0]} rows affected`,
       );
 
       logger.trace(
-        `${loggerDate()} : Running function singleBalance()`,
+        `Running function singleBalance()`,
       );
       const {
         rowsReturned: natureBalance,
@@ -1057,19 +1069,19 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
         Number(payload.firstStep.department),
       );
       logger.trace(
-        `${loggerDate()} : Finished running function singleBalance()`,
+        `Finished running function singleBalance()`,
       );
       logger.debug(
-        `${loggerDate()} : ${natureBalanceRowsAffected[0]} rows affected"`,
+        `${natureBalanceRowsAffected[0]} rows affected`,
       );
       logger.debug(
-        `${loggerDate()} : Value of natureBalance is {value}`,
+        `Value of natureBalance is {value}`,
         { natureBalance },
       );
 
       const currentNatureBalance = Number(natureBalance[0].Balance);
       logger.debug(
-        `${loggerDate()} : Value of currentNatureBalance is ${currentNatureBalance}`,
+        `Value of currentNatureBalance is ${currentNatureBalance}`,
       );
 
       if (!isRedLight && currentNatureBalance < netPriceByCurrencyRate) {
@@ -1077,27 +1089,27 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
       }
 
       logger.debug(
-        `${loggerDate()} : Value of isRedLight is ${isRedLight}`,
+        `Value of isRedLight is ${isRedLight}`,
       );
     }
     logger.trace(
-      `${loggerDate()} : Finished looping "payload.thirdStep.usages"`,
+      `Finished looping "payload.thirdStep.usages"`,
     );
 
     const requestSubject = !isRedLight
       ? payload.secondStep.subject
       : `[RL] ${payload.secondStep.subject}`;
     logger.debug(
-      `${loggerDate()} : Value of requestSubject is ${requestSubject}`,
+      `Value of requestSubject is ${requestSubject}`,
     );
 
     const initialRemarks = !isRedLight ? "" : "[RL]";
     logger.debug(
-      `${loggerDate()} : Value of initialRemarks is ${initialRemarks}`,
+      `Value of initialRemarks is ${initialRemarks}`,
     );
 
     logger.trace(
-      `${loggerDate()} : Running function postRequestInformation()`,
+      `Running function postRequestInformation()`,
     );
     const { rowsAffected: requestInfoRowAffected, newId: requestInfoId } =
       await postRequestInformation(
@@ -1114,13 +1126,13 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
       );
 
     logger.trace(
-      `${loggerDate()} : Finished running function homeRequestsCount()`,
+      `Finished running function homeRequestsCount()`,
     );
     logger.debug(
-      `${loggerDate()} : ${requestInfoRowAffected[0]} rows affected"`,
+      `${requestInfoRowAffected[0]} rows affected`,
     );
     logger.debug(
-      `${loggerDate()} : Value of requestInfoId is ${requestInfoId}`,
+      `Value of requestInfoId is ${requestInfoId}`,
     );
 
     const supervisorNames = [
@@ -1132,11 +1144,11 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
       })),
     ];
     logger.debug(
-      `${loggerDate()} : Value of supervisorNames is ${supervisorNames}`,
+      `Value of supervisorNames is ${supervisorNames}`,
     );
 
     logger.trace(
-      `${loggerDate()} : Running function getUserIdByName()`,
+      `Running function getUserIdByName()`,
     );
     const {
       rowsAffected: initialSupervisorIdRowsAffected,
@@ -1146,17 +1158,17 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
       payload.fourthStep.approver[0],
     );
     logger.trace(
-      `${loggerDate()} : Finished running function getUserIdByName()`,
+      `Finished running function getUserIdByName()`,
     );
     logger.debug(
-      `${loggerDate()} : ${initialSupervisorIdRowsAffected[0]} rows affected"`,
+      `${initialSupervisorIdRowsAffected[0]} rows affected`,
     );
     logger.debug(
-      `${loggerDate()} : Value of initialSupervisorId is ${initialSupervisorId}`,
+      `Value of initialSupervisorId is ${initialSupervisorId}`,
     );
 
     logger.trace(
-      `${loggerDate()} : Running function postRequestTrace()`,
+      `Running function postRequestTrace()`,
     );
     const { rowsAffected: newTraceIdRowsAffected, newIDTrace: newTraceId } =
       await postRequestTrace(
@@ -1172,26 +1184,26 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
         initialRemarks,
       );
     logger.trace(
-      `${loggerDate()} : Finished running function postRequestTrace()`,
+      `Finished running function postRequestTrace()`,
     );
     logger.debug(
-      `${loggerDate()} : ${newTraceIdRowsAffected[0]} rows affected"`,
+      `${newTraceIdRowsAffected[0]} rows affected`,
     );
     logger.debug(
-      `${loggerDate()} : Value of newTraceId is ${newTraceId}`,
+      `Value of newTraceId is ${newTraceId}`,
     );
 
     {
       logger.trace(
-        `${loggerDate()} : Started looping "supervisorNames"`,
+        `Started looping "supervisorNames"`,
       );
       let approverStep = 0;
       for (const supervisorName of supervisorNames) {
         logger.debug(
-          `${loggerDate()} : Value of supervisorName is ${supervisorName}`,
+          `Value of supervisorName is ${supervisorName}`,
         );
         logger.trace(
-          `${loggerDate()} : Running function getUserIdByName()`,
+          `Running function getUserIdByName()`,
         );
         const {
           rowsAffected: currentSupervisorRowsAffected,
@@ -1201,19 +1213,17 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
           supervisorName.name,
         );
         logger.trace(
-          `${loggerDate()} : Finished running function getUserIdByName()`,
+          `Finished running function getUserIdByName()`,
         );
         logger.debug(
-          `${loggerDate()} : ${
-            currentSupervisorRowsAffected[0]
-          } rows affected"`,
+          `${currentSupervisorRowsAffected[0]} rows affected`,
         );
         logger.debug(
-          `${loggerDate()} : Value of supervisorId is ${supervisorId}`,
+          `Value of supervisorId is ${supervisorId}`,
         );
 
         logger.trace(
-          `${loggerDate()} : Running function postRequestApproverPath()`,
+          `Running function postRequestApproverPath()`,
         );
         const requestApproverPathRowsAffected = await postRequestApproverPath(
           transaction,
@@ -1223,28 +1233,26 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
           approverStep + 1,
         );
         logger.debug(
-          `${loggerDate()} : ${
-            requestApproverPathRowsAffected[0]
-          } rows affected"`,
+          `${requestApproverPathRowsAffected[0]} rows affected`,
         );
 
         approverStep += 1;
       }
       logger.trace(
-        `${loggerDate()} : Finished looping "supervisorNames"`,
+        `Finished looping "supervisorNames"`,
       );
     }
 
     logger.trace(
-      `${loggerDate()} : Started looping "payload.fifthStep.files"`,
+      `Started looping "payload.fifthStep.files"`,
     );
     for (const file of payload.fifthStep.files) {
       logger.debug(
-        `${loggerDate()} : Current file = {value}`,
+        `Current file = {value}`,
         { file },
       );
       logger.trace(
-        `${loggerDate()} : Running function postRequestFiles()`,
+        `Running function postRequestFiles()`,
       );
       const { rowsAffected: newUploadRowsAffected, newUploadId } =
         await postRequestFiles(
@@ -1256,21 +1264,21 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
           submissionDate,
         );
       logger.trace(
-        `${loggerDate()} : Finished running function getUserIdByName()`,
+        `Finished running function getUserIdByName()`,
       );
       logger.debug(
-        `${loggerDate()} : ${newUploadRowsAffected[0]} rows affected"`,
+        `${newUploadRowsAffected[0]} rows affected`,
       );
       logger.debug(
-        `${loggerDate()} : Value of newUploadId is ${newUploadId}`,
+        `Value of newUploadId is ${newUploadId}`,
       );
     }
     logger.trace(
-      `${loggerDate()} : Finished looping "payload.fifthStep.files"`,
+      `Finished looping "payload.fifthStep.files"`,
     );
 
     logger.info(
-      `${loggerDate()} : Comitting transaction`,
+      `Comitting transaction`,
     );
 
     await transaction.commit();
@@ -1287,7 +1295,7 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
   } catch (err) {
     try {
       logger.error(
-        `${loggerDate()} : Rolling back transaction. {value}`,
+        `Rolling back transaction. {value}`,
         { err },
       );
       const errMessage = err instanceof Error
@@ -1304,7 +1312,7 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
       ctx.response.body = failingResponse;
     } catch (rollbackErr) {
       logger.error(
-        `${loggerDate()} : Failed rolling back transaction. {value}`,
+        `Failed rolling back transaction. {value}`,
         { rollbackErr },
       );
       const errMessage = rollbackErr instanceof Error
@@ -1326,18 +1334,18 @@ export const getAuthInformation = async (
   ctx: RouterContext<"/auth">,
 ) => {
   logger.info(
-    `${loggerDate()} : User accessed route "/usermaster/auth"`,
+    `User accessed route "/usermaster/auth"`,
   );
   logger.trace(
-    `${loggerDate()} : Running function getAuthInfo()`,
+    `Running function getAuthInfo()`,
   );
   const { rowsReturned, rowsAffected } = await getAuthInfo(databasePool);
 
   logger.trace(
-    `${loggerDate()} : Finished running function getAuthInfo()`,
+    `Finished running function getAuthInfo()`,
   );
   logger.debug(
-    `${loggerDate()} : ${rowsAffected[0]} rows affected"`,
+    `${rowsAffected[0]} rows affected`,
   );
 
   ctx.response.status = 200;
@@ -1346,7 +1354,7 @@ export const getAuthInformation = async (
 
 export const requestJwt = async (ctx: RouterContext<"/request">) => {
   logger.info(
-    `${loggerDate()} : User accessed route "/jwt/request"`,
+    `User accessed route "/jwt/request"`,
   );
 
   const authorizedMessage = "Valid credentials";
@@ -1354,36 +1362,36 @@ export const requestJwt = async (ctx: RouterContext<"/request">) => {
   const generationErrMessage = "There was an error in generating the token";
 
   logger.trace(
-    `${loggerDate()} : Running function getKey()`,
+    `Running function getKey()`,
   );
   const jwtKey = await getKey();
   logger.trace(
-    `${loggerDate()} : Finished running function getKey()`,
+    `Finished running function getKey()`,
   );
   logger.debug(
-    `${loggerDate()} : JWT ${jwtKey ? "Exist" : "is missing"}`,
+    `JWT ${jwtKey ? "Exist" : "is missing"}`,
   );
   const jwtHeader: Header = { alg: "HS512", type: "JWT" };
   const nineHourExpiration = getNumericDate(60 * 60 * 9);
 
   const request: LoginPayload = await ctx.request.body.json();
   logger.debug(
-    `${loggerDate()} : Value of request is {value}`,
+    `Value of request is {value}`,
     { request },
   );
 
   logger.trace(
-    `${loggerDate()} : Running function getAuthInfo()`,
+    `Running function getAuthInfo()`,
   );
   const { rowsReturned: credentials, rowsAffected: authInfoRowsAffected } =
     await getAuthInfo(
       databasePool,
     );
   logger.trace(
-    `${loggerDate()} : Finished running function getAuthInfo()`,
+    `Finished running function getAuthInfo()`,
   );
   logger.debug(
-    `${loggerDate()} : ${authInfoRowsAffected[0]} rows affected"`,
+    `${authInfoRowsAffected[0]} rows affected`,
   );
 
   let validCredentials: AuthInfo | null = null;
@@ -1393,7 +1401,7 @@ export const requestJwt = async (ctx: RouterContext<"/request">) => {
       credentials.filter((credential) => credential.IDUser === 1)[0].Password;
 
   logger.debug(
-    `${loggerDate()} : Value of isAdmin is ${isAdmin}`,
+    `Value of isAdmin is ${isAdmin}`,
   );
 
   if (isAdmin) {
@@ -1401,11 +1409,11 @@ export const requestJwt = async (ctx: RouterContext<"/request">) => {
       credential.IDUser === 1
     )[0];
     logger.debug(
-      `${loggerDate()} : Value of adminCredentials is ${adminCredentials}`,
+      `Value of adminCredentials is ${adminCredentials}`,
     );
     validCredentials = adminCredentials;
     logger.debug(
-      `${loggerDate()} : Value of validCredentials is ${validCredentials}`,
+      `Value of validCredentials is ${validCredentials}`,
     );
   } else {
     logger.info(`Started looping for "credentials"`);
@@ -1415,7 +1423,7 @@ export const requestJwt = async (ctx: RouterContext<"/request">) => {
       if (validNRP && validPassword) {
         validCredentials = credential;
         logger.debug(
-          `${loggerDate()} : Value of validCredentials is ${validCredentials}`,
+          `Value of validCredentials is ${validCredentials}`,
         );
         logger.info(`Finished looping early for "credentials"`);
         break;
@@ -1435,12 +1443,12 @@ export const requestJwt = async (ctx: RouterContext<"/request">) => {
     };
 
     logger.debug(
-      `${loggerDate()} : Value of jwtPayload is ${jwtPayload}`,
+      `Value of jwtPayload is ${jwtPayload}`,
     );
 
     const jwt = await create(jwtHeader, jwtPayload, jwtKey);
     logger.debug(
-      `${loggerDate()} : Value of jwt is ${jwt}`,
+      `Value of jwt is ${jwt}`,
     );
 
     if (jwt) {
@@ -1450,11 +1458,11 @@ export const requestJwt = async (ctx: RouterContext<"/request">) => {
         jwt: jwt,
       };
       logger.debug(
-        `${loggerDate()} : Value of authorizedResponse is ${authorizedResponse}`,
+        `Value of authorizedResponse is ${authorizedResponse}`,
       );
 
       logger.trace(
-        `${loggerDate()} : Running function patchNewLogin()`,
+        `Running function patchNewLogin()`,
       );
       const newLoginPatchRowsAffected = patchNewLogin(
         databasePool,
@@ -1462,16 +1470,16 @@ export const requestJwt = async (ctx: RouterContext<"/request">) => {
       );
 
       logger.trace(
-        `${loggerDate()} : Finished running function patchNewLogin()`,
+        `Finished running function patchNewLogin()`,
       );
       logger.debug(
-        `${loggerDate()} : ${newLoginPatchRowsAffected} rows affected"`,
+        `${newLoginPatchRowsAffected} rows affected`,
       );
       ctx.response.status = 200;
       ctx.response.body = authorizedResponse;
     } else {
       logger.error(
-        `${loggerDate()} : The value of "jwt" does not exist`,
+        `The value of "jwt" does not exist`,
       );
       const errResponse: LoginResponse = {
         message: generationErrMessage,
@@ -1485,7 +1493,7 @@ export const requestJwt = async (ctx: RouterContext<"/request">) => {
   }
 
   logger.warning(
-    `${loggerDate()} : Incoming NRP and Password does not exist in database`,
+    `Incoming NRP and Password does not exist in database`,
   );
   const unauthorizedResponse: LoginResponse = {
     message: unauthorizedMessage,
@@ -1501,15 +1509,15 @@ export const getRequestsBySupervisorNrp = async (
   ctx: RouterContext<"/approve">,
 ) => {
   logger.info(
-    `${loggerDate()} : User accessed route "/trace/approve"`,
+    `User accessed route "/trace/approve"`,
   );
 
   logger.trace(
-    `${loggerDate()} : Started searching route parameters`,
+    `Started searching route parameters`,
   );
   const params = ctx.request.url.searchParams;
   logger.trace(
-    `${loggerDate()} : Finished searching route parameters`,
+    `Finished searching route parameters`,
   );
 
   const startDate = params.get("startdate") || null;
@@ -1529,29 +1537,29 @@ export const getRequestsBySupervisorNrp = async (
   const pagination = Number(params.get("pagination")) || 50;
 
   logger.debug(
-    `${loggerDate()} : Value of startDate is ${startDate}`,
+    `Value of startDate is ${startDate}`,
   );
   logger.debug(
-    `${loggerDate()} : Value of endDate is ${endDate}`,
+    `Value of endDate is ${endDate}`,
   );
   logger.debug(
-    `${loggerDate()} : Value of search is ${search}`,
+    `Value of search is ${search}`,
   );
   logger.debug(
-    `${loggerDate()} : Value of status is ${status}`,
+    `Value of status is ${status}`,
   );
   logger.debug(
-    `${loggerDate()} : Value of formattedNrp is ${formattedNrp}`,
+    `Value of formattedNrp is ${formattedNrp}`,
   );
   logger.debug(
-    `${loggerDate()} : Value of page is ${page}`,
+    `Value of page is ${page}`,
   );
   logger.debug(
-    `${loggerDate()} : Value of pagination is ${pagination}`,
+    `Value of pagination is ${pagination}`,
   );
 
   logger.trace(
-    `${loggerDate()} : Running function approveRequests()`,
+    `Running function approveRequests()`,
   );
   const { rowsReturned, rowsAffected } = await approveRequests(
     databasePool,
@@ -1565,10 +1573,10 @@ export const getRequestsBySupervisorNrp = async (
   );
 
   logger.trace(
-    `${loggerDate()} : Finished running function approveRequests()`,
+    `Finished running function approveRequests()`,
   );
   logger.debug(
-    `${loggerDate()} : ${rowsAffected[0]} rows affected"`,
+    `${rowsAffected[0]} rows affected`,
   );
 
   ctx.response.status = 200;
@@ -1579,17 +1587,17 @@ export const getRequestsBySupervisorNrpCount = async (
   ctx: RouterContext<"/approve/count">,
 ) => {
   logger.info(
-    `${loggerDate()} : User accessed route "/trace/approve/count"`,
+    `User accessed route "/trace/approve/count"`,
   );
 
   logger.trace(
-    `${loggerDate()} : Started searching route parameters`,
+    `Started searching route parameters`,
   );
 
   const params = ctx.request.url.searchParams;
 
   logger.trace(
-    `${loggerDate()} : Finished searching route parameters`,
+    `Finished searching route parameters`,
   );
 
   const startDate = params.get("startdate") || null;
@@ -1606,23 +1614,23 @@ export const getRequestsBySupervisorNrpCount = async (
     : null;
 
   logger.debug(
-    `${loggerDate()} : Value of startDate is ${startDate}`,
+    `Value of startDate is ${startDate}`,
   );
   logger.debug(
-    `${loggerDate()} : Value of endDate is ${endDate}`,
+    `Value of endDate is ${endDate}`,
   );
   logger.debug(
-    `${loggerDate()} : Value of search is ${search}`,
+    `Value of search is ${search}`,
   );
   logger.debug(
-    `${loggerDate()} : Value of status is ${status}`,
+    `Value of status is ${status}`,
   );
   logger.debug(
-    `${loggerDate()} : Value of formattedNrp is ${formattedNrp}`,
+    `Value of formattedNrp is ${formattedNrp}`,
   );
 
   logger.trace(
-    `${loggerDate()} : Running function approveRequestsCount()`,
+    `Running function approveRequestsCount()`,
   );
   const { rowsReturned, rowsAffected } = await approveRequestsCount(
     databasePool,
@@ -1634,10 +1642,10 @@ export const getRequestsBySupervisorNrpCount = async (
   );
 
   logger.trace(
-    `${loggerDate()} : Finished running function approveRequestsCount()`,
+    `Finished running function approveRequestsCount()`,
   );
   logger.debug(
-    `${loggerDate()} : ${rowsAffected[0]} rows affected"`,
+    `${rowsAffected[0]} rows affected`,
   );
 
   ctx.response.status = 200;
@@ -1646,17 +1654,17 @@ export const getRequestsBySupervisorNrpCount = async (
 
 export const patchRemarks = async (ctx: RouterContext<"/remarks">) => {
   logger.info(
-    `${loggerDate()} : User accessed route "/approve/remarks"`,
+    `User accessed route "/approve/remarks"`,
   );
 
   const request: PatchRemarksPayload = await ctx.request.body.json();
   logger.debug(
-    `${loggerDate()} : Value of request is {value}`,
+    `Value of request is {value}`,
     { request },
   );
 
   logger.trace(
-    `${loggerDate()} : Running function patchRemarksOfTrace()`,
+    `Running function patchRemarksOfTrace()`,
   );
   const patchTraceRowsAffected = await patchRemarksOfTrace(
     databasePool,
@@ -1664,14 +1672,14 @@ export const patchRemarks = async (ctx: RouterContext<"/remarks">) => {
     request.noForm,
   );
   logger.trace(
-    `${loggerDate()} : Finished running function patchRemarksOfTrace()`,
+    `Finished running function patchRemarksOfTrace()`,
   );
   logger.debug(
-    `${loggerDate()} : ${patchTraceRowsAffected} rows affected"`,
+    `${patchTraceRowsAffected} rows affected`,
   );
 
   logger.trace(
-    `${loggerDate()} : Running function patchRemarksOfRequest()`,
+    `Running function patchRemarksOfRequest()`,
   );
   const patchRequestRowsAffected = await patchRemarksOfRequest(
     databasePool,
@@ -1679,10 +1687,10 @@ export const patchRemarks = async (ctx: RouterContext<"/remarks">) => {
     request.noForm,
   );
   logger.trace(
-    `${loggerDate()} : Finished running function patchRemarksOfRequest()`,
+    `Finished running function patchRemarksOfRequest()`,
   );
   logger.debug(
-    `${loggerDate()} : ${patchRequestRowsAffected} rows affected"`,
+    `${patchRequestRowsAffected} rows affected`,
   );
   ctx.response.status = 200;
 };
@@ -1691,49 +1699,49 @@ export const patchRejectRequest = async (
   ctx: RouterContext<"/reject">,
 ) => {
   logger.info(
-    `${loggerDate()} : User accessed route "/approve/reject"`,
+    `User accessed route "/approve/reject"`,
   );
   const request: patchApprovalVerdict = await ctx.request.body.json();
 
   logger.debug(
-    `${loggerDate()} : Value of request is ${request}`,
+    `Value of request is ${request}`,
   );
 
   const transaction = new ssms.Transaction(databasePool);
 
   logger.info(
-    `${loggerDate()} : Beginning transaction`,
+    `Beginning transaction`,
   );
 
   try {
     await transaction.begin();
 
     logger.trace(
-      `${loggerDate()} : Running function provisionFormNumber()`,
+      `Running function provisionFormNumber()`,
     );
     const { formId, noForm, noPr, requestItems } = await getRequestIds(
       transaction,
       request.traceId,
     );
     logger.trace(
-      `${loggerDate()} : Finished running function provisionFormNumber()`,
+      `Finished running function provisionFormNumber()`,
     );
     logger.debug(
-      `${loggerDate()} : Value of formId is ${formId}`,
+      `Value of formId is ${formId}`,
     );
     logger.debug(
-      `${loggerDate()} : Value of noForm is ${noForm}`,
+      `Value of noForm is ${noForm}`,
     );
     logger.debug(
-      `${loggerDate()} : Value of noPr is ${noPr}`,
+      `Value of noPr is ${noPr}`,
     );
     logger.debug(
-      `${loggerDate()} : Value of requestItems is {value}`,
+      `Value of requestItems is {value}`,
       { requestItems },
     );
 
     logger.trace(
-      `${loggerDate()} : Running function patchTraceDVerdict()`,
+      `Running function patchTraceDVerdict()`,
     );
     const traceDPatchRowsAffected = await patchTraceDVerdict(
       transaction,
@@ -1742,14 +1750,14 @@ export const patchRejectRequest = async (
       request.supervisorLevel,
     );
     logger.trace(
-      `${loggerDate()} : Finished running function patchTraceDVerdict()`,
+      `Finished running function patchTraceDVerdict()`,
     );
     logger.debug(
-      `${loggerDate()} : ${traceDPatchRowsAffected} rows affected"`,
+      `${traceDPatchRowsAffected} rows affected`,
     );
 
     logger.trace(
-      `${loggerDate()} : Running function getNextApprover()`,
+      `Running function getNextApprover()`,
     );
     const { nextUserId, nextApproverLevel } = await getNextApprover(
       transaction,
@@ -1758,42 +1766,42 @@ export const patchRejectRequest = async (
       request.supervisorLevel,
     );
     logger.trace(
-      `${loggerDate()} : Finished running function getNextApprover()`,
+      `Finished running function getNextApprover()`,
     );
     logger.debug(
-      `${loggerDate()} : Value of nextUserId is ${nextUserId}`,
+      `Value of nextUserId is ${nextUserId}`,
     );
     logger.debug(
-      `${loggerDate()} : Value of nextApproverLevel is ${nextApproverLevel}`,
+      `Value of nextApproverLevel is ${nextApproverLevel}`,
     );
 
     logger.trace(
-      `${loggerDate()} : Running function getOtherApproverInfo()`,
+      `Running function getOtherApproverInfo()`,
     );
     const { Maxxed: MaxApproverLevel, Summed: SumApproverLevel } =
       await getOtherApproverInfo(transaction, request.traceId);
     logger.trace(
-      `${loggerDate()} : Finished running function getOtherApproverInfo()`,
+      `Finished running function getOtherApproverInfo()`,
     );
     logger.debug(
-      `${loggerDate()} : Value of MaxApproverLevel is ${MaxApproverLevel}`,
+      `Value of MaxApproverLevel is ${MaxApproverLevel}`,
     );
     logger.debug(
-      `${loggerDate()} : Value of SumApproverLevel is ${SumApproverLevel}`,
+      `Value of SumApproverLevel is ${SumApproverLevel}`,
     );
 
     logger.trace(
-      `${loggerDate()} : Started looping "requestItems"`,
+      `Started looping "requestItems"`,
     );
     // Return requested budget (all items)
     await Promise.all(requestItems.map(async (item) => {
       logger.debug(
-        `${loggerDate()} : Current requestItems = {value}`,
+        `Current requestItems = {value}`,
         { requestItems },
       );
 
       logger.trace(
-        `${loggerDate()} : Running function patchRequestBudget()`,
+        `Running function patchRequestBudget()`,
       );
       const { rowsAffected: budgetPatchRowsAffeceted, rowsReturned: _ } =
         await patchRequestBudget(
@@ -1806,18 +1814,18 @@ export const patchRejectRequest = async (
           Number(item.Department),
         );
       logger.trace(
-        `${loggerDate()} : Finished running function patchRequestBudget()`,
+        `Finished running function patchRequestBudget()`,
       );
       logger.debug(
-        `${loggerDate()} : ${budgetPatchRowsAffeceted} rows affected"`,
+        `${budgetPatchRowsAffeceted} rows affected`,
       );
     }));
     logger.trace(
-      `${loggerDate()} : Finished looping "requestItems"`,
+      `Finished looping "requestItems"`,
     );
 
     logger.trace(
-      `${loggerDate()} : Running function patchTraceVerdict()`,
+      `Running function patchTraceVerdict()`,
     );
     const tracePatchRowsAffected = await patchTraceVerdict(
       transaction,
@@ -1829,16 +1837,16 @@ export const patchRejectRequest = async (
       nextApproverLevel,
     );
     logger.trace(
-      `${loggerDate()} : Finished running function patchTraceVerdict()`,
+      `Finished running function patchTraceVerdict()`,
     );
     logger.debug(
-      `${loggerDate()} : ${tracePatchRowsAffected} rows affected"`,
+      `${tracePatchRowsAffected} rows affected`,
     );
 
     await Promise.all(
       request.rejectedItems.map(async (itemId) => {
         logger.trace(
-          `${loggerDate()} : Running function patchFrmPRDVerdict()`,
+          `Running function patchFrmPRDVerdict()`,
         );
         const frmPrDRowPatchAffected = await patchFrmPRDVerdict(
           transaction,
@@ -1846,16 +1854,16 @@ export const patchRejectRequest = async (
           itemId,
         );
         logger.trace(
-          `${loggerDate()} : Finished running function patchFrmPRDVerdict()`,
+          `Finished running function patchFrmPRDVerdict()`,
         );
         logger.debug(
-          `${loggerDate()} : ${frmPrDRowPatchAffected} rows affected"`,
+          `${frmPrDRowPatchAffected} rows affected`,
         );
       }),
     );
 
     logger.info(
-      `${loggerDate()} : Comitting transaction`,
+      `Comitting transaction`,
     );
 
     await transaction.commit();
@@ -1863,7 +1871,7 @@ export const patchRejectRequest = async (
     ctx.response.status = 200;
   } catch (err) {
     logger.error(
-      `${loggerDate()} : Rolling back transaction. {value}`,
+      `Rolling back transaction. {value}`,
       { err },
     );
     if (transaction) await transaction.rollback();
@@ -1876,18 +1884,18 @@ export const patchAcceptRequest = async (
   ctx: RouterContext<"/accept">,
 ) => {
   logger.info(
-    `${loggerDate()} : User accessed route "/approve/accept"`,
+    `User accessed route "/approve/accept"`,
   );
 
   const request: patchApprovalVerdict = await ctx.request.body.json();
 
   logger.debug(
-    `${loggerDate()} : Value of request is {value}`,
+    `Value of request is {value}`,
     { request },
   );
 
   logger.trace(
-    `${loggerDate()} : Running function getNextApprover()`,
+    `Running function getNextApprover()`,
   );
   const { nextUserId, nextApproverLevel } = await getNextApprover(
     databasePool,
@@ -1896,18 +1904,18 @@ export const patchAcceptRequest = async (
     request.supervisorLevel,
   );
   logger.trace(
-    `${loggerDate()} : Finished running function getNextApprover()`,
+    `Finished running function getNextApprover()`,
   );
 
   logger.debug(
-    `${loggerDate()} : Value of nextUserId is ${nextUserId}`,
+    `Value of nextUserId is ${nextUserId}`,
   );
   logger.debug(
-    `${loggerDate()} : Value of nextApproverLevel is ${nextApproverLevel}`,
+    `Value of nextApproverLevel is ${nextApproverLevel}`,
   );
 
   logger.trace(
-    `${loggerDate()} : Running function patchTraceDVerdict()`,
+    `Running function patchTraceDVerdict()`,
   );
   const traceDPatchRowsAffected = await patchTraceDVerdict(
     databasePool,
@@ -1916,15 +1924,15 @@ export const patchAcceptRequest = async (
     request.supervisorLevel,
   );
   logger.trace(
-    `${loggerDate()} : Finished running function patchTraceDVerdict()`,
+    `Finished running function patchTraceDVerdict()`,
   );
   logger.debug(
-    `${loggerDate()} : ${traceDPatchRowsAffected} rows affected"`,
+    `${traceDPatchRowsAffected} rows affected`,
   );
 
   if (nextUserId !== null && nextApproverLevel !== null) {
     logger.trace(
-      `${loggerDate()} : Running function patchApproverToActiveApproving()`,
+      `Running function patchApproverToActiveApproving()`,
     );
     const toActiveApprovingRowsAffected = await patchApproverToActiveApproving(
       databasePool,
@@ -1932,30 +1940,30 @@ export const patchAcceptRequest = async (
       nextApproverLevel,
     );
     logger.trace(
-      `${loggerDate()} : Finished running function patchApproverToActiveApproving()`,
+      `Finished running function patchApproverToActiveApproving()`,
     );
     logger.debug(
-      `${loggerDate()} : ${toActiveApprovingRowsAffected} rows affected"`,
+      `${toActiveApprovingRowsAffected} rows affected`,
     );
   }
 
   logger.trace(
-    `${loggerDate()} : Running function getOtherApproverInfo()`,
+    `Running function getOtherApproverInfo()`,
   );
   const { Maxxed: MaxApproverLevel, Summed: SumApproverLevel } =
     await getOtherApproverInfo(databasePool, request.traceId);
   logger.trace(
-    `${loggerDate()} : Finished running function getOtherApproverInfo()`,
+    `Finished running function getOtherApproverInfo()`,
   );
   logger.debug(
-    `${loggerDate()} : Value of MaxApproverLevel is ${MaxApproverLevel}`,
+    `Value of MaxApproverLevel is ${MaxApproverLevel}`,
   );
   logger.debug(
-    `${loggerDate()} : Value of SumApproverLevel is ${SumApproverLevel}`,
+    `Value of SumApproverLevel is ${SumApproverLevel}`,
   );
 
   logger.trace(
-    `${loggerDate()} : Running function patchTraceVerdict()`,
+    `Running function patchTraceVerdict()`,
   );
 
   const tracePatchRowsAffected = await patchTraceVerdict(
@@ -1968,10 +1976,10 @@ export const patchAcceptRequest = async (
     nextApproverLevel,
   );
   logger.trace(
-    `${loggerDate()} : Finished running function patchTraceVerdict()`,
+    `Finished running function patchTraceVerdict()`,
   );
   logger.debug(
-    `${loggerDate()} : ${tracePatchRowsAffected} rows affected"`,
+    `${tracePatchRowsAffected} rows affected`,
   );
 
   ctx.response.status = 200;
@@ -1981,13 +1989,13 @@ export const putBudgets = async (
   ctx: RouterContext<"/budget">,
 ) => {
   logger.info(
-    `${loggerDate()} : User accessed route "/admin/budget"`,
+    `User accessed route "/admin/budget"`,
   );
 
   const request: BudgetTable[] = await ctx.request.body.json();
 
   logger.debug(
-    `${loggerDate()} : Value of request is {value}`,
+    `Value of request is {value}`,
     { request },
   );
 
@@ -2001,16 +2009,16 @@ export const putBudgets = async (
 
   try {
     logger.info(
-      `${loggerDate()} : Beginning transaction`,
+      `Beginning transaction`,
     );
     await transaction.begin();
 
     logger.trace(
-      `${loggerDate()} : Started looping "request"`,
+      `Started looping "request"`,
     );
     for (const budgetData of request) {
       logger.debug(
-        `${loggerDate()} : Current budgetData is ${budgetData}`,
+        `Current budgetData is ${budgetData}`,
       );
 
       const potentialDuplicate: BudgetTable = await getSpecificBudgetData(
@@ -2022,7 +2030,7 @@ export const putBudgets = async (
         budgetData.FileResource,
       );
       logger.debug(
-        `${loggerDate()} : Value of potentialDuplicate is ${potentialDuplicate}`,
+        `Value of potentialDuplicate is ${potentialDuplicate}`,
       );
 
       let payload: BudgetTable = {
@@ -2035,21 +2043,21 @@ export const putBudgets = async (
         FileResource: budgetData.FileResource,
       };
       logger.debug(
-        `${loggerDate()} : Value of payload is ${payload}`,
+        `Value of payload is ${payload}`,
       );
 
       if (potentialDuplicate) {
         const newBudget = budgetData.Budget;
         logger.debug(
-          `${loggerDate()} : Value of newBudget is ${newBudget}`,
+          `Value of newBudget is ${newBudget}`,
         );
         const oldBudget = Number(potentialDuplicate.Budget);
         logger.debug(
-          `${loggerDate()} : Value of oldBudget is ${oldBudget}`,
+          `Value of oldBudget is ${oldBudget}`,
         );
         const difference = newBudget - oldBudget;
         logger.debug(
-          `${loggerDate()} : Value of difference is ${difference}`,
+          `Value of difference is ${difference}`,
         );
 
         payload = {
@@ -2058,46 +2066,46 @@ export const putBudgets = async (
           Balance: Number(potentialDuplicate.Balance) + difference,
         };
         logger.debug(
-          `${loggerDate()} : Value of payload is ${payload}`,
+          `Value of payload is ${payload}`,
         );
 
         logger.trace(
-          `${loggerDate()} : Running function patchSpecificBudgetNewBudget()`,
+          `Running function patchSpecificBudgetNewBudget()`,
         );
         const newSpecificBudgetRowsAffected =
           await patchSpecificBudgetNewBudget(transaction, payload);
         logger.trace(
-          `${loggerDate()} : Finished running function patchSpecificBudgetNewBudget()`,
+          `Finished running function patchSpecificBudgetNewBudget()`,
         );
         logger.debug(
-          `${loggerDate()} : ${newSpecificBudgetRowsAffected} rows affected"`,
+          `${newSpecificBudgetRowsAffected} rows affected`,
         );
       } else {
         logger.trace(
-          `${loggerDate()} : Running function postBudget()`,
+          `Running function postBudget()`,
         );
         const newBudgetRowsAffected = await postBudget(transaction, payload);
         logger.trace(
-          `${loggerDate()} : Finished running function postBudget()`,
+          `Finished running function postBudget()`,
         );
         logger.debug(
-          `${loggerDate()} : ${newBudgetRowsAffected} rows affected"`,
+          `${newBudgetRowsAffected} rows affected`,
         );
       }
     }
     logger.trace(
-      `${loggerDate()} : Finished looping "request"`,
+      `Finished looping "request"`,
     );
 
     logger.info(
-      `${loggerDate()} : Comitting transaction`,
+      `Comitting transaction`,
     );
     await transaction.commit();
 
     ctx.response.status = 200;
   } catch (err) {
     logger.error(
-      `${loggerDate()} : Rolling back transaction. {value}`,
+      `Rolling back transaction. {value}`,
       { err },
     );
     await transaction.rollback();
@@ -2109,19 +2117,19 @@ export const putBudgets = async (
 
 export const deleteRequest = async (ctx: RouterContext<"/:traceId">) => {
   logger.info(
-    `${loggerDate()} : User accessed route "/admin"`,
+    `User accessed route "/admin"`,
   );
 
   const traceId = Number(ctx.params.traceId);
   logger.debug(
-    `${loggerDate()} : Value of traceId is ${traceId}`,
+    `Value of traceId is ${traceId}`,
   );
 
   const transaction = new ssms.Transaction(databasePool);
 
   try {
     logger.info(
-      `${loggerDate()} : Beginning transaction`,
+      `Beginning transaction`,
     );
     await transaction.begin();
 
@@ -2130,94 +2138,94 @@ export const deleteRequest = async (ctx: RouterContext<"/:traceId">) => {
       traceId,
     );
     logger.trace(
-      `${loggerDate()} : Finished running function provisionFormNumber()`,
+      `Finished running function provisionFormNumber()`,
     );
     logger.debug(
-      `${loggerDate()} : Value of formId is ${formId}`,
+      `Value of formId is ${formId}`,
     );
     logger.debug(
-      `${loggerDate()} : Value of noForm is ${noForm}`,
+      `Value of noForm is ${noForm}`,
     );
     logger.debug(
-      `${loggerDate()} : Value of noPr is ${noPr}`,
+      `Value of noPr is ${noPr}`,
     );
     logger.debug(
-      `${loggerDate()} : Value of requestItems is {value}`,
+      `Value of requestItems is {value}`,
       { requestItems },
     );
 
     // POST to table UploadFile
     logger.trace(
-      `${loggerDate()} : Running function deleteRequestFiles()`,
+      `Running function deleteRequestFiles()`,
     );
     const deleteFilesRowsAffected = await deleteRequestFiles(
       transaction,
       noForm,
     );
     logger.trace(
-      `${loggerDate()} : Finished running function deleteRequestFiles()`,
+      `Finished running function deleteRequestFiles()`,
     );
     logger.debug(
-      `${loggerDate()} : ${deleteFilesRowsAffected} rows affected"`,
+      `${deleteFilesRowsAffected} rows affected`,
     );
 
     // DELETE Trace_D
     logger.trace(
-      `${loggerDate()} : Running function deleteRequestApproverPath()`,
+      `Running function deleteRequestApproverPath()`,
     );
     const deleteApproverPathRowAffected = await deleteRequestApproverPath(
       transaction,
       traceId,
     );
     logger.trace(
-      `${loggerDate()} : Finished running function deleteRequestApproverPath()`,
+      `Finished running function deleteRequestApproverPath()`,
     );
     logger.debug(
-      `${loggerDate()} : ${deleteApproverPathRowAffected} rows affected"`,
+      `${deleteApproverPathRowAffected} rows affected`,
     );
 
     // DELETE Trace
     logger.trace(
-      `${loggerDate()} : Running function deleteRequestTrace()`,
+      `Running function deleteRequestTrace()`,
     );
     const deleteTraceRowsAffected = await deleteRequestTrace(
       transaction,
       noForm,
     );
     logger.trace(
-      `${loggerDate()} : Finished running function deleteRequestTrace()`,
+      `Finished running function deleteRequestTrace()`,
     );
     logger.debug(
-      `${loggerDate()} : ${deleteTraceRowsAffected} rows affected"`,
+      `${deleteTraceRowsAffected} rows affected`,
     );
 
     // DELETE frm_PR_H
     logger.trace(
-      `${loggerDate()} : Running function deleteRequestInformation()`,
+      `Running function deleteRequestInformation()`,
     );
     const deleteReqInfoRowsAffected = await deleteRequestInformation(
       transaction,
       formId,
     );
     logger.trace(
-      `${loggerDate()} : Finished running function deleteRequestInformation()`,
+      `Finished running function deleteRequestInformation()`,
     );
     logger.debug(
-      `${loggerDate()} : ${deleteReqInfoRowsAffected} rows affected"`,
+      `${deleteReqInfoRowsAffected} rows affected`,
     );
 
     // PATCH Budget
     logger.trace(
-      `${loggerDate()} : Started looping "requestItems"`,
+      `Started looping "requestItems"`,
     );
     await Promise.all(requestItems.map(async (item) => {
       logger.debug(
-        `${loggerDate()} : Current requestItems = {value}`,
+        `Current requestItems = {value}`,
         { requestItems },
       );
 
       logger.trace(
-        `${loggerDate()} : Running function patchRequestBudget()`,
+        `Running function patchRequestBudget()`,
       );
       const { rowsAffected: budgetPatchRowsAffeceted, rowsReturned: _ } =
         await patchRequestBudget(
@@ -2230,37 +2238,37 @@ export const deleteRequest = async (ctx: RouterContext<"/:traceId">) => {
           Number(item.Department),
         );
       logger.trace(
-        `${loggerDate()} : Finished running function patchRequestBudget()`,
+        `Finished running function patchRequestBudget()`,
       );
       logger.debug(
-        `${loggerDate()} : ${budgetPatchRowsAffeceted} rows affected"`,
+        `${budgetPatchRowsAffeceted} rows affected`,
       );
     }));
     logger.trace(
-      `${loggerDate()} : Finished looping "requestItems"`,
+      `Finished looping "requestItems"`,
     );
 
     // DELETE frm_PR_D
     logger.trace(
-      `${loggerDate()} : Running function deleteRequestItems()`,
+      `Running function deleteRequestItems()`,
     );
     const deleteItemsRowsAffected = await deleteRequestItems(transaction, noPr);
     logger.trace(
-      `${loggerDate()} : Finished running function deleteRequestItems()`,
+      `Finished running function deleteRequestItems()`,
     );
     logger.debug(
-      `${loggerDate()} : ${deleteItemsRowsAffected} rows affected"`,
+      `${deleteItemsRowsAffected} rows affected`,
     );
 
     logger.info(
-      `${loggerDate()} : Comitting transaction`,
+      `Comitting transaction`,
     );
     await transaction.commit();
 
     ctx.response.status = 200;
   } catch (err) {
     logger.error(
-      `${loggerDate()} : Rolling back transaction. {value}`,
+      `Rolling back transaction. {value}`,
       { err },
     );
     await transaction.rollback();
@@ -2273,29 +2281,29 @@ export const getAllValidDepartments = async (
   ctx: RouterContext<"/departments">,
 ) => {
   logger.info(
-    `${loggerDate()} : User accessed route "/budget/departments"`,
+    `User accessed route "/budget/departments"`,
   );
 
   logger.trace(
-    `${loggerDate()} : Started searching route parameters`,
+    `Started searching route parameters`,
   );
   const params = ctx.request.url.searchParams;
   logger.trace(
-    `${loggerDate()} : Finished searching route parameters`,
+    `Finished searching route parameters`,
   );
 
   const fullPeriode = params.get("period") || null;
   const fileResource = params.get("fileresource") || null;
 
   logger.debug(
-    `${loggerDate()} : Value of fullPeriode is ${fullPeriode}`,
+    `Value of fullPeriode is ${fullPeriode}`,
   );
   logger.debug(
-    `${loggerDate()} : Value of fileResource is ${fileResource}`,
+    `Value of fileResource is ${fileResource}`,
   );
 
   logger.trace(
-    `${loggerDate()} : Running function getValidDepartments()`,
+    `Running function getValidDepartments()`,
   );
   const { rowsReturned, rowsAffected } = await getValidDepartments(
     databasePool,
@@ -2303,10 +2311,10 @@ export const getAllValidDepartments = async (
     fileResource,
   );
   logger.trace(
-    `${loggerDate()} : Finished running function getValidDepartments()`,
+    `Finished running function getValidDepartments()`,
   );
   logger.debug(
-    `${loggerDate()} : ${rowsAffected[0]} rows affected"`,
+    `${rowsAffected[0]} rows affected`,
   );
 
   ctx.response.status = 200;
@@ -2317,15 +2325,15 @@ export const getAllValidCostCenters = async (
   ctx: RouterContext<"/costcenters">,
 ) => {
   logger.info(
-    `${loggerDate()} : User accessed route "/budget/costcenters"`,
+    `User accessed route "/budget/costcenters"`,
   );
 
   logger.trace(
-    `${loggerDate()} : Started searching route parameters`,
+    `Started searching route parameters`,
   );
   const params = ctx.request.url.searchParams;
   logger.trace(
-    `${loggerDate()} : Finished searching route parameters`,
+    `Finished searching route parameters`,
   );
 
   const fullPeriode = params.get("period") || null;
@@ -2333,17 +2341,17 @@ export const getAllValidCostCenters = async (
   const dept = Number(params.get("dept")) || null;
 
   logger.debug(
-    `${loggerDate()} : Value of fullPeriode is ${fullPeriode}`,
+    `Value of fullPeriode is ${fullPeriode}`,
   );
   logger.debug(
-    `${loggerDate()} : Value of fileResource is ${fileResource}`,
+    `Value of fileResource is ${fileResource}`,
   );
   logger.debug(
-    `${loggerDate()} : Value of dept is ${dept}`,
+    `Value of dept is ${dept}`,
   );
 
   logger.trace(
-    `${loggerDate()} : Running function getValidCostCenters()`,
+    `Running function getValidCostCenters()`,
   );
   const { rowsReturned, rowsAffected } = await getValidCostCenters(
     databasePool,
@@ -2352,10 +2360,10 @@ export const getAllValidCostCenters = async (
     dept,
   );
   logger.trace(
-    `${loggerDate()} : Finished running function getValidCostCenters()`,
+    `Finished running function getValidCostCenters()`,
   );
   logger.debug(
-    `${loggerDate()} : ${rowsAffected[0]} rows affected"`,
+    `${rowsAffected[0]} rows affected`,
   );
 
   ctx.response.status = 200;
@@ -2366,7 +2374,7 @@ export const getUploadBudgetTemplate = async (
   ctx: RouterContext<"/template">,
 ) => {
   logger.info(
-    `${loggerDate()} : User accessed route "/admin/template"`,
+    `User accessed route "/admin/template"`,
   );
 
   const filename = "upload_budget_template.xlsx";
@@ -2381,7 +2389,7 @@ export const getUploadBudgetTemplate = async (
   );
 
   logger.trace(
-    `${loggerDate()} : Sending template to an admin`,
+    `Sending template to an admin`,
   );
 
   await ctx.send(options);
@@ -2391,20 +2399,20 @@ export const getForex = async (
   ctx: RouterContext<"/forex">,
 ) => {
   logger.info(
-    `${loggerDate()} : User accessed route "/forex"`,
+    `User accessed route "/forex"`,
   );
 
   logger.trace(
-    `${loggerDate()} : Running function getCurrentRateDollar()`,
+    `Running function getCurrentRateDollar()`,
   );
   const { rowsReturned, rowsAffected } = await getCurrentRateDollar(
     databasePool,
   );
   logger.trace(
-    `${loggerDate()} : Finished running function getCurrentRateDollar()`,
+    `Finished running function getCurrentRateDollar()`,
   );
   logger.debug(
-    `${loggerDate()} : ${rowsAffected[0]} rows affected"`,
+    `${rowsAffected[0]} rows affected`,
   );
 
   ctx.response.status = 200;
@@ -2415,25 +2423,25 @@ export const patchForex = async (
   ctx: RouterContext<"/ratedollartemp">,
 ) => {
   logger.info(
-    `${loggerDate()} : User accessed route "/admin/ratedollartemp"`,
+    `User accessed route "/admin/ratedollartemp"`,
   );
 
   logger.trace(
-    `${loggerDate()} : Started searching route parameters`,
+    `Started searching route parameters`,
   );
   const params = ctx.request.url.searchParams;
   logger.trace(
-    `${loggerDate()} : Finished searching route parameters`,
+    `Finished searching route parameters`,
   );
 
   const currency = params.get("currency");
   const newValue = params.get("value");
 
   logger.debug(
-    `${loggerDate()} : Value of currency is ${currency}`,
+    `Value of currency is ${currency}`,
   );
   logger.debug(
-    `${loggerDate()} : Value of newValue is ${newValue}`,
+    `Value of newValue is ${newValue}`,
   );
 
   if (currency === null || newValue === null) {
@@ -2460,7 +2468,7 @@ export const patchForex = async (
   }
 
   logger.trace(
-    `${loggerDate()} : Running function patchRateDollarTemp()`,
+    `Running function patchRateDollarTemp()`,
   );
   const rateDollarTempPatchRowsAffected = await patchRateDollarTemp(
     databasePool,
@@ -2468,10 +2476,10 @@ export const patchForex = async (
     Number(newValue),
   );
   logger.trace(
-    `${loggerDate()} : Finished running function patchRateDollarTemp()`,
+    `Finished running function patchRateDollarTemp()`,
   );
   logger.debug(
-    `${loggerDate()} : ${rateDollarTempPatchRowsAffected} rows affected"`,
+    `${rateDollarTempPatchRowsAffected} rows affected`,
   );
 
   ctx.response.status = 200;
@@ -2481,21 +2489,21 @@ export const getForexTemp = async (
   ctx: RouterContext<"/forextemp">,
 ) => {
   logger.info(
-    `${loggerDate()} : User accessed route "/forextemp"`,
+    `User accessed route "/forextemp"`,
   );
 
   logger.trace(
-    `${loggerDate()} : Running function getCurrentRateDollarTemp()`,
+    `Running function getCurrentRateDollarTemp()`,
   );
 
   const { rowsReturned, rowsAffected } = await getCurrentRateDollarTemp(
     databasePool,
   );
   logger.trace(
-    `${loggerDate()} : Finished running function getCurrentRateDollarTemp()`,
+    `Finished running function getCurrentRateDollarTemp()`,
   );
   logger.debug(
-    `${loggerDate()} : ${rowsAffected[0]} rows affected"`,
+    `${rowsAffected[0]} rows affected`,
   );
 
   ctx.response.status = 200;
@@ -2504,13 +2512,13 @@ export const getForexTemp = async (
 
 export const patchRateDollar = async () => {
   logger.trace(
-    `${loggerDate()} : Running function renewRateDollar()`,
+    `Running function renewRateDollar()`,
   );
   const rowsAffected = await renewRateDollar(databasePool);
   logger.trace(
-    `${loggerDate()} : Finished running function renewRateDollar()`,
+    `Finished running function renewRateDollar()`,
   );
   logger.debug(
-    `${loggerDate()} : ${rowsAffected} rows affected"`,
+    `${rowsAffected} rows affected`,
   );
 };

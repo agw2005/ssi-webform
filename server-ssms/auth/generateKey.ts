@@ -1,4 +1,8 @@
 import { encodeBase64 } from "@std/encoding";
+import { getLogger } from "@logtape/logtape";
+import { loggerDate } from "../helper/loggerDate.ts";
+
+const logger = getLogger("webform-oak-server");
 
 const ENV_PATH = ".env";
 
@@ -19,7 +23,9 @@ const generateJWTKey = async () => {
   );
 
   await Deno.writeTextFile(ENV_PATH, updatedEnv);
-  console.log("JWT_KEY successfully appended to .env file.");
+  logger.info(
+    `${loggerDate()} : JWT_KEY successfully appended to .env file"`,
+  );
 };
 
 generateJWTKey();
