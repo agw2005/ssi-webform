@@ -1,4 +1,9 @@
-export const verifyJwtPayload = (storedToken: string) => {
+export const verifyJwtPayload = (storedToken: string): {
+  method: string;
+  headers: {
+    Authorization: string;
+  };
+} => {
   const Request = {
     method: "GET",
     headers: {

@@ -88,7 +88,7 @@ export const postUsage = async (
   reason: FrmPRDTable["Reason"],
   rateByCurrency: FrmPRDTable["Rate"],
   budgetId: FrmPRDTable["IDBudget"],
-): Promise<number> => {
+) => {
   const netPrice = (quantity * unitPrice) / rateByCurrency;
 
   const request = requestSource.request();
@@ -125,7 +125,7 @@ export const postUsage = async (
     `);
 
   const newIdItem = result.recordset[0].IDItem;
-  return newIdItem;
+  return { rowsAffected: result.rowsAffected, newUsageId: newIdItem };
 };
 
 export const patchFrmPRDVerdict = async (
@@ -138,14 +138,14 @@ export const patchFrmPRDVerdict = async (
   request.input("supervisorId", FrmPRDSSMSTypes.RejectedBy, supervisorId);
   request.input("itemId", FrmPRDSSMSTypes.IDItem, itemId);
 
-  await request.query(
+  const result = await request.query(
     `UPDATE frm_PR_D
       SET
         StatusItem = 'True',
         RejectedBy = @supervisorId
       WHERE IDItem = @itemId;`,
   );
-  return void 0;
+  return result.rowsAffected[0];
 };
 
 export const deleteRequestItems = async (
@@ -156,9 +156,9 @@ export const deleteRequestItems = async (
 
   request.input("noPr", FrmPRDSSMSTypes.NoPR, noPr);
 
-  await request.query(
+  const result = await request.query(
     `DELETE FROM frm_PR_D WHERE NoPR = @noPr;`,
   );
 
-  return null;
+  return result.rowsAffected[0];
 };

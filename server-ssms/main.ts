@@ -3,12 +3,23 @@ import * as handlers from "./routes.ts";
 import { handleCors } from "./handleCors.ts";
 import { verifyJwt } from "./auth/verifyJwt.ts";
 import { updateRates } from "./jobs.ts";
+import { getLogger } from "@logtape/logtape";
+import { loggerDate } from "./helper/loggerDate.ts";
+
+const logger = getLogger("webform-oak-server");
 
 Deno.cron("start-of-each-month", "0 0 1 * *", async () => {
-  console.log((new Date()).toISOString());
-  console.log("Started copying RateDollarTemp to RateDollar");
+  logger.info(
+    `${loggerDate()} : Starting Deno.cron for the start of each month`,
+  );
+
+  logger.trace(
+    `${loggerDate()} : Started copying RateDollarTemp to RateDollar`,
+  );
   await updateRates();
-  console.log("Finished copying RateDollarTemp to RateDollar");
+  logger.trace(
+    `${loggerDate()} : Finished copying RateDollarTemp to RateDollar`,
+  );
 });
 
 const oakApp = new Application();
@@ -116,13 +127,13 @@ oakApp.use(rootRouter.routes());
 oakApp.use(rootRouter.allowedMethods());
 
 if (import.meta.main) {
-  console.log(
-    `Server is running on http://${Deno.env.get("SERVER_HOST")}:${
-      Deno.env.get("SERVER_PORT")
-    }`,
+  logger.info(
+    `${loggerDate()} : Server is running on http://${
+      Deno.env.get("SERVER_HOST")
+    }:${Deno.env.get("SERVER_PORT")}`,
   );
-  console.log(
-    `CORS available for client ${Deno.env.get("CLIENT_URL")}`,
+  logger.info(
+    `${loggerDate()} : CORS available for client ${Deno.env.get("CLIENT_URL")}`,
   );
   await oakApp.listen({ port: Number(Deno.env.get("SERVER_PORT")) });
 }

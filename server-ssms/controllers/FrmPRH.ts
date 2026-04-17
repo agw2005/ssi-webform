@@ -123,7 +123,7 @@ export const postRequestInformation = async (
   requestAmount: FrmPRHTable["Amount"],
   requestReturnOnOutgoing: FrmPRHTable["ReturnOnOutgoing"],
   remarks: FrmPRHTable["Remarks"],
-): Promise<number> => {
+) => {
   const request = requestSource.request();
 
   request.input("noForm", FrmPRHSSMSTypes.NoForm, noForm);
@@ -148,7 +148,7 @@ export const postRequestInformation = async (
   );
 
   const newId = result.recordset[0].ID;
-  return newId;
+  return { rowsAffected: result.rowsAffected, newId };
 };
 
 export const patchRemarksOfRequest = async (
@@ -177,9 +177,9 @@ export const deleteRequestInformation = async (
 
   request.input("formId", FrmPRHSSMSTypes.ID, formId);
 
-  await request.query(
+  const result = await request.query(
     `DELETE FROM frm_PR_H WHERE ID = @formId;`,
   );
 
-  return null;
+  return result.rowsAffected[0];
 };

@@ -1,6 +1,12 @@
 import type { LoginPayload } from "./type.d.ts";
 
-export const jwtRequestPayload = (payload: LoginPayload) => {
+export const jwtRequestPayload = (payload: LoginPayload): {
+  method: string;
+  headers: {
+    "Content-Type": string;
+  };
+  body: string;
+} => {
   const Request = {
     method: "POST",
     headers: {

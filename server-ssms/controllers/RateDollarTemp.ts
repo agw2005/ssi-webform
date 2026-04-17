@@ -13,7 +13,7 @@ export const patchRateDollarTemp = async (
   pool: ssms.ConnectionPool,
   currency: "IDR" | "JPY" | "SGD" | "USD",
   newValue: number,
-): Promise<null> => {
+): Promise<number> => {
   const request = pool.request();
 
   request.input(
@@ -30,11 +30,9 @@ export const patchRateDollarTemp = async (
     WHERE IDCur = @currency;
     `);
 
-  const rowsAffected = result.rowsAffected;
+  const rowsAffected = result.rowsAffected[0];
 
-  console.log(rowsAffected);
-
-  return null;
+  return rowsAffected;
 };
 
 export const getCurrentRateDollarTemp = async (

@@ -29,8 +29,8 @@ export const getCurrentRateDollar = async (
 
 export const renewRateDollar = async (
   pool: ssms.ConnectionPool,
-): Promise<null> => {
-  await pool.request().query(`
+): Promise<number> => {
+  const result = await pool.request().query(`
     UPDATE RateDollar
     SET
       RateDollar.CurrencyValue = RateDollarTemp.CurrencyValue
@@ -39,5 +39,5 @@ export const renewRateDollar = async (
       ON RateDollar.IDCur = RateDollarTemp.IDCur;
     `);
 
-  return null;
+  return result.rowsAffected[0];
 };

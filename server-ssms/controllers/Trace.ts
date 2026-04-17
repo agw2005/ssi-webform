@@ -237,7 +237,7 @@ export const postRequestTrace = async (
   requestSubmissionDate: TraceTable["SubmitDate"],
   initialSupervisorId: TraceTable["ProcessedBy"],
   remarks: TraceTable["Remarks"],
-): Promise<number> => {
+) => {
   const request = requestSource.request();
 
   request.input("noForm", TraceSSMSTypes.NoForm, noForm);
@@ -263,7 +263,7 @@ export const postRequestTrace = async (
   );
 
   const newIDTrace = result.recordset[0].IDTrace;
-  return newIDTrace;
+  return { rowsAffected: result.rowsAffected, newIDTrace };
 };
 
 export const approveRequests = async (
@@ -421,12 +421,14 @@ export const patchRemarksOfTrace = async (
   request.input("newRemarks", TraceSSMSTypes.Remarks, newRemarks);
   request.input("noForm", TraceSSMSTypes.NoForm, noForm);
 
-  await request.query(
+  const result = await request.query(
     `UPDATE Trace
       SET Remarks = ?
       WHERE
         NoForm = ?;`,
   );
+
+  return result.rowsAffected[0];
 };
 
 export const patchTraceVerdict = async (
@@ -439,6 +441,8 @@ export const patchTraceVerdict = async (
   nextApproverLevel: TraceTable["LevelProgress"] | null,
 ) => {
   const request = requestSource.request();
+
+  let result: ssms.IResult<null> | null = null;
 
   if (verdict === "Rejected") {
     request.input(
@@ -453,7 +457,7 @@ export const patchTraceVerdict = async (
     );
     request.input("traceId", TraceSSMSTypes.IDTrace, traceId);
 
-    await request.query(
+    result = await request.query(
       `UPDATE Trace
         SET
           Trace.Status = 'Rejected',
@@ -493,7 +497,7 @@ export const patchTraceVerdict = async (
     );
     request.input("traceId", TraceSSMSTypes.IDTrace, traceId);
 
-    await request.query(
+    result = await request.query(
       `UPDATE Trace
         SET
           Trace.Status = @newStatus,
@@ -503,7 +507,7 @@ export const patchTraceVerdict = async (
         WHERE Trace.IDTrace = @traceId;`,
     );
   }
-  return void 0;
+  return result.rowsAffected[0];
 };
 
 export const getRequestIds = async (
@@ -566,7 +570,9 @@ export const deleteRequestTrace = async (
 
   request.input("noForm", TraceSSMSTypes.NoForm, noForm);
 
-  await request.query(`DELETE FROM Trace WHERE NoForm = @noForm;`);
+  const result = await request.query(
+    `DELETE FROM Trace WHERE NoForm = @noForm;`,
+  );
 
-  return null;
+  return result.rowsAffected[0];
 };

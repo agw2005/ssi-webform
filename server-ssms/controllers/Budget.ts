@@ -234,7 +234,7 @@ export const patchRequestBudget = async (
   period: BudgetTable["Periode"],
   fileResource: BudgetTable["FileResource"],
   dept: BudgetTable["IDSection"],
-): Promise<MsSqlResponse<null>> => {
+) => {
   const request = new ssms.Request(requestSource);
 
   request.input("usage", BudgetSSMSTypes.Budget, usage);
@@ -316,7 +316,7 @@ export const patchSpecificBudgetNewBudget = async (
     data.FileResource,
   );
 
-  await request.query(
+  const result = await request.query(
     `UPDATE Budget
       SET
         Budget = @Budget,
@@ -329,7 +329,7 @@ export const patchSpecificBudgetNewBudget = async (
         AND FileResource = @FileResource;`,
   );
 
-  return null;
+  return result.rowsAffected[0];
 };
 
 export const postBudget = async (
@@ -350,14 +350,14 @@ export const postBudget = async (
     data.FileResource,
   );
 
-  await request.query(
+  const result = await request.query(
     `INSERT INTO Budget
         (CostCenter, Nature, Periode, Budget, Balance, IDSection, FileResource)
       VALUES
         (@CostCenter, @Nature, @Periode, @Budget, @Balance, @IDSection, @FileResource);`,
   );
 
-  return null;
+  return result.rowsAffected[0];
 };
 
 export const getValidDepartments = async (

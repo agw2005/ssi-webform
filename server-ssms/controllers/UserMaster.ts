@@ -41,7 +41,7 @@ export const supervisorNames = async (
 export const getUserIdByName = async (
   requestSource: ssms.Transaction,
   nameUser: UserMasterTable["NameUser"],
-): Promise<number> => {
+) => {
   const request = requestSource.request();
 
   request.input("nameUser", UserMasterSSMSTypes.NameUser, `%${nameUser}%`);
@@ -55,7 +55,7 @@ export const getUserIdByName = async (
 
   const userId = result.recordset[0].IDUser;
 
-  return userId;
+  return { rowsAffected: result.rowsAffected, userId };
 };
 
 export const getAuthInfo = async (
@@ -82,7 +82,7 @@ export const getAuthInfo = async (
 export const patchNewLogin = async (
   pool: ssms.ConnectionPool,
   userId: UserMasterTable["IDUser"],
-): Promise<null> => {
+): Promise<number> => {
   const request = pool.request();
 
   const now = new Date();
@@ -100,12 +100,12 @@ export const patchNewLogin = async (
   request.input("now", UserMasterSSMSTypes.LastLogin, formattedNow);
   request.input("userId", UserMasterSSMSTypes.IDUser, userId);
 
-  await request.query(
+  const result = await request.query(
     `UPDATE UserMaster
       SET LastLogin = @now
       WHERE
         IDUser = @userId;`,
   );
 
-  return null;
+  return result.rowsAffected[0];
 };

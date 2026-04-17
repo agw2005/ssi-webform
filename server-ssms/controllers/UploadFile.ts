@@ -48,7 +48,7 @@ export const postRequestFiles = async (
   requestorName: UploadFileTable["Requestor"],
   filename: UploadFileTable["Filename"],
   uploadDate: UploadFileTable["DateUpload"],
-): Promise<number> => {
+) => {
   const request = requestSource.request();
 
   request.input("noForm", UploadFileSSMSTypes.NoForm, noForm);
@@ -65,7 +65,7 @@ export const postRequestFiles = async (
         (@noForm , @requestSubject , @requestorName , @filename , @uploadDate)`,
   );
   const newUploadId = result.recordset[0].IDUpload;
-  return newUploadId;
+  return { rowsAffected: result.rowsAffected, newUploadId };
 };
 
 export const deleteRequestFiles = async (
@@ -76,9 +76,9 @@ export const deleteRequestFiles = async (
 
   request.input("noForm", UploadFileSSMSTypes.NoForm, noForm);
 
-  await request.query(
+  const result = await request.query(
     `DELETE FROM UploadFile WHERE NoForm = @noForm`,
   );
 
-  return null;
+  return result.rowsAffected[0];
 };

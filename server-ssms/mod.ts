@@ -86,7 +86,10 @@ export interface SubmitPayload {
   fifthStep: FifthStepInputs;
 }
 
-export const submitRequest = (requestPayload: SubmitPayload) => {
+export const submitRequest = (requestPayload: SubmitPayload): {
+  method: string;
+  body: FormData;
+} => {
   const formData = new FormData();
   const { fifthStep, ...otherSteps } = requestPayload;
   formData.append("payload", JSON.stringify(otherSteps));
@@ -122,7 +125,10 @@ export interface patchApprovalVerdict {
 }
 
 import type { BudgetTable } from "./models/Budget.d.ts";
-export const putBudgets = (payload: BudgetTable[]) => {
+export const putBudgets = (payload: BudgetTable[]): {
+  method: string;
+  body: string;
+} => {
   const Request = {
     method: "PUT",
     body: JSON.stringify(payload),

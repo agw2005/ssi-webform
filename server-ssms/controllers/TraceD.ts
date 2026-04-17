@@ -66,13 +66,13 @@ export const postRequestApproverPath = async (
   request.input("approverType", TraceDSSMSTypes.ApproverType, approverType);
   request.input("approverStep", TraceDSSMSTypes.ApproverLevel, approverStep);
 
-  await request.query(
+  const queryResult = await request.query(
     `INSERT INTO Trace_D
         (IDTrace, IDUser, Result, DateApprove, ApproverType, ApproverLevel)
       VALUES
         (@traceId , @userId , @result , null , @approverType , @approverStep);`,
   );
-  return void 0;
+  return queryResult.rowsAffected;
 };
 
 export const patchTraceDVerdict = async (
@@ -91,7 +91,7 @@ export const patchTraceDVerdict = async (
     currentApproverLevel,
   );
 
-  await request.query(
+  const result = await request.query(
     `UPDATE Trace_D
       SET
         Trace_D.Result = @verdict,
@@ -99,7 +99,7 @@ export const patchTraceDVerdict = async (
       WHERE Trace_D.IDTrace = @traceId
       AND Trace_D.ApproverLevel = @currentApproverLevel;`,
   );
-  return void 0;
+  return result.rowsAffected[0];
 };
 
 export const getNextApprover = async (
@@ -175,14 +175,14 @@ export const patchApproverToActiveApproving = async (
   request.input("traceId", TraceDSSMSTypes.IDTrace, traceId);
   request.input("approverLevel", TraceDSSMSTypes.ApproverLevel, approverLevel);
 
-  await pool.query(
+  const result = await pool.query(
     `UPDATE Trace_D
       SET
         Trace_D.Result = 'In Progress'
       WHERE Trace_D.IDTrace = @traceId
       AND Trace_D.ApproverLevel = @approverLevel;`,
   );
-  return void 0;
+  return result.rowsAffected[0];
 };
 
 export const deleteRequestApproverPath = async (
@@ -193,9 +193,9 @@ export const deleteRequestApproverPath = async (
 
   request.input("traceId", TraceDSSMSTypes.IDTrace, traceId);
 
-  await request.query(
+  const result = await request.query(
     `DELETE FROM Trace_D WHERE IDTrace = @traceId;`,
   );
 
-  return null;
+  return result.rowsAffected[0];
 };

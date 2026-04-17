@@ -9,6 +9,8 @@
     "keygen": "deno run --allow-read --allow-write ./auth/generateKey.ts"
   },
   "imports": {
+    "@logtape/file": "jsr:@logtape/file@^2.0.5",
+    "@logtape/logtape": "jsr:@logtape/logtape@^2.0.5",
     "@oak/oak": "jsr:@oak/oak@^17.2.0",
     "@std/encoding": "jsr:@std/encoding@^1.0.10",
     "@types/mssql": "npm:@types/mssql@^9.1.11",
