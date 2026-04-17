@@ -130,12 +130,12 @@ oakApp.use(rootRouter.allowedMethods());
 
 if (import.meta.main) {
   logger.info(
-    `${loggerDate()} : Server is running on http://${
-      Deno.env.get("SERVER_HOST")
-    }:${Deno.env.get("SERVER_PORT")}`,
+    `Server is running on http://${Deno.env.get("SERVER_HOST")}:${
+      Deno.env.get("SERVER_PORT")
+    }`,
   );
   logger.info(
-    `${loggerDate()} : CORS available for client ${Deno.env.get("CLIENT_URL")}`,
+    `CORS available for client ${Deno.env.get("CLIENT_URL")}`,
   );
   await oakApp.listen({ port: Number(Deno.env.get("SERVER_PORT")) });
 }

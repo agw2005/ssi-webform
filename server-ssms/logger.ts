@@ -3,17 +3,7 @@ import { configure, getConsoleSink, type LogRecord } from "@logtape/logtape";
 import { loggerDate } from "./helper/loggerDate.ts";
 
 const webformLogFormatter = (record: LogRecord): string => {
-  const levelMap: Record<string, string> = {
-    "trace": "TRC",
-    "debug": "DBG",
-    "info": "INF",
-    "warn": "WRN",
-    "error": "ERR",
-    "fatal": "FTL",
-  };
-  const level = levelMap[record.level] || record.level.toUpperCase();
-
-  return `[${level}] ${loggerDate()}=> ${record.message}\n`;
+  return `[${record.level}] ${loggerDate()}=> ${record.message}\n`;
 };
 
 export async function setupLogger() {

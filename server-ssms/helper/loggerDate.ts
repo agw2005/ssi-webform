@@ -1,5 +1,6 @@
 export const loggerDate = (date: Date = new Date()) => {
-  const padder = (timeUnit: number) => timeUnit.toString().padStart(2, "0");
+  const padder = (timeUnit: number, padding: number = 2) =>
+    timeUnit.toString().padStart(padding, "0");
 
   const y = date.getFullYear();
   const m = padder(date.getMonth() + 1);
@@ -7,7 +8,7 @@ export const loggerDate = (date: Date = new Date()) => {
   const h = padder(date.getHours());
   const min = padder(date.getMinutes());
   const sec = padder(date.getSeconds());
-  const millSec = padder(date.getMilliseconds());
+  const millSec = padder(date.getMilliseconds(), 3);
 
   const offset = -date.getTimezoneOffset();
   const sign = offset >= 0 ? "+" : "-";
