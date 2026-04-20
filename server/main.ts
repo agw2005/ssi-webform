@@ -10,9 +10,9 @@ import { setupLogger } from "./logger.ts";
 await setupLogger();
 const logger = getLogger("webform-oak-server");
 
-Deno.cron("start-of-each-month", "0 0 1 * *", async () => {
+Deno.cron("start-of-each-month", "0 17 1 * *", async () => {
   logger.info(
-    `${loggerDate()} : Starting Deno.cron for the start of each month`,
+    `${loggerDate()} : Starting Deno.cron for the "start-of-each-month"`,
   );
 
   logger.trace(
@@ -21,6 +21,20 @@ Deno.cron("start-of-each-month", "0 0 1 * *", async () => {
   await updateRates();
   logger.trace(
     `${loggerDate()} : Finished copying RateDollarTemp to RateDollar`,
+  );
+});
+
+Deno.cron("everyday", "0 17 * * *", async () => {
+  logger.info(
+    `${loggerDate()} : Starting Deno.cron for "everyday"`,
+  );
+
+  logger.trace(
+    `${loggerDate()} : Started truncating file "server.log"`,
+  );
+  await Deno.truncate(`${Deno.cwd()}/logs/server.log`);
+  logger.trace(
+    `${loggerDate()} : Finished truncating file "server.log"`,
   );
 });
 
