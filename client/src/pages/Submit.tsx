@@ -21,7 +21,7 @@ import {
   type UserSection,
   type ValidCostCenter,
   type ValidDepartment,
-} from "@scope/server-ssms";
+} from "@scope/server";
 import useFetch from "../hooks/useFetch.tsx";
 import useForex from "../hooks/useForex.tsx";
 import { useNavigate } from "react-router-dom";

@@ -1,4 +1,4 @@
-import type { UserSection } from "@scope/server-ssms";
+import type { UserSection } from "@scope/server";
 
 interface ReducedValue {
   domain: string;

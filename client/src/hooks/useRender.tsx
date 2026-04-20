@@ -1,6 +1,6 @@
 import Description from "../components/non-reusable/report/Description.tsx";
 import Titles from "../components/non-reusable/report/Titles.tsx";
-import type { ReportResponse } from "@scope/server-ssms";
+import type { ReportResponse } from "@scope/server";
 import {
   COMPANY_NAME,
   FH_MONTHS,

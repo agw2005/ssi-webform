@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { BudgetUsages } from "@scope/server-ssms";
+import type { BudgetUsages } from "@scope/server";
 import { webformAPI } from "../helper/apis.ts";
 
 const useBudgetUsages = (

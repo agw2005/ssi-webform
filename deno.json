@@ -2,7 +2,7 @@
   "name": "ssi-webform",
   "version": "0.0.0",
   "exports": "./mod.ts",
-  "workspace": ["./server-mysql", "./server-ssms", "./client"],
+  "workspace": ["./server", "./client"],
   "nodeModulesDir": "auto",
   "overrides": {
     "vite": "npm:rolldown-vite@7.2.5"

@@ -1,4 +1,4 @@
-import type { SecondStepInputs } from "@scope/server-ssms";
+import type { SecondStepInputs } from "@scope/server";
 import { createGenericChangeHandler } from "../../../helper/genericInputHandler.ts";
 import TextAreaInput from "../../reusable/inputs/TextAreaInput.tsx";
 import TextInput from "../../reusable/inputs/TextInput.tsx";

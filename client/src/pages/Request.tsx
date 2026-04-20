@@ -8,8 +8,8 @@ import type {
   RequestItem,
   RequestOverview,
   UploadedFile,
-} from "@scope/server-ssms";
-import { onlyNumerics } from "@scope/server-ssms";
+} from "@scope/server";
+import { onlyNumerics } from "@scope/server";
 import capitalize from "../helper/capitalize.ts";
 import formatNumberToString from "../helper/formatNumberToString.ts";
 import mysqlDateIsoStringToJSString from "../helper/mysqlDateIsoStringToJSString.ts";

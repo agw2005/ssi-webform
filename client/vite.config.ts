@@ -17,10 +17,13 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
-      "@scope/server-mysql": path.resolve(__dirname, "../server-mysql/mod.ts"),
-      "@scope/server-ssms": path.resolve(__dirname, "../server-ssms/mod.ts"),
+      "@scope/server": path.resolve(__dirname, "../server/mod.ts"),
       "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/package/xlsx.mjs",
     },
   },
   base: "/webform",
+  server: {
+    host: "0.0.0.0",
+    port: 5173,
+  },
 });

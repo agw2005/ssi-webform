@@ -1,7 +1,7 @@
 import TipBox from "../../reusable/TipBox.tsx";
 import MultiselectionInputTwoFilter from "../../reusable/inputs/MultiselectionInputTwoFilter.tsx";
 import userSectionReducer from "../../../helper/userSectionReducer.ts";
-import type { FourthStepInputs, UserSection } from "@scope/server-ssms";
+import type { FourthStepInputs, UserSection } from "@scope/server";
 
 const STEP = 4;
 

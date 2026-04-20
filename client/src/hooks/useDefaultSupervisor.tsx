@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { webformAPI } from "../helper/apis.ts";
-import { SupervisorNames } from "@scope/server-ssms";
+import { SupervisorNames } from "@scope/server";
 
 const useDefaultSupervisor = (
   supervisorNRPs: string[],

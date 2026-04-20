@@ -1,5 +1,5 @@
-import { verifyJwtPayload } from "@scope/server-ssms";
-import type { VerifyResponse } from "@scope/server-ssms";
+import { verifyJwtPayload } from "@scope/server";
+import type { VerifyResponse } from "@scope/server";
 import { webformAPI } from "./apis.ts";
 
 export const verifySession = async (): Promise<VerifyResponse | null> => {

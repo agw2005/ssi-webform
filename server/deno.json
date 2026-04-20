@@ -1,5 +1,5 @@
 {
-  "name": "@scope/server-ssms",
+  "name": "@scope/server",
   "version": "0.0.0",
   "exports": "./mod.ts",
   "tasks": {

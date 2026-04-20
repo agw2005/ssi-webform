@@ -1,4 +1,4 @@
-import type { SupervisorNRPs } from "@scope/server-ssms";
+import type { SupervisorNRPs } from "@scope/server";
 
 export const defaultSupervisorsNRP: SupervisorNRPs = {
   approver: ["002162R"],

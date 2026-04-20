@@ -10,7 +10,7 @@ import type {
   SectionName,
   SupervisorNames,
   TraceRequestsCount,
-} from "@scope/server-ssms";
+} from "@scope/server";
 import LoadingFallback from "../components/reusable/LoadingFallback.tsx";
 import useFetch from "../hooks/useFetch.tsx";
 import capitalize from "../helper/capitalize.ts";

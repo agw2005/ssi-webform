@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import type { SupervisorNames } from "@scope/server-ssms";
+import type { SupervisorNames } from "@scope/server";
 import capitalize from "../helper/capitalize.ts";
 
 export const useDuplicateSupervisors = (

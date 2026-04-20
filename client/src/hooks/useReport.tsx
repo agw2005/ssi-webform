@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { ReportResponse } from "@scope/server-ssms";
+import type { ReportResponse } from "@scope/server";
 import { webformAPI } from "../helper/apis.ts";
 
 const useReport = (

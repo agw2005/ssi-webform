@@ -2,10 +2,7 @@ import { Link } from "react-router-dom";
 import LoadingFallback from "../components/reusable/LoadingFallback.tsx";
 import Primitive from "../components/reusable/Primitive.tsx";
 import useAuth from "../hooks/useAuth.tsx";
-import type {
-  TraceApproveRequests,
-  TraceRequestsCount,
-} from "@scope/server-ssms";
+import type { TraceApproveRequests, TraceRequestsCount } from "@scope/server";
 import { useReducer } from "react";
 import stringContainsRedLight from "../helper/stringContainsRedLight.ts";
 import formatNumberToString from "../helper/formatNumberToString.ts";

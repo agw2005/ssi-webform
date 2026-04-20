@@ -13,7 +13,7 @@ import type {
   Nature,
   ThirdStepInputs,
   ValidCostCenter,
-} from "@scope/server-ssms";
+} from "@scope/server";
 import type {
   FrankfurterForexRates,
   UseForexResponse,

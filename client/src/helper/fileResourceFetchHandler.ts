@@ -1,4 +1,4 @@
-import type { FileResource } from "@scope/server-ssms";
+import type { FileResource } from "@scope/server";
 
 const fileResourceFetchHandler = (arr: FileResource[] | null) => {
   return !arr

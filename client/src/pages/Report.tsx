@@ -5,7 +5,7 @@ import extractMonthFromFullPeriode from "../helper/extractMonthFromFullPeriode.t
 import extractYearFromFullPeriode from "../helper/extractYearFromFullPeriode.ts";
 import Button from "../components/reusable/Button.tsx";
 import useReport from "../hooks/useReport.tsx";
-import type { ReportResponse } from "@scope/server-ssms";
+import type { ReportResponse } from "@scope/server";
 import useRender from "../hooks/useRender.tsx";
 
 interface MonthlyData extends Pick<ReportResponse, "Budget" | "Balance"> {

@@ -5,8 +5,8 @@ import PasswordInput from "../components/reusable/inputs/PasswordInput.tsx";
 import TipBox from "../components/reusable/TipBox.tsx";
 import Button from "../components/reusable/Button.tsx";
 import { useState } from "react";
-import type { LoginPayload, LoginResponse } from "@scope/server-ssms";
-import { jwtRequestPayload } from "@scope/server-ssms";
+import type { LoginPayload, LoginResponse } from "@scope/server";
+import { jwtRequestPayload } from "@scope/server";
 import { createGenericChangeHandler } from "../helper/genericInputHandler.ts";
 import { webformAPI } from "../helper/apis.ts";
 
