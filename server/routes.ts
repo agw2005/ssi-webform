@@ -74,7 +74,7 @@ import type {
   PatchRemarksPayload,
   SubmitPayload,
   SubmitResponse,
-} from "@scope/server-ssms";
+} from "@scope/server";
 import provisionFormNumber from "./helper/provisionFormNumber.ts";
 import addHours from "./helper/addHours.ts";
 import { create, getNumericDate } from "@zaubrik/djwt";

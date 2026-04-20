@@ -1,8 +1,4 @@
-import type {
-  FrmPRDTable,
-  MsSqlResponse,
-  TraceTable,
-} from "@scope/server-ssms";
+import type { FrmPRDTable, MsSqlResponse, TraceTable } from "@scope/server";
 import type { FrmPRDRequestItem } from "../models/FrmPRD.d.ts";
 import { TraceSSMSTypes } from "./Trace.ts";
 import ssms from "mssql";

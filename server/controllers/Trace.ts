@@ -8,7 +8,7 @@ import type {
   TraceTable,
 } from "../models/Trace.d.ts";
 import { sum } from "../helper/sum.ts";
-import type { MsSqlResponse } from "@scope/server-ssms";
+import type { MsSqlResponse } from "@scope/server";
 import { UserMasterSSMSTypes } from "./UserMaster.ts";
 import { TraceDSSMSTypes } from "./TraceD.ts";
 import ssms from "mssql";

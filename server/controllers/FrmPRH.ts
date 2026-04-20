@@ -3,11 +3,7 @@ import type {
   PRNumberIncrement,
   RequestItemsAtBudgetView,
 } from "../models/FrmPRH.d.ts";
-import type {
-  FrmPRDTable,
-  MsSqlResponse,
-  TraceTable,
-} from "@scope/server-ssms";
+import type { FrmPRDTable, MsSqlResponse, TraceTable } from "@scope/server";
 import { FrmPRDSSMSTypes } from "./FrmPRD.ts";
 import { TraceSSMSTypes } from "./Trace.ts";
 import ssms from "mssql";

@@ -1,4 +1,4 @@
-import type { MsSqlResponse } from "@scope/server-ssms";
+import type { MsSqlResponse } from "@scope/server";
 import type {
   BudgetBalance,
   BudgetNature,

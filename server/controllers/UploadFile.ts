@@ -2,7 +2,7 @@ import type {
   UploadFileMinimalInformation,
   UploadFileTable,
 } from "../models/UploadFile.d.ts";
-import type { MsSqlResponse, TraceTable } from "@scope/server-ssms";
+import type { MsSqlResponse, TraceTable } from "@scope/server";
 import { TraceSSMSTypes } from "./Trace.ts";
 import ssms from "mssql";
 

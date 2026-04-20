@@ -4,7 +4,7 @@ import type {
   SectionTable,
   UserSection,
 } from "../models/Section.d.ts";
-import type { MsSqlResponse } from "@scope/server-ssms";
+import type { MsSqlResponse } from "@scope/server";
 import ssms from "mssql";
 
 const { Int, VarChar } = ssms;

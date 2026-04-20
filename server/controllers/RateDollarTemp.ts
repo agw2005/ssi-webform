@@ -1,5 +1,5 @@
 import ssms from "mssql";
-import type { MsSqlResponse, WebformDBForexResponse } from "@scope/server-ssms";
+import type { MsSqlResponse, WebformDBForexResponse } from "@scope/server";
 
 const { VarChar, Decimal } = ssms;
 

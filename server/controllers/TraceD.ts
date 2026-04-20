@@ -4,7 +4,7 @@ import type {
   TraceApproverPath,
   TraceDTable,
 } from "../models/TraceD.d.ts";
-import type { MsSqlResponse } from "@scope/server-ssms";
+import type { MsSqlResponse } from "@scope/server";
 
 import ssms from "mssql";
 
