@@ -1926,95 +1926,120 @@ export const patchAcceptRequest = async (
     { request },
   );
 
-  logger.trace(
-    `Running function getNextApprover()`,
-  );
-  const { nextUserId, nextApproverLevel } = await getNextApprover(
-    databasePool,
-    request.traceId,
-    request.supervisorId,
-    request.supervisorLevel,
-  );
-  logger.trace(
-    `Finished running function getNextApprover()`,
+  const transaction = new ssms.Transaction(databasePool);
+
+  logger.info(
+    `Beginning transaction`,
   );
 
-  logger.debug(
-    `Value of nextUserId is ${nextUserId}`,
-  );
-  logger.debug(
-    `Value of nextApproverLevel is ${nextApproverLevel}`,
-  );
+  try {
+    await transaction.begin();
 
-  logger.trace(
-    `Running function patchTraceDVerdict()`,
-  );
-  const traceDPatchRowsAffected = await patchTraceDVerdict(
-    databasePool,
-    "Approved",
-    request.traceId,
-    request.supervisorLevel,
-  );
-  logger.trace(
-    `Finished running function patchTraceDVerdict()`,
-  );
-  logger.debug(
-    `${traceDPatchRowsAffected} rows affected`,
-  );
-
-  if (nextUserId !== null && nextApproverLevel !== null) {
     logger.trace(
-      `Running function patchApproverToActiveApproving()`,
+      `Running function getNextApprover()`,
     );
-    const toActiveApprovingRowsAffected = await patchApproverToActiveApproving(
+    const { nextUserId, nextApproverLevel } = await getNextApprover(
       databasePool,
       request.traceId,
+      request.supervisorId,
+      request.supervisorLevel,
+    );
+    logger.trace(
+      `Finished running function getNextApprover()`,
+    );
+
+    logger.debug(
+      `Value of nextUserId is ${nextUserId}`,
+    );
+    logger.debug(
+      `Value of nextApproverLevel is ${nextApproverLevel}`,
+    );
+
+    logger.trace(
+      `Running function patchTraceDVerdict()`,
+    );
+    const traceDPatchRowsAffected = await patchTraceDVerdict(
+      databasePool,
+      "Approved",
+      request.traceId,
+      request.supervisorLevel,
+    );
+    logger.trace(
+      `Finished running function patchTraceDVerdict()`,
+    );
+    logger.debug(
+      `${traceDPatchRowsAffected} rows affected`,
+    );
+
+    if (nextUserId !== null && nextApproverLevel !== null) {
+      logger.trace(
+        `Running function patchApproverToActiveApproving()`,
+      );
+      const toActiveApprovingRowsAffected =
+        await patchApproverToActiveApproving(
+          databasePool,
+          request.traceId,
+          nextApproverLevel,
+        );
+      logger.trace(
+        `Finished running function patchApproverToActiveApproving()`,
+      );
+      logger.debug(
+        `${toActiveApprovingRowsAffected} rows affected`,
+      );
+    }
+
+    logger.trace(
+      `Running function getOtherApproverInfo()`,
+    );
+    const { Maxxed: MaxApproverLevel, Summed: SumApproverLevel } =
+      await getOtherApproverInfo(databasePool, request.traceId);
+    logger.trace(
+      `Finished running function getOtherApproverInfo()`,
+    );
+    logger.debug(
+      `Value of MaxApproverLevel is ${MaxApproverLevel}`,
+    );
+    logger.debug(
+      `Value of SumApproverLevel is ${SumApproverLevel}`,
+    );
+
+    logger.trace(
+      `Running function patchTraceVerdict()`,
+    );
+
+    const tracePatchRowsAffected = await patchTraceVerdict(
+      databasePool,
+      "Approved",
+      request.traceId,
+      MaxApproverLevel,
+      SumApproverLevel,
+      nextUserId,
       nextApproverLevel,
     );
     logger.trace(
-      `Finished running function patchApproverToActiveApproving()`,
+      `Finished running function patchTraceVerdict()`,
     );
     logger.debug(
-      `${toActiveApprovingRowsAffected} rows affected`,
+      `${tracePatchRowsAffected} rows affected`,
     );
+
+    logger.info(
+      `Comitting transaction`,
+    );
+
+    await transaction.commit();
+
+    ctx.response.status = 200;
+  } catch (err) {
+    logger.error(
+      `Rolling back transaction. {value}`,
+      { err },
+    );
+    if (transaction) await transaction.rollback();
+    ctx.response.status = 500;
+    console.error(err);
   }
-
-  logger.trace(
-    `Running function getOtherApproverInfo()`,
-  );
-  const { Maxxed: MaxApproverLevel, Summed: SumApproverLevel } =
-    await getOtherApproverInfo(databasePool, request.traceId);
-  logger.trace(
-    `Finished running function getOtherApproverInfo()`,
-  );
-  logger.debug(
-    `Value of MaxApproverLevel is ${MaxApproverLevel}`,
-  );
-  logger.debug(
-    `Value of SumApproverLevel is ${SumApproverLevel}`,
-  );
-
-  logger.trace(
-    `Running function patchTraceVerdict()`,
-  );
-
-  const tracePatchRowsAffected = await patchTraceVerdict(
-    databasePool,
-    "Approved",
-    request.traceId,
-    MaxApproverLevel,
-    SumApproverLevel,
-    nextUserId,
-    nextApproverLevel,
-  );
-  logger.trace(
-    `Finished running function patchTraceVerdict()`,
-  );
-  logger.debug(
-    `${tracePatchRowsAffected} rows affected`,
-  );
-
-  ctx.response.status = 200;
 };
 
 export const putBudgets = async (
