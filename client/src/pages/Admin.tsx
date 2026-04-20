@@ -72,10 +72,10 @@ const Admin = () => {
     );
     const confirmContent = (
       <div className="flex flex-col gap-2 p-4 select-none items-center">
-        <h3 className="font-bold text-2xl">
+        <h3 className="font-bold text-2xl max-w-1/3">
           {confirmMessage}
         </h3>
-        <div className="flex justify-around">
+        <div className="flex justify-between">
           <div
             className="cursor-pointer"
             onClick={() => {
