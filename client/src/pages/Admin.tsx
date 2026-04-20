@@ -71,25 +71,25 @@ const Admin = () => {
       </form>
     );
     const confirmContent = (
-      <div className="flex flex-col gap-2 p-4 select-none items-center">
-        <h3 className="font-bold text-2xl max-w-1/3">
+      <div className="flex flex-col gap-6 p-6 select-none items-center w-full max-w-sm mx-auto">
+        <h3 className="font-bold text-xl text-center">
           {confirmMessage}
         </h3>
-        <div className="flex justify-between">
+        <div className="flex justify-center w-full gap-4 mt-2">
           <div
-            className="cursor-pointer"
+            className="cursor-pointer flex-1"
             onClick={() => {
               if (onConfirm) onConfirm();
               toggleDialog(generalModal);
             }}
           >
-            <Button label="Yes" id="modify-button" variant="green" />
+            <Button label="Yes" id="confirmation-button-yes" variant="green" />
           </div>
           <div
-            className="cursor-pointer"
+            className="cursor-pointer flex-1"
             onClick={() => toggleDialog(generalModal)}
           >
-            <Button label="No" id="modify-button" variant="red" />
+            <Button label="No" id="confirmation-button-no" variant="red" />
           </div>
         </div>
       </div>
