@@ -136,7 +136,11 @@ const AddView = ({ toggleDialog }: AddViewProps) => {
       }
 
       if (monthString) {
-        accumulator[key].Budget[monthString] += currentData.Budget;
+        if (isNaN(accumulator[key].Budget[monthString])) {
+          accumulator[key].Budget[monthString] = currentData.Budget;
+        } else {
+          accumulator[key].Budget[monthString] += currentData.Budget;
+        }
       }
 
       return accumulator;
