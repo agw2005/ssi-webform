@@ -32,9 +32,10 @@ Deno.cron("everyday", "0 17 * * *", async () => {
   logger.trace(
     `${loggerDate()} : Started truncating file "server.log"`,
   );
+  const logSize = (await Deno.stat(`${Deno.cwd()}/logs/server.log`)).size;
   await Deno.truncate(`${Deno.cwd()}/logs/server.log`);
   logger.trace(
-    `${loggerDate()} : Finished truncating file "server.log"`,
+    `${loggerDate()} : Finished truncating file "server.log" (size: ${logSize} bytes)`,
   );
 });
 
