@@ -546,7 +546,6 @@ const Submit = () => {
       <Dialog
         toggle={() => toggleDialog(generalModal)}
         ref={generalModal}
-        position="-top-144"
       >
         {generalModalContent}
       </Dialog>

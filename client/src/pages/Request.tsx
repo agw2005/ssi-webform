@@ -532,7 +532,6 @@ const Request = () => {
         <Dialog
           toggle={() => toggleDialog(rejectReference)}
           ref={rejectReference}
-          position="-top-48"
         >
           <div className="flex flex-col px-16 py-16 gap-4">
             <h2 className="text-xl font-bold">

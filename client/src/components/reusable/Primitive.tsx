@@ -149,7 +149,6 @@ const Primitive = ({
       <Dialog
         toggle={() => toggleDialog(logoutReference)}
         ref={logoutReference}
-        position="-top-144"
       >
         <div className="m-4 flex flex-col gap-8 items-end">
           <h2 className="text-2xl font-bold">
