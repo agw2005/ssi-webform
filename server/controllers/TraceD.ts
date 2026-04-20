@@ -153,22 +153,23 @@ export const getOtherApproverInfo = async (
 };
 
 export const patchApproverToActiveApproving = async (
-  pool: ssms.ConnectionPool,
+  requestSource: ssms.Transaction | ssms.ConnectionPool,
   traceId: TraceDTable["IDTrace"],
   approverLevel: TraceDTable["ApproverLevel"],
 ) => {
-  const request = pool.request();
+  const request = requestSource.request();
 
   request.input("traceId", TraceDSSMSTypes.IDTrace, traceId);
   request.input("approverLevel", TraceDSSMSTypes.ApproverLevel, approverLevel);
 
-  const result = await pool.query(
+  const result = await request.query(
     `UPDATE Trace_D
       SET
         Trace_D.Result = 'In Progress'
       WHERE Trace_D.IDTrace = @traceId
       AND Trace_D.ApproverLevel = @approverLevel;`,
   );
+
   return result.rowsAffected[0];
 };
 

@@ -1939,7 +1939,7 @@ export const patchAcceptRequest = async (
       `Running function getNextApprover()`,
     );
     const { nextUserId, nextApproverLevel } = await getNextApprover(
-      databasePool,
+      transaction,
       request.traceId,
       request.supervisorId,
       request.supervisorLevel,
@@ -1959,7 +1959,7 @@ export const patchAcceptRequest = async (
       `Running function patchTraceDVerdict()`,
     );
     const traceDPatchRowsAffected = await patchTraceDVerdict(
-      databasePool,
+      transaction,
       "Approved",
       request.traceId,
       request.supervisorLevel,
@@ -1977,7 +1977,7 @@ export const patchAcceptRequest = async (
       );
       const toActiveApprovingRowsAffected =
         await patchApproverToActiveApproving(
-          databasePool,
+          transaction,
           request.traceId,
           nextApproverLevel,
         );
@@ -1993,7 +1993,7 @@ export const patchAcceptRequest = async (
       `Running function getOtherApproverInfo()`,
     );
     const { Maxxed: MaxApproverLevel, Summed: SumApproverLevel } =
-      await getOtherApproverInfo(databasePool, request.traceId);
+      await getOtherApproverInfo(transaction, request.traceId);
     logger.trace(
       `Finished running function getOtherApproverInfo()`,
     );
@@ -2009,7 +2009,7 @@ export const patchAcceptRequest = async (
     );
 
     const tracePatchRowsAffected = await patchTraceVerdict(
-      databasePool,
+      transaction,
       "Approved",
       request.traceId,
       MaxApproverLevel,
