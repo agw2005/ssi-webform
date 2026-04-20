@@ -25,8 +25,10 @@ import { webformAPI } from "../../../helper/apis.ts";
 
 interface ModifyViewProps {
   toggleDialog: (
-    option: "empty" | "success" | "error" | "modify",
+    option: "empty" | "success" | "error" | "modify" | "confirm",
     errMessage?: Error | null,
+    verifyMessage?: string | null,
+    onConfirm?: () => void,
   ) => void;
 }
 
@@ -316,7 +318,14 @@ const ModifyView = ({ toggleDialog }: ModifyViewProps) => {
                       </td>
                       <td
                         className="bg-red-500/50 hover:bg-red-500 active:bg-red-800 | text-black active:text-white | border-black active:border-black | text-xs lg:text-sm xl:text-base | whitespace-nowrap border min-w-16 text-center p-2 select-none"
-                        onClick={() => deleteRequest(request.IDTrace)}
+                        onClick={() => {
+                          toggleDialog(
+                            "confirm",
+                            null,
+                            `Are you sure you want to delete the request with trace ID of ${request.IDTrace}?`,
+                            () => deleteRequest(request.IDTrace),
+                          );
+                        }}
                       >
                         Delete
                       </td>

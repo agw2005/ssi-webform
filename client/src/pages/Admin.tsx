@@ -25,8 +25,10 @@ const Admin = () => {
   >();
 
   const toggleGeneralModal = (
-    option: "empty" | "success" | "error" | "modify",
+    option: "empty" | "success" | "error" | "modify" | "confirm",
     errMessage?: Error | null,
+    confirmMessage?: string | null,
+    onConfirm?: () => void,
   ) => {
     const err = errMessage ?? null;
     const emptyContent = (
@@ -68,6 +70,30 @@ const Admin = () => {
         <Button label="Modify" id="modify-button" variant="black" />
       </form>
     );
+    const confirmContent = (
+      <div className="flex flex-col gap-2 p-4 select-none items-center">
+        <h3 className="font-bold text-2xl">
+          {confirmMessage}
+        </h3>
+        <div className="flex justify-around">
+          <div
+            className="cursor-pointer"
+            onClick={() => {
+              if (onConfirm) onConfirm();
+              toggleDialog(generalModal);
+            }}
+          >
+            <Button label="Yes" id="modify-button" variant="green" />
+          </div>
+          <div
+            className="cursor-pointer"
+            onClick={() => toggleDialog(generalModal)}
+          >
+            <Button label="No" id="modify-button" variant="red" />
+          </div>
+        </div>
+      </div>
+    );
     toggleDialog(generalModal);
     setGeneralModalContent(
       option === "empty"
@@ -76,6 +102,8 @@ const Admin = () => {
         ? successContent
         : option === "error"
         ? errorContent
+        : option === "confirm"
+        ? confirmContent
         : modifyContent,
     );
   };
