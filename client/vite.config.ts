@@ -22,8 +22,4 @@ export default defineConfig({
     },
   },
   base: "/webform",
-  server: {
-    host: "0.0.0.0",
-    port: 5173,
-  },
 });
