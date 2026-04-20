@@ -2024,7 +2024,12 @@ export const putBudgets = async (
     `User accessed route "/admin/budget"`,
   );
 
-  const request: BudgetTable[] = await ctx.request.body.json();
+  const request: (Omit<BudgetTable, "Budget" | "Balance"> & {
+    Budget: number | null;
+    Balance: number | null;
+  })[] = await ctx
+    .request
+    .body.json();
 
   logger.debug(
     `Value of request is {value}`,
@@ -2049,6 +2054,8 @@ export const putBudgets = async (
       `Started looping "request"`,
     );
     for (const budgetData of request) {
+      if (budgetData.Budget === null || budgetData.Balance === null) continue;
+
       logger.debug(
         `Current budgetData is ${budgetData}`,
       );

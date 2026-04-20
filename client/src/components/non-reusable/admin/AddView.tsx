@@ -119,18 +119,18 @@ const AddView = ({ toggleDialog }: AddViewProps) => {
           IDSection: currentData.IDSection,
           FileResource: currentData.FileResource,
           Budget: {
-            January: 0,
-            February: 0,
-            March: 0,
-            April: 0,
-            May: 0,
-            June: 0,
-            July: 0,
-            August: 0,
-            September: 0,
-            October: 0,
-            November: 0,
-            December: 0,
+            January: NaN,
+            February: NaN,
+            March: NaN,
+            April: NaN,
+            May: NaN,
+            June: NaN,
+            July: NaN,
+            August: NaN,
+            September: NaN,
+            October: NaN,
+            November: NaN,
+            December: NaN,
           },
         };
       }
@@ -189,13 +189,13 @@ const AddView = ({ toggleDialog }: AddViewProps) => {
         const cellBudgetValue = Number(
           mainSheet["!data"]?.[row]?.[column].v,
         );
-        const budget = isNaN(cellBudgetValue) ? 0 : cellBudgetValue;
+        if (isNaN(cellBudgetValue)) continue;
         const newBudgetEntry: BudgetTable = {
           CostCenter: costCenter,
           Nature: nature,
           Periode: getCurrentPeriod(selectedYear, column - 3),
-          Budget: budget,
-          Balance: budget,
+          Budget: cellBudgetValue,
+          Balance: cellBudgetValue,
           IDSection: sectionId,
           FileResource: fileResource,
         };
