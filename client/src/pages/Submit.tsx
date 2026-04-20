@@ -330,9 +330,12 @@ const Submit = () => {
       currentValues.secondStep.subject ===
         comparisonDefaults.secondStep.subject ||
       thirdStepInputs.usages.length === 0 ||
-      fourthStepInputs.approver.length === 0 ||
-      fourthStepInputs.releaser.length === 0 ||
-      fourthStepInputs.administrator.length === 0;
+      (defaultSupervisorsNRP.approver.length === 0 &&
+        fourthStepInputs.approver.length === 0) ||
+      (defaultSupervisorsNRP.releaser.length === 0 &&
+        fourthStepInputs.releaser.length === 0) ||
+      (defaultSupervisorsNRP.administrator.length === 0 &&
+        fourthStepInputs.administrator.length === 0);
 
     return someRequiredFieldsAreEmpty;
   };
