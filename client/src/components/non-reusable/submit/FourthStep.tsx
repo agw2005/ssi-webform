@@ -2,6 +2,7 @@ import TipBox from "../../reusable/TipBox.tsx";
 import MultiselectionInputTwoFilter from "../../reusable/inputs/MultiselectionInputTwoFilter.tsx";
 import userSectionReducer from "../../../helper/userSectionReducer.ts";
 import type { FourthStepInputs, UserSection } from "@scope/server";
+import { defaultSupervisorsNRP } from "../../../helper/defaultSupervisor.ts";
 
 const STEP = 4;
 
@@ -39,10 +40,18 @@ const FourthStep = ({
     };
 
   const requiredFieldsAreEmpty = () => {
-    const hasNoApprover = fourthStepInputsGetter.approver.length === 0;
-    const hasNoReleaser = fourthStepInputsGetter.releaser.length === 0;
-    const hasNoAdmin = fourthStepInputsGetter.administrator.length === 0;
-    return hasNoApprover || hasNoReleaser || hasNoAdmin;
+    const hasNoDefaultApprover = defaultSupervisorsNRP.approver.length === 0;
+    const hasNoInputApprover = fourthStepInputsGetter.approver.length === 0;
+    const hasNoDefaultReleaser = defaultSupervisorsNRP.releaser.length === 0;
+    const hasNoInputReleaser = fourthStepInputsGetter.releaser.length === 0;
+    const hasNoDefaultAdmin = defaultSupervisorsNRP.administrator.length === 0;
+    const hasNoInputAdmin = fourthStepInputsGetter.administrator.length === 0;
+
+    const approverIsEmpty = hasNoDefaultApprover && hasNoInputApprover;
+    const releaserIsEmpty = hasNoDefaultReleaser && hasNoInputReleaser;
+    const administratorIsEmpty = hasNoDefaultAdmin && hasNoInputAdmin;
+
+    return approverIsEmpty || releaserIsEmpty || administratorIsEmpty;
   };
 
   return (
