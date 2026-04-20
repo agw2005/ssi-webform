@@ -117,26 +117,13 @@ export const getNextApprover = async (
   request.input("idUser", TraceDSSMSTypes.IDUser, idUser);
   request.input("currentLevel", TraceDSSMSTypes.ApproverLevel, currentLevel);
 
-  const results = await request.query<NextApproverPath[]>(
-    `WITH SequentialApprovers AS (
-      SELECT 
-        IDTrace,
-        IDUser AS CurrentIDUser,
-        ApproverLevel AS CurrentLevel,
-        LEAD(IDUser) OVER (PARTITION BY IDTrace ORDER BY ApproverLevel ASC) AS NextIDUser,
-        LEAD(ApproverLevel) OVER (PARTITION BY IDTrace ORDER BY ApproverLevel ASC) AS NextApproverLevel
-      FROM 
-        Trace_D
-      )
-      SELECT 
-        NextIDUser, 
-        NextApproverLevel
-      FROM SequentialApprovers
-      WHERE 
-        IDTrace = @traceId
-        AND CurrentIDUser = @idUser
-        AND CurrentLevel = @currentLevel;`,
-  );
+  const results = await request.query<NextApproverPath[]>(`
+    SELECT TOP 1 
+      IDUser AS NextIDUser, 
+      ApproverLevel AS NextApproverLevel
+    FROM Trace_D
+      WHERE IDTrace = @traceId 
+      AND ApproverLevel > @currentLevel;`);
 
   const nextUserId = results.recordset[0]?.NextIDUser ?? null;
   const nextApproverLevel = results.recordset[0]?.NextApproverLevel ?? null;
