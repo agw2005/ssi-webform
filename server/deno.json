@@ -3,9 +3,9 @@
   "version": "0.0.0",
   "exports": "./mod.ts",
   "tasks": {
-    "dev": "deno run --watch --unstable-cron --allow-env --env-file=.env --allow-net --allow-read --allow-sys main.ts",
-    "serve": "deno run --unstable-cron --allow-env --env-file=.env --allow-net --allow-read --allow-sys main.ts",
-    "build": "deno compile --unstable-cron --allow-env --env-file=.env --allow-net --allow-read --allow-sys --target x86_64-unknown-linux-gnu --output webform-oak-server main.ts",
+    "dev": "deno run --watch --unstable-cron --allow-env --env-file=.env --allow-net --allow-read --allow-sys --allow-write main.ts",
+    "serve": "deno run --unstable-cron --allow-env --env-file=.env --allow-net --allow-read --allow-sys --allow-write main.ts",
+    "build": "deno compile --unstable-cron --allow-env --env-file=.env --allow-net --allow-read --allow-sys --allow-write --target x86_64-unknown-linux-gnu --output webform-oak-server main.ts",
     "keygen": "deno run --allow-read --allow-write ./auth/generateKey.ts"
   },
   "imports": {
