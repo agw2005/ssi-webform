@@ -423,9 +423,9 @@ export const patchRemarksOfTrace = async (
 
   const result = await request.query(
     `UPDATE Trace
-      SET Remarks = ?
+      SET Remarks = @newRemarks
       WHERE
-        NoForm = ?;`,
+        NoForm = @noForm;`,
   );
 
   return result.rowsAffected[0];

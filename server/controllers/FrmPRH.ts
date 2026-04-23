@@ -159,9 +159,9 @@ export const patchRemarksOfRequest = async (
 
   await request.query(
     `UPDATE frm_PR_H
-      SET Remarks = ?
+      SET Remarks = @newRemarks
       WHERE
-        NoForm = ?;`,
+        NoForm = @noForm;`,
   );
 };
 
