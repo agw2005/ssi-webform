@@ -107,6 +107,7 @@ const Request = () => {
     data: requestOverviewData,
     isLoading: isRequestOverviewDataLoading,
     isError: isRequestOverviewDataError,
+    refetch: refetchOverview,
   } = useFetch<RequestOverview>(
     webformAPI.RequestOverview,
     reactRouterParams.requestId,
@@ -140,18 +141,8 @@ const Request = () => {
     reactRouterParams.requestId,
   );
 
-  const [currentRemarks, setCurrentRemarks] = useState(() => {
-    if (!requestOverviewData?.length) return "";
-    else {
-      return requestOverviewData[0].Remarks;
-    }
-  });
-  const [newRemarks, setNewRemarks] = useState(() => {
-    if (!requestOverviewData?.length) return "";
-    else {
-      return requestOverviewData[0].Remarks;
-    }
-  });
+  const [currentRemarks, setCurrentRemarks] = useState("");
+  const [newRemarks, setNewRemarks] = useState("");
   const [selectedRejects, setSelectedRejects] = useState<number[]>([]);
   const [rejectEmptyErr, setRejectEmptyErr] = useState(false);
 
@@ -164,6 +155,10 @@ const Request = () => {
   useEffect(() => {
     if (!requestOverviewData?.length) return;
 
+    const fetchedRemarks = requestOverviewData[0].Remarks || "";
+    setCurrentRemarks(fetchedRemarks);
+    setNewRemarks(fetchedRemarks);
+
     setCurrentOverview({
       "Form ID": requestOverviewData[0].FormID,
       "Form Number": requestOverviewData[0].NoForm,
@@ -174,7 +169,7 @@ const Request = () => {
       Subject: requestOverviewData[0].Subject,
       Amount: `${formatNumberToString(requestOverviewData[0].Amount)} USD`,
       "Return On Outgoing": requestOverviewData[0].ReturnOnOutgoing,
-      Remarks: requestOverviewData[0].Remarks || "",
+      Remarks: fetchedRemarks,
       "Cost Center": requestOverviewData[0].CostCenter,
       Nature: requestOverviewData[0].Nature,
       "ID Budget": requestOverviewData[0].IDBudget,
@@ -322,10 +317,11 @@ const Request = () => {
                                 "There was a problem in saving the new remarks",
                               );
                             }
+                            setCurrentRemarks(newRemarks);
+                            refetchOverview();
                           } catch (err) {
                             console.error(err);
                           }
-                          setCurrentRemarks(newRemarks);
                         }}
                       >
                         <Button
