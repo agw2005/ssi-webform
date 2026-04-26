@@ -1,0 +1,21 @@
+FROM denoland/deno:latest
+
+EXPOSE 8000
+
+ENV DENO_DIR=/deno-dir
+
+WORKDIR /server
+
+RUN mkdir -p /deno-dir /server/logs && \
+    touch /server/logs/server.log && \
+    chown -R deno:deno /deno-dir /server
+
+USER deno
+
+COPY --chown=deno:deno deno.json deno.lock* ./
+
+RUN deno cache --reload main.ts || true
+
+COPY --chown=deno:deno . .
+
+CMD ["deno", "task", "dev"]

@@ -117,7 +117,7 @@ const RateView = () => {
         </tbody>
       </table>
       <div className="flex flex-col gap-2">
-        <h2 className="font-bold text-xl">New Values</h2>
+        <h2 className="font-bold text-xl">New Rates</h2>
         <label htmlFor="new-idr" className="flex gap-2 items-center">
           <input
             type="number"

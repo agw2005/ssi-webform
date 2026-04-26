@@ -1,0 +1,18 @@
+FROM mcr.microsoft.com/mssql/server:2025-latest
+
+USER root
+
+RUN mkdir -p /var/opt/mssql/backup && \
+    mkdir -p /usr/config
+
+COPY backup.bak /var/opt/mssql/backup/
+COPY restore.sql /var/opt/mssql/backup/
+COPY entry.sh /usr/config/
+
+RUN sed -i 's/\r$//' /usr/config/entry.sh && \
+    chmod +x /usr/config/entry.sh && \
+    chown -R mssql:root /var/opt/mssql/backup /usr/config
+
+USER mssql
+
+ENTRYPOINT ["/usr/config/entry.sh"]

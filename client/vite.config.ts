@@ -22,4 +22,15 @@ export default defineConfig({
     },
   },
   base: "/webform",
+  server: {
+    host: true,
+    port: 5173,
+    strictPort: true,
+    hmr: {
+      host: "myintranet.mywebform.com",
+    },
+    watch: {
+      usePolling: true,
+    },
+  },
 });

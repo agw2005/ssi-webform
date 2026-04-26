@@ -80,17 +80,23 @@ traceRouter
   .get("/approve", handlers.getRequestsBySupervisorNrp)
   .get("/approve/count", handlers.getRequestsBySupervisorNrpCount);
 
-frmPrDRouter.get("/request/:traceId", handlers.getSpecificRequestItems);
+frmPrDRouter
+  .get("/request/:traceId", handlers.getSpecificRequestItems);
 
-uploadFileRouter.get("/:traceId", handlers.getUploadFiles);
+uploadFileRouter
+  .get("/:traceId", handlers.getUploadFiles);
 
-traceDRouter.get("/:traceId", handlers.getApproverPath);
+traceDRouter
+  .get("/:traceId", handlers.getApproverPath);
 
-frmPrHRouter.get("/", handlers.getRequestsAtBudgetView);
+frmPrHRouter
+  .get("/", handlers.getRequestsAtBudgetView);
 
-jwtRouter.post("/request", handlers.requestJwt).get("/verify", verifyJwt);
+jwtRouter
+  .post("/request", handlers.requestJwt).get("/verify", verifyJwt);
 
-approverRouter.patch("/remarks", handlers.patchRemarks)
+approverRouter
+  .patch("/remarks", handlers.patchRemarks)
   .patch("/reject", handlers.patchRejectRequest)
   .patch("/accept", handlers.patchAcceptRequest);
 
@@ -106,42 +112,35 @@ rootRouter
   .get("/forex", handlers.getForex)
   .get("/forextemp", handlers.getForexTemp);
 
-rootRouter.use(
-  "/section",
-  sectionRouter.routes(),
-  sectionRouter.allowedMethods(),
-);
-rootRouter.use(
-  "/usermaster",
-  userMasterRouter.routes(),
-  userMasterRouter.allowedMethods(),
-);
-rootRouter.use("/budget", budgetRouter.routes(), budgetRouter.allowedMethods());
-rootRouter.use("/frmprd", frmPrDRouter.routes(), frmPrDRouter.allowedMethods());
-rootRouter.use("/trace", traceRouter.routes(), traceRouter.allowedMethods());
-rootRouter.use(
-  "/uploadfile",
-  uploadFileRouter.routes(),
-  uploadFileRouter.allowedMethods(),
-);
-rootRouter.use("/traced", traceDRouter.routes(), traceDRouter.allowedMethods());
-rootRouter.use("/frmprh", frmPrHRouter.routes(), frmPrHRouter.allowedMethods());
-rootRouter.use("/jwt", jwtRouter.routes(), jwtRouter.allowedMethods());
-rootRouter.use(
-  "/approve",
-  approverRouter.routes(),
-  approverRouter.allowedMethods(),
-);
-rootRouter.use("/admin", adminRouter.routes(), adminRouter.allowedMethods());
+rootRouter
+  .use("/section", sectionRouter.routes(), sectionRouter.allowedMethods())
+  .use(
+    "/usermaster",
+    userMasterRouter.routes(),
+    userMasterRouter.allowedMethods(),
+  )
+  .use("/budget", budgetRouter.routes(), budgetRouter.allowedMethods())
+  .use("/frmprd", frmPrDRouter.routes(), frmPrDRouter.allowedMethods())
+  .use("/trace", traceRouter.routes(), traceRouter.allowedMethods())
+  .use(
+    "/uploadfile",
+    uploadFileRouter.routes(),
+    uploadFileRouter.allowedMethods(),
+  )
+  .use("/traced", traceDRouter.routes(), traceDRouter.allowedMethods())
+  .use("/frmprh", frmPrHRouter.routes(), frmPrHRouter.allowedMethods())
+  .use("/jwt", jwtRouter.routes(), jwtRouter.allowedMethods())
+  .use("/approve", approverRouter.routes(), approverRouter.allowedMethods())
+  .use("/admin", adminRouter.routes(), adminRouter.allowedMethods());
 
-oakApp.use(async (ctx, next) => {
-  const isPreflight = handleCors(ctx);
-  if (isPreflight) return;
-  await next();
-});
-
-oakApp.use(rootRouter.routes());
-oakApp.use(rootRouter.allowedMethods());
+oakApp
+  .use(async (ctx, next) => {
+    const isPreflight = handleCors(ctx);
+    if (isPreflight) return;
+    await next();
+  })
+  .use(rootRouter.routes())
+  .use(rootRouter.allowedMethods());
 
 if (import.meta.main) {
   logger.info(

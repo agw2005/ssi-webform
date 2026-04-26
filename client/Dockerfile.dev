@@ -1,0 +1,15 @@
+FROM denoland/deno:latest
+
+EXPOSE 5173
+
+WORKDIR /client
+
+RUN chown -R deno:deno /client
+
+USER deno
+
+COPY --chown=deno:deno package.json deno.json ./
+
+COPY --chown=deno:deno . .
+
+CMD ["sh", "-c", "deno install --allow-import && deno task dev"]
