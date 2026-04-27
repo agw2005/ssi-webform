@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { webformAPI } from "../helper/apis.ts";
 import { type WebformDBForexResponse } from "@scope/server";
 
-interface Forexes {
+export interface Forexes {
   IDR: number;
   JPY: number;
   SGD: number;

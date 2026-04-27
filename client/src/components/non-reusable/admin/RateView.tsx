@@ -1,17 +1,10 @@
-import useForex from "../../../hooks/useForex.tsx";
+import useForex, { type Forexes } from "../../../hooks/useForex.tsx";
 import formatNumberToString from "../../../helper/formatNumberToString.ts";
 import Button from "../../reusable/Button.tsx";
 import { useEffect, useState } from "react";
 import { webformAPI } from "../../../helper/apis.ts";
 
 const forexes = ["IDR", "JPY", "SGD", "USD"];
-
-interface InputRates {
-  IDR: number;
-  JPY: number;
-  SGD: number;
-  USD: number;
-}
 
 const RateView = () => {
   const {
@@ -35,7 +28,7 @@ const RateView = () => {
     refetchForex: DbTempRefetch,
   } = useForex("Db", true);
 
-  const [currentInputRates, setCurrentInputRates] = useState<InputRates>({
+  const [currentInputRates, setCurrentInputRates] = useState<Forexes>({
     IDR: dbForex?.rates.IDR || 0,
     JPY: dbForex?.rates.JPY || 0,
     SGD: dbForex?.rates.SGD || 0,
@@ -52,6 +45,35 @@ const RateView = () => {
       });
     }
   }, [dbForex]);
+
+  const handleRenewal = async () => {
+    const newForexes = [
+      { currency: "IDR", value: currentInputRates.IDR },
+      { currency: "JPY", value: currentInputRates.JPY },
+      { currency: "SGD", value: currentInputRates.SGD },
+      { currency: "USD", value: currentInputRates.USD },
+    ];
+
+    for (const forex of newForexes) {
+      const url = new URL(
+        webformAPI.NewForex,
+        globalThis.location.origin,
+      );
+
+      const params = new URLSearchParams();
+
+      params.append("currency", forex.currency);
+
+      params.append("value", String(forex.value));
+
+      url.search = params.toString();
+
+      await fetch(url, { method: "PATCH" });
+    }
+
+    await DbRefetch();
+    await DbTempRefetch();
+  };
 
   return (
     <div className="mt-4 flex flex-col gap-8">
@@ -73,43 +95,33 @@ const RateView = () => {
         </thead>
         <tbody>
           {forexes.map((forex, index) => {
+            const currencyKey = forex as keyof Forexes;
+            const currentEuForex = euForex?.rates[currencyKey];
+            const currentDbForex = dbForex?.rates[currencyKey];
+            const currentDbTempForex = dbTempForex?.rates[currencyKey];
             return (
               <tr key={index}>
                 <td className="text-xs lg:text-sm xl:text-base | whitespace-nowrap border p-2 bg-blue-800 text-white border-black text-center font-bold">
                   {forex}
                 </td>
                 <td className="text-xs lg:text-sm xl:text-base | whitespace-nowrap text-center border break-all p-2">
-                  {forex === forexes[0]
-                    ? formatNumberToString(Number(euForex?.rates.IDR), 6)
-                    : forex === forexes[1]
-                    ? formatNumberToString(Number(euForex?.rates.JPY), 6)
-                    : forex === forexes[2]
-                    ? formatNumberToString(Number(euForex?.rates.SGD), 6)
-                    : forex === forexes[3]
-                    ? formatNumberToString(Number(euForex?.rates.USD), 6)
-                    : ""}
+                  {currentEuForex
+                    ? formatNumberToString(currentEuForex, 6)
+                    : "N/A"}
                 </td>
                 <td className="text-xs lg:text-sm xl:text-base | whitespace-nowrap text-center border break-all p-2">
-                  {forex === forexes[0]
-                    ? formatNumberToString(Number(dbForex?.rates.IDR), 6)
-                    : forex === forexes[1]
-                    ? formatNumberToString(Number(dbForex?.rates.JPY), 6)
-                    : forex === forexes[2]
-                    ? formatNumberToString(Number(dbForex?.rates.SGD), 6)
-                    : forex === forexes[3]
-                    ? formatNumberToString(Number(dbForex?.rates.USD), 6)
-                    : ""}
+                  {currentDbForex
+                    ? formatNumberToString(currentDbForex, 6)
+                    : "N/A"}
                 </td>
-                <td className="text-xs lg:text-sm xl:text-base | whitespace-nowrap text-center border break-all p-2">
-                  {forex === forexes[0]
-                    ? formatNumberToString(Number(dbTempForex?.rates.IDR), 6)
-                    : forex === forexes[1]
-                    ? formatNumberToString(Number(dbTempForex?.rates.JPY), 6)
-                    : forex === forexes[2]
-                    ? formatNumberToString(Number(dbTempForex?.rates.SGD), 6)
-                    : forex === forexes[3]
-                    ? formatNumberToString(Number(dbTempForex?.rates.USD), 6)
-                    : ""}
+                <td
+                  className={`text-xs lg:text-sm xl:text-base | ${
+                    currentDbForex !== currentDbTempForex ? "bg-red-300" : ""
+                  } whitespace-nowrap text-center border break-all p-2`}
+                >
+                  {currentDbTempForex
+                    ? formatNumberToString(currentDbTempForex, 6)
+                    : "N/A"}
                 </td>
               </tr>
             );
@@ -118,104 +130,36 @@ const RateView = () => {
       </table>
       <div className="flex flex-col gap-2">
         <h2 className="font-bold text-xl">New Rates</h2>
-        <label htmlFor="new-idr" className="flex gap-2 items-center">
-          <input
-            type="number"
-            name="new-idr"
-            id="new-idr"
-            className="border outline none px-2 py-1"
-            value={currentInputRates.IDR}
-            onChange={(e) => {
-              const value = Number(e.currentTarget.value);
-              setCurrentInputRates((prev) => ({
-                ...prev,
-                IDR: value,
-              }));
-            }}
-          />
-          <p>IDR</p>
-        </label>
-        <label htmlFor="new-jpy" className="flex gap-2 items-center">
-          <input
-            type="number"
-            name="new-jpy"
-            id="new-jpy"
-            className="border outline none px-2 py-1"
-            value={currentInputRates.JPY}
-            onChange={(e) => {
-              const value = Number(e.currentTarget.value);
-              setCurrentInputRates((prev) => ({
-                ...prev,
-                JPY: value,
-              }));
-            }}
-          />
-          <p>JPY</p>
-        </label>
-        <label htmlFor="new-sgd" className="flex gap-2 items-center">
-          <input
-            type="number"
-            name="new-sgd"
-            id="new-sgd"
-            className="border outline none px-2 py-1"
-            value={currentInputRates.SGD}
-            onChange={(e) => {
-              const value = Number(e.currentTarget.value);
-              setCurrentInputRates((prev) => ({
-                ...prev,
-                SGD: value,
-              }));
-            }}
-          />
-          <p>SGD</p>
-        </label>
-        <label htmlFor="new-usd" className="flex gap-2 items-center">
-          <input
-            type="number"
-            name="new-usd"
-            id="new-usd"
-            className="border outline none px-2 py-1"
-            value={currentInputRates.USD}
-            onChange={(e) => {
-              const value = Number(e.currentTarget.value);
-              setCurrentInputRates((prev) => ({
-                ...prev,
-                USD: value,
-              }));
-            }}
-          />
-          <p>USD</p>
-        </label>
+        {forexes.map((forex, index) => {
+          const currencyKey = forex as keyof Forexes;
+          const lowercaseCurrency = forex.toLowerCase();
+          return (
+            <label
+              key={index}
+              htmlFor={`new-${lowercaseCurrency}`}
+              className="flex gap-2 items-center"
+            >
+              <input
+                type="number"
+                name={`new-${lowercaseCurrency}`}
+                id={`new-${lowercaseCurrency}`}
+                className="border rounded-xl outline none px-2 py-1"
+                value={currentInputRates[currencyKey]}
+                onChange={(e) => {
+                  const value = Number(e.currentTarget.value);
+                  setCurrentInputRates((prev) => ({
+                    ...prev,
+                    [currencyKey]: value,
+                  }));
+                }}
+              />
+              <p>{currencyKey}</p>
+            </label>
+          );
+        })}
         <div
           className="w-max"
-          onClick={async () => {
-            const newForexes = [
-              { currency: "IDR", value: currentInputRates.IDR },
-              { currency: "JPY", value: currentInputRates.JPY },
-              { currency: "SGD", value: currentInputRates.SGD },
-              { currency: "USD", value: currentInputRates.USD },
-            ];
-
-            for (const forex of newForexes) {
-              const url = new URL(
-                webformAPI.NewForex,
-                globalThis.location.origin,
-              );
-
-              const params = new URLSearchParams();
-
-              params.append("currency", forex.currency);
-
-              params.append("value", String(forex.value));
-
-              url.search = params.toString();
-
-              await fetch(url, { method: "PATCH" });
-            }
-
-            await DbRefetch();
-            await DbTempRefetch();
-          }}
+          onClick={handleRenewal}
         >
           <Button id="submit-new-rate-dollar" variant="black" label="Update" />
         </div>
