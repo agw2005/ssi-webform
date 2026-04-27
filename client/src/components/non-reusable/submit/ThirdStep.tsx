@@ -256,7 +256,7 @@ const ThirdStep = ({
         label={`Do not let your budget get a red light`}
         variant="yellow"
       />
-      <div className="flex flex-col lg:flex-row gap-3 h-172">
+      <div className="flex flex-col lg:flex-row gap-3 h-182">
         <div className="flex flex-col gap-2">
           <SelectionInputSeparateLabel
             label="Cost Center"
@@ -346,10 +346,12 @@ const ThirdStep = ({
               placeholder="e.g. 192500"
             />
           </div>
-          <TipBox
-            label={`Jangan gunakan koma. Gunakan titik untuk desimal.`}
-            variant="yellow"
-          />
+          <div className="flex">
+            <TipBox
+              label={`Jangan gunakan koma. Gunakan titik untuk desimal.`}
+              variant="yellow"
+            />
+          </div>
           <div className="flex">
             <TextInput
               label="Measure"
