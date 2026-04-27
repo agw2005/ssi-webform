@@ -13,7 +13,7 @@ import { removeWhitespace } from "../../../helper/removeSpaces.ts";
 
 interface AddViewProps {
   toggleDialog: (
-    option: "empty" | "success" | "error" | "modify",
+    option: "empty" | "success" | "error",
     errMessage?: Error | null,
   ) => void;
 }

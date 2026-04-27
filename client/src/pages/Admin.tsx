@@ -25,7 +25,7 @@ const Admin = () => {
   >();
 
   const toggleGeneralModal = (
-    option: "empty" | "success" | "error" | "modify" | "confirm",
+    option: "empty" | "success" | "error" | "confirm",
     errMessage?: Error | null,
     confirmMessage?: string | null,
     onConfirm?: () => void,
@@ -55,20 +55,6 @@ const Admin = () => {
         </h3>
         <p>Click anywhere to continue</p>
       </div>
-    );
-    const modifyContent = (
-      <form className="flex flex-col w-2xl gap-4 p-4 select-none">
-        <label htmlFor="input-text" className="flex items-center gap-2">
-          <p className="font-bold">Text</p>
-          <input
-            type="text"
-            name="input-text"
-            id="input-text"
-            className="border px-2 py-1 w-full rounded-xl"
-          />
-        </label>
-        <Button label="Modify" id="modify-button" variant="black" />
-      </form>
     );
     const confirmContent = (
       <div className="flex flex-col gap-6 p-6 select-none items-center w-full max-w-sm mx-auto">
@@ -102,9 +88,7 @@ const Admin = () => {
         ? successContent
         : option === "error"
         ? errorContent
-        : option === "confirm"
-        ? confirmContent
-        : modifyContent,
+        : confirmContent,
     );
   };
 

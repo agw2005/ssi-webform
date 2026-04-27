@@ -860,12 +860,12 @@ export const getUserByNRP = async (
   ctx.response.body = rowsReturned;
 };
 
-// POST to table frm_PR_D
+// POST to table frm_PR_D (NoPR)
 // PATCH to table Budget
-// POST to table frm_PR_H
-// POST to table Trace
-// POST to table Trace_D
-// POST to table UploadFile
+// POST to table frm_PR_H (NoForm, NoPR)
+// POST to table Trace (NoForm, IDTrace)
+// POST to table Trace_D (IDTrace)
+// POST to table UploadFile (NoForm)
 export const submitRequest = async (ctx: RouterContext<"/submit">) => {
   logger.info(
     `User accessed route "/submit"`,

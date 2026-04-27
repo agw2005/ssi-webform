@@ -25,9 +25,9 @@ import { webformAPI } from "../../../helper/apis.ts";
 
 interface ModifyViewProps {
   toggleDialog: (
-    option: "empty" | "success" | "error" | "modify" | "confirm",
+    option: "empty" | "success" | "error" | "confirm",
     errMessage?: Error | null,
-    verifyMessage?: string | null,
+    confirmMessage?: string | null,
     onConfirm?: () => void,
   ) => void;
 }
@@ -122,10 +122,6 @@ const ModifyView = ({ toggleDialog }: ModifyViewProps) => {
   const duplicateSupervisorNames = useDuplicateSupervisors(
     supervisorNames,
   );
-
-  const editRequest = () => {
-    toggleDialog("modify");
-  };
 
   const deleteRequest = async (traceId: number) => {
     setModificationIsLoading(true);
@@ -309,12 +305,6 @@ const ModifyView = ({ toggleDialog }: ModifyViewProps) => {
                       </td>
                       <td className="text-xs lg:text-sm xl:text-base | whitespace-nowrap border text-center p-2">
                         {formatDate(request.SubmitDate)}
-                      </td>
-                      <td
-                        className="bg-yellow-500/50 hover:bg-yellow-500 active:bg-yellow-800 | text-black active:text-white | border-black active:border-black | text-xs lg:text-sm xl:text-base | whitespace-nowrap border min-w-16 text-center p-2 select-none"
-                        onClick={editRequest}
-                      >
-                        Edit
                       </td>
                       <td
                         className="bg-red-500/50 hover:bg-red-500 active:bg-red-800 | text-black active:text-white | border-black active:border-black | text-xs lg:text-sm xl:text-base | whitespace-nowrap border min-w-16 text-center p-2 select-none"
