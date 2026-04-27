@@ -256,7 +256,7 @@ const ThirdStep = ({
         label={`Do not let your budget get a red light`}
         variant="yellow"
       />
-      <div className="flex flex-col lg:flex-row gap-3 lg:h-168">
+      <div className="flex flex-col lg:flex-row gap-3 h-172">
         <div className="flex flex-col gap-2">
           <SelectionInputSeparateLabel
             label="Cost Center"
@@ -272,122 +272,144 @@ const ThirdStep = ({
             value={usageField.costCenter}
             onChangeHandler={handleCostCenterChange}
           />
-          <SelectionInput
-            label="Budget/Nature"
-            name="budget/nature"
-            id="budget/nature"
-            requiredInput
-            variant="yellow"
-            isDisabled={usageField.costCenter === ""}
-            defaultDisabledValue="Select Budget/Nature"
-            options={!natures ? [] : natures.map((nature) => nature.Nature)}
-            value={usageField.budgetOrNature}
-            onChangeHandler={handleBudgetOrNatureChange}
-          />
-          <TextInput
-            label="Periode"
-            name="periode"
-            id="periode"
-            variant="yellow"
-            requiredInput={false}
-            isDisabled
-            value={usageField.periode}
-            onChangeHandler={genericChangeHandler("periode")}
-          />
-          <TextInput
-            label="Balance"
-            name="balance"
-            id="balance"
-            variant="yellow"
-            requiredInput={false}
-            isDisabled
-            value={usageField.balance}
-            onChangeHandler={genericChangeHandler("balance")}
-          />
-          <TextInput
-            label="Description"
-            name="description"
-            id="description"
-            variant="yellow"
-            requiredInput
-            value={usageField.description}
-            onChangeHandler={genericChangeHandler("description")}
-            placeholder="e.g. Seagate HDD"
-          />
-          <NumberInput
-            label="Quantity"
-            name="quantity"
-            id="quantity"
-            variant="yellow"
-            requiredInput
-            value={usageField.quantity}
-            onChangeHandler={genericChangeHandler("quantity")}
-            placeholder="e.g. 175"
-          />
-          <NumberInput
-            label="Unit Price"
-            name="unit-price"
-            id="unit-price"
-            variant="yellow"
-            requiredInput
-            value={usageField.unitPrice}
-            onChangeHandler={genericChangeHandler("unitPrice")}
-            placeholder="e.g. 192500"
-          />
+          <div className="flex">
+            <SelectionInput
+              label="Budget/Nature"
+              name="budget/nature"
+              id="budget/nature"
+              requiredInput
+              variant="yellow"
+              isDisabled={usageField.costCenter === ""}
+              defaultDisabledValue="Select Budget/Nature"
+              options={!natures ? [] : natures.map((nature) => nature.Nature)}
+              value={usageField.budgetOrNature}
+              onChangeHandler={handleBudgetOrNatureChange}
+            />
+          </div>
+          <div className="flex">
+            <TextInput
+              label="Periode"
+              name="periode"
+              id="periode"
+              variant="yellow"
+              requiredInput={false}
+              isDisabled
+              value={usageField.periode}
+              onChangeHandler={genericChangeHandler("periode")}
+            />
+          </div>
+          <div className="flex">
+            <TextInput
+              label="Balance"
+              name="balance"
+              id="balance"
+              variant="yellow"
+              requiredInput={false}
+              isDisabled
+              value={usageField.balance}
+              onChangeHandler={genericChangeHandler("balance")}
+            />
+          </div>
+          <div className="flex">
+            <TextInput
+              label="Description"
+              name="description"
+              id="description"
+              variant="yellow"
+              requiredInput
+              value={usageField.description}
+              onChangeHandler={genericChangeHandler("description")}
+              placeholder="e.g. Seagate HDD"
+            />
+          </div>
+          <div className="flex">
+            <NumberInput
+              label="Quantity"
+              name="quantity"
+              id="quantity"
+              variant="yellow"
+              requiredInput
+              value={usageField.quantity}
+              onChangeHandler={genericChangeHandler("quantity")}
+              placeholder="e.g. 175"
+            />
+          </div>
+          <div className="flex">
+            <NumberInput
+              label="Unit Price"
+              name="unit-price"
+              id="unit-price"
+              variant="yellow"
+              requiredInput
+              value={usageField.unitPrice}
+              onChangeHandler={genericChangeHandler("unitPrice")}
+              placeholder="e.g. 192500"
+            />
+          </div>
           <TipBox
             label={`Jangan gunakan koma. Gunakan titik untuk desimal.`}
             variant="yellow"
           />
-          <TextInput
-            label="Measure"
-            name="measure"
-            id="measure"
-            variant="yellow"
-            requiredInput
-            value={usageField.measure}
-            onChangeHandler={genericChangeHandler("measure")}
-            placeholder="e.g. kilogram"
-          />
-          <SelectionInput
-            label="Currency"
-            name="currency"
-            id="currency"
-            requiredInput
-            variant="yellow"
-            defaultDisabledValue="Select Currency"
-            options={CURRENCY}
-            value={usageField.currency}
-            onChangeHandler={genericChangeHandler("currency")}
-          />
-          <TextInput
-            label="Vendor"
-            name="vendor"
-            id="vendor"
-            variant="yellow"
-            requiredInput
-            value={usageField.vendor}
-            onChangeHandler={genericChangeHandler("vendor")}
-            placeholder="e.g. Seagate Technology LLC"
-          />
-          <TextInput
-            label="Reason"
-            name="reason"
-            id="reason"
-            variant="yellow"
-            requiredInput
-            value={usageField.reason}
-            onChangeHandler={genericChangeHandler("reason")}
-            placeholder="e.g. Upgrading server"
-          />
-          <DateInput
-            label="Estimated Delivery Date"
-            name="estimated-delivery-date"
-            id="estimated-delivery-date"
-            variant="yellow"
-            requiredInput
-            value={usageField.estimatedDeliveryDate}
-            onChangeHandler={genericChangeHandler("estimatedDeliveryDate")}
-          />
+          <div className="flex">
+            <TextInput
+              label="Measure"
+              name="measure"
+              id="measure"
+              variant="yellow"
+              requiredInput
+              value={usageField.measure}
+              onChangeHandler={genericChangeHandler("measure")}
+              placeholder="e.g. kilogram"
+            />
+          </div>
+          <div className="flex">
+            <SelectionInput
+              label="Currency"
+              name="currency"
+              id="currency"
+              requiredInput
+              variant="yellow"
+              defaultDisabledValue="Select Currency"
+              options={CURRENCY}
+              value={usageField.currency}
+              onChangeHandler={genericChangeHandler("currency")}
+            />
+          </div>
+          <div className="flex">
+            <TextInput
+              label="Vendor"
+              name="vendor"
+              id="vendor"
+              variant="yellow"
+              requiredInput
+              value={usageField.vendor}
+              onChangeHandler={genericChangeHandler("vendor")}
+              placeholder="e.g. Seagate Technology LLC"
+            />
+          </div>
+          <div className="flex">
+            <TextInput
+              label="Reason"
+              name="reason"
+              id="reason"
+              variant="yellow"
+              requiredInput
+              value={usageField.reason}
+              onChangeHandler={genericChangeHandler("reason")}
+              placeholder="e.g. Upgrading server"
+            />
+          </div>
+          <div className="flex">
+            <DateInput
+              label="Estimated Delivery Date"
+              name="estimated-delivery-date"
+              id="estimated-delivery-date"
+              variant="yellow"
+              requiredInput
+              value={usageField.estimatedDeliveryDate}
+              onChangeHandler={genericChangeHandler("estimatedDeliveryDate")}
+            />
+          </div>
           <div
             onClick={() => {
               if (usageField.balance === NO_BALANCE_VALUE) {
@@ -420,6 +442,9 @@ const ThirdStep = ({
           <table className="table-auto border-collapse w-full">
             <thead className="sticky top-0 z-1 border">
               <tr>
+                <th className="text-xs border p-2 bg-yellow-800 text-white border-black whitespace-nowrap text-center">
+                  Action
+                </th>
                 {USAGE_ATTRIBUTES.map((attribute, index) => {
                   return (
                     <th
@@ -430,15 +455,26 @@ const ThirdStep = ({
                     </th>
                   );
                 })}
-                <th className="text-xs border p-2 bg-yellow-800 text-white border-black whitespace-nowrap text-center">
-                  Action
-                </th>
               </tr>
             </thead>
             <tbody>
               {thirdStepInputsGetter.usages.map((usage, index) => {
                 return (
                   <tr key={index}>
+                    <td
+                      className="bg-red-400 hover:bg-red-500 active:bg-red-600 | text-xs border p-2 whitespace-nowrap text-center select-none"
+                      onClick={() => {
+                        const newUsages = thirdStepInputsGetter.usages.filter(
+                          (_, innerIndex) => innerIndex !== index,
+                        );
+                        const newThirdStepInputs: ThirdStepInputs = {
+                          usages: [...newUsages],
+                        };
+                        thirdStepInputsInputsSetter(newThirdStepInputs);
+                      }}
+                    >
+                      Delete
+                    </td>
                     <td className="text-xs border p-2 whitespace-nowrap text-center">
                       {usage.costCenter}
                     </td>
@@ -492,20 +528,6 @@ const ThirdStep = ({
                     </td>
                     <td className="text-xs border p-2 whitespace-nowrap text-center">
                       {`${usage.periode}-${usage.costCenter}-${submitterDepartmentName}`}
-                    </td>
-                    <td
-                      className="bg-red-400 hover:bg-red-500 active:bg-red-600 | text-xs border p-2 whitespace-nowrap text-center select-none"
-                      onClick={() => {
-                        const newUsages = thirdStepInputsGetter.usages.filter(
-                          (_, innerIndex) => innerIndex !== index,
-                        );
-                        const newThirdStepInputs: ThirdStepInputs = {
-                          usages: [...newUsages],
-                        };
-                        thirdStepInputsInputsSetter(newThirdStepInputs);
-                      }}
-                    >
-                      Delete
                     </td>
                   </tr>
                 );

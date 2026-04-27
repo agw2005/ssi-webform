@@ -39,38 +39,44 @@ const SecondStep = ({
   return (
     <div className="rounded-2xl bg-blue-100 p-8 flex flex-col gap-4 flex-1">
       <h1 className="text-3xl font-bold text-blue-600">Step 2</h1>
-      <TextInput
-        label="No. Form"
-        name="no-form"
-        id="no-form"
-        variant="blue"
-        requiredInput={false}
-        isDisabled
-        value={secondStepInputsGetter.formNumber}
-        onChangeHandler={genericChangeHandler("formNumber")}
-        placeholder="Will be generated after submission"
-      />
-      <TextInput
-        label="No. PR"
-        name="no-pr"
-        id="no-pr"
-        variant="blue"
-        requiredInput={false}
-        isDisabled
-        value={secondStepInputsGetter.prNumber}
-        onChangeHandler={genericChangeHandler("prNumber")}
-        placeholder="Will be generated after submission"
-      />
-      <TextInput
-        label="Subject"
-        name="subject"
-        id="subject"
-        variant="blue"
-        requiredInput
-        value={secondStepInputsGetter.subject}
-        onChangeHandler={genericChangeHandler("subject")}
-        placeholder="e.g. Graphite sheet for SL9.0 BI Box Improvement"
-      />
+      <div className="flex">
+        <TextInput
+          label="No. Form"
+          name="no-form"
+          id="no-form"
+          variant="blue"
+          requiredInput={false}
+          isDisabled
+          value={secondStepInputsGetter.formNumber}
+          onChangeHandler={genericChangeHandler("formNumber")}
+          placeholder="Will be generated after submission"
+        />
+      </div>
+      <div className="flex">
+        <TextInput
+          label="No. PR"
+          name="no-pr"
+          id="no-pr"
+          variant="blue"
+          requiredInput={false}
+          isDisabled
+          value={secondStepInputsGetter.prNumber}
+          onChangeHandler={genericChangeHandler("prNumber")}
+          placeholder="Will be generated after submission"
+        />
+      </div>
+      <div className="flex">
+        <TextInput
+          label="Subject"
+          name="subject"
+          id="subject"
+          variant="blue"
+          requiredInput
+          value={secondStepInputsGetter.subject}
+          onChangeHandler={genericChangeHandler("subject")}
+          placeholder="e.g. Graphite sheet for SL9.0 BI Box Improvement"
+        />
+      </div>
       <TextAreaInput
         label="Return on Outgoing"
         name="return-on-outgoing"
