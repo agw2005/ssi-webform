@@ -338,8 +338,8 @@ const Request = () => {
                 )
                 : (
                   <div key={key} className={blackAndWhite}>
-                    <div className="flex-1 px-4 py-2">{key}</div>
-                    <div className="flex-9 px-4 py-2">
+                    <div className="flex-2 px-4 py-2">{key}</div>
+                    <div className="flex-13 px-4 py-2">
                       {value === "" ? "-" : value}
                     </div>
                   </div>
@@ -347,8 +347,8 @@ const Request = () => {
             } else if (key !== "Attachment") {
               return (
                 <div key={key} className={blackAndWhite}>
-                  <div className="flex-1 px-4 py-2">{key}</div>
-                  <div className="flex-9 px-4 py-2">
+                  <div className="flex-2 px-4 py-2">{key}</div>
+                  <div className="flex-13 px-4 py-2">
                     {value === "" ? "-" : value}
                   </div>
                 </div>
@@ -356,8 +356,8 @@ const Request = () => {
             } else {
               return (
                 <div key={key} className={blackAndWhite}>
-                  <div className="flex-1 px-4 py-2">{key}</div>
-                  <div className="flex-9 px-4 py-2">
+                  <div className="flex-2 px-4 py-2">{key}</div>
+                  <div className="flex-13 px-4 py-2">
                     {requestFilesData && requestFilesData.length === 0
                       ? "-"
                       : requestFilesData &&

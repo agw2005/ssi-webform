@@ -14,6 +14,8 @@ Omit the `--build` flag if you've already run it once.
 
 To stop the dev environment, run `docker compose down` in the same location.
 
+**You might need to wait a few seconds until the error resolves itself.**
+
 # Deployment
 
 Deployment of the application already assumes that the `webformdb` database already exists on port 1433.
