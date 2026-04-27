@@ -117,7 +117,7 @@ const Submit = () => {
   const [activeCostCenter, setActiveCostCenter] = useState<string>("");
   const [_isBalanceLoading, setIsBalanceLoading] = useState<boolean>(false);
   const [balanceError, setBalanceError] = useState<Error | null>(null);
-  const [requestIsProcessing, setRequestIsProcessing] = useState(false);
+  const [_requestIsProcessing, setRequestIsProcessing] = useState(false);
   const [requestIsError, setRequestIsError] = useState<Error | null>(null);
 
   const [generalModalContent, setGeneralModalContent] = useState<
@@ -126,19 +126,19 @@ const Submit = () => {
 
   const {
     data: sectionNames,
-    isLoading: isSectionLoading,
+    isLoading: _isSectionLoading,
     isError: isSectionError,
   } = useFetch<SectionName>(webformAPI.SectionNames);
 
   const {
     data: fileResources,
-    isLoading: isFileResourcesLoading,
+    isLoading: _isFileResourcesLoading,
     isError: isFileResourcesError,
   } = useFetch<FileResource>(webformAPI.FileResources);
 
   const {
     data: departments,
-    isLoading: isDepartmentsLoading,
+    isLoading: _isDepartmentsLoading,
     isError: isDepartmentsError,
   } = useFetch<ValidDepartment>(
     webformAPI.Departments(firstStepInputs.fileResource),
@@ -146,7 +146,7 @@ const Submit = () => {
 
   const {
     data: costCenters,
-    isLoading: isCostCentersLoading,
+    isLoading: _isCostCentersLoading,
     isError: isCostCentersError,
   } = useFetch<ValidCostCenter>(
     webformAPI.CostCenters(
@@ -171,7 +171,7 @@ const Submit = () => {
 
   const {
     data: userSectionMappings,
-    isLoading: isUserSectionMappingsLoading,
+    isLoading: _isUserSectionMappingsLoading,
     isError: isUserSectionMappingsError,
   } = useFetch<UserSection>(webformAPI.SectionUserMappings);
 
@@ -396,14 +396,7 @@ const Submit = () => {
 
   return (
     <Primitive
-      isLoading={[
-        isSectionLoading,
-        isFileResourcesLoading,
-        isDepartmentsLoading,
-        isUserSectionMappingsLoading,
-        requestIsProcessing,
-        isCostCentersLoading,
-      ]}
+      isLoading={[]}
       isErr={[
         isSectionError,
         isFileResourcesError,
