@@ -281,8 +281,8 @@ const Request = () => {
               return isAuthorizedApprover
                 ? (
                   <div key={key} className={blackAndWhite}>
-                    <div className="flex-1 px-4 py-2">{key}</div>
-                    <div className="flex-9 px-4 py-2 flex flex-col gap-2">
+                    <div className="flex-2 px-4 py-2">{key}</div>
+                    <div className="flex-13 px-4 py-2 flex flex-col gap-2">
                       <input
                         type="text"
                         className={`px-2 py-1 rounded-xl outline-none ${
