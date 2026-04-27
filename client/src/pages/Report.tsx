@@ -1,5 +1,5 @@
 import { Link, useSearchParams } from "react-router-dom";
-import sharp_logo from "../assets/svg/sharp_logo.svg";
+import company_logo from "../assets/svg/company_logo.svg";
 import LoadingFallback from "../components/reusable/LoadingFallback.tsx";
 import extractMonthFromFullPeriode from "../helper/extractMonthFromFullPeriode.ts";
 import extractYearFromFullPeriode from "../helper/extractYearFromFullPeriode.ts";
@@ -29,7 +29,7 @@ interface TypeTitle {
   bynature: string;
 }
 
-export const COMPANY_NAME = "PT SHARP SEMICONDUCTOR INDONESIA";
+export const COMPANY_NAME = "PT Foxconn Technologies Indonesia";
 export const MONTHS = [
   "JANUARY",
   "FEBRUARY",
@@ -177,7 +177,7 @@ const Report = () => {
               )
               : (
                 <>
-                  <img src={sharp_logo} alt="Sharp Logo" className="h-4" />
+                  <img src={company_logo} alt="Sharp Logo" className="h-11" />
                   <h3 className="text-sm font-medium">{COMPANY_NAME}</h3>
                   {render.description(reportType)}
                 </>

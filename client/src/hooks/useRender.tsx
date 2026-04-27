@@ -18,7 +18,7 @@ import SectionReport from "../components/non-reusable/report/SectionReport.tsx";
 import QuarterlyReport from "../components/non-reusable/report/QuarterlyReport.tsx";
 import { autoTable, type CellHookData } from "jspdf-autotable/es";
 import jsPDF from "jspdf";
-import sharp_logo from "../assets/svg/sharp_logo.svg";
+import company_logo from "../assets/svg/company_logo.svg";
 import getCurrentPeriod from "../helper/getCurrentPeriod.ts";
 import extractYearFromFullPeriode from "../helper/extractYearFromFullPeriode.ts";
 import extractMonthFromFullPeriode from "../helper/extractMonthFromFullPeriode.ts";
@@ -161,7 +161,7 @@ const useRender = (
         | "",
     ) => {
       const space = { title: 6.5, other: 4 };
-      const initialYAxis = { title: 12.5, logo: 30, other: 38.5 };
+      const initialYAxis = { title: 12.5, logo: 30, other: 38.5 + 2.45 };
       const initialXAxis = 5;
       const a4PortraitSize = { x: 210, y: 297 };
       const titleFontSize = 12;
@@ -238,7 +238,7 @@ const useRender = (
                   };
                   img.onerror = () =>
                     reject(new Error("Failed to load SVG resource"));
-                  img.src = sharp_logo;
+                  img.src = company_logo;
                 },
               );
               const logoWidth = logoHeight * logoData.aspectRatio;
@@ -248,8 +248,8 @@ const useRender = (
                 "PNG",
                 initialXAxis,
                 initialYAxis.logo,
-                logoWidth,
-                logoHeight,
+                logoWidth * 2.45,
+                logoHeight * 2.45,
               );
             } catch (error) {
               console.error("Error generating company logo:", error);
@@ -259,7 +259,7 @@ const useRender = (
             reportPdf.text(
               COMPANY_NAME,
               initialXAxis,
-              initialYAxis.other, //38.5
+              initialYAxis.other,
               {
                 align: "left",
               },
@@ -370,7 +370,7 @@ const useRender = (
                   };
                   img.onerror = () =>
                     reject(new Error("Failed to load SVG resource"));
-                  img.src = sharp_logo;
+                  img.src = company_logo;
                 },
               );
               const logoWidth = logoHeight * logoData.aspectRatio;
@@ -508,7 +508,7 @@ const useRender = (
                   };
                   img.onerror = () =>
                     reject(new Error("Failed to load SVG resource"));
-                  img.src = sharp_logo;
+                  img.src = company_logo;
                 },
               );
               const logoWidth = logoHeight * logoData.aspectRatio;
@@ -606,7 +606,7 @@ const useRender = (
                   };
                   img.onerror = () =>
                     reject(new Error("Failed to load SVG resource"));
-                  img.src = sharp_logo;
+                  img.src = company_logo;
                 },
               );
               const logoWidth = logoHeight * logoData.aspectRatio;
