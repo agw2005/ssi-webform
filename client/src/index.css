@@ -9,3 +9,7 @@
   --font-nunito: Nunito, "sans-serif";
   --default-font-family: var(--font-nunito);
 }
+
+html {
+  font-size: 80%;
+}
