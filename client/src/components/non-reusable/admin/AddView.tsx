@@ -9,6 +9,7 @@ import Button from "../../reusable/Button.tsx";
 import LoadingFallback from "../../reusable/LoadingFallback.tsx";
 import ErrorFallback from "../../reusable/ErrorFallback.tsx";
 import { webformAPI } from "../../../helper/apis.ts";
+import { removeWhitespace } from "../../../helper/removeSpaces.ts";
 
 interface AddViewProps {
   toggleDialog: (
@@ -176,15 +177,15 @@ const AddView = ({ toggleDialog }: AddViewProps) => {
       const sectionId = Number(
         mainSheet["!data"]?.[row]?.[SECTION_ID_COLUMN_INDEX].v,
       );
-      const nature = String(
+      const nature = removeWhitespace(String(
         mainSheet["!data"]?.[row]?.[NATURE_COLUMN_INDEX].v,
-      );
-      const fileResource = String(
+      ));
+      const fileResource = removeWhitespace(String(
         mainSheet["!data"]?.[row]?.[FILE_RESOURCE_COLUMN_INDEX].v,
-      );
-      const costCenter = String(
+      ));
+      const costCenter = removeWhitespace(String(
         mainSheet["!data"]?.[row]?.[COST_CENTER_COLUMN_INDEX].v,
-      );
+      ));
       for (
         let column = JANUARY_COLUMN_INDEX;
         column <= DECEMBER_COLUMN_INDEX;

@@ -161,24 +161,33 @@ const BudgetView = ({ year, fileResource }: BudgetViewProps) => {
                       budgetData.Description === rowDescription &&
                       budgetData.MonthIndex === monthIndex,
                   );
-                  const monthBudget = Number(monthData?.Budget || 0);
-                  const monthBalance = Number(monthData?.Balance || 0);
+                  const budgetExist = monthData?.Budget !== undefined;
+                  const monthBudget = Number(monthData?.Budget);
+                  const monthBalance = Number(monthData?.Balance);
                   const monthUsage = monthBudget - monthBalance;
                   return (
                     <React.Fragment key={index}>
                       <td className="text-xs lg:text-sm xl:text-base | border p-2 text-center">
-                        {formatNumberToString(monthBudget)}
+                        {budgetExist
+                          ? formatNumberToString(monthBudget)
+                          : "N/A"}
                       </td>
                       <td className="text-xs lg:text-sm xl:text-base | border p-2 text-center">
-                        <Link
-                          className="text-blue-700 underline"
-                          to={`/usage?year=${monthData?.PeriodYear}&month=${monthData?.MonthIndex}&costcenter=${rowData.CostCenter}&nature=${rowNature}`}
-                        >
-                          {formatNumberToString(monthUsage)}
-                        </Link>
+                        {budgetExist
+                          ? (
+                            <Link
+                              className="text-blue-700 underline"
+                              to={`/usage?year=${monthData?.PeriodYear}&month=${monthData?.MonthIndex}&costcenter=${rowData.CostCenter}&nature=${rowNature}`}
+                            >
+                              {formatNumberToString(monthUsage)}
+                            </Link>
+                          )
+                          : "N/A"}
                       </td>
                       <td className="text-xs lg:text-sm xl:text-base | border p-2 text-center">
-                        {formatNumberToString(monthBalance)}
+                        {budgetExist
+                          ? formatNumberToString(monthBalance)
+                          : "N/A"}
                       </td>
                     </React.Fragment>
                   );
