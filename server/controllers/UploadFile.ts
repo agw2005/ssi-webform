@@ -18,7 +18,7 @@ export const UploadFileSSMSTypes = {
 };
 
 export const getMinimumFileInformation = async (
-  pool: ssms.ConnectionPool,
+  transaction: ssms.Transaction,
   traceId: TraceTable["IDTrace"],
 ): Promise<MsSqlResponse<UploadFileMinimalInformation>> => {
   const request = pool.request();

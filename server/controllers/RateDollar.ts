@@ -10,7 +10,7 @@ const _RateDollarTypes = {
 };
 
 export const getCurrentRateDollar = async (
-  pool: ssms.ConnectionPool,
+  transaction: ssms.Transaction,
 ): Promise<MsSqlResponse<WebformDBForexResponse>> => {
   const result = await pool.request().query<WebformDBForexResponse>(`
     SELECT
@@ -28,9 +28,9 @@ export const getCurrentRateDollar = async (
 };
 
 export const renewRateDollar = async (
-  pool: ssms.ConnectionPool,
+  transaction: ssms.Transaction,
 ): Promise<number> => {
-  const result = await pool.request().query(`
+  const result = await transaction.request().query(`
     UPDATE RateDollar
     SET
       RateDollar.CurrencyValue = RateDollarTemp.CurrencyValue

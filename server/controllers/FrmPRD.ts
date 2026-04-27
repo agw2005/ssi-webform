@@ -30,10 +30,10 @@ export const FrmPRDSSMSTypes = {
 };
 
 export const getAllRequestItems = async (
-  pool: ssms.ConnectionPool,
+  transaction: ssms.Transaction,
   traceId: TraceTable["IDTrace"],
 ): Promise<MsSqlResponse<FrmPRDRequestItem>> => {
-  const request = pool.request();
+  const request = transaction.request();
 
   request.input("traceId", TraceSSMSTypes.IDTrace, traceId);
 

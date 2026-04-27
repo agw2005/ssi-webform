@@ -22,7 +22,7 @@ export const UserMasterSSMSTypes = {
 };
 
 export const supervisorNames = async (
-  pool: ssms.ConnectionPool,
+  transaction: ssms.Transaction,
 ): Promise<MsSqlResponse<UserMasterName>> => {
   const result = await pool.request().query<UserMasterName>(
     `SELECT NameUser, IDUser
@@ -39,7 +39,7 @@ export const supervisorNames = async (
 };
 
 export const getUserInfoByNRP = async (
-  pool: ssms.ConnectionPool,
+  transaction: ssms.Transaction,
   nrp: UserMasterTable["NRP"],
 ): Promise<MsSqlResponse<UserMasterName>> => {
   const request = pool.request();
@@ -82,7 +82,7 @@ export const getUserIdByName = async (
 };
 
 export const getAuthInfo = async (
-  pool: ssms.ConnectionPool,
+  transaction: ssms.Transaction,
 ): Promise<MsSqlResponse<AuthInfo>> => {
   const result = await pool.request().query<AuthInfo>(
     `SELECT 
@@ -103,10 +103,10 @@ export const getAuthInfo = async (
 };
 
 export const patchNewLogin = async (
-  pool: ssms.ConnectionPool,
+  transaction: ssms.Transaction,
   userId: UserMasterTable["IDUser"],
 ): Promise<number> => {
-  const request = pool.request();
+  const request = transaction.request();
 
   const now = new Date();
   const month = now.getMonth() + 1;

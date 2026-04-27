@@ -94,6 +94,8 @@ import {
   patchRateDollarTemp,
 } from "./controllers/RateDollarTemp.ts";
 import { getLogger } from "@logtape/logtape";
+import { runParameterizedQuery } from "./helper/runParameterizedQuery.ts";
+import { runSimpleQuery } from "./helper/runSimpleQuery.ts";
 
 const logger = getLogger("webform-oak-server");
 
@@ -107,88 +109,41 @@ export const healthCheck = (ctx: RouterContext<"/">) => {
 
 export const getAllFileResources = async (
   ctx: RouterContext<"/fileresources">,
-) => {
-  logger.info(
-    `User accessed route "/budget/fileresources"`,
+) =>
+  await runSimpleQuery(
+    ctx,
+    "/budget/fileresources",
+    allFileResources,
+    "allFileResources",
   );
-  logger.trace(
-    `Running function allFileResources()`,
-  );
-
-  const { rowsReturned, rowsAffected } = await allFileResources(
-    databasePool,
-  );
-
-  logger.trace(
-    `Finished running function allFileResources()`,
-  );
-  logger.debug(
-    `${rowsAffected[0]} rows affected`,
-  );
-
-  ctx.response.status = 200;
-  ctx.response.body = rowsReturned;
-};
 
 export const getAvailableBudgetYears = async (
   ctx: RouterContext<"/years">,
-) => {
-  logger.info(
-    `User accessed route "/budget/years"`,
-  );
-  logger.trace(
-    `Running function availableYears()`,
-  );
-
-  const { rowsReturned, rowsAffected } = await availableYears(databasePool);
-
-  logger.trace(
-    `Finished running function availableYears()`,
-  );
-  logger.debug(
-    `${rowsAffected[0]} rows affected`,
-  );
-
-  ctx.response.status = 200;
-  ctx.response.body = rowsReturned;
-};
+) =>
+  await runSimpleQuery(ctx, "/budget/years", availableYears, "availableYears");
 
 export const getAvailableBudgetPeriods = async (
   ctx: RouterContext<"/periods">,
-) => {
-  logger.info(
-    `User accessed route "/budget/periods"`,
+) =>
+  await runSimpleQuery(
+    ctx,
+    "/budget/periods",
+    availablePeriods,
+    "availablePeriods",
   );
-  logger.trace(
-    `Running function availablePeriods()`,
-  );
-
-  const { rowsReturned, rowsAffected } = await availablePeriods(databasePool);
-
-  logger.trace(
-    `Finished running function availablePeriods()`,
-  );
-  logger.debug(
-    `${rowsAffected[0]} rows affected`,
-  );
-
-  ctx.response.status = 200;
-  ctx.response.body = rowsReturned;
-};
 
 export const getAllValidNatures = async (
   ctx: RouterContext<"/nature">,
 ) => {
+  const route = "/budget/nature";
   logger.info(
-    `User accessed route "/budget/nature"`,
+    `User accessed route "${route}"`,
   );
-
   logger.trace(
     `Started searching route parameters`,
   );
 
   const params = ctx.request.url.searchParams;
-
   const fullPeriode = params.get("period") || null;
   const fileResource = params.get("fileresource") || null;
   const dept = Number(params.get("dept")) || null;
@@ -211,36 +166,22 @@ export const getAllValidNatures = async (
     `Value of costCenter is ${costCenter}`,
   );
 
-  logger.trace(
-    `Running function getValidNatures()`,
+  await runParameterizedQuery(
+    ctx,
+    route,
+    "getValidNatures",
+    (transaction) =>
+      getValidNatures(transaction, fullPeriode, fileResource, dept, costCenter),
   );
-
-  const { rowsReturned, rowsAffected } = await getValidNatures(
-    databasePool,
-    fullPeriode,
-    fileResource,
-    dept,
-    costCenter,
-  );
-
-  logger.trace(
-    `Finished running function getValidNatures()`,
-  );
-  logger.debug(
-    `${rowsAffected[0]} rows affected`,
-  );
-
-  ctx.response.status = 200;
-  ctx.response.body = rowsReturned;
 };
 
 export const getSingleBalance = async (
   ctx: RouterContext<"/balance">,
 ) => {
+  const route = "/budget/balance";
   logger.info(
-    `User accessed route "/budget/balance"`,
+    `User accessed route "${route}"`,
   );
-
   logger.trace(
     `Started searching route parameters`,
   );
@@ -287,35 +228,28 @@ export const getSingleBalance = async (
     return;
   }
 
-  logger.trace(
-    `Running function singleBalance()`,
+  await runParameterizedQuery(
+    ctx,
+    route,
+    "singleBalance",
+    (transaction) =>
+      singleBalance(
+        transaction,
+        costCenter,
+        periode,
+        nature,
+        fileResource,
+        dept,
+      ),
   );
-
-  const { rowsReturned, rowsAffected } = await singleBalance(
-    databasePool,
-    costCenter,
-    periode,
-    nature,
-    fileResource,
-    dept,
-  );
-
-  logger.trace(
-    `Finished running function singleBalance()`,
-  );
-  logger.debug(
-    `${rowsAffected[0]} rows affected`,
-  );
-
-  ctx.response.status = 200;
-  ctx.response.body = rowsReturned;
 };
 
 export const getBudgetViewInformation = async (
   ctx: RouterContext<"/">,
 ) => {
+  const route = "/budget/";
   logger.info(
-    `User accessed route "/budget/"`,
+    `User accessed route "${route}"`,
   );
 
   logger.trace(
@@ -338,32 +272,20 @@ export const getBudgetViewInformation = async (
     `Value of fileResource is ${fileResource}`,
   );
 
-  logger.trace(
-    `Running function getBudgetsByYear()`,
+  await runParameterizedQuery(
+    ctx,
+    route,
+    "getValidNatures",
+    (transaction) => getBudgetsByYear(transaction, fileResource, year),
   );
-
-  const { rowsReturned, rowsAffected } = await getBudgetsByYear(
-    databasePool,
-    fileResource,
-    year,
-  );
-
-  logger.trace(
-    `Finished running function getBudgetsByYear()`,
-  );
-  logger.debug(
-    `${rowsAffected[0]} rows affected`,
-  );
-
-  ctx.response.status = 200;
-  ctx.response.body = rowsReturned;
 };
 
 export const getReportViewInformation = async (
   ctx: RouterContext<"/report">,
 ) => {
+  const route = "/budget/report";
   logger.info(
-    `User accessed route "/budget/report"`,
+    `User accessed route "${route}"`,
   );
 
   logger.trace(
@@ -386,32 +308,25 @@ export const getReportViewInformation = async (
     `Value of fileResource is ${fileResource}`,
   );
 
-  logger.trace(
-    `Running function reportInformation()`,
+  await runParameterizedQuery(
+    ctx,
+    route,
+    "getValidNatures",
+    (transaction) =>
+      reportInformation(
+        transaction,
+        periode,
+        fileResource,
+      ),
   );
-
-  const { rowsReturned, rowsAffected } = await reportInformation(
-    databasePool,
-    periode,
-    fileResource,
-  );
-
-  logger.trace(
-    `Finished running function reportInformation()`,
-  );
-  logger.debug(
-    `${rowsAffected[0]} rows affected`,
-  );
-
-  ctx.response.status = 200;
-  ctx.response.body = rowsReturned;
 };
 
 export const getSpecificRequestItems = async (
   ctx: RouterContext<"/request/:traceId">,
 ) => {
+  const route = "/frmprd/request";
   logger.info(
-    `User accessed route "/frmprd/request"`,
+    `User accessed route "${route}"`,
   );
 
   const traceId = Number(ctx.params.traceId);
@@ -420,31 +335,24 @@ export const getSpecificRequestItems = async (
     `Value of traceId is ${traceId}`,
   );
 
-  logger.trace(
-    `Running function getAllRequestItems()`,
+  await runParameterizedQuery(
+    ctx,
+    route,
+    "getValidNatures",
+    (transaction) =>
+      getAllRequestItems(
+        transaction,
+        traceId,
+      ),
   );
-
-  const { rowsReturned, rowsAffected } = await getAllRequestItems(
-    databasePool,
-    traceId,
-  );
-
-  logger.trace(
-    `Finished running function getAllRequestItems()`,
-  );
-  logger.debug(
-    `${rowsAffected[0]} rows affected`,
-  );
-
-  ctx.response.status = 200;
-  ctx.response.body = rowsReturned;
 };
 
 export const getRequestsAtBudgetView = async (
   ctx: RouterContext<"/">,
 ) => {
+  const route = "/frmprh/";
   logger.info(
-    `User accessed route "/frmprh/"`,
+    `User accessed route "${route}"`,
   );
 
   logger.trace(
@@ -475,107 +383,58 @@ export const getRequestsAtBudgetView = async (
     `Value of endDate is ${endDate}`,
   );
 
-  logger.trace(
-    `Running function getRequestItemForBudgetView()`,
+  await runParameterizedQuery(
+    ctx,
+    route,
+    "getValidNatures",
+    (transaction) =>
+      getRequestItemForBudgetView(
+        transaction,
+        nature,
+        costCenter,
+        startDate,
+        endDate,
+      ),
   );
-
-  const { rowsReturned, rowsAffected } = await getRequestItemForBudgetView(
-    databasePool,
-    nature,
-    costCenter,
-    startDate,
-    endDate,
-  );
-
-  logger.trace(
-    `Finished running function getRequestItemForBudgetView()`,
-  );
-  logger.debug(
-    `${rowsAffected[0]} rows affected`,
-  );
-
-  ctx.response.status = 200;
-  ctx.response.body = rowsReturned;
 };
 
-export const getSectionNames = async (ctx: RouterContext<"/names">) => {
-  logger.info(
-    `User accessed route "/section/names"`,
-  );
+export const getSectionNames = async (ctx: RouterContext<"/names">) =>
+  await runSimpleQuery(ctx, "/section/names", sectionNames, "sectionNames");
 
-  logger.trace(
-    `Running function userSectionMappings()`,
+export const getSectionUsers = async (ctx: RouterContext<"/users">) =>
+  await runSimpleQuery(
+    ctx,
+    "/section/users",
+    userSectionMappings,
+    "userSectionMappings",
   );
-  const { rowsReturned, rowsAffected } = await sectionNames(databasePool);
-
-  logger.trace(
-    `Finished running function userSectionMappings()`,
-  );
-  logger.debug(
-    `${rowsAffected[0]} rows affected`,
-  );
-
-  ctx.response.status = 200;
-  ctx.response.body = rowsReturned;
-};
-
-export const getSectionUsers = async (ctx: RouterContext<"/users">) => {
-  logger.info(
-    `User accessed route "/section/users"`,
-  );
-
-  logger.trace(
-    `Running function userSectionMappings()`,
-  );
-
-  const { rowsReturned, rowsAffected } = await userSectionMappings(
-    databasePool,
-  );
-
-  logger.trace(
-    `Finished running function userSectionMappings()`,
-  );
-  logger.debug(
-    `${rowsAffected[0]} rows affected`,
-  );
-
-  ctx.response.status = 200;
-  ctx.response.body = rowsReturned;
-};
 
 export const getRequests = async (ctx: RouterContext<"/requests">) => {
+  const route = "/trace/requests";
   logger.info(
-    `User accessed route "/trace/requests"`,
+    `User accessed route "${route}"`,
   );
-
   logger.trace(
     `Started searching route parameters`,
   );
 
   const params = ctx.request.url.searchParams;
+  const requestorSectionId = params.has("requestorsectionid")
+    ? params.get("requestorsectionid")
+    : null;
+  const status = params.get("status") || null;
+  const currentSupervisorId = params.has("currentsupervisorid")
+    ? Number(params.get("currentsupervisorid"))
+    : null;
+  const startDate = params.get("startdate") || null;
+  const endDate = params.get("enddate") || null;
+  const search = params.get("search") || null;
+  const pagination = Number(params.get("pagination")) || 50;
+  const page = Number(params.get("page")) || 1;
 
   logger.trace(
     `Finished searching route parameters`,
   );
-
-  const requestorSectionId = params.has("requestorsectionid")
-    ? params.get("requestorsectionid")
-    : null;
-
-  const status = params.get("status") || null;
-
-  const currentSupervisorId = params.has("currentsupervisorid")
-    ? Number(params.get("currentsupervisorid"))
-    : null;
-
-  const startDate = params.get("startdate") || null;
-
-  const endDate = params.get("enddate") || null;
-
-  const search = params.get("search") || null;
-
-  const pagination = Number(params.get("pagination")) || 50;
-  const page = Number(params.get("page")) || 1;
 
   logger.debug(
     `Value of requestorSectionId is ${requestorSectionId}`,
@@ -602,38 +461,31 @@ export const getRequests = async (ctx: RouterContext<"/requests">) => {
     `Value of page is ${page}`,
   );
 
-  logger.trace(
-    `Running function homeRequests()`,
+  await runParameterizedQuery(
+    ctx,
+    route,
+    "getValidNatures",
+    (transaction) =>
+      homeRequests(
+        transaction,
+        page,
+        pagination,
+        requestorSectionId,
+        status,
+        currentSupervisorId,
+        startDate,
+        endDate,
+        search,
+      ),
   );
-
-  const { rowsReturned, rowsAffected } = await homeRequests(
-    databasePool,
-    page,
-    pagination,
-    requestorSectionId,
-    status,
-    currentSupervisorId,
-    startDate,
-    endDate,
-    search,
-  );
-
-  logger.trace(
-    `Finished running function homeRequests()`,
-  );
-  logger.debug(
-    `${rowsAffected[0]} rows affected`,
-  );
-
-  ctx.response.status = 200;
-  ctx.response.body = rowsReturned;
 };
 
 export const getRequestsCount = async (
   ctx: RouterContext<"/requests/count">,
 ) => {
+  const route = "/trace/requests/count";
   logger.info(
-    `User accessed route "/trace/requests/count"`,
+    `User accessed route "${route}"`,
   );
 
   logger.trace(
@@ -642,25 +494,20 @@ export const getRequestsCount = async (
 
   const params = ctx.request.url.searchParams;
 
-  logger.trace(
-    `Finished searching route parameters`,
-  );
-
   const requestorSectionId = params.has("requestorsectionid")
     ? params.get("requestorsectionid")
     : null;
-
   const status = params.get("status") || null;
-
   const currentSupervisorId = params.has("currentsupervisorid")
     ? Number(params.get("currentsupervisorid"))
     : null;
-
   const startDate = params.get("startdate") || null;
-
   const endDate = params.get("enddate") || null;
-
   const search = params.get("search") || null;
+
+  logger.trace(
+    `Finished searching route parameters`,
+  );
 
   logger.debug(
     `Value of requestorSectionId is ${requestorSectionId}`,
@@ -681,36 +528,29 @@ export const getRequestsCount = async (
     `Value of search is ${search}`,
   );
 
-  logger.trace(
-    `Running function homeRequestsCount()`,
+  await runParameterizedQuery(
+    ctx,
+    route,
+    "getValidNatures",
+    (transaction) =>
+      homeRequestsCount(
+        transaction,
+        requestorSectionId,
+        status,
+        currentSupervisorId,
+        startDate,
+        endDate,
+        search,
+      ),
   );
-
-  const { rowsReturned, rowsAffected } = await homeRequestsCount(
-    databasePool,
-    requestorSectionId,
-    status,
-    currentSupervisorId,
-    startDate,
-    endDate,
-    search,
-  );
-
-  logger.trace(
-    `Finished running function homeRequestsCount()`,
-  );
-  logger.debug(
-    `${rowsAffected[0]} rows affected`,
-  );
-
-  ctx.response.status = 200;
-  ctx.response.body = rowsReturned;
 };
 
 export const getSpecificRequest = async (
   ctx: RouterContext<"/request/:traceId">,
 ) => {
+  const route = "/trace/request";
   logger.info(
-    `User accessed route "/trace/request"`,
+    `User accessed route "${route}"`,
   );
 
   const traceId = Number(ctx.params.traceId);
@@ -719,31 +559,24 @@ export const getSpecificRequest = async (
     `Value of traceId is ${traceId}`,
   );
 
-  logger.trace(
-    `Running function specificRequest()`,
+  await runParameterizedQuery(
+    ctx,
+    route,
+    "getValidNatures",
+    (transaction) =>
+      specificRequest(
+        transaction,
+        traceId,
+      ),
   );
-
-  const { rowsReturned, rowsAffected } = await specificRequest(
-    databasePool,
-    traceId,
-  );
-
-  logger.trace(
-    `Finished running function specificRequest()`,
-  );
-  logger.debug(
-    `${rowsAffected[0]} rows affected`,
-  );
-
-  ctx.response.status = 200;
-  ctx.response.body = rowsReturned;
 };
 
 export const getApproverPath = async (
   ctx: RouterContext<"/:traceId">,
 ) => {
+  const route = "/traced";
   logger.info(
-    `User accessed route "/traced"`,
+    `User accessed route "${route}"`,
   );
 
   const traceId = Number(ctx.params.traceId);
@@ -752,31 +585,24 @@ export const getApproverPath = async (
     `Value of traceId is ${traceId}`,
   );
 
-  logger.trace(
-    `Running function getApproverPathInformation()`,
+  await runParameterizedQuery(
+    ctx,
+    route,
+    "getValidNatures",
+    (transaction) =>
+      getApproverPathInformation(
+        transaction,
+        traceId,
+      ),
   );
-
-  const { rowsReturned, rowsAffected } = await getApproverPathInformation(
-    databasePool,
-    traceId,
-  );
-
-  logger.trace(
-    `Finished running function getApproverPathInformation()`,
-  );
-  logger.debug(
-    `${rowsAffected[0]} rows affected`,
-  );
-
-  ctx.response.status = 200;
-  ctx.response.body = rowsReturned;
 };
 
 export const getUploadFiles = async (
   ctx: RouterContext<"/:traceId">,
 ) => {
+  const route = "/uploadfile";
   logger.info(
-    `User accessed route "/uploadfile"`,
+    `User accessed route "${route}"`,
   );
 
   const traceId = Number(ctx.params.traceId);
@@ -785,79 +611,50 @@ export const getUploadFiles = async (
     `Value of traceId is ${traceId}`,
   );
 
-  logger.trace(
-    `Running function getMinimumFileInformation()`,
+  await runParameterizedQuery(
+    ctx,
+    route,
+    "getValidNatures",
+    (transaction) =>
+      getMinimumFileInformation(
+        transaction,
+        traceId,
+      ),
   );
-
-  const { rowsReturned, rowsAffected } = await getMinimumFileInformation(
-    databasePool,
-    traceId,
-  );
-
-  logger.trace(
-    `Finished running function getMinimumFileInformation()`,
-  );
-  logger.debug(
-    `${rowsAffected[0]} rows affected`,
-  );
-
-  ctx.response.status = 200;
-  ctx.response.body = rowsReturned;
 };
 
 export const getSupervisorNames = async (
   ctx: RouterContext<"/names">,
-) => {
-  logger.info(
-    `User accessed route "/usermaster/names"`,
+) =>
+  await runSimpleQuery(
+    ctx,
+    "/usermaster/names",
+    supervisorNames,
+    "supervisorNames",
   );
-
-  logger.trace(
-    `Running function supervisorNames()`,
-  );
-
-  const { rowsReturned, rowsAffected } = await supervisorNames(databasePool);
-
-  logger.trace(
-    `Finished running function supervisorNames()`,
-  );
-  logger.debug(
-    `${rowsAffected[0]} rows affected`,
-  );
-
-  ctx.response.status = 200;
-  ctx.response.body = rowsReturned;
-};
 
 export const getUserByNRP = async (
   ctx: RouterContext<"/:nrp">,
 ) => {
+  const route = "/nrp";
   logger.info(
-    `User accessed route "/nrp"`,
+    `User accessed route "${route}"`,
   );
 
   const nrp = ctx.params.nrp;
-  logger.debug(
-    `Value of nrp is ${nrp}`,
-  );
 
-  logger.trace(
-    `Running function getUserInfoByNRP()`,
-  );
-  const { rowsReturned, rowsAffected } = await getUserInfoByNRP(
-    databasePool,
-    nrp,
-  );
+  logger.debug(`Value of nrp is ${nrp}`);
 
-  logger.trace(
-    `Finished running function getUserInfoByNRP()`,
+  await runParameterizedQuery(
+    ctx,
+    route,
+    "getValidNatures",
+    (transaction) =>
+      getUserInfoByNRP(
+        transaction,
+        nrp,
+      ),
   );
-  logger.debug(
-    `${rowsAffected[0]} rows affected`,
-  );
-
-  ctx.response.status = 200;
-  ctx.response.body = rowsReturned;
 };
 
 // POST to table frm_PR_D (NoPR)
@@ -867,8 +664,9 @@ export const getUserByNRP = async (
 // POST to table Trace_D (IDTrace)
 // POST to table UploadFile (NoForm)
 export const submitRequest = async (ctx: RouterContext<"/submit">) => {
+  const route = "/submit";
   logger.info(
-    `User accessed route "/submit"`,
+    `User accessed route "${route}"`,
   );
 
   const formDataRequest: FormData = await ctx.request.body.formData();
@@ -925,30 +723,30 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
     );
   });
 
-  logger.trace(
-    `Running function getCurrentRateDollar()`,
-  );
-  const { rowsReturned: rates, rowsAffected: ratesRowAffected } =
-    await getCurrentRateDollar(
-      databasePool,
-    );
-  logger.trace(
-    `Finished running function getCurrentRateDollar()`,
-  );
-  logger.debug(
-    `${ratesRowAffected[0]} rows affected`,
-  );
-
-  logger.debug(
-    `Value of rates is ${rates}`,
-  );
-
   logger.info(
     `Beginning transaction`,
   );
 
   try {
     await transaction.begin();
+
+    logger.trace(
+      `Running function getCurrentRateDollar()`,
+    );
+    const { rowsReturned: rates, rowsAffected: ratesRowAffected } =
+      await getCurrentRateDollar(
+        transaction,
+      );
+    logger.trace(
+      `Finished running function getCurrentRateDollar()`,
+    );
+    logger.debug(
+      `${ratesRowAffected[0]} rows affected`,
+    );
+
+    logger.debug(
+      `Value of rates is ${rates}`,
+    );
 
     logger.trace(
       `Running function provisionFormNumber()`,
@@ -1364,182 +1162,199 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
 
 export const getAuthInformation = async (
   ctx: RouterContext<"/auth">,
-) => {
-  logger.info(
-    `User accessed route "/usermaster/auth"`,
-  );
-  logger.trace(
-    `Running function getAuthInfo()`,
-  );
-  const { rowsReturned, rowsAffected } = await getAuthInfo(databasePool);
-
-  logger.trace(
-    `Finished running function getAuthInfo()`,
-  );
-  logger.debug(
-    `${rowsAffected[0]} rows affected`,
-  );
-
-  ctx.response.status = 200;
-  ctx.response.body = rowsReturned;
-};
+) => await runSimpleQuery(ctx, "/usermaster/auth", getAuthInfo, "getAuthInfo");
 
 export const requestJwt = async (ctx: RouterContext<"/request">) => {
+  const route = "/jwt/request";
   logger.info(
-    `User accessed route "/jwt/request"`,
+    `User accessed route "${route}"`,
   );
 
   const authorizedMessage = "Valid credentials";
   const unauthorizedMessage = "Invalid credentials";
   const generationErrMessage = "There was an error in generating the token";
 
-  logger.trace(
-    `Running function getKey()`,
-  );
-  const jwtKey = await getKey();
-  logger.trace(
-    `Finished running function getKey()`,
-  );
-  logger.debug(
-    `JWT ${jwtKey ? "Exist" : "is missing"}`,
-  );
-  const jwtHeader: Header = { alg: "HS512", type: "JWT" };
-  const nineHourExpiration = getNumericDate(60 * 60 * 9);
+  const transaction = new ssms.Transaction(databasePool);
 
-  const request: LoginPayload = await ctx.request.body.json();
-  logger.debug(
-    `Value of request is {value}`,
-    { request },
-  );
-
-  logger.trace(
-    `Running function getAuthInfo()`,
-  );
-  const { rowsReturned: credentials, rowsAffected: authInfoRowsAffected } =
-    await getAuthInfo(
-      databasePool,
+  transaction.on("error", (err) => {
+    logger.error(
+      `Internal transaction error caught by listener = {value}`,
+      { err },
     );
-  logger.trace(
-    `Finished running function getAuthInfo()`,
-  );
-  logger.debug(
-    `${authInfoRowsAffected[0]} rows affected`,
-  );
+  });
 
-  let validCredentials: AuthInfo | null = null;
-
-  const isAdmin = request.nrp === "Admin" &&
-    request.password ===
-      credentials.filter((credential) => credential.IDUser === 1)[0].Password;
-
-  logger.debug(
-    `Value of isAdmin is ${isAdmin}`,
+  logger.info(
+    `Beginning transaction`,
   );
 
-  if (isAdmin) {
-    const adminCredentials = credentials.filter((credential) =>
-      credential.IDUser === 1
-    )[0];
+  try {
+    await transaction.begin();
+
+    logger.trace(
+      `Running function getKey()`,
+    );
+    const jwtKey = await getKey();
+    logger.trace(
+      `Finished running function getKey()`,
+    );
+
     logger.debug(
-      `Value of adminCredentials is ${adminCredentials}`,
+      `JWT ${jwtKey ? "Exist" : "is missing"}`,
     );
-    validCredentials = adminCredentials;
+
+    const jwtHeader: Header = { alg: "HS512", type: "JWT" };
+    const nineHourExpiration = getNumericDate(60 * 60 * 9);
+
+    const request: LoginPayload = await ctx.request.body.json();
     logger.debug(
-      `Value of validCredentials is ${validCredentials}`,
+      `Value of request is {value}`,
+      { request },
     );
-  } else {
-    logger.info(`Started looping for "credentials"`);
-    for (const credential of credentials) {
-      const validNRP = credential.NRP === request.nrp;
-      const validPassword = credential.Password === request.password;
-      if (validNRP && validPassword) {
-        validCredentials = credential;
-        logger.debug(
-          `Value of validCredentials is ${validCredentials}`,
-        );
-        logger.info(`Finished looping early for "credentials"`);
-        break;
+
+    logger.trace(
+      `Running function getAuthInfo()`,
+    );
+    const { rowsReturned: credentials, rowsAffected: authInfoRowsAffected } =
+      await getAuthInfo(
+        transaction,
+      );
+    logger.trace(
+      `Finished running function getAuthInfo()`,
+    );
+    logger.debug(
+      `${authInfoRowsAffected[0]} rows affected`,
+    );
+
+    let validCredentials: AuthInfo | null = null;
+
+    const isAdmin = request.nrp === "Admin" &&
+      request.password ===
+        credentials.filter((credential) => credential.IDUser === 1)[0].Password;
+
+    logger.debug(
+      `Value of isAdmin is ${isAdmin}`,
+    );
+
+    if (isAdmin) {
+      const adminCredentials = credentials.filter((credential) =>
+        credential.IDUser === 1
+      )[0];
+      logger.debug(
+        `Value of adminCredentials is ${adminCredentials}`,
+      );
+      validCredentials = adminCredentials;
+      logger.debug(
+        `Value of validCredentials is ${validCredentials}`,
+      );
+    } else {
+      logger.info(`Started looping for "credentials"`);
+      for (const credential of credentials) {
+        const validNRP = credential.NRP === request.nrp;
+        const validPassword = credential.Password === request.password;
+        if (validNRP && validPassword) {
+          validCredentials = credential;
+          logger.debug(
+            `Value of validCredentials is ${validCredentials}`,
+          );
+          logger.info(`Finished looping early for "credentials"`);
+          break;
+        }
       }
+      logger.info(`Finished looping for "credentials"`);
     }
-    logger.info(`Finished looping for "credentials"`);
-  }
 
-  if (validCredentials !== null) {
-    const jwtPayload: Payload = {
-      iss: validCredentials.NRP,
-      exp: nineHourExpiration,
-      userId: validCredentials.IDUser,
-      userName: validCredentials.UserName,
-      nameUser: validCredentials.NameUser,
-      nrp: validCredentials.NRP,
+    if (validCredentials !== null) {
+      const jwtPayload: Payload = {
+        iss: validCredentials.NRP,
+        exp: nineHourExpiration,
+        userId: validCredentials.IDUser,
+        userName: validCredentials.UserName,
+        nameUser: validCredentials.NameUser,
+        nrp: validCredentials.NRP,
+      };
+
+      logger.debug(
+        `Value of jwtPayload is ${jwtPayload}`,
+      );
+
+      const jwt = await create(jwtHeader, jwtPayload, jwtKey);
+      logger.debug(
+        `Value of jwt is ${jwt}`,
+      );
+
+      if (jwt) {
+        const authorizedResponse: LoginResponse = {
+          message: authorizedMessage,
+          nrp: validCredentials.NRP,
+          jwt: jwt,
+        };
+        logger.debug(
+          `Value of authorizedResponse is ${authorizedResponse}`,
+        );
+
+        logger.trace(
+          `Running function patchNewLogin()`,
+        );
+        const newLoginPatchRowsAffected = patchNewLogin(
+          transaction,
+          validCredentials.IDUser,
+        );
+
+        logger.trace(
+          `Finished running function patchNewLogin()`,
+        );
+        logger.debug(
+          `${newLoginPatchRowsAffected} rows affected`,
+        );
+        ctx.response.status = 200;
+        ctx.response.body = authorizedResponse;
+      } else {
+        logger.error(
+          `The value of "jwt" does not exist`,
+        );
+        const errResponse: LoginResponse = {
+          message: generationErrMessage,
+          nrp: validCredentials.NRP,
+          jwt: "",
+        };
+        ctx.response.status = 500;
+        ctx.response.body = errResponse;
+      }
+      return;
+    }
+
+    logger.warning(
+      `Incoming NRP and Password does not exist in database`,
+    );
+    const unauthorizedResponse: LoginResponse = {
+      message: unauthorizedMessage,
+      nrp: "",
+      jwt: "",
     };
 
-    logger.debug(
-      `Value of jwtPayload is ${jwtPayload}`,
+    ctx.response.status = 401;
+    ctx.response.body = unauthorizedResponse;
+  } catch (err) {
+    logger.error(
+      `Transaction failed for route "${route}". {value}`,
+      { err },
     );
-
-    const jwt = await create(jwtHeader, jwtPayload, jwtKey);
-    logger.debug(
-      `Value of jwt is ${jwt}`,
-    );
-
-    if (jwt) {
-      const authorizedResponse: LoginResponse = {
-        message: authorizedMessage,
-        nrp: validCredentials.NRP,
-        jwt: jwt,
-      };
-      logger.debug(
-        `Value of authorizedResponse is ${authorizedResponse}`,
-      );
-
-      logger.trace(
-        `Running function patchNewLogin()`,
-      );
-      const newLoginPatchRowsAffected = patchNewLogin(
-        databasePool,
-        validCredentials.IDUser,
-      );
-
-      logger.trace(
-        `Finished running function patchNewLogin()`,
-      );
-      logger.debug(
-        `${newLoginPatchRowsAffected} rows affected`,
-      );
-      ctx.response.status = 200;
-      ctx.response.body = authorizedResponse;
-    } else {
+    ctx.response.status = 500;
+    try {
+      await transaction.rollback();
+    } catch (rollbackErr) {
       logger.error(
-        `The value of "jwt" does not exist`,
+        `Failed rolling back transaction. {value}`,
+        { rollbackErr },
       );
-      const errResponse: LoginResponse = {
-        message: generationErrMessage,
-        nrp: validCredentials.NRP,
-        jwt: "",
-      };
-      ctx.response.status = 500;
-      ctx.response.body = errResponse;
     }
-    return;
   }
-
-  logger.warning(
-    `Incoming NRP and Password does not exist in database`,
-  );
-  const unauthorizedResponse: LoginResponse = {
-    message: unauthorizedMessage,
-    nrp: "",
-    jwt: "",
-  };
-
-  ctx.response.status = 401;
-  ctx.response.body = unauthorizedResponse;
 };
 
 export const getRequestsBySupervisorNrp = async (
   ctx: RouterContext<"/approve">,
 ) => {
+  const route = "/trace/approve";
   logger.info(
     `User accessed route "/trace/approve"`,
   );
@@ -1553,18 +1368,13 @@ export const getRequestsBySupervisorNrp = async (
   );
 
   const startDate = params.get("startdate") || null;
-
   const endDate = params.get("enddate") || null;
-
   const search = params.get("search") || null;
-
   const status = params.get("status") || null;
-
   const supervisorNrp = params.get("nrp") || null;
   const formattedNrp = supervisorNrp && supervisorNrp !== "null"
     ? onlyNumerics(supervisorNrp)
     : null;
-
   const page = Number(params.get("page")) || 1;
   const pagination = Number(params.get("pagination")) || 50;
 
@@ -1590,34 +1400,28 @@ export const getRequestsBySupervisorNrp = async (
     `Value of pagination is ${pagination}`,
   );
 
-  logger.trace(
-    `Running function approveRequests()`,
+  await runParameterizedQuery(
+    ctx,
+    route,
+    "getValidNatures",
+    (transaction) =>
+      approveRequests(
+        transaction,
+        formattedNrp,
+        page,
+        pagination,
+        status,
+        startDate,
+        endDate,
+        search,
+      ),
   );
-  const { rowsReturned, rowsAffected } = await approveRequests(
-    databasePool,
-    formattedNrp,
-    page,
-    pagination,
-    status,
-    startDate,
-    endDate,
-    search,
-  );
-
-  logger.trace(
-    `Finished running function approveRequests()`,
-  );
-  logger.debug(
-    `${rowsAffected[0]} rows affected`,
-  );
-
-  ctx.response.status = 200;
-  ctx.response.body = rowsReturned;
 };
 
 export const getRequestsBySupervisorNrpCount = async (
   ctx: RouterContext<"/approve/count">,
 ) => {
+  const route = "/trace/approve/count";
   logger.info(
     `User accessed route "/trace/approve/count"`,
   );
@@ -1628,22 +1432,18 @@ export const getRequestsBySupervisorNrpCount = async (
 
   const params = ctx.request.url.searchParams;
 
-  logger.trace(
-    `Finished searching route parameters`,
-  );
-
   const startDate = params.get("startdate") || null;
-
   const endDate = params.get("enddate") || null;
-
   const search = params.get("search") || null;
-
   const status = params.get("status") || null;
-
   const supervisorNrp = params.get("nrp") || null;
   const formattedNrp = supervisorNrp && supervisorNrp !== "null"
     ? onlyNumerics(supervisorNrp)
     : null;
+
+  logger.trace(
+    `Finished searching route parameters`,
+  );
 
   logger.debug(
     `Value of startDate is ${startDate}`,
@@ -1661,32 +1461,26 @@ export const getRequestsBySupervisorNrpCount = async (
     `Value of formattedNrp is ${formattedNrp}`,
   );
 
-  logger.trace(
-    `Running function approveRequestsCount()`,
+  await runParameterizedQuery(
+    ctx,
+    route,
+    "getValidNatures",
+    (transaction) =>
+      approveRequestsCount(
+        transaction,
+        formattedNrp,
+        status,
+        startDate,
+        endDate,
+        search,
+      ),
   );
-  const { rowsReturned, rowsAffected } = await approveRequestsCount(
-    databasePool,
-    formattedNrp,
-    status,
-    startDate,
-    endDate,
-    search,
-  );
-
-  logger.trace(
-    `Finished running function approveRequestsCount()`,
-  );
-  logger.debug(
-    `${rowsAffected[0]} rows affected`,
-  );
-
-  ctx.response.status = 200;
-  ctx.response.body = rowsReturned;
 };
 
 export const patchRemarks = async (ctx: RouterContext<"/remarks">) => {
+  const route = "/approve/remarks";
   logger.info(
-    `User accessed route "/approve/remarks"`,
+    `User accessed route "${route}"`,
   );
 
   const request: PatchRemarksPayload = await ctx.request.body.json();
@@ -1695,43 +1489,73 @@ export const patchRemarks = async (ctx: RouterContext<"/remarks">) => {
     { request },
   );
 
-  logger.trace(
-    `Running function patchRemarksOfTrace()`,
-  );
-  const patchTraceRowsAffected = await patchRemarksOfTrace(
-    databasePool,
-    request.newRemarks,
-    request.noForm,
-  );
-  logger.trace(
-    `Finished running function patchRemarksOfTrace()`,
-  );
-  logger.debug(
-    `${patchTraceRowsAffected} rows affected`,
-  );
+  const transaction = new ssms.Transaction(databasePool);
 
-  logger.trace(
-    `Running function patchRemarksOfRequest()`,
-  );
-  const patchRequestRowsAffected = await patchRemarksOfRequest(
-    databasePool,
-    request.newRemarks,
-    request.noForm,
-  );
-  logger.trace(
-    `Finished running function patchRemarksOfRequest()`,
-  );
-  logger.debug(
-    `${patchRequestRowsAffected} rows affected`,
-  );
-  ctx.response.status = 200;
+  transaction.on("error", (err: unknown) => {
+    logger.error(
+      `Internal transaction error caught by listener = {value}`,
+      { err },
+    );
+  });
+
+  logger.info(`Beginning transaction`);
+
+  try {
+    await transaction.begin();
+
+    logger.trace(
+      `Running function patchRemarksOfTrace()`,
+    );
+    const patchTraceRowsAffected = await patchRemarksOfTrace(
+      transaction,
+      request.newRemarks,
+      request.noForm,
+    );
+    logger.trace(
+      `Finished running function patchRemarksOfTrace()`,
+    );
+    logger.debug(
+      `${patchTraceRowsAffected} rows affected`,
+    );
+
+    logger.trace(
+      `Running function patchRemarksOfRequest()`,
+    );
+    const patchRequestRowsAffected = await patchRemarksOfRequest(
+      transaction,
+      request.newRemarks,
+      request.noForm,
+    );
+    logger.trace(
+      `Finished running function patchRemarksOfRequest()`,
+    );
+    logger.debug(
+      `${patchRequestRowsAffected} rows affected`,
+    );
+    ctx.response.status = 200;
+  } catch (err) {
+    logger.error(
+      `Transaction failed for route "${route}". {value}`,
+      { err },
+    );
+    ctx.response.status = 500;
+    try {
+      await transaction.rollback();
+    } catch (rollbackErr) {
+      logger.error(
+        `Failed rolling back transaction. {value}`,
+        { rollbackErr },
+      );
+    }
+  }
 };
 
 export const patchRejectRequest = async (
   ctx: RouterContext<"/reject">,
 ) => {
+  const route = "/approve/reject";
   logger.info(
-    `User accessed route "/approve/reject"`,
+    `User accessed route "${route}"`,
   );
   const request: patchApprovalVerdict = await ctx.request.body.json();
 
@@ -1903,20 +1727,27 @@ export const patchRejectRequest = async (
     ctx.response.status = 200;
   } catch (err) {
     logger.error(
-      `Rolling back transaction. {value}`,
+      `Transaction failed for route "${route}". {value}`,
       { err },
     );
-    if (transaction) await transaction.rollback();
     ctx.response.status = 500;
-    console.error(err);
+    try {
+      await transaction.rollback();
+    } catch (rollbackErr) {
+      logger.error(
+        `Failed rolling back transaction. {value}`,
+        { rollbackErr },
+      );
+    }
   }
 };
 
 export const patchAcceptRequest = async (
   ctx: RouterContext<"/accept">,
 ) => {
+  const route = "/approve/accept";
   logger.info(
-    `User accessed route "/approve/accept"`,
+    `User accessed route "${route}"`,
   );
 
   const request: patchApprovalVerdict = await ctx.request.body.json();
@@ -2033,20 +1864,27 @@ export const patchAcceptRequest = async (
     ctx.response.status = 200;
   } catch (err) {
     logger.error(
-      `Rolling back transaction. {value}`,
+      `Transaction failed for route "${route}". {value}`,
       { err },
     );
-    if (transaction) await transaction.rollback();
     ctx.response.status = 500;
-    console.error(err);
+    try {
+      await transaction.rollback();
+    } catch (rollbackErr) {
+      logger.error(
+        `Failed rolling back transaction. {value}`,
+        { rollbackErr },
+      );
+    }
   }
 };
 
 export const putBudgets = async (
   ctx: RouterContext<"/budget">,
 ) => {
+  const route = "/admin/budget";
   logger.info(
-    `User accessed route "/admin/budget"`,
+    `User accessed route "${route}"`,
   );
 
   const request: (Omit<BudgetTable, "Budget" | "Balance"> & {
@@ -2169,19 +2007,25 @@ export const putBudgets = async (
     ctx.response.status = 200;
   } catch (err) {
     logger.error(
-      `Rolling back transaction. {value}`,
+      `Transaction failed for route "${route}". {value}`,
       { err },
     );
-    await transaction.rollback();
-    const errMessage = err instanceof Error ? err.message : "";
     ctx.response.status = 500;
-    ctx.response.body = errMessage;
+    try {
+      await transaction.rollback();
+    } catch (rollbackErr) {
+      logger.error(
+        `Failed rolling back transaction. {value}`,
+        { rollbackErr },
+      );
+    }
   }
 };
 
 export const deleteRequest = async (ctx: RouterContext<"/:traceId">) => {
+  const route = "/admin";
   logger.info(
-    `User accessed route "/admin"`,
+    `User accessed route "${route}"`,
   );
 
   const traceId = Number(ctx.params.traceId);
@@ -2332,20 +2176,27 @@ export const deleteRequest = async (ctx: RouterContext<"/:traceId">) => {
     ctx.response.status = 200;
   } catch (err) {
     logger.error(
-      `Rolling back transaction. {value}`,
+      `Transaction failed for route "${route}". {value}`,
       { err },
     );
-    await transaction.rollback();
     ctx.response.status = 500;
-    console.error(err);
+    try {
+      await transaction.rollback();
+    } catch (rollbackErr) {
+      logger.error(
+        `Failed rolling back transaction. {value}`,
+        { rollbackErr },
+      );
+    }
   }
 };
 
 export const getAllValidDepartments = async (
   ctx: RouterContext<"/departments">,
 ) => {
+  const route = "/budget/departments";
   logger.info(
-    `User accessed route "/budget/departments"`,
+    `User accessed route "${route}"`,
   );
 
   logger.trace(
@@ -2366,30 +2217,25 @@ export const getAllValidDepartments = async (
     `Value of fileResource is ${fileResource}`,
   );
 
-  logger.trace(
-    `Running function getValidDepartments()`,
+  await runParameterizedQuery(
+    ctx,
+    route,
+    "getValidNatures",
+    (transaction) =>
+      getValidDepartments(
+        transaction,
+        fullPeriode,
+        fileResource,
+      ),
   );
-  const { rowsReturned, rowsAffected } = await getValidDepartments(
-    databasePool,
-    fullPeriode,
-    fileResource,
-  );
-  logger.trace(
-    `Finished running function getValidDepartments()`,
-  );
-  logger.debug(
-    `${rowsAffected[0]} rows affected`,
-  );
-
-  ctx.response.status = 200;
-  ctx.response.body = rowsReturned;
 };
 
 export const getAllValidCostCenters = async (
   ctx: RouterContext<"/costcenters">,
 ) => {
+  const route = "/budget/costcenters";
   logger.info(
-    `User accessed route "/budget/costcenters"`,
+    `User accessed route "${route}"`,
   );
 
   logger.trace(
@@ -2414,80 +2260,70 @@ export const getAllValidCostCenters = async (
     `Value of dept is ${dept}`,
   );
 
-  logger.trace(
-    `Running function getValidCostCenters()`,
+  await runParameterizedQuery(
+    ctx,
+    route,
+    "getValidNatures",
+    (transaction) =>
+      getValidCostCenters(
+        transaction,
+        fullPeriode,
+        fileResource,
+        dept,
+      ),
   );
-  const { rowsReturned, rowsAffected } = await getValidCostCenters(
-    databasePool,
-    fullPeriode,
-    fileResource,
-    dept,
-  );
-  logger.trace(
-    `Finished running function getValidCostCenters()`,
-  );
-  logger.debug(
-    `${rowsAffected[0]} rows affected`,
-  );
-
-  ctx.response.status = 200;
-  ctx.response.body = rowsReturned;
 };
 
 export const getUploadBudgetTemplate = async (
   ctx: RouterContext<"/template">,
 ) => {
+  const route = "/admin/template";
   logger.info(
-    `User accessed route "/admin/template"`,
+    `User accessed route "${route}"`,
   );
 
-  const filename = "upload_budget_template.xlsx";
-  const options: ContextSendOptions = {
-    root: `${Deno.cwd()}/public`,
-    path: filename,
-  };
+  try {
+    const filename = "upload_budget_template.xlsx";
+    const options: ContextSendOptions = {
+      root: `${Deno.cwd()}/public`,
+      path: filename,
+    };
 
-  ctx.response.headers.set(
-    "Content-Disposition",
-    `attachment; filename="${filename}"`,
-  );
+    ctx.response.headers.set(
+      "Content-Disposition",
+      `attachment; filename="${filename}"`,
+    );
 
-  logger.trace(
-    `Sending template to an admin`,
-  );
+    logger.trace(
+      `Sending template to an admin`,
+    );
 
-  await ctx.send(options);
+    await ctx.send(options);
+  } catch (err) {
+    logger.error(
+      `Download failed on route "${route}". {value}`,
+      { err },
+    );
+    ctx.response.status = 500;
+  }
 };
 
 export const getForex = async (
   ctx: RouterContext<"/forex">,
-) => {
-  logger.info(
-    `User accessed route "/forex"`,
+) =>
+  await runSimpleQuery(
+    ctx,
+    "/forex",
+    getCurrentRateDollar,
+    "getCurrentRateDollar",
   );
-
-  logger.trace(
-    `Running function getCurrentRateDollar()`,
-  );
-  const { rowsReturned, rowsAffected } = await getCurrentRateDollar(
-    databasePool,
-  );
-  logger.trace(
-    `Finished running function getCurrentRateDollar()`,
-  );
-  logger.debug(
-    `${rowsAffected[0]} rows affected`,
-  );
-
-  ctx.response.status = 200;
-  ctx.response.body = rowsReturned;
-};
 
 export const patchForex = async (
   ctx: RouterContext<"/ratedollartemp">,
 ) => {
+  const route = "/admin/ratedollartemp";
   logger.info(
-    `User accessed route "/admin/ratedollartemp"`,
+    `User accessed route "${route}"`,
   );
 
   logger.trace(
@@ -2531,58 +2367,104 @@ export const patchForex = async (
     return;
   }
 
-  logger.trace(
-    `Running function patchRateDollarTemp()`,
-  );
-  const rateDollarTempPatchRowsAffected = await patchRateDollarTemp(
-    databasePool,
-    currency as "IDR" | "JPY" | "SGD" | "USD",
-    Number(newValue),
-  );
-  logger.trace(
-    `Finished running function patchRateDollarTemp()`,
-  );
-  logger.debug(
-    `${rateDollarTempPatchRowsAffected} rows affected`,
+  const transaction = new ssms.Transaction(databasePool);
+
+  transaction.on("error", (err) => {
+    logger.error(
+      `Internal transaction error caught by listener = {value}`,
+      { err },
+    );
+  });
+
+  logger.info(
+    `Beginning transaction`,
   );
 
-  ctx.response.status = 200;
+  try {
+    await transaction.begin();
+
+    logger.trace(
+      `Running function patchRateDollarTemp()`,
+    );
+    const rateDollarTempPatchRowsAffected = await patchRateDollarTemp(
+      transaction,
+      currency as "IDR" | "JPY" | "SGD" | "USD",
+      Number(newValue),
+    );
+    logger.trace(
+      `Finished running function patchRateDollarTemp()`,
+    );
+    logger.debug(
+      `${rateDollarTempPatchRowsAffected} rows affected`,
+    );
+
+    ctx.response.status = 200;
+  } catch (err) {
+    logger.error(
+      `Transaction failed for route "${route}". {value}`,
+      { err },
+    );
+    ctx.response.status = 500;
+    try {
+      await transaction.rollback();
+    } catch (rollbackErr) {
+      logger.error(
+        `Failed rolling back transaction. {value}`,
+        { rollbackErr },
+      );
+    }
+  }
 };
 
 export const getForexTemp = async (
   ctx: RouterContext<"/forextemp">,
-) => {
-  logger.info(
-    `User accessed route "/forextemp"`,
+) =>
+  await runSimpleQuery(
+    ctx,
+    "/forextemp",
+    getCurrentRateDollarTemp,
+    "getCurrentRateDollarTemp",
   );
-
-  logger.trace(
-    `Running function getCurrentRateDollarTemp()`,
-  );
-
-  const { rowsReturned, rowsAffected } = await getCurrentRateDollarTemp(
-    databasePool,
-  );
-  logger.trace(
-    `Finished running function getCurrentRateDollarTemp()`,
-  );
-  logger.debug(
-    `${rowsAffected[0]} rows affected`,
-  );
-
-  ctx.response.status = 200;
-  ctx.response.body = rowsReturned;
-};
 
 export const patchRateDollar = async () => {
-  logger.trace(
-    `Running function renewRateDollar()`,
+  const transaction = new ssms.Transaction(databasePool);
+
+  transaction.on("error", (err) => {
+    logger.error(
+      `Internal transaction error caught by listener = {value}`,
+      { err },
+    );
+  });
+
+  logger.info(
+    `Beginning transaction`,
   );
-  const rowsAffected = await renewRateDollar(databasePool);
-  logger.trace(
-    `Finished running function renewRateDollar()`,
-  );
-  logger.debug(
-    `${rowsAffected} rows affected`,
-  );
+
+  try {
+    await transaction.begin();
+
+    logger.trace(
+      `Running function ${renewRateDollar.name}()`,
+    );
+    const rowsAffected = await renewRateDollar(transaction);
+    logger.trace(
+      `Finished running function ${renewRateDollar.name}()`,
+    );
+    logger.debug(
+      `${rowsAffected} rows affected`,
+    );
+  } catch (err) {
+    logger.error(
+      `Failed running ${renewRateDollar.name}(). {value}`,
+      { err },
+    );
+    try {
+      await transaction.rollback();
+    } catch (rollbackErr) {
+      logger.error(
+        `Failed rolling back transaction. {value}`,
+        { rollbackErr },
+      );
+    }
+  }
 };

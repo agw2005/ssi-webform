@@ -16,7 +16,7 @@ export const SectionSSMSTypes = {
 };
 
 export const sectionNames = async (
-  pool: ssms.ConnectionPool,
+  transaction: ssms.Transaction,
 ): Promise<MsSqlResponse<SectionName>> => {
   const result = await pool.request().query<SectionName>(
     `SELECT IDSection, SectionName
@@ -32,7 +32,7 @@ export const sectionNames = async (
 };
 
 export const userSectionMappings = async (
-  pool: ssms.ConnectionPool,
+  transaction: ssms.Transaction,
 ): Promise<MsSqlResponse<UserSection>> => {
   const result = await pool.request().query<UserSection>(
     `SELECT Section.SectionName, UserMaster.NameUser

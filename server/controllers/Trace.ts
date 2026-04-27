@@ -37,7 +37,7 @@ export const TraceSSMSTypes = {
 };
 
 export const homeRequests = async (
-  pool: ssms.ConnectionPool,
+  transaction: ssms.Transaction,
   page: number,
   pagination: number = 50,
   requestorSectionId: TraceTable["IDSection"] | null,
@@ -124,7 +124,7 @@ export const homeRequests = async (
 };
 
 export const homeRequestsCount = async (
-  pool: ssms.ConnectionPool,
+  transaction: ssms.Transaction,
   requestorSectionId: TraceTable["IDSection"] | null,
   status: TraceTable["Status"] | null,
   currentSupervisorId: UserMasterTable["IDUser"] | null,
@@ -187,7 +187,7 @@ export const homeRequestsCount = async (
 };
 
 export const specificRequest = async (
-  pool: ssms.ConnectionPool,
+  transaction: ssms.Transaction,
   traceId: TraceTable["IDTrace"],
 ): Promise<MsSqlResponse<TraceRequestOverview>> => {
   const request = pool.request();
@@ -267,7 +267,7 @@ export const postRequestTrace = async (
 };
 
 export const approveRequests = async (
-  pool: ssms.ConnectionPool,
+  transaction: ssms.Transaction,
   supervisorNrp: UserMasterTable["NRP"] | null,
   page: number,
   pagination: number = 50,
@@ -349,7 +349,7 @@ export const approveRequests = async (
 };
 
 export const approveRequestsCount = async (
-  pool: ssms.ConnectionPool,
+  transaction: ssms.Transaction,
   supervisorNrp: UserMasterTable["NRP"] | null,
   status: TraceDTable["Result"] | null,
   startDate: TraceTable["SubmitDate"] | null,
@@ -412,11 +412,11 @@ export const approveRequestsCount = async (
 };
 
 export const patchRemarksOfTrace = async (
-  pool: ssms.ConnectionPool,
+  transaction: ssms.Transaction,
   newRemarks: TraceTable["Remarks"],
   noForm: TraceTable["NoForm"],
 ) => {
-  const request = pool.request();
+  const request = transaction.request();
 
   request.input("newRemarks", TraceSSMSTypes.Remarks, newRemarks);
   request.input("noForm", TraceSSMSTypes.NoForm, noForm);
@@ -432,7 +432,7 @@ export const patchRemarksOfTrace = async (
 };
 
 export const patchTraceVerdict = async (
-  requestSource: ssms.Transaction | ssms.ConnectionPool,
+  requestSource: ssms.Transaction,
   verdict: "Rejected" | "Approved",
   traceId: TraceTable["IDTrace"],
   maxApproverLevel: TraceTable["ProcessedLevel"],
@@ -511,7 +511,7 @@ export const patchTraceVerdict = async (
 };
 
 export const getRequestIds = async (
-  pool: ssms.ConnectionPool | ssms.Transaction,
+  transaction: ssms.Transaction,
   idTrace: TraceTable["IDTrace"],
 ): Promise<{
   formId: FrmPRHTable["ID"];
@@ -519,7 +519,7 @@ export const getRequestIds = async (
   noPr: FrmPRHTable["NoPR"];
   requestItems: PurchasingRequestItemsInformation[];
 }> => {
-  const request = pool.request();
+  const request = transaction.request();
 
   request.input("idTrace", TraceSSMSTypes.IDTrace, idTrace);
 

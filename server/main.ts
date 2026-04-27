@@ -54,7 +54,8 @@ const jwtRouter = new Router();
 const approverRouter = new Router();
 const adminRouter = new Router();
 
-sectionRouter.get("/names", handlers.getSectionNames)
+sectionRouter
+  .get("/names", handlers.getSectionNames)
   .get("/users", handlers.getSectionUsers);
 
 userMasterRouter

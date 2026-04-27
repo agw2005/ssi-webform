@@ -24,13 +24,13 @@ export const FrmPRHSSMSTypes = {
 };
 
 export const getRequestItemForBudgetView = async (
-  pool: ssms.ConnectionPool,
+  transaction: ssms.Transaction,
   nature: FrmPRDTable["Nature"] | null,
   costCenter: FrmPRDTable["CostCenter"] | null,
   startDate: TraceTable["SubmitDate"] | null,
   endDate: TraceTable["SubmitDate"] | null,
 ): Promise<MsSqlResponse<RequestItemsAtBudgetView>> => {
-  const request = pool.request();
+  const request = transaction.request();
 
   request.input("nature", FrmPRDSSMSTypes.Nature, nature);
   request.input("costCenter", FrmPRDSSMSTypes.CostCenter, costCenter);
@@ -148,11 +148,11 @@ export const postRequestInformation = async (
 };
 
 export const patchRemarksOfRequest = async (
-  pool: ssms.ConnectionPool,
+  transaction: ssms.Transaction,
   newRemarks: FrmPRHTable["Remarks"],
   noForm: FrmPRHTable["NoForm"],
 ) => {
-  const request = pool.request();
+  const request = transaction.request();
 
   request.input("newRemarks", FrmPRHSSMSTypes.Remarks, newRemarks);
   request.input("noForm", FrmPRHSSMSTypes.NoForm, noForm);
@@ -166,7 +166,7 @@ export const patchRemarksOfRequest = async (
 };
 
 export const deleteRequestInformation = async (
-  pool: ssms.Transaction,
+  transaction: ssms.Transaction,
   formId: FrmPRHTable["ID"],
 ) => {
   const request = pool.request();
