@@ -47,7 +47,7 @@ const Login = () => {
         );
 
         const responseBody: LoginResponse = await response.json();
-        const isAdmin = responseBody.nrp === "";
+        const isAdmin = responseBody.nrp === "Admin";
         console.log(responseBody);
 
         if (response.ok) {

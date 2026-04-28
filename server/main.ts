@@ -94,7 +94,8 @@ frmPrHRouter
   .get("/", handlers.getRequestsAtBudgetView);
 
 jwtRouter
-  .post("/request", handlers.requestJwt).get("/verify", verifyJwt);
+  .post("/request", handlers.requestJwt)
+  .get("/verify", verifyJwt);
 
 approverRouter
   .patch("/remarks", handlers.patchRemarks)

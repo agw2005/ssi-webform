@@ -1295,7 +1295,7 @@ export const requestJwt = async (ctx: RouterContext<"/request">) => {
         logger.trace(
           `Running function patchNewLogin()`,
         );
-        const newLoginPatchRowsAffected = patchNewLogin(
+        const newLoginPatchRowsAffected = await patchNewLogin(
           transaction,
           validCredentials.IDUser,
         );
