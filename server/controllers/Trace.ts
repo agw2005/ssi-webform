@@ -292,8 +292,8 @@ export const approveRequests = async (
   request.input("startDate", TraceSSMSTypes.SubmitDate, startDate);
   request.input("endDate", TraceSSMSTypes.SubmitDate, endDate);
   request.input("searchPattern", VarChar(500), searchPattern);
-  request.input("startRow", Int(), startRow);
-  request.input("endRow", Int(), endRow);
+  request.input("startRow", Int, startRow);
+  request.input("endRow", Int, endRow);
 
   const result = await request.query<TraceApproveRequests>(`
     WITH OrderedRequests AS (
@@ -323,7 +323,8 @@ export const approveRequests = async (
         ON Trace_D.IDTrace = Trace.IDTrace
       INNER JOIN UserMaster AS Supervisors
         ON Trace_D.IDUser = Supervisors.IDUser
-      WHERE Supervisors.NRP LIKE @supervisorNrpPattern
+      WHERE 
+      (@supervisorNrpPattern IS NULL OR Supervisors.NRP LIKE @supervisorNrpPattern)
       AND Trace_D.Result <> ''
       AND (@status IS NULL OR Trace_D.Result = @status)
       AND (@startDate IS NULL OR Trace.SubmitDate >= @startDate)
@@ -356,7 +357,7 @@ export const approveRequestsCount = async (
   endDate: TraceTable["SubmitDate"] | null,
   search: string | null,
 ): Promise<MsSqlResponse<TraceRequestsCount>> => {
-  const supervisorNrpPattern = `%${supervisorNrp}%`;
+  const supervisorNrpPattern = supervisorNrp ? `%${supervisorNrp}%` : null;
   const searchPattern = search ? `%${search}%` : null;
 
   const request = transaction.request();
@@ -384,7 +385,7 @@ export const approveRequestsCount = async (
     INNER JOIN UserMaster AS Supervisors
       ON Trace_D.IDUser = Supervisors.IDUser
     WHERE
-      Supervisors.NRP LIKE @supervisorNrpPattern
+      (@supervisorNrpPattern IS NULL OR Supervisors.NRP LIKE @supervisorNrpPattern)
     AND
       Trace_D.Result <> ''
     AND

@@ -1120,6 +1120,12 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
       traceId: String(newTraceId),
     };
 
+    logger.info(
+      `Comitting transaction`,
+    );
+
+    await transaction.commit();
+
     ctx.response.status = 200;
     ctx.response.body = successResponse;
   } catch (err) {
@@ -1166,9 +1172,7 @@ export const getAuthInformation = async (
 
 export const requestJwt = async (ctx: RouterContext<"/request">) => {
   const route = "/jwt/request";
-  logger.info(
-    `User accessed route "${route}"`,
-  );
+  logger.info(`User accessed route "${route}"`);
 
   const authorizedMessage = "Valid credentials";
   const unauthorizedMessage = "Invalid credentials";
@@ -1183,69 +1187,39 @@ export const requestJwt = async (ctx: RouterContext<"/request">) => {
     );
   });
 
-  logger.info(
-    `Beginning transaction`,
-  );
+  logger.info(`Beginning transaction`);
 
   try {
     await transaction.begin();
-
-    logger.trace(
-      `Running function getKey()`,
-    );
+    logger.trace(`Running function getKey()`);
     const jwtKey = await getKey();
-    logger.trace(
-      `Finished running function getKey()`,
-    );
-
-    logger.debug(
-      `JWT ${jwtKey ? "Exist" : "is missing"}`,
-    );
+    logger.trace(`Finished running function getKey()`);
+    logger.debug(`JWT ${jwtKey ? "Exist" : "is missing"}`);
 
     const jwtHeader: Header = { alg: "HS512", type: "JWT" };
     const nineHourExpiration = getNumericDate(60 * 60 * 9);
-
     const request: LoginPayload = await ctx.request.body.json();
-    logger.debug(
-      `Value of request is {value}`,
-      { request },
-    );
+    logger.debug(`Value of request is {value}`, { request });
 
-    logger.trace(
-      `Running function getAuthInfo()`,
-    );
+    logger.trace(`Running function getAuthInfo()`);
     const { rowsReturned: credentials, rowsAffected: authInfoRowsAffected } =
-      await getAuthInfo(
-        transaction,
-      );
-    logger.trace(
-      `Finished running function getAuthInfo()`,
-    );
-    logger.debug(
-      `${authInfoRowsAffected[0]} rows affected`,
-    );
+      await getAuthInfo(transaction);
+    logger.trace(`Finished running function getAuthInfo()`);
+    logger.debug(`${authInfoRowsAffected[0]} rows affected`);
 
     let validCredentials: AuthInfo | null = null;
-
     const isAdmin = request.nrp === "Admin" &&
       request.password ===
         credentials.filter((credential) => credential.IDUser === 1)[0].Password;
-
-    logger.debug(
-      `Value of isAdmin is ${isAdmin}`,
-    );
+    logger.debug(`Value of isAdmin is ${isAdmin}`);
 
     if (isAdmin) {
       const adminCredentials = credentials.filter((credential) =>
         credential.IDUser === 1
       )[0];
-      logger.debug(
-        `Value of adminCredentials is ${adminCredentials}`,
-      );
+      logger.debug(`Value of adminCredentials is ${adminCredentials}`);
       validCredentials = adminCredentials;
-      logger.debug(
-        `Value of validCredentials is ${validCredentials}`,
-      );
+      logger.debug(`Value of validCredentials is ${validCredentials}`);
     } else {
       logger.info(`Started looping for "credentials"`);
       for (const credential of credentials) {
@@ -1253,9 +1227,7 @@ export const requestJwt = async (ctx: RouterContext<"/request">) => {
         const validPassword = credential.Password === request.password;
         if (validNRP && validPassword) {
           validCredentials = credential;
-          logger.debug(
-            `Value of validCredentials is ${validCredentials}`,
-          );
+          logger.debug(`Value of validCredentials is ${validCredentials}`);
           logger.info(`Finished looping early for "credentials"`);
           break;
         }
@@ -1272,15 +1244,9 @@ export const requestJwt = async (ctx: RouterContext<"/request">) => {
         nameUser: validCredentials.NameUser,
         nrp: validCredentials.NRP,
       };
-
-      logger.debug(
-        `Value of jwtPayload is ${jwtPayload}`,
-      );
-
+      logger.debug(`Value of jwtPayload is ${jwtPayload}`);
       const jwt = await create(jwtHeader, jwtPayload, jwtKey);
-      logger.debug(
-        `Value of jwt is ${jwt}`,
-      );
+      logger.debug(`Value of jwt is ${jwt}`);
 
       if (jwt) {
         const authorizedResponse: LoginResponse = {
@@ -1288,65 +1254,63 @@ export const requestJwt = async (ctx: RouterContext<"/request">) => {
           nrp: validCredentials.NRP,
           jwt: jwt,
         };
-        logger.debug(
-          `Value of authorizedResponse is ${authorizedResponse}`,
-        );
-
-        logger.trace(
-          `Running function patchNewLogin()`,
-        );
+        logger.debug(`Value of authorizedResponse is ${authorizedResponse}`);
+        logger.trace(`Running function patchNewLogin()`);
         const newLoginPatchRowsAffected = await patchNewLogin(
           transaction,
           validCredentials.IDUser,
         );
+        logger.trace(`Finished running function patchNewLogin()`);
+        logger.debug(`${newLoginPatchRowsAffected} rows affected`);
 
-        logger.trace(
-          `Finished running function patchNewLogin()`,
-        );
-        logger.debug(
-          `${newLoginPatchRowsAffected} rows affected`,
-        );
+        logger.info(`Comitting transaction`);
+
+        await transaction.commit();
+
         ctx.response.status = 200;
         ctx.response.body = authorizedResponse;
       } else {
-        logger.error(
-          `The value of "jwt" does not exist`,
-        );
+        logger.error(`The value of "jwt" does not exist`);
         const errResponse: LoginResponse = {
           message: generationErrMessage,
           nrp: validCredentials.NRP,
           jwt: "",
         };
+
+        logger.warn(
+          `Transaction failed for route "${route}". JWT value does not exist`,
+        );
+
+        await transaction.rollback();
+
         ctx.response.status = 500;
         ctx.response.body = errResponse;
       }
       return;
     }
 
-    logger.warning(
-      `Incoming NRP and Password does not exist in database`,
-    );
+    logger.warning(`Incoming NRP and Password does not exist in database`);
     const unauthorizedResponse: LoginResponse = {
       message: unauthorizedMessage,
       nrp: "",
       jwt: "",
     };
 
+    logger.warn(
+      `Transaction failed for route "${route}". Unauthorized`,
+    );
+
+    await transaction.rollback();
+
     ctx.response.status = 401;
     ctx.response.body = unauthorizedResponse;
   } catch (err) {
-    logger.error(
-      `Transaction failed for route "${route}". {value}`,
-      { err },
-    );
+    logger.error(`Transaction failed for route "${route}". {value}`, { err });
     ctx.response.status = 500;
     try {
       await transaction.rollback();
     } catch (rollbackErr) {
-      logger.error(
-        `Failed rolling back transaction. {value}`,
-        { rollbackErr },
-      );
+      logger.error(`Failed rolling back transaction. {value}`, { rollbackErr });
     }
   }
 };
@@ -1479,16 +1443,10 @@ export const getRequestsBySupervisorNrpCount = async (
 
 export const patchRemarks = async (ctx: RouterContext<"/remarks">) => {
   const route = "/approve/remarks";
-  logger.info(
-    `User accessed route "${route}"`,
-  );
+  logger.info(`User accessed route "${route}"`);
 
   const request: PatchRemarksPayload = await ctx.request.body.json();
-  logger.debug(
-    `Value of request is {value}`,
-    { request },
-  );
-
+  logger.debug(`Value of request is {value}`, { request });
   const transaction = new ssms.Transaction(databasePool);
 
   transaction.on("error", (err: unknown) => {
@@ -1503,49 +1461,36 @@ export const patchRemarks = async (ctx: RouterContext<"/remarks">) => {
   try {
     await transaction.begin();
 
-    logger.trace(
-      `Running function patchRemarksOfTrace()`,
-    );
+    logger.trace(`Running function patchRemarksOfTrace()`);
     const patchTraceRowsAffected = await patchRemarksOfTrace(
       transaction,
       request.newRemarks,
       request.noForm,
     );
-    logger.trace(
-      `Finished running function patchRemarksOfTrace()`,
-    );
-    logger.debug(
-      `${patchTraceRowsAffected} rows affected`,
-    );
+    logger.trace(`Finished running function patchRemarksOfTrace()`);
+    logger.debug(`${patchTraceRowsAffected} rows affected`);
 
-    logger.trace(
-      `Running function patchRemarksOfRequest()`,
-    );
+    logger.trace(`Running function patchRemarksOfRequest()`);
     const patchRequestRowsAffected = await patchRemarksOfRequest(
       transaction,
       request.newRemarks,
       request.noForm,
     );
-    logger.trace(
-      `Finished running function patchRemarksOfRequest()`,
-    );
-    logger.debug(
-      `${patchRequestRowsAffected} rows affected`,
-    );
+    logger.trace(`Finished running function patchRemarksOfRequest()`);
+    logger.debug(`${patchRequestRowsAffected} rows affected`);
+
+    logger.info(`Comitting transaction`);
+
+    await transaction.commit();
+
     ctx.response.status = 200;
   } catch (err) {
-    logger.error(
-      `Transaction failed for route "${route}". {value}`,
-      { err },
-    );
+    logger.error(`Transaction failed for route "${route}". {value}`, { err });
     ctx.response.status = 500;
     try {
       await transaction.rollback();
     } catch (rollbackErr) {
-      logger.error(
-        `Failed rolling back transaction. {value}`,
-        { rollbackErr },
-      );
+      logger.error(`Failed rolling back transaction. {value}`, { rollbackErr });
     }
   }
 };
@@ -2398,6 +2343,12 @@ export const patchForex = async (
       `${rateDollarTempPatchRowsAffected} rows affected`,
     );
 
+    logger.info(
+      `Comitting transaction`,
+    );
+
+    await transaction.commit();
+
     ctx.response.status = 200;
   } catch (err) {
     logger.error(
@@ -2453,6 +2404,12 @@ export const patchRateDollar = async () => {
     logger.debug(
       `${rowsAffected} rows affected`,
     );
+
+    logger.info(
+      `Comitting transaction`,
+    );
+
+    await transaction.commit();
   } catch (err) {
     logger.error(
       `Failed running ${renewRateDollar.name}(). {value}`,
