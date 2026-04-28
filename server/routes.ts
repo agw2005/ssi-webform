@@ -1107,12 +1107,6 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
       `Finished looping "payload.fifthStep.files"`,
     );
 
-    logger.info(
-      `Comitting transaction`,
-    );
-
-    await transaction.commit();
-
     const successResponse: SubmitResponse = {
       message: "Your purchasing request has been filed successfully!",
       noForm: noForm,
