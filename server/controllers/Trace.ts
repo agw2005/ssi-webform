@@ -64,9 +64,9 @@ export const homeRequests = async (
   );
   request.input("startDate", TraceSSMSTypes.SubmitDate, startDate);
   request.input("endDate", TraceSSMSTypes.SubmitDate, endDate);
-  request.input("searchPattern", ssms.VarChar(500), searchPattern);
-  request.input("skip", ssms.Int, skip);
-  request.input("take", ssms.Int, pagination);
+  request.input("searchPattern", VarChar(500), searchPattern);
+  request.input("skip", Int(), skip);
+  request.input("take", Int(), pagination);
 
   const result = await request.query<TraceRequests>(`
     WITH RawResults AS (
@@ -148,7 +148,7 @@ export const homeRequestsCount = async (
   );
   request.input("startDate", TraceSSMSTypes.SubmitDate, startDate);
   request.input("endDate", TraceSSMSTypes.SubmitDate, endDate);
-  request.input("searchPattern", ssms.VarChar(500), searchPattern);
+  request.input("searchPattern", VarChar(500), searchPattern);
 
   const result = await request.query<TraceRequestsCount>(`
     SELECT 
@@ -276,7 +276,7 @@ export const approveRequests = async (
   endDate: TraceTable["SubmitDate"] | null,
   search: string | null,
 ): Promise<MsSqlResponse<TraceApproveRequests>> => {
-  const supervisorNrpPattern = `%${supervisorNrp}%`;
+  const supervisorNrpPattern = supervisorNrp ? `%${supervisorNrp}%` : null;
   const searchPattern = search ? `%${search}%` : null;
   const startRow = (page - 1) * pagination + 1;
   const endRow = page * pagination;
@@ -291,9 +291,9 @@ export const approveRequests = async (
   request.input("status", TraceDSSMSTypes.Result, status);
   request.input("startDate", TraceSSMSTypes.SubmitDate, startDate);
   request.input("endDate", TraceSSMSTypes.SubmitDate, endDate);
-  request.input("searchPattern", ssms.VarChar(500), searchPattern);
-  request.input("startRow", ssms.Int(), startRow);
-  request.input("endRow", ssms.Int(), endRow);
+  request.input("searchPattern", VarChar(500), searchPattern);
+  request.input("startRow", Int(), startRow);
+  request.input("endRow", Int(), endRow);
 
   const result = await request.query<TraceApproveRequests>(`
     WITH OrderedRequests AS (
@@ -369,7 +369,7 @@ export const approveRequestsCount = async (
   request.input("status", TraceDSSMSTypes.Result, status);
   request.input("startDate", TraceSSMSTypes.SubmitDate, startDate);
   request.input("endDate", TraceSSMSTypes.SubmitDate, endDate);
-  request.input("searchPattern", ssms.VarChar(500), searchPattern);
+  request.input("searchPattern", VarChar(500), searchPattern);
 
   const result = await request.query<TraceRequestsCount>(`
     SELECT 

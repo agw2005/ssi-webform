@@ -150,7 +150,7 @@ export const getBudgetsByYear = async (
   const request = transaction.request();
 
   request.input("fileResource", BudgetSSMSTypes.FileResource, fileResource);
-  request.input("year", ssms.Int(), year ? parseInt(year, 10) : null);
+  request.input("year", Int(), year ? parseInt(year, 10) : null);
 
   const result = await request.query<BudgetViewInformation>(`
     WITH CalculatedBudget AS (
