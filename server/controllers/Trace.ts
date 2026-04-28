@@ -49,7 +49,7 @@ export const homeRequests = async (
 ): Promise<MsSqlResponse<TraceRequests>> => {
   const skip = (page - 1) * pagination;
   const searchPattern = search ? `%${search}%` : null;
-  const request = pool.request();
+  const request = transaction.request();
 
   request.input(
     "requestorSectionId",
@@ -133,7 +133,7 @@ export const homeRequestsCount = async (
   search: string | null,
 ): Promise<MsSqlResponse<TraceRequestsCount>> => {
   const searchPattern = search ? `%${search}%` : null;
-  const request = pool.request();
+  const request = transaction.request();
 
   request.input(
     "requestorSectionId",
@@ -190,7 +190,7 @@ export const specificRequest = async (
   transaction: ssms.Transaction,
   traceId: TraceTable["IDTrace"],
 ): Promise<MsSqlResponse<TraceRequestOverview>> => {
-  const request = pool.request();
+  const request = transaction.request();
 
   request.input("traceId", TraceSSMSTypes.IDTrace, traceId);
 
@@ -227,7 +227,7 @@ export const specificRequest = async (
 };
 
 export const postRequestTrace = async (
-  requestSource: ssms.Transaction,
+  transaction: ssms.Transaction,
   noForm: TraceTable["NoForm"],
   requestorName: TraceTable["Requestor"],
   requestorSectionId: TraceTable["IDSection"],
@@ -238,7 +238,7 @@ export const postRequestTrace = async (
   initialSupervisorId: TraceTable["ProcessedBy"],
   remarks: TraceTable["Remarks"],
 ) => {
-  const request = requestSource.request();
+  const request = transaction.request();
 
   request.input("noForm", TraceSSMSTypes.NoForm, noForm);
   request.input("requestorName", TraceSSMSTypes.Requestor, requestorName);
@@ -281,7 +281,7 @@ export const approveRequests = async (
   const startRow = (page - 1) * pagination + 1;
   const endRow = page * pagination;
 
-  const request = pool.request();
+  const request = transaction.request();
 
   request.input(
     "supervisorNrpPattern",
@@ -359,7 +359,7 @@ export const approveRequestsCount = async (
   const supervisorNrpPattern = `%${supervisorNrp}%`;
   const searchPattern = search ? `%${search}%` : null;
 
-  const request = pool.request();
+  const request = transaction.request();
 
   request.input(
     "supervisorNrpPattern",
@@ -432,7 +432,7 @@ export const patchRemarksOfTrace = async (
 };
 
 export const patchTraceVerdict = async (
-  requestSource: ssms.Transaction,
+  transaction: ssms.Transaction,
   verdict: "Rejected" | "Approved",
   traceId: TraceTable["IDTrace"],
   maxApproverLevel: TraceTable["ProcessedLevel"],
@@ -440,7 +440,7 @@ export const patchTraceVerdict = async (
   nextApproverId: TraceTable["ProcessedBy"] | null,
   nextApproverLevel: TraceTable["LevelProgress"] | null,
 ) => {
-  const request = requestSource.request();
+  const request = transaction.request();
 
   let result: ssms.IResult<null> | null = null;
 
@@ -563,10 +563,10 @@ export const getRequestIds = async (
 };
 
 export const deleteRequestTrace = async (
-  requestSource: ssms.Transaction,
+  transaction: ssms.Transaction,
   noForm: FrmPRHTable["NoForm"],
 ) => {
-  const request = requestSource.request();
+  const request = transaction.request();
 
   request.input("noForm", TraceSSMSTypes.NoForm, noForm);
 

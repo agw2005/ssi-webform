@@ -14,7 +14,7 @@ export const patchRateDollarTemp = async (
   currency: "IDR" | "JPY" | "SGD" | "USD",
   newValue: number,
 ): Promise<number> => {
-  const request = pool.request();
+  const request = transaction.request();
 
   request.input(
     "currency",
@@ -38,7 +38,7 @@ export const patchRateDollarTemp = async (
 export const getCurrentRateDollarTemp = async (
   transaction: ssms.Transaction,
 ): Promise<MsSqlResponse<WebformDBForexResponse>> => {
-  const result = await pool.request().query<WebformDBForexResponse>(`
+  const result = await transaction.request().query<WebformDBForexResponse>(`
     SELECT
       IDCur AS Currency,
       CurrencyValue AS Valuation

@@ -82,10 +82,10 @@ export const getRequestItemForBudgetView = async (
 };
 
 export const provisionPRNumber = async (
-  requestSource: ssms.Transaction,
+  transaction: ssms.Transaction,
   dept: string,
 ): Promise<string> => {
-  const request = requestSource.request();
+  const request = transaction.request();
 
   const result = await request.query<PRNumberIncrement>(`
     SELECT
@@ -109,7 +109,7 @@ export const provisionPRNumber = async (
 };
 
 export const postRequestInformation = async (
-  requestSource: ssms.Transaction,
+  transaction: ssms.Transaction,
   noForm: FrmPRHTable["NoForm"],
   requestorName: FrmPRHTable["Requestor"],
   requestorNrp: FrmPRHTable["NRP"],
@@ -120,7 +120,7 @@ export const postRequestInformation = async (
   requestReturnOnOutgoing: FrmPRHTable["ReturnOnOutgoing"],
   remarks: FrmPRHTable["Remarks"],
 ) => {
-  const request = requestSource.request();
+  const request = transaction.request();
 
   request.input("noForm", FrmPRHSSMSTypes.NoForm, noForm);
   request.input("requestorName", FrmPRHSSMSTypes.Requestor, requestorName);
@@ -169,7 +169,7 @@ export const deleteRequestInformation = async (
   transaction: ssms.Transaction,
   formId: FrmPRHTable["ID"],
 ) => {
-  const request = pool.request();
+  const request = transaction.request();
 
   request.input("formId", FrmPRHSSMSTypes.ID, formId);
 

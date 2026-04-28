@@ -21,7 +21,7 @@ export const getMinimumFileInformation = async (
   transaction: ssms.Transaction,
   traceId: TraceTable["IDTrace"],
 ): Promise<MsSqlResponse<UploadFileMinimalInformation>> => {
-  const request = pool.request();
+  const request = transaction.request();
 
   request.input("traceId", TraceSSMSTypes.IDTrace, traceId);
 
@@ -42,14 +42,14 @@ export const getMinimumFileInformation = async (
 };
 
 export const postRequestFiles = async (
-  requestSource: ssms.Transaction,
+  transaction: ssms.Transaction,
   noForm: UploadFileTable["NoForm"],
   requestSubject: UploadFileTable["FormName"],
   requestorName: UploadFileTable["Requestor"],
   filename: UploadFileTable["Filename"],
   uploadDate: UploadFileTable["DateUpload"],
 ) => {
-  const request = requestSource.request();
+  const request = transaction.request();
 
   request.input("noForm", UploadFileSSMSTypes.NoForm, noForm);
   request.input("requestSubject", UploadFileSSMSTypes.FormName, requestSubject);
@@ -69,10 +69,10 @@ export const postRequestFiles = async (
 };
 
 export const deleteRequestFiles = async (
-  requestSource: ssms.Transaction,
+  transaction: ssms.Transaction,
   noForm: UploadFileTable["NoForm"],
 ) => {
-  const request = requestSource.request();
+  const request = transaction.request();
 
   request.input("noForm", UploadFileSSMSTypes.NoForm, noForm);
 

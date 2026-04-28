@@ -12,7 +12,7 @@ const _RateDollarTypes = {
 export const getCurrentRateDollar = async (
   transaction: ssms.Transaction,
 ): Promise<MsSqlResponse<WebformDBForexResponse>> => {
-  const result = await pool.request().query<WebformDBForexResponse>(`
+  const result = await transaction.request().query<WebformDBForexResponse>(`
     SELECT
       IDCur AS Currency,
       CurrencyValue AS Valuation

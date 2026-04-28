@@ -23,7 +23,7 @@ export const getApproverPathInformation = async (
   transaction: ssms.Transaction,
   traceId: TraceDTable["IDTrace"],
 ): Promise<MsSqlResponse<TraceApproverPath>> => {
-  const request = pool.request();
+  const request = transaction.request();
 
   request.input("traceId", TraceDSSMSTypes.IDTrace, traceId);
 
@@ -50,7 +50,7 @@ export const getApproverPathInformation = async (
 };
 
 export const postRequestApproverPath = async (
-  requestSource: ssms.Transaction,
+  transaction: ssms.Transaction,
   traceId: TraceDTable["IDTrace"],
   userId: TraceDTable["IDUser"],
   approverType: TraceDTable["ApproverType"],
@@ -58,7 +58,7 @@ export const postRequestApproverPath = async (
 ) => {
   const result = approverStep === 1 ? "In Progress" : "";
 
-  const request = requestSource.request();
+  const request = transaction.request();
 
   request.input("traceId", TraceDSSMSTypes.IDTrace, traceId);
   request.input("userId", TraceDSSMSTypes.IDUser, userId);
@@ -76,12 +76,12 @@ export const postRequestApproverPath = async (
 };
 
 export const patchTraceDVerdict = async (
-  requestSource: ssms.Transaction,
+  transaction: ssms.Transaction,
   verdict: "Rejected" | "Approved",
   traceId: TraceDTable["IDTrace"],
   currentApproverLevel: TraceDTable["ApproverLevel"],
 ) => {
-  const request = requestSource.request();
+  const request = transaction.request();
 
   request.input("verdict", TraceDSSMSTypes.Result, verdict);
   request.input("traceId", TraceDSSMSTypes.IDTrace, traceId);
@@ -103,7 +103,7 @@ export const patchTraceDVerdict = async (
 };
 
 export const getNextApprover = async (
-  requestSource: ssms.Transaction,
+  transaction: ssms.Transaction,
   traceId: TraceDTable["IDTrace"],
   idUser: TraceDTable["IDUser"],
   currentLevel: TraceDTable["ApproverLevel"],
@@ -111,7 +111,7 @@ export const getNextApprover = async (
   nextUserId: number | null;
   nextApproverLevel: number | null;
 }> => {
-  const request = requestSource.request();
+  const request = transaction.request();
 
   request.input("traceId", TraceDSSMSTypes.IDTrace, traceId);
   request.input("idUser", TraceDSSMSTypes.IDUser, idUser);
@@ -132,10 +132,10 @@ export const getNextApprover = async (
 };
 
 export const getOtherApproverInfo = async (
-  requestSource: ssms.Transaction,
+  transaction: ssms.Transaction,
   traceId: TraceDTable["IDTrace"],
 ) => {
-  const request = requestSource.request();
+  const request = transaction.request();
 
   request.input("traceId", TraceDSSMSTypes.IDTrace, traceId);
 
@@ -153,11 +153,11 @@ export const getOtherApproverInfo = async (
 };
 
 export const patchApproverToActiveApproving = async (
-  requestSource: ssms.Transaction,
+  transaction: ssms.Transaction,
   traceId: TraceDTable["IDTrace"],
   approverLevel: TraceDTable["ApproverLevel"],
 ) => {
-  const request = requestSource.request();
+  const request = transaction.request();
 
   request.input("traceId", TraceDSSMSTypes.IDTrace, traceId);
   request.input("approverLevel", TraceDSSMSTypes.ApproverLevel, approverLevel);
@@ -174,10 +174,10 @@ export const patchApproverToActiveApproving = async (
 };
 
 export const deleteRequestApproverPath = async (
-  requestSource: ssms.Transaction,
+  transaction: ssms.Transaction,
   traceId: TraceDTable["IDTrace"],
 ) => {
-  const request = requestSource.request();
+  const request = transaction.request();
 
   request.input("traceId", TraceDSSMSTypes.IDTrace, traceId);
 

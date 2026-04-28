@@ -18,7 +18,7 @@ export const SectionSSMSTypes = {
 export const sectionNames = async (
   transaction: ssms.Transaction,
 ): Promise<MsSqlResponse<SectionName>> => {
-  const result = await pool.request().query<SectionName>(
+  const result = await transaction.request().query<SectionName>(
     `SELECT IDSection, SectionName
       FROM Section`,
   );
@@ -34,7 +34,7 @@ export const sectionNames = async (
 export const userSectionMappings = async (
   transaction: ssms.Transaction,
 ): Promise<MsSqlResponse<UserSection>> => {
-  const result = await pool.request().query<UserSection>(
+  const result = await transaction.request().query<UserSection>(
     `SELECT Section.SectionName, UserMaster.NameUser
       FROM Section
       INNER JOIN UserMaster
@@ -50,10 +50,10 @@ export const userSectionMappings = async (
 };
 
 export const getSectionIdByName = async (
-  requestSource: ssms.Transaction,
+  transaction: ssms.Transaction,
   sectionName: SectionTable["SectionName"],
 ): Promise<number> => {
-  const request = requestSource.request();
+  const request = transaction.request();
 
   request.input("sectionName", SectionSSMSTypes.SectionName, sectionName);
 

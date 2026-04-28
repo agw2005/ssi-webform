@@ -70,7 +70,7 @@ export const getAllRequestItems = async (
 };
 
 export const postUsage = async (
-  requestSource: ssms.Transaction,
+  transaction: ssms.Transaction,
   noPR: FrmPRDTable["NoPR"],
   costCenter: FrmPRDTable["CostCenter"],
   nature: FrmPRDTable["Nature"],
@@ -87,7 +87,7 @@ export const postUsage = async (
 ) => {
   const netPrice = (quantity * unitPrice) / rateByCurrency;
 
-  const request = requestSource.request();
+  const request = transaction.request();
 
   request.input("noPR", FrmPRDSSMSTypes.NoPR, noPR);
   request.input("costCenter", FrmPRDSSMSTypes.CostCenter, costCenter);
@@ -125,11 +125,11 @@ export const postUsage = async (
 };
 
 export const patchFrmPRDVerdict = async (
-  requestSource: ssms.Transaction,
+  transaction: ssms.Transaction,
   supervisorId: FrmPRDTable["RejectedBy"],
   itemId: FrmPRDTable["IDItem"],
 ) => {
-  const request = new ssms.Request(requestSource);
+  const request = new ssms.Request(transaction);
 
   request.input("supervisorId", FrmPRDSSMSTypes.RejectedBy, supervisorId);
   request.input("itemId", FrmPRDSSMSTypes.IDItem, itemId);
@@ -145,10 +145,10 @@ export const patchFrmPRDVerdict = async (
 };
 
 export const deleteRequestItems = async (
-  requestSource: ssms.Transaction,
+  transaction: ssms.Transaction,
   noPr: FrmPRDTable["NoPR"],
 ) => {
-  const request = new ssms.Request(requestSource);
+  const request = new ssms.Request(transaction);
 
   request.input("noPr", FrmPRDSSMSTypes.NoPR, noPr);
 

@@ -188,11 +188,11 @@ export const getBudgetsByYear = async (
 };
 
 export const reportInformation = async (
-  requestSource: ssms.Transaction,
+  transaction: ssms.Transaction,
   periode: BudgetTable["Periode"] | null,
   fileResource: BudgetTable["FileResource"] | null,
 ): Promise<MsSqlResponse<ReportViewInformation>> => {
-  const request = requestSource.request();
+  const request = transaction.request();
 
   request.input("periode", BudgetSSMSTypes.Periode, periode);
   request.input("fileResource", BudgetSSMSTypes.FileResource, fileResource);
@@ -227,7 +227,7 @@ export const reportInformation = async (
 };
 
 export const patchRequestBudget = async (
-  requestSource: ssms.Transaction,
+  transaction: ssms.Transaction,
   usage: BudgetTable["Balance"],
   costCenter: BudgetTable["CostCenter"],
   nature: BudgetTable["Nature"],
@@ -235,7 +235,7 @@ export const patchRequestBudget = async (
   fileResource: BudgetTable["FileResource"],
   dept: BudgetTable["IDSection"],
 ) => {
-  const request = new ssms.Request(requestSource);
+  const request = new ssms.Request(transaction);
 
   request.input("usage", BudgetSSMSTypes.Budget, usage);
   request.input("costCenter", BudgetSSMSTypes.CostCenter, costCenter);
@@ -264,14 +264,14 @@ export const patchRequestBudget = async (
 };
 
 export const getSpecificBudgetData = async (
-  requestSource: ssms.Transaction,
+  transaction: ssms.Transaction,
   costCenter: BudgetTable["CostCenter"],
   nature: BudgetTable["Nature"],
   periode: BudgetTable["Periode"],
   idSection: BudgetTable["IDSection"],
   fileResource: BudgetTable["FileResource"],
 ) => {
-  const request = new ssms.Request(requestSource);
+  const request = new ssms.Request(transaction);
 
   request.input("costCenter", BudgetSSMSTypes.CostCenter, costCenter);
   request.input("nature", BudgetSSMSTypes.Nature, nature);
@@ -299,10 +299,10 @@ export const getSpecificBudgetData = async (
 };
 
 export const patchSpecificBudgetNewBudget = async (
-  requestSource: ssms.Transaction,
+  transaction: ssms.Transaction,
   data: BudgetTable,
 ) => {
-  const request = new ssms.Request(requestSource);
+  const request = new ssms.Request(transaction);
 
   request.input("Budget", BudgetSSMSTypes.Budget, data.Budget);
   request.input("Balance", BudgetSSMSTypes.Balance, data.Balance);
@@ -333,10 +333,10 @@ export const patchSpecificBudgetNewBudget = async (
 };
 
 export const postBudget = async (
-  requestSource: ssms.Transaction,
+  transaction: ssms.Transaction,
   data: BudgetTable,
 ) => {
-  const request = new ssms.Request(requestSource);
+  const request = new ssms.Request(transaction);
 
   request.input("CostCenter", BudgetSSMSTypes.CostCenter, data.CostCenter);
   request.input("Nature", BudgetSSMSTypes.Nature, data.Nature);
