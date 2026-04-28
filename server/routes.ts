@@ -275,7 +275,7 @@ export const getBudgetViewInformation = async (
   await runParameterizedQuery(
     ctx,
     route,
-    "getValidNatures",
+    "getBudgetsByYear",
     (transaction) => getBudgetsByYear(transaction, fileResource, year),
   );
 };
@@ -311,7 +311,7 @@ export const getReportViewInformation = async (
   await runParameterizedQuery(
     ctx,
     route,
-    "getValidNatures",
+    "reportInformation",
     (transaction) =>
       reportInformation(
         transaction,
@@ -338,7 +338,7 @@ export const getSpecificRequestItems = async (
   await runParameterizedQuery(
     ctx,
     route,
-    "getValidNatures",
+    "getAllRequestItems",
     (transaction) =>
       getAllRequestItems(
         transaction,
@@ -386,7 +386,7 @@ export const getRequestsAtBudgetView = async (
   await runParameterizedQuery(
     ctx,
     route,
-    "getValidNatures",
+    "getRequestItemForBudgetView",
     (transaction) =>
       getRequestItemForBudgetView(
         transaction,
@@ -464,7 +464,7 @@ export const getRequests = async (ctx: RouterContext<"/requests">) => {
   await runParameterizedQuery(
     ctx,
     route,
-    "getValidNatures",
+    "homeRequests",
     (transaction) =>
       homeRequests(
         transaction,
@@ -531,7 +531,7 @@ export const getRequestsCount = async (
   await runParameterizedQuery(
     ctx,
     route,
-    "getValidNatures",
+    "homeRequestsCount",
     (transaction) =>
       homeRequestsCount(
         transaction,
@@ -562,7 +562,7 @@ export const getSpecificRequest = async (
   await runParameterizedQuery(
     ctx,
     route,
-    "getValidNatures",
+    "specificRequest",
     (transaction) =>
       specificRequest(
         transaction,
@@ -588,7 +588,7 @@ export const getApproverPath = async (
   await runParameterizedQuery(
     ctx,
     route,
-    "getValidNatures",
+    "getApproverPathInformation",
     (transaction) =>
       getApproverPathInformation(
         transaction,
@@ -614,7 +614,7 @@ export const getUploadFiles = async (
   await runParameterizedQuery(
     ctx,
     route,
-    "getValidNatures",
+    "getMinimumFileInformation",
     (transaction) =>
       getMinimumFileInformation(
         transaction,
@@ -648,7 +648,7 @@ export const getUserByNRP = async (
   await runParameterizedQuery(
     ctx,
     route,
-    "getValidNatures",
+    "getUserInfoByNRP",
     (transaction) =>
       getUserInfoByNRP(
         transaction,
@@ -1356,7 +1356,7 @@ export const getRequestsBySupervisorNrp = async (
 ) => {
   const route = "/trace/approve";
   logger.info(
-    `User accessed route "/trace/approve"`,
+    `User accessed route "${route}"`,
   );
 
   logger.trace(
@@ -1403,7 +1403,7 @@ export const getRequestsBySupervisorNrp = async (
   await runParameterizedQuery(
     ctx,
     route,
-    "getValidNatures",
+    "approveRequests",
     (transaction) =>
       approveRequests(
         transaction,
@@ -1464,7 +1464,7 @@ export const getRequestsBySupervisorNrpCount = async (
   await runParameterizedQuery(
     ctx,
     route,
-    "getValidNatures",
+    "approveRequestsCount",
     (transaction) =>
       approveRequestsCount(
         transaction,
@@ -2220,7 +2220,7 @@ export const getAllValidDepartments = async (
   await runParameterizedQuery(
     ctx,
     route,
-    "getValidNatures",
+    "getValidDepartments",
     (transaction) =>
       getValidDepartments(
         transaction,
@@ -2263,7 +2263,7 @@ export const getAllValidCostCenters = async (
   await runParameterizedQuery(
     ctx,
     route,
-    "getValidNatures",
+    "getValidCostCenters",
     (transaction) =>
       getValidCostCenters(
         transaction,
