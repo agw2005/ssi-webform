@@ -2066,6 +2066,9 @@ export const deleteRequest = async (ctx: RouterContext<"/:traceId">) => {
     logger.debug(
       `${deleteReqInfoRowsAffected} rows affected`,
     );
+    if (deleteReqInfoRowsAffected === 0) {
+      throw new Error(`No request info was deleted. Aborting request.`);
+    }
 
     // PATCH Budget
     logger.trace(
