@@ -1,8 +1,19 @@
 import jsPDF from "jspdf";
 import { autoTable, type CellHookData } from "jspdf-autotable/es";
 import type { Overview } from "../pages/Request.tsx";
+import type { UploadedFile } from "@scope/server";
 
-const generateRequestPdf = (requestId: string, overview: Overview) => {
+const generateRequestPdf = (
+  requestId: string,
+  overview: Overview,
+  attachments: UploadedFile[] | null,
+) => {
+  const overviewWithAttachments = {
+    ...overview,
+    Attachment: attachments?.map((attachment, index) =>
+      `${index > 0 ? " " : ""}${attachment.Filename}`
+    ),
+  };
   const a4PortraitSize = { x: 210, y: 297 };
   const initialXAxis = {
     main: 15,
@@ -55,7 +66,7 @@ const generateRequestPdf = (requestId: string, overview: Overview) => {
   );
 
   let index = 1;
-  for (const [key, value] of Object.entries(overview)) {
+  for (const [key, value] of Object.entries(overviewWithAttachments)) {
     requestPdf.text(
       String(key),
       initialXAxis.main,

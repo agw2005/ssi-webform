@@ -20,24 +20,24 @@ import Dialog, { toggleDialog } from "../components/reusable/Dialog.tsx";
 import { getCurrentApproverLevel } from "../helper/getCurrentApproverLevel.ts";
 import generateRequestPdf from "../helper/generateRequestPdf.ts";
 import { webformAPI } from "../helper/apis.ts";
+import type { FinalApprovalPayload } from "@scope/server";
 
 export interface Overview {
   "Form ID": string;
   "Form Number": string;
-  Requestor: string;
   "PR Number": string;
+  Requestor: string;
   Subject: string;
   Amount: string;
   "Return On Outgoing": string;
-  Remarks: string;
-  "Cost Center": string;
-  Nature: string;
-  "ID Budget": string;
   Attachment: string;
+  Remarks: string;
 }
 
 const ITEMS_COLUMNS = [
   "ID",
+  "Cost Center",
+  "Nature",
   "Description",
   "Quantity",
   "Price Per Unit",
@@ -45,9 +45,7 @@ const ITEMS_COLUMNS = [
   "Vendor",
   "Reason",
   "Rejected",
-  "Supplier",
   "Net Price",
-  "Delivery Date",
 ];
 
 const PROGRESS_COLUMNS = ["Type", "NRP", "Name", "Result", "Verdict Date"];
@@ -61,16 +59,13 @@ const APPROVE_BUTTON_STYLINGS =
 const EMPTY_OVERVIEW: Overview = {
   "Form ID": "",
   "Form Number": "",
-  Requestor: "",
   "PR Number": "",
+  Requestor: "",
   Subject: "",
   Amount: "",
   "Return On Outgoing": "",
-  Remarks: "",
-  "Cost Center": "",
-  Nature: "",
-  "ID Budget": "",
   Attachment: "",
+  Remarks: "",
 };
 
 const handleProgressColors = (progress: string) => {
@@ -83,10 +78,6 @@ const handleProgressColors = (progress: string) => {
   } else {
     return "bg-white hover:bg-black/10 active:bg-black/5";
   }
-};
-
-const stringIsEmpty = (str: string) => {
-  return str === "" || str === "null" ? "-" : str;
 };
 
 const approverIsAuthorized = (data: ApproverPath[], nrp: string | null) => {
@@ -162,18 +153,15 @@ const Request = () => {
     setCurrentOverview({
       "Form ID": requestOverviewData[0].FormID,
       "Form Number": requestOverviewData[0].NoForm,
+      "PR Number": requestOverviewData[0].NoPR,
       Requestor: `${capitalize(requestOverviewData[0].Requestor)} (${
         requestOverviewData[0].RequestorNRP
       }) - ${requestOverviewData[0].RequestorSection}`,
-      "PR Number": requestOverviewData[0].NoPR,
       Subject: requestOverviewData[0].Subject,
       Amount: `${formatNumberToString(requestOverviewData[0].Amount)} USD`,
       "Return On Outgoing": requestOverviewData[0].ReturnOnOutgoing,
-      Remarks: fetchedRemarks,
-      "Cost Center": requestOverviewData[0].CostCenter,
-      Nature: requestOverviewData[0].Nature,
-      "ID Budget": requestOverviewData[0].IDBudget,
       Attachment: "",
+      Remarks: fetchedRemarks,
     });
   }, [requestOverviewData]);
 
@@ -182,15 +170,22 @@ const Request = () => {
     payload: patchApprovalVerdict,
   ) => {
     try {
-      const response = await fetch(webformAPI.PostVerdict(verdict), {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetch(
+        webformAPI.PostVerdict(verdict),
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
         },
-        body: JSON.stringify(payload),
-      });
+      );
       if (response.ok) {
         console.log("Server accepted the verdict");
+        if (response.status === 200) {
+          const responsePayload: FinalApprovalPayload = await response.json();
+          console.log(responsePayload);
+        }
         refetchApproverPath();
       } else {
         console.log("Server rejected the verdict");
@@ -264,6 +259,7 @@ const Request = () => {
                   generateRequestPdf(
                     reactRouterParams.requestId || "",
                     currentOverview,
+                    requestFilesData,
                   )}
               >
                 Print Request
@@ -409,7 +405,13 @@ const Request = () => {
                       <td className="bg-white hover:bg-black/10 active:bg-black/5 | whitespace-nowrap border text-center px-4 py-2">
                         {item.IDItem}
                       </td>
-                      <td className="bg-white hover:bg-black/10 active:bg-black/5 | max-w-32 break-normal border text-center px-4 py-2">
+                      <td className="bg-white hover:bg-black/10 active:bg-black/5 | whitespace-nowrap border text-center px-4 py-2">
+                        {item.CostCenter}
+                      </td>
+                      <td className="bg-white hover:bg-black/10 active:bg-black/5 | whitespace-nowrap border text-center px-4 py-2">
+                        {item.Nature}
+                      </td>
+                      <td className="bg-white hover:bg-black/10 active:bg-black/5 | max-w-40 break-normal border text-center px-4 py-2">
                         {item.Description}
                       </td>
                       <td className="bg-white hover:bg-black/10 active:bg-black/5 | whitespace-nowrap border text-center px-4 py-2">
@@ -437,14 +439,8 @@ const Request = () => {
                         {item.StatusItem === "True" ? "Yes" : "No"}
                       </td>
                       <td className="bg-white hover:bg-black/10 active:bg-black/5 | whitespace-nowrap border text-center px-4 py-2">
-                        {stringIsEmpty(item.Supplier)}
-                      </td>
-                      <td className="bg-white hover:bg-black/10 active:bg-black/5 | whitespace-nowrap border text-center px-4 py-2">
                         {formatNumberToString(item.UnitPrice * item.Qty)}{" "}
                         {item.Currency}
-                      </td>
-                      <td className="bg-white hover:bg-black/10 active:bg-black/5 | whitespace-nowrap border text-center px-4 py-2">
-                        {stringIsEmpty(String(item.DeliveryDate))}
                       </td>
                     </tr>
                   );

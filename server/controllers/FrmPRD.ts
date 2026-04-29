@@ -50,8 +50,8 @@ export const getAllRequestItems = async (
       frm_PR_D.Reason,
       frm_PR_D.StatusItem,
       frm_PR_D.RejectedBy,
-      frm_PR_D.Supplier,
-      frm_PR_D.DeliveryDate
+      frm_PR_D.CostCenter,
+      frm_PR_D.Nature
     FROM frm_PR_D
     INNER JOIN frm_PR_H
 	    ON frm_PR_H.NoPR = frm_PR_D.NoPR

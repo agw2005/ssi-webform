@@ -34,6 +34,6 @@ export interface FrmPRDRequestItem {
   Reason: string;
   StatusItem: string;
   RejectedBy: string;
-  Supplier: string;
-  DeliveryDate: string;
+  CostCenter: string;
+  Nature: string;
 }

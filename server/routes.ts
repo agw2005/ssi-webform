@@ -96,6 +96,7 @@ import {
 import { getLogger } from "@logtape/logtape";
 import { runParameterizedQuery } from "./helper/runParameterizedQuery.ts";
 import { runSimpleQuery } from "./helper/runSimpleQuery.ts";
+import type { FinalApprovalPayload } from "@scope/server";
 
 const logger = getLogger("webform-oak-server");
 
@@ -671,6 +672,8 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
 
   const formDataRequest: FormData = await ctx.request.body.formData();
 
+  console.log(formDataRequest);
+
   logger.debug(
     `User FormData = {value}`,
     { formDataRequest },
@@ -904,10 +907,7 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
       logger.debug(
         `${natureBalanceRowsAffected[0]} rows affected`,
       );
-      logger.debug(
-        `Value of natureBalance is {value}`,
-        { natureBalance },
-      );
+      logger.debug(`Value of natureBalance is ${natureBalance[0].Balance}`);
 
       const currentNatureBalance = Number(natureBalance[0].Balance);
       logger.debug(
@@ -1542,6 +1542,7 @@ export const patchRejectRequest = async (
       transaction,
       "Rejected",
       request.traceId,
+      request.supervisorId,
       request.supervisorLevel,
     );
     logger.trace(
@@ -1732,6 +1733,7 @@ export const patchAcceptRequest = async (
       transaction,
       "Approved",
       request.traceId,
+      request.supervisorId,
       request.supervisorLevel,
     );
     logger.trace(
@@ -1740,6 +1742,9 @@ export const patchAcceptRequest = async (
     logger.debug(
       `${traceDPatchRowsAffected} rows affected`,
     );
+
+    const isLastSupervisor = nextApproverLevel === null &&
+      nextUserId === null;
 
     if (nextUserId !== null && nextApproverLevel !== null) {
       logger.trace(
@@ -1794,13 +1799,126 @@ export const patchAcceptRequest = async (
       `${tracePatchRowsAffected} rows affected`,
     );
 
+    if (isLastSupervisor) {
+      logger.trace(
+        `Last supervisor for request of ID Trace ${request.traceId} is approved. Firing final approved API.`,
+      );
+
+      logger.trace(
+        `Running function getAllRequestItems()`,
+      );
+      const {
+        rowsReturned: requestItems,
+        rowsAffected: requestItemsRowsAffected,
+      } = await getAllRequestItems(
+        transaction,
+        request.traceId,
+      );
+      logger.trace(
+        `Finished running function getAllRequestItems()`,
+      );
+      logger.debug(
+        `${requestItemsRowsAffected[0]} rows affected`,
+      );
+
+      logger.trace(
+        `Running function specificRequest()`,
+      );
+      const {
+        rowsReturned: requestOverview,
+        rowsAffected: reqOverviewRowsAffected,
+      } = await specificRequest(
+        transaction,
+        request.traceId,
+      );
+      logger.trace(
+        `Finished running function specificRequest()`,
+      );
+      logger.debug(
+        `${reqOverviewRowsAffected[0]} rows affected`,
+      );
+
+      const processedItems = requestItems.map((item) => ({
+        Id: item.IDItem,
+        CostCenter: item.CostCenter,
+        Nature: item.Nature,
+        Description: item.Description,
+        Quantity: item.Qty,
+        Measure: item.Measure,
+        PricePerMeasure: item.UnitPrice,
+        Currency: item.Currency,
+        EstimatedDeliveryDate: item.EstimatedDelivery,
+        Vendor: item.Vendor,
+        PurchaseReason: item.Reason,
+        IsRejected: item.StatusItem === "True" ? true : false,
+        RejectedBy: item.StatusItem === "True" ? item.RejectedBy : null,
+      }));
+
+      logger.trace(
+        `Running function getApproverPathInformation()`,
+      );
+      const {
+        rowsReturned: requestSupervisors,
+        rowsAffected: requestSupervisorsRowsAffected,
+      } = await getApproverPathInformation(
+        transaction,
+        request.traceId,
+      );
+      logger.trace(
+        `Finished running function getApproverPathInformation()`,
+      );
+      logger.debug(
+        `${requestSupervisorsRowsAffected[0]} rows affected`,
+      );
+
+      const payload: FinalApprovalPayload = {
+        Id: requestOverview[0].FormID,
+        NoForm: requestOverview[0].NoForm,
+        NoPR: requestOverview[0].NoPR,
+        Requestor: requestOverview[0].Requestor,
+        RequestorNRP: requestOverview[0].RequestorNRP,
+        RequestorSection: requestOverview[0].RequestorSection,
+        Subject: requestOverview[0].Subject,
+        Amount: requestOverview[0].Amount,
+        ReturnOnOutgoing: requestOverview[0].ReturnOnOutgoing,
+        Remarks: requestOverview[0].Remarks,
+        RequestItems: processedItems,
+        RequestSupervisors: {
+          Approvers: requestSupervisors.filter((supervisor) =>
+            supervisor.ApproverType === "A"
+          ).map((supervisor) => ({
+            Name: supervisor.NameUser,
+            NRP: supervisor.NRP,
+            ApprovalDate: supervisor.DateApprove,
+          })),
+          Releasers: requestSupervisors.filter((supervisor) =>
+            supervisor.ApproverType === "R"
+          ).map((supervisor) => ({
+            Name: supervisor.NameUser,
+            NRP: supervisor.NRP,
+            ApprovalDate: supervisor.DateApprove,
+          })),
+          Administrators: requestSupervisors.filter((supervisor) =>
+            supervisor.ApproverType === "ADM"
+          ).map((supervisor) => ({
+            Name: supervisor.NameUser,
+            NRP: supervisor.NRP,
+            ApprovalDate: supervisor.DateApprove,
+          })),
+        },
+      };
+
+      ctx.response.status = 200;
+      ctx.response.body = payload;
+    } else {
+      ctx.response.status = 204;
+    }
+
     logger.info(
       `Comitting transaction`,
     );
 
     await transaction.commit();
-
-    ctx.response.status = 200;
   } catch (err) {
     logger.error(
       `Transaction failed for route "${route}". {value}`,

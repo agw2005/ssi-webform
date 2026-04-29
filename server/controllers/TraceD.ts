@@ -79,12 +79,14 @@ export const patchTraceDVerdict = async (
   transaction: ssms.Transaction,
   verdict: "Rejected" | "Approved",
   traceId: TraceDTable["IDTrace"],
+  idUser: TraceDTable["IDUser"],
   currentApproverLevel: TraceDTable["ApproverLevel"],
 ) => {
   const request = transaction.request();
 
   request.input("verdict", TraceDSSMSTypes.Result, verdict);
   request.input("traceId", TraceDSSMSTypes.IDTrace, traceId);
+  request.input("idUser", TraceDSSMSTypes.IDUser, idUser);
   request.input(
     "currentApproverLevel",
     TraceDSSMSTypes.ApproverLevel,
@@ -97,7 +99,9 @@ export const patchTraceDVerdict = async (
         Trace_D.Result = @verdict,
         Trace_D.DateApprove = GETDATE()
       WHERE Trace_D.IDTrace = @traceId
-      AND Trace_D.ApproverLevel = @currentApproverLevel;`,
+      AND (@verdict = 'Rejected' OR Trace_D.ApproverLevel >= @currentApproverLevel)
+      AND (@verdict = 'Approved' OR Trace_D.ApproverLevel = @currentApproverLevel)
+      AND Trace_D.IDUser = @idUser;`,
   );
   return result.rowsAffected[0];
 };
@@ -123,7 +127,10 @@ export const getNextApprover = async (
       ApproverLevel AS NextApproverLevel
     FROM Trace_D
       WHERE IDTrace = @traceId 
-      AND ApproverLevel > @currentLevel;`);
+      AND IDUser <> @idUser
+      AND DateApprove IS NULL
+      AND ApproverLevel > @currentLevel
+    ORDER BY ApproverLevel;`);
 
   const nextUserId = results.recordset[0]?.NextIDUser ?? null;
   const nextApproverLevel = results.recordset[0]?.NextApproverLevel ?? null;

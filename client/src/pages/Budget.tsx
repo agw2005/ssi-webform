@@ -55,12 +55,12 @@ const Budget = () => {
             <BudgetViewFilters
               variants="black"
               fileResources={fileResourceFetchHandler(fileResources)}
-              years={!years ? [] : [
+              years={(!years ? [] : [
                 ...years.map((year) => year.Year),
                 String(
                   Math.max(...years.map((year) => Number(year.Year))) + 1,
                 ),
-              ]}
+              ]).sort()}
               fileResourceValue={fileResource}
               yearValue={year}
               fileResourceOnChange={(e) => {

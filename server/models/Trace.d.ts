@@ -37,18 +37,14 @@ export interface TraceRequestsCount {
 export interface TraceRequestOverview {
   FormID: string;
   NoForm: string;
+  NoPR: string;
   Requestor: string;
   RequestorNRP: string;
   RequestorSection: string;
-  NoPR: string;
   Subject: string;
   Amount: number;
   ReturnOnOutgoing: string;
   Remarks: string;
-  CostCenter: string;
-  Nature: string;
-  IDBudget: string;
-  Rate: number;
 }
 
 export interface TraceApproveRequests {

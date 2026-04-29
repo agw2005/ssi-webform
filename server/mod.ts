@@ -151,3 +151,48 @@ export interface SupervisorNRPs {
   releaser: string[];
   administrator: string[];
 }
+
+export interface FinalApprovalPayload {
+  Id: string;
+  NoForm: string;
+  NoPR: string;
+  Requestor: string;
+  RequestorNRP: string;
+  RequestorSection: string;
+  Subject: string;
+  Amount: number;
+  ReturnOnOutgoing: string;
+  Remarks: string;
+  RequestItems: {
+    Id: number;
+    CostCenter: string;
+    Nature: string;
+    Description: string;
+    Quantity: number;
+    Measure: string;
+    PricePerMeasure: number;
+    Currency: string;
+    EstimatedDeliveryDate: string;
+    Vendor: string;
+    PurchaseReason: string;
+    IsRejected: boolean;
+    RejectedBy: string | null;
+  }[];
+  RequestSupervisors: {
+    Approvers: {
+      Name: string;
+      NRP: string;
+      ApprovalDate: string;
+    }[];
+    Releasers: {
+      Name: string;
+      NRP: string;
+      ApprovalDate: string;
+    }[];
+    Administrators: {
+      Name: string;
+      NRP: string;
+      ApprovalDate: string;
+    }[];
+  };
+}
