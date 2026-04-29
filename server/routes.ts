@@ -812,7 +812,7 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
       }
 
       const budgetId =
-        `${usage.periode}-${usage.costCenter}-${payload.firstStep.section}`;
+        `${usage.periode}-${usage.costCenter}-${payload.firstStep.fileResource}`;
       logger.debug(
         `Value of budgetId is ${budgetId}`,
       );
@@ -2030,6 +2030,9 @@ export const deleteRequest = async (ctx: RouterContext<"/:traceId">) => {
     logger.debug(
       `${deleteApproverPathRowAffected} rows affected`,
     );
+    if (deleteApproverPathRowAffected === 0) {
+      throw new Error(`No approver path was deleted. Aborting request.`);
+    }
 
     // DELETE Trace
     logger.trace(
@@ -2045,6 +2048,9 @@ export const deleteRequest = async (ctx: RouterContext<"/:traceId">) => {
     logger.debug(
       `${deleteTraceRowsAffected} rows affected`,
     );
+    if (deleteTraceRowsAffected === 0) {
+      throw new Error(`No request trace was deleted. Aborting request.`);
+    }
 
     // DELETE frm_PR_H
     logger.trace(
@@ -2066,15 +2072,16 @@ export const deleteRequest = async (ctx: RouterContext<"/:traceId">) => {
       `Started looping "requestItems"`,
     );
     await Promise.all(requestItems.map(async (item) => {
-      logger.debug(
-        `Current requestItems = {value}`,
-        { requestItems },
-      );
+      logger.debug(`Current requestItems : `);
+      logger.debug(`Value of CostCenter is ${item.CostCenter}`);
+      logger.debug(`Value of Department is ${item.Department}`);
+      logger.debug(`Value of FileResource is ${item.FileResource}`);
+      logger.debug(`Value of Nature is ${item.Nature}`);
+      logger.debug(`Value of NetPrice is ${-item.NetPrice}`);
+      logger.debug(`Value of Periode is ${item.Periode}`);
 
-      logger.trace(
-        `Running function patchRequestBudget()`,
-      );
-      const { rowsAffected: budgetPatchRowsAffeceted, rowsReturned: _ } =
+      logger.trace(`Running function patchRequestBudget()`);
+      const { rowsAffected: budgetPatchRowsAffected, rowsReturned: _ } =
         await patchRequestBudget(
           transaction,
           -item.NetPrice,
@@ -2088,8 +2095,11 @@ export const deleteRequest = async (ctx: RouterContext<"/:traceId">) => {
         `Finished running function patchRequestBudget()`,
       );
       logger.debug(
-        `${budgetPatchRowsAffeceted} rows affected`,
+        `${budgetPatchRowsAffected[0]} rows affected`,
       );
+      if (budgetPatchRowsAffected[0] === 0) {
+        throw new Error(`No budget was modified. Aborting request.`);
+      }
     }));
     logger.trace(
       `Finished looping "requestItems"`,
@@ -2106,6 +2116,9 @@ export const deleteRequest = async (ctx: RouterContext<"/:traceId">) => {
     logger.debug(
       `${deleteItemsRowsAffected} rows affected`,
     );
+    if (deleteItemsRowsAffected === 0) {
+      throw new Error(`No request items were deleted. Aborting request.`);
+    }
 
     logger.info(
       `Comitting transaction`,
