@@ -365,9 +365,11 @@ const AddView = ({ toggleDialog }: AddViewProps) => {
                       {budgetData.FileResource}
                     </td>
                     {TABLE_COLUMNS.slice(-12).map((month, innerIndex) => {
+                      const budgetValue =
+                        budgetData.Budget[month as keyof MonthlyBudget];
                       return (
                         <td key={innerIndex} className="border p-2">
-                          {budgetData.Budget[month as keyof MonthlyBudget]}
+                          {isNaN(budgetValue) ? "Skipped" : budgetValue}
                         </td>
                       );
                     })}
