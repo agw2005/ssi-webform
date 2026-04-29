@@ -195,4 +195,8 @@ export interface FinalApprovalPayload {
       ApprovalDate: string;
     }[];
   };
+  Files: {
+    Filename: string;
+    UploadDate: string;
+  }[];
 }

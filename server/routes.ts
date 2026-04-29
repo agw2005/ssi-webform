@@ -1871,6 +1871,23 @@ export const patchAcceptRequest = async (
         `${requestSupervisorsRowsAffected[0]} rows affected`,
       );
 
+      logger.trace(
+        `Running function getMinimumFileInformation()`,
+      );
+      const {
+        rowsReturned: requestFiles,
+        rowsAffected: requestFilesRowsAffected,
+      } = await getMinimumFileInformation(
+        transaction,
+        request.traceId,
+      );
+      logger.trace(
+        `Finished running function getMinimumFileInformation()`,
+      );
+      logger.debug(
+        `${requestFilesRowsAffected[0]} rows affected`,
+      );
+
       const payload: FinalApprovalPayload = {
         Id: requestOverview[0].FormID,
         NoForm: requestOverview[0].NoForm,
@@ -1906,6 +1923,10 @@ export const patchAcceptRequest = async (
             ApprovalDate: supervisor.DateApprove,
           })),
         },
+        Files: requestFiles.map((file) => ({
+          Filename: file.Filename,
+          UploadDate: file.DateUpload,
+        })),
       };
 
       ctx.response.status = 200;
