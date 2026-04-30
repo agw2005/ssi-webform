@@ -96,7 +96,7 @@ import {
 import { getLogger } from "@logtape/logtape";
 import { runParameterizedQuery } from "./helper/runParameterizedQuery.ts";
 import { runSimpleQuery } from "./helper/runSimpleQuery.ts";
-import type { FinalApprovalPayload } from "@scope/server";
+import { getRequestInformation } from "./helper/getRequestInformation.ts";
 
 const logger = getLogger("webform-oak-server");
 
@@ -1804,133 +1804,13 @@ export const patchAcceptRequest = async (
         `Last supervisor for request of ID Trace ${request.traceId} is approved. Firing final approved API.`,
       );
 
-      logger.trace(
-        `Running function getAllRequestItems()`,
-      );
-      const {
-        rowsReturned: requestItems,
-        rowsAffected: requestItemsRowsAffected,
-      } = await getAllRequestItems(
-        transaction,
+      const finalApprovedAPIResponse = await getRequestInformation(
         request.traceId,
-      );
-      logger.trace(
-        `Finished running function getAllRequestItems()`,
-      );
-      logger.debug(
-        `${requestItemsRowsAffected[0]} rows affected`,
-      );
-
-      logger.trace(
-        `Running function specificRequest()`,
-      );
-      const {
-        rowsReturned: requestOverview,
-        rowsAffected: reqOverviewRowsAffected,
-      } = await specificRequest(
         transaction,
-        request.traceId,
       );
-      logger.trace(
-        `Finished running function specificRequest()`,
-      );
-      logger.debug(
-        `${reqOverviewRowsAffected[0]} rows affected`,
-      );
-
-      const processedItems = requestItems.map((item) => ({
-        Id: item.IDItem,
-        CostCenter: item.CostCenter,
-        Nature: item.Nature,
-        Description: item.Description,
-        Quantity: item.Qty,
-        Measure: item.Measure,
-        PricePerMeasure: item.UnitPrice,
-        Currency: item.Currency,
-        EstimatedDeliveryDate: item.EstimatedDelivery,
-        Vendor: item.Vendor,
-        PurchaseReason: item.Reason,
-        IsRejected: item.StatusItem === "True" ? true : false,
-        RejectedBy: item.StatusItem === "True" ? item.RejectedBy : null,
-      }));
-
-      logger.trace(
-        `Running function getApproverPathInformation()`,
-      );
-      const {
-        rowsReturned: requestSupervisors,
-        rowsAffected: requestSupervisorsRowsAffected,
-      } = await getApproverPathInformation(
-        transaction,
-        request.traceId,
-      );
-      logger.trace(
-        `Finished running function getApproverPathInformation()`,
-      );
-      logger.debug(
-        `${requestSupervisorsRowsAffected[0]} rows affected`,
-      );
-
-      logger.trace(
-        `Running function getMinimumFileInformation()`,
-      );
-      const {
-        rowsReturned: requestFiles,
-        rowsAffected: requestFilesRowsAffected,
-      } = await getMinimumFileInformation(
-        transaction,
-        request.traceId,
-      );
-      logger.trace(
-        `Finished running function getMinimumFileInformation()`,
-      );
-      logger.debug(
-        `${requestFilesRowsAffected[0]} rows affected`,
-      );
-
-      const payload: FinalApprovalPayload = {
-        Id: requestOverview[0].FormID,
-        NoForm: requestOverview[0].NoForm,
-        NoPR: requestOverview[0].NoPR,
-        Requestor: requestOverview[0].Requestor,
-        RequestorNRP: requestOverview[0].RequestorNRP,
-        RequestorSection: requestOverview[0].RequestorSection,
-        Subject: requestOverview[0].Subject,
-        Amount: requestOverview[0].Amount,
-        ReturnOnOutgoing: requestOverview[0].ReturnOnOutgoing,
-        Remarks: requestOverview[0].Remarks,
-        RequestItems: processedItems,
-        RequestSupervisors: {
-          Approvers: requestSupervisors.filter((supervisor) =>
-            supervisor.ApproverType === "A"
-          ).map((supervisor) => ({
-            Name: supervisor.NameUser,
-            NRP: supervisor.NRP,
-            ApprovalDate: supervisor.DateApprove,
-          })),
-          Releasers: requestSupervisors.filter((supervisor) =>
-            supervisor.ApproverType === "R"
-          ).map((supervisor) => ({
-            Name: supervisor.NameUser,
-            NRP: supervisor.NRP,
-            ApprovalDate: supervisor.DateApprove,
-          })),
-          Administrators: requestSupervisors.filter((supervisor) =>
-            supervisor.ApproverType === "ADM"
-          ).map((supervisor) => ({
-            Name: supervisor.NameUser,
-            NRP: supervisor.NRP,
-            ApprovalDate: supervisor.DateApprove,
-          })),
-        },
-        Files: requestFiles.map((file) => ({
-          Filename: file.Filename,
-          UploadDate: file.DateUpload,
-        })),
-      };
 
       ctx.response.status = 200;
-      ctx.response.body = payload;
+      ctx.response.body = finalApprovedAPIResponse;
     } else {
       ctx.response.status = 204;
     }
