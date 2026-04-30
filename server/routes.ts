@@ -66,14 +66,15 @@ import {
 } from "./controllers/UserMaster.ts";
 import type { RouterContext } from "@oak/oak";
 import databasePool from "./dbpool.ts";
-import type {
-  BudgetTable,
-  LoginPayload,
-  LoginResponse,
-  patchApprovalVerdict,
-  PatchRemarksPayload,
-  SubmitPayload,
-  SubmitResponse,
+import {
+  appCurrencies,
+  type BudgetTable,
+  type LoginPayload,
+  type LoginResponse,
+  type patchApprovalVerdict,
+  type PatchRemarksPayload,
+  type SubmitPayload,
+  type SubmitResponse,
 } from "@scope/server";
 import provisionFormNumber from "./helper/provisionFormNumber.ts";
 import addHours from "./helper/addHours.ts";
@@ -116,12 +117,19 @@ export const getAllFileResources = async (
     "/budget/fileresources",
     allFileResources,
     "allFileResources",
+    200,
   );
 
 export const getAvailableBudgetYears = async (
   ctx: RouterContext<"/years">,
 ) =>
-  await runSimpleQuery(ctx, "/budget/years", availableYears, "availableYears");
+  await runSimpleQuery(
+    ctx,
+    "/budget/years",
+    availableYears,
+    "availableYears",
+    200,
+  );
 
 export const getAvailableBudgetPeriods = async (
   ctx: RouterContext<"/periods">,
@@ -131,6 +139,7 @@ export const getAvailableBudgetPeriods = async (
     "/budget/periods",
     availablePeriods,
     "availablePeriods",
+    200,
   );
 
 export const getAllValidNatures = async (
@@ -173,6 +182,7 @@ export const getAllValidNatures = async (
     "getValidNatures",
     (transaction) =>
       getValidNatures(transaction, fullPeriode, fileResource, dept, costCenter),
+    200,
   );
 };
 
@@ -242,6 +252,7 @@ export const getSingleBalance = async (
         fileResource,
         dept,
       ),
+    200,
   );
 };
 
@@ -278,6 +289,7 @@ export const getBudgetViewInformation = async (
     route,
     "getBudgetsByYear",
     (transaction) => getBudgetsByYear(transaction, fileResource, year),
+    200,
   );
 };
 
@@ -319,6 +331,7 @@ export const getReportViewInformation = async (
         periode,
         fileResource,
       ),
+    200,
   );
 };
 
@@ -345,6 +358,7 @@ export const getSpecificRequestItems = async (
         transaction,
         traceId,
       ),
+    200,
   );
 };
 
@@ -396,11 +410,18 @@ export const getRequestsAtBudgetView = async (
         startDate,
         endDate,
       ),
+    200,
   );
 };
 
 export const getSectionNames = async (ctx: RouterContext<"/names">) =>
-  await runSimpleQuery(ctx, "/section/names", sectionNames, "sectionNames");
+  await runSimpleQuery(
+    ctx,
+    "/section/names",
+    sectionNames,
+    "sectionNames",
+    200,
+  );
 
 export const getSectionUsers = async (ctx: RouterContext<"/users">) =>
   await runSimpleQuery(
@@ -408,6 +429,7 @@ export const getSectionUsers = async (ctx: RouterContext<"/users">) =>
     "/section/users",
     userSectionMappings,
     "userSectionMappings",
+    200,
   );
 
 export const getRequests = async (ctx: RouterContext<"/requests">) => {
@@ -478,6 +500,7 @@ export const getRequests = async (ctx: RouterContext<"/requests">) => {
         endDate,
         search,
       ),
+    200,
   );
 };
 
@@ -543,6 +566,7 @@ export const getRequestsCount = async (
         endDate,
         search,
       ),
+    200,
   );
 };
 
@@ -569,6 +593,7 @@ export const getSpecificRequest = async (
         transaction,
         traceId,
       ),
+    200,
   );
 };
 
@@ -595,6 +620,7 @@ export const getApproverPath = async (
         transaction,
         traceId,
       ),
+    200,
   );
 };
 
@@ -621,6 +647,7 @@ export const getUploadFiles = async (
         transaction,
         traceId,
       ),
+    200,
   );
 };
 
@@ -632,6 +659,7 @@ export const getSupervisorNames = async (
     "/usermaster/names",
     supervisorNames,
     "supervisorNames",
+    200,
   );
 
 export const getUserByNRP = async (
@@ -655,6 +683,7 @@ export const getUserByNRP = async (
         transaction,
         nrp,
       ),
+    200,
   );
 };
 
@@ -1120,7 +1149,7 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
 
     await transaction.commit();
 
-    ctx.response.status = 200;
+    ctx.response.status = 201;
     ctx.response.body = successResponse;
   } catch (err) {
     try {
@@ -1162,7 +1191,14 @@ export const submitRequest = async (ctx: RouterContext<"/submit">) => {
 
 export const getAuthInformation = async (
   ctx: RouterContext<"/auth">,
-) => await runSimpleQuery(ctx, "/usermaster/auth", getAuthInfo, "getAuthInfo");
+) =>
+  await runSimpleQuery(
+    ctx,
+    "/usermaster/auth",
+    getAuthInfo,
+    "getAuthInfo",
+    200,
+  );
 
 export const requestJwt = async (ctx: RouterContext<"/request">) => {
   const route = "/jwt/request";
@@ -1373,6 +1409,7 @@ export const getRequestsBySupervisorNrp = async (
         endDate,
         search,
       ),
+    200,
   );
 };
 
@@ -1432,6 +1469,7 @@ export const getRequestsBySupervisorNrpCount = async (
         endDate,
         search,
       ),
+    200,
   );
 };
 
@@ -1477,7 +1515,7 @@ export const patchRemarks = async (ctx: RouterContext<"/remarks">) => {
 
     await transaction.commit();
 
-    ctx.response.status = 200;
+    ctx.response.status = 204;
   } catch (err) {
     logger.error(`Transaction failed for route "${route}". {value}`, { err });
     ctx.response.status = 500;
@@ -1664,7 +1702,7 @@ export const patchRejectRequest = async (
 
     await transaction.commit();
 
-    ctx.response.status = 200;
+    ctx.response.status = 204;
   } catch (err) {
     logger.error(
       `Transaction failed for route "${route}". {value}`,
@@ -1962,7 +2000,7 @@ export const putBudgets = async (
     );
     await transaction.commit();
 
-    ctx.response.status = 200;
+    ctx.response.status = 204;
   } catch (err) {
     logger.error(
       `Transaction failed for route "${route}". {value}`,
@@ -2147,7 +2185,7 @@ export const deleteRequest = async (ctx: RouterContext<"/:traceId">) => {
     );
     await transaction.commit();
 
-    ctx.response.status = 200;
+    ctx.response.status = 204;
   } catch (err) {
     logger.error(
       `Transaction failed for route "${route}". {value}`,
@@ -2201,6 +2239,7 @@ export const getAllValidDepartments = async (
         fullPeriode,
         fileResource,
       ),
+    200,
   );
 };
 
@@ -2245,6 +2284,7 @@ export const getAllValidCostCenters = async (
         fileResource,
         dept,
       ),
+    200,
   );
 };
 
@@ -2290,6 +2330,7 @@ export const getForex = async (
     "/forex",
     getCurrentRateDollar,
     "getCurrentRateDollar",
+    200,
   );
 
 export const patchForex = async (
@@ -2334,7 +2375,7 @@ export const patchForex = async (
     return;
   }
 
-  if (!["IDR", "JPY", "SGD", "USD"].includes(currency)) {
+  if (!(appCurrencies as readonly string[]).includes(currency)) {
     logger.warning(`The input currency was not found in the database`);
     ctx.response.status = 400;
     ctx.response.body = "Invalid parameters!";
@@ -2362,7 +2403,7 @@ export const patchForex = async (
     );
     const rateDollarTempPatchRowsAffected = await patchRateDollarTemp(
       transaction,
-      currency as "IDR" | "JPY" | "SGD" | "USD",
+      currency as (typeof appCurrencies)[number],
       Number(newValue),
     );
     logger.trace(
@@ -2378,7 +2419,7 @@ export const patchForex = async (
 
     await transaction.commit();
 
-    ctx.response.status = 200;
+    ctx.response.status = 204;
   } catch (err) {
     logger.error(
       `Transaction failed for route "${route}". {value}`,
@@ -2404,6 +2445,7 @@ export const getForexTemp = async (
     "/forextemp",
     getCurrentRateDollarTemp,
     "getCurrentRateDollarTemp",
+    200,
   );
 
 export const patchRateDollar = async () => {

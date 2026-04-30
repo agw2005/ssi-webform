@@ -13,6 +13,7 @@ export const runSimpleQuery = async <T extends string, U>(
     transaction: ssms.Transaction,
   ) => Promise<MsSqlResponse<U>>,
   queryFuncName: string,
+  successCode: number,
 ) => {
   logger.info(
     `User accessed route "${route}"`,
@@ -56,7 +57,7 @@ export const runSimpleQuery = async <T extends string, U>(
 
     await transaction.commit();
 
-    ctx.response.status = 200;
+    ctx.response.status = successCode;
     ctx.response.body = rowsReturned;
   } catch (err) {
     logger.error(

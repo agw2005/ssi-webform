@@ -8,11 +8,12 @@ import { createGenericChangeHandler } from "../../../helper/genericInputHandler.
 import { useMemo, useState } from "react";
 import Button from "../../reusable/Button.tsx";
 import { dateSplitter } from "../../../helper/dateSplitter.ts";
-import type {
-  Balance,
-  Nature,
-  ThirdStepInputs,
-  ValidCostCenter,
+import {
+  appCurrencies,
+  type Balance,
+  type Nature,
+  type ThirdStepInputs,
+  type ValidCostCenter,
 } from "@scope/server";
 import type {
   FrankfurterForexRates,
@@ -48,7 +49,6 @@ const BUDGET_SUMMARY_ATTRIBUTES = [
   "Remain ($)",
 ];
 
-const CURRENCY = ["IDR", "JPY", "SGD", "USD"];
 const STEP = 3;
 
 export interface Usage {
@@ -372,7 +372,7 @@ const ThirdStep = ({
               requiredInput
               variant="yellow"
               defaultDisabledValue="Select Currency"
-              options={CURRENCY}
+              options={[...appCurrencies]} // Copy from read-only to mutable
               value={usageField.currency}
               onChangeHandler={genericChangeHandler("currency")}
             />

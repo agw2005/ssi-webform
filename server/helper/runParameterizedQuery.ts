@@ -13,6 +13,7 @@ export const runParameterizedQuery = async <T extends string, U>(
   queryFunc: (
     transaction: ssms.Transaction,
   ) => Promise<MsSqlResponse<U>>,
+  successCode: number,
 ) => {
   const transaction = new ssms.Transaction(databasePool);
 
@@ -50,7 +51,7 @@ export const runParameterizedQuery = async <T extends string, U>(
 
     await transaction.commit();
 
-    ctx.response.status = 200;
+    ctx.response.status = successCode;
     ctx.response.body = rowsReturned;
   } catch (err) {
     logger.error(

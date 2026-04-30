@@ -200,3 +200,5 @@ export interface FinalApprovalPayload {
     UploadDate: string;
   }[];
 }
+
+export const appCurrencies = ["IDR", "JPY", "SGD", "USD"] as const;

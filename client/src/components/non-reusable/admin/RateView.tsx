@@ -3,8 +3,7 @@ import formatNumberToString from "../../../helper/formatNumberToString.ts";
 import Button from "../../reusable/Button.tsx";
 import { useEffect, useState } from "react";
 import { webformAPI } from "../../../helper/apis.ts";
-
-const forexes = ["IDR", "JPY", "SGD", "USD"];
+import { appCurrencies } from "@scope/server";
 
 const RateView = () => {
   const {
@@ -94,7 +93,7 @@ const RateView = () => {
           </tr>
         </thead>
         <tbody>
-          {forexes.map((forex, index) => {
+          {appCurrencies.map((forex, index) => {
             const currencyKey = forex as keyof Forexes;
             const currentEuForex = euForex?.rates[currencyKey];
             const currentDbForex = dbForex?.rates[currencyKey];
@@ -130,7 +129,7 @@ const RateView = () => {
       </table>
       <div className="flex flex-col gap-2">
         <h2 className="font-bold text-xl">New Rates</h2>
-        {forexes.map((forex, index) => {
+        {appCurrencies.map((forex, index) => {
           const currencyKey = forex as keyof Forexes;
           const lowercaseCurrency = forex.toLowerCase();
           return (
