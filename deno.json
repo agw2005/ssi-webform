@@ -6,5 +6,15 @@
   "nodeModulesDir": "auto",
   "overrides": {
     "vite": "npm:rolldown-vite@7.2.5"
+  },
+  "tasks": {
+    "build:server": "deno task --cwd server build",
+    "build:client": "deno task --cwd client build",
+    "build:all": "deno task build:server && deno task build:client",
+    "package": "deno task build:all && deno run --allow-env --allow-write --allow-read scripts/bundler.ts"
+  },
+  "imports": {
+    "@std/fs": "jsr:@std/fs@^1.0.23",
+    "@std/path": "jsr:@std/path@^1.1.4"
   }
 }
