@@ -1,41 +1,42 @@
 import getCurrentPeriod from "./getCurrentPeriod.ts";
 
-const prefix = "webform-api";
+const serverRoot = import.meta.env.VITE_SERVER_ROOT_ROUTE;
 
 export const webformAPI = {
-  Forex: `/${prefix}/forex`,
-  ForexTemp: `/${prefix}/forextemp`,
-  NewForex: `/${prefix}/admin/ratedollartemp`,
-  SubmitBudget: `/${prefix}/admin/budget`,
-  SubmitRequest: `/${prefix}/submit`,
-  Template: `/${prefix}/admin/template`,
-  Request: `/${prefix}/trace/requests`,
-  RequestCount: `/${prefix}/trace/requests/count`,
-  SupervisorNames: `/${prefix}/usermaster/names`,
-  SupervisorNrp: `/${prefix}/usermaster`,
-  DeleteRequest: (traceId: string | number) => `/${prefix}/admin/${traceId}`,
-  VerifyToken: `/${prefix}/jwt/verify`,
-  Budget: `/${prefix}/budget`,
-  Usages: `/${prefix}/frmprh`,
-  Report: `/${prefix}/budget/report`,
-  ApproversRequest: `/${prefix}/trace/approve`,
-  ApproversRequestCount: `/${prefix}/trace/approve/count`,
-  FileResources: `/${prefix}/budget/fileresources`,
-  BudgetYears: `/${prefix}/budget/years`,
-  BudgetPeriods: `/${prefix}/budget/periods`,
-  SectionNames: `/${prefix}/section/names`,
-  SectionUserMappings: `/${prefix}/section/users`,
-  RequestToken: `/${prefix}/jwt/request`,
-  RequestOverview: `/${prefix}/trace/request`,
-  RequestItems: `/${prefix}/frmprd/request`,
-  RequestAttachments: `/${prefix}/uploadfile`,
-  ApproverPath: `/${prefix}/traced`,
-  PatchRemarks: `/${prefix}/approve/remarks`,
+  Forex: `/${serverRoot}/forex`,
+  ForexTemp: `/${serverRoot}/forextemp`,
+  NewForex: `/${serverRoot}/admin/ratedollartemp`,
+  SubmitBudget: `/${serverRoot}/admin/budget`,
+  SubmitRequest: `/${serverRoot}/submit`,
+  Template: `/${serverRoot}/admin/template`,
+  Request: `/${serverRoot}/trace/requests`,
+  RequestCount: `/${serverRoot}/trace/requests/count`,
+  SupervisorNames: `/${serverRoot}/usermaster/names`,
+  SupervisorNrp: `/${serverRoot}/usermaster`,
+  DeleteRequest: (traceId: string | number) =>
+    `/${serverRoot}/admin/${traceId}`,
+  VerifyToken: `/${serverRoot}/jwt/verify`,
+  Budget: `/${serverRoot}/budget`,
+  Usages: `/${serverRoot}/frmprh`,
+  Report: `/${serverRoot}/budget/report`,
+  ApproversRequest: `/${serverRoot}/trace/approve`,
+  ApproversRequestCount: `/${serverRoot}/trace/approve/count`,
+  FileResources: `/${serverRoot}/budget/fileresources`,
+  BudgetYears: `/${serverRoot}/budget/years`,
+  BudgetPeriods: `/${serverRoot}/budget/periods`,
+  SectionNames: `/${serverRoot}/section/names`,
+  SectionUserMappings: `/${serverRoot}/section/users`,
+  RequestToken: `/${serverRoot}/jwt/request`,
+  RequestOverview: `/${serverRoot}/trace/request`,
+  RequestItems: `/${serverRoot}/frmprd/request`,
+  RequestAttachments: `/${serverRoot}/uploadfile`,
+  ApproverPath: `/${serverRoot}/traced`,
+  PatchRemarks: `/${serverRoot}/approve/remarks`,
   PostVerdict: (verdict: "accept" | "reject") =>
-    `/${prefix}/approve/${verdict}`,
+    `/${serverRoot}/approve/${verdict}`,
   Departments: (fileResource?: string) => {
     const url = new URL(
-      `/${prefix}/budget/departments`,
+      `/${serverRoot}/budget/departments`,
       globalThis.location.origin,
     );
 
@@ -52,7 +53,7 @@ export const webformAPI = {
     deptId?: number | null,
   ) => {
     const url = new URL(
-      `/${prefix}/budget/costcenters`,
+      `/${serverRoot}/budget/costcenters`,
       globalThis.location.origin,
     );
 
@@ -72,7 +73,7 @@ export const webformAPI = {
     costCenter?: string | null,
   ) => {
     const url = new URL(
-      `/${prefix}/budget/nature`,
+      `/${serverRoot}/budget/nature`,
       globalThis.location.origin,
     );
 
@@ -96,7 +97,7 @@ export const webformAPI = {
     period?: string,
   ) => {
     const url = new URL(
-      `/${prefix}/budget/balance`,
+      `/${serverRoot}/budget/balance`,
       globalThis.location.origin,
     );
 
