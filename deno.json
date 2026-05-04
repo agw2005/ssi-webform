@@ -11,7 +11,7 @@
     "build:server": "deno task --cwd server build",
     "build:client": "deno task --cwd client build",
     "build:all": "deno task build:server && deno task build:client",
-    "package": "deno task build:all && deno run --allow-env --allow-write --allow-read scripts/bundler.ts"
+    "package": "deno task build:all && deno run --allow-env --allow-write --allow-read --env=.env scripts/bundler.ts"
   },
   "imports": {
     "@std/fs": "jsr:@std/fs@^1.0.23",
