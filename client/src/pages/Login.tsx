@@ -9,6 +9,7 @@ import type { LoginPayload, LoginResponse } from "@scope/server";
 import { jwtRequestPayload } from "@scope/server";
 import { createGenericChangeHandler } from "../helper/genericInputHandler.ts";
 import { webformAPI } from "../helper/apis.ts";
+import handleLoginSSO from "../helper/sso/handleLogin.ts";
 
 const DEFAULT_FORM_CONTENT: LoginPayload = {
   nrp: "",
@@ -111,9 +112,18 @@ const Login = () => {
             onChangeHandler={loginInputChangeHandler("password")}
           />
 
-          <button type="submit" className="flex">
-            <Button id="login-submit" variant="black" label="Sign in" />
-          </button>
+          <div className="flex gap-2">
+            <button type="submit" className="flex">
+              <Button id="login-submit" variant="black" label="Sign in" />
+            </button>
+            <button
+              type="button"
+              className="flex"
+              onClick={handleLoginSSO}
+            >
+              <Button id="login-sso" variant="red" label="Single Sign-On" />
+            </button>
+          </div>
         </form>
         <Link
           to="/submit"
