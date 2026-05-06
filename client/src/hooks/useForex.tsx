@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
-import { webformAPI } from "../helper/apis.ts";
-import { type WebformDBForexResponse } from "@scope/server";
+import { APIs } from "../helper/apis.ts";
+import { type DBForexResponse } from "@scope/server";
 
 export interface Forexes {
   IDR: number;
@@ -49,7 +49,7 @@ export const useForex = (mode: "Eu" | "Db", tempDb: boolean = false) => {
     try {
       const response = mode === "Eu"
         ? await fetch(EU_FOREX_API_URL)
-        : await fetch(tempDb ? webformAPI.ForexTemp : webformAPI.Forex);
+        : await fetch(tempDb ? APIs.ForexTemp : APIs.Forex);
       if (!response.ok) {
         throw new Error(
           `Error when fetching forex information: ${response.status} (useForex.tsx)`,
@@ -72,7 +72,7 @@ export const useForex = (mode: "Eu" | "Db", tempDb: boolean = false) => {
 
         setForexInformation(hookData);
       } else {
-        const dbData: WebformDBForexResponse[] = await response.json();
+        const dbData: DBForexResponse[] = await response.json();
 
         const hookData: UseForexResponse = {
           date: (new Date()).toString(),

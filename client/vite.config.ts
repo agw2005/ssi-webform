@@ -21,13 +21,13 @@ export default defineConfig({
       "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/package/xlsx.mjs",
     },
   },
-  base: "/webform",
+  base: "/prism",
   server: {
     host: true,
     port: 5173,
     strictPort: true,
     hmr: {
-      host: "myintranet.mywebform.com",
+      host: "myintranet.prism.com",
     },
     watch: {
       usePolling: true,

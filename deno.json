@@ -1,5 +1,5 @@
 {
-  "name": "ssi-webform",
+  "name": "prism",
   "version": "0.0.0",
   "exports": "./mod.ts",
   "workspace": ["./server", "./client"],

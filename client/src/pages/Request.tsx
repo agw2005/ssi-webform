@@ -19,7 +19,7 @@ import { useEffect, useRef, useState } from "react";
 import Dialog, { toggleDialog } from "../components/reusable/Dialog.tsx";
 import { getCurrentApproverLevel } from "../helper/getCurrentApproverLevel.ts";
 import generateRequestPdf from "../helper/generateRequestPdf.ts";
-import { webformAPI } from "../helper/apis.ts";
+import { APIs } from "../helper/apis.ts";
 import type { FinalApprovalPayload } from "@scope/server";
 
 export interface Overview {
@@ -100,7 +100,7 @@ const Request = () => {
     isError: isRequestOverviewDataError,
     refetch: refetchOverview,
   } = useFetch<RequestOverview>(
-    webformAPI.RequestOverview,
+    APIs.RequestOverview,
     reactRouterParams.requestId,
   );
 
@@ -109,7 +109,7 @@ const Request = () => {
     isLoading: isRequestItemsDataLoading,
     isError: isRequestItemsDataError,
   } = useFetch<RequestItem>(
-    webformAPI.RequestItems,
+    APIs.RequestItems,
     reactRouterParams.requestId,
   );
 
@@ -118,7 +118,7 @@ const Request = () => {
     isLoading: isRequestFilesDataLoading,
     isError: isRequestFilesDataError,
   } = useFetch<UploadedFile>(
-    webformAPI.RequestAttachments,
+    APIs.RequestAttachments,
     reactRouterParams.requestId,
   );
 
@@ -128,7 +128,7 @@ const Request = () => {
     isError: isRequestApproverPathDataError,
     refetch: refetchApproverPath,
   } = useFetch<ApproverPath>(
-    webformAPI.ApproverPath,
+    APIs.ApproverPath,
     reactRouterParams.requestId,
   );
 
@@ -171,7 +171,7 @@ const Request = () => {
   ) => {
     try {
       const response = await fetch(
-        webformAPI.PostVerdict(verdict),
+        APIs.PostVerdict(verdict),
         {
           method: "PATCH",
           headers: {
@@ -299,7 +299,7 @@ const Request = () => {
                           };
                           try {
                             const response = await fetch(
-                              webformAPI.PatchRemarks,
+                              APIs.PatchRemarks,
                               {
                                 method: "PATCH",
                                 headers: {

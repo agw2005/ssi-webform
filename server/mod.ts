@@ -141,7 +141,7 @@ export interface MsSqlResponse<T> {
   rowsAffected: number[];
 }
 
-export interface WebformDBForexResponse {
+export interface DBForexResponse {
   Currency: string;
   Valuation: number;
 }

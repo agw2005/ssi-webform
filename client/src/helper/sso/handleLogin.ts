@@ -8,7 +8,7 @@ const handleLoginSSO = () => {
   );
   ssoURL.searchParams.set(
     "system",
-    "webform",
+    "prism",
   );
 
   console.log(ssoURL.toString());

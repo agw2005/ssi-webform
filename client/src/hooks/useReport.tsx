@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import type { ReportResponse } from "@scope/server";
-import { webformAPI } from "../helper/apis.ts";
+import { APIs } from "../helper/apis.ts";
 
 const useReport = (
   reportType: "" | "general" | "byquarter" | "bysection" | "bynature" | "empty",
@@ -22,7 +22,7 @@ const useReport = (
     let ignore = false;
 
     const fetchData = async () => {
-      const requestUrl = new URL(webformAPI.Report, globalThis.location.origin);
+      const requestUrl = new URL(APIs.Report, globalThis.location.origin);
       requestUrl.search = queryString;
 
       try {

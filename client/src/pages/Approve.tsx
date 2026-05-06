@@ -17,7 +17,7 @@ import DateRangeInput from "../components/reusable/inputs/DateRangeInput.tsx";
 import SelectionInput from "../components/reusable/inputs/SelectionInput.tsx";
 import { useDebounce } from "../hooks/useDebounce.tsx";
 import usePurchasingRequests from "../hooks/usePurchasingRequests.tsx";
-import { webformAPI } from "../helper/apis.ts";
+import { APIs } from "../helper/apis.ts";
 
 const COLUMNS = [
   "ID Trace",
@@ -110,8 +110,8 @@ const Approve = () => {
     totalRequestsAtDatabase,
     requests,
   } = usePurchasingRequests<TraceApproveRequests, TraceRequestsCount>(
-    webformAPI.ApproversRequest,
-    webformAPI.ApproversRequestCount,
+    APIs.ApproversRequest,
+    APIs.ApproversRequestCount,
     params.toString(),
   );
 

@@ -1,6 +1,6 @@
 import { verifyJwtPayload } from "@scope/server";
 import type { VerifyResponse } from "@scope/server";
-import { webformAPI } from "./apis.ts";
+import { APIs } from "./apis.ts";
 
 export const verifySession = async (): Promise<VerifyResponse | null> => {
   const storedToken = sessionStorage.getItem("session_token");
@@ -9,7 +9,7 @@ export const verifySession = async (): Promise<VerifyResponse | null> => {
 
   try {
     const response = await fetch(
-      webformAPI.VerifyToken,
+      APIs.VerifyToken,
       verifyJwtPayload(storedToken),
     );
     const responseJson: VerifyResponse = await response.json();

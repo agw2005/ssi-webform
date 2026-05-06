@@ -43,7 +43,7 @@ const router = createBrowserRouter([
     hydrateFallbackElement: <LoadingFallback />,
   },
 ], {
-  basename: "/webform",
+  basename: "/prism",
 });
 
 createRoot(document.getElementById("root")!).render(

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import type { BudgetUsages } from "@scope/server";
-import { webformAPI } from "../helper/apis.ts";
+import { APIs } from "../helper/apis.ts";
 
 const useBudgetUsages = (
   queryString: string,
@@ -15,7 +15,7 @@ const useBudgetUsages = (
   const refetch = () => setTrigger((prev) => prev + 1);
 
   useEffect(() => {
-    const requestUrl = new URL(webformAPI.Usages, globalThis.location.origin);
+    const requestUrl = new URL(APIs.Usages, globalThis.location.origin);
     requestUrl.search = queryString;
     const abortController = new AbortController();
     setUsagesIsLoading(true);

@@ -2,7 +2,7 @@ import { encodeBase64 } from "@std/encoding";
 import { getLogger } from "@logtape/logtape";
 import { loggerDate } from "../helper/loggerDate.ts";
 
-const logger = getLogger("webform-oak-server");
+const logger = getLogger("prism-server");
 
 const ENV_PATH = ".env";
 

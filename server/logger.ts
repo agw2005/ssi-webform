@@ -2,7 +2,7 @@ import { getFileSink } from "@logtape/file";
 import { configure, getConsoleSink, type LogRecord } from "@logtape/logtape";
 import { loggerDate } from "./helper/loggerDate.ts";
 
-const webformLogFormatter = (record: LogRecord): string => {
+const logFormatter = (record: LogRecord): string => {
   return `[${record.level}] ${loggerDate()}=> ${record.message}\n`;
 };
 
@@ -14,16 +14,16 @@ export async function setupLogger() {
         bufferSize: 8192,
         flushInterval: 5000,
         nonBlocking: true,
-        formatter: webformLogFormatter,
+        formatter: logFormatter,
       }),
       console: getConsoleSink({
         nonBlocking: true,
-        formatter: webformLogFormatter,
+        formatter: logFormatter,
       }),
     },
     loggers: [
       {
-        category: "webform-oak-server",
+        category: "prism-server",
         lowestLevel: "trace",
         sinks: ["file", "console"],
       },

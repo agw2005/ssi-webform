@@ -7,7 +7,7 @@ import ReportView from "../components/non-reusable/budget/ReportView.tsx";
 import type { FileResource, Period, Year } from "@scope/server";
 import useFetch from "../hooks/useFetch.tsx";
 import fileResourceFetchHandler from "../helper/fileResourceFetchHandler.ts";
-import { webformAPI } from "../helper/apis.ts";
+import { APIs } from "../helper/apis.ts";
 
 const Budget = () => {
   const [viewMode, setViewMode] = useState<"Budget" | "Report">("Budget");
@@ -18,19 +18,19 @@ const Budget = () => {
     data: fileResources,
     isLoading: isFileResourcesLoading,
     isError: isFileResourcesError,
-  } = useFetch<FileResource>(webformAPI.FileResources);
+  } = useFetch<FileResource>(APIs.FileResources);
 
   const {
     data: years,
     isLoading: isYearsLoading,
     isError: isYearsError,
-  } = useFetch<Year>(webformAPI.BudgetYears);
+  } = useFetch<Year>(APIs.BudgetYears);
 
   const {
     data: periods,
     isLoading: isPeriodsLoading,
     isError: isPeriodsError,
-  } = useFetch<Period>(webformAPI.BudgetPeriods);
+  } = useFetch<Period>(APIs.BudgetPeriods);
 
   return (
     <Primitive

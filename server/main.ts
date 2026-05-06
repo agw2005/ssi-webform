@@ -8,7 +8,7 @@ import { loggerDate } from "./helper/loggerDate.ts";
 import { setupLogger } from "./logger.ts";
 
 await setupLogger();
-const logger = getLogger("webform-oak-server");
+const logger = getLogger("prism-server");
 
 Deno.cron("start-of-each-month", "0 17 1 * *", async () => {
   logger.info(

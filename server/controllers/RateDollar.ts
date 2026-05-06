@@ -1,5 +1,5 @@
 import ssms from "mssql";
-import type { MsSqlResponse, WebformDBForexResponse } from "@scope/server";
+import type { DBForexResponse, MsSqlResponse } from "@scope/server";
 
 const { VarChar, Decimal } = ssms;
 
@@ -11,15 +11,15 @@ const _RateDollarTypes = {
 
 export const getCurrentRateDollar = async (
   transaction: ssms.Transaction,
-): Promise<MsSqlResponse<WebformDBForexResponse>> => {
-  const result = await transaction.request().query<WebformDBForexResponse>(`
+): Promise<MsSqlResponse<DBForexResponse>> => {
+  const result = await transaction.request().query<DBForexResponse>(`
     SELECT
       IDCur AS Currency,
       CurrencyValue AS Valuation
     FROM RateDollar;
     `);
 
-  const response: MsSqlResponse<WebformDBForexResponse> = {
+  const response: MsSqlResponse<DBForexResponse> = {
     rowsReturned: result.recordset,
     rowsAffected: result.rowsAffected,
   };

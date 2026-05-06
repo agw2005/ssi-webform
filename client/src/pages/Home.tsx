@@ -23,7 +23,7 @@ import { formatDate } from "../helper/formatDate.ts";
 import { statusStyling } from "../helper/statusStyling.ts";
 import usePurchasingRequests from "../hooks/usePurchasingRequests.tsx";
 import { useDuplicateSupervisors } from "../hooks/useDuplicateSupervisors.tsx";
-import { webformAPI } from "../helper/apis.ts";
+import { APIs } from "../helper/apis.ts";
 
 interface SectionInfo {
   IDSection: number;
@@ -109,13 +109,13 @@ const Home = () => {
     data: sectionNames,
     isLoading: isSectionLoading,
     isError: sectionError,
-  } = useFetch<SectionName>(webformAPI.SectionNames);
+  } = useFetch<SectionName>(APIs.SectionNames);
 
   const {
     data: supervisorNames,
     isLoading: isSupervisorLoading,
     isError: supervisorError,
-  } = useFetch<SupervisorNames>(webformAPI.SupervisorNames);
+  } = useFetch<SupervisorNames>(APIs.SupervisorNames);
 
   const duplicateSupervisorNames = useDuplicateSupervisors(
     supervisorNames,
@@ -149,8 +149,8 @@ const Home = () => {
     totalRequestsAtDatabase,
     requests,
   } = usePurchasingRequests<FormRequest, TraceRequestsCount>(
-    webformAPI.Request,
-    webformAPI.RequestCount,
+    APIs.Request,
+    APIs.RequestCount,
     params.toString(),
   );
 

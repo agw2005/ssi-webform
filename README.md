@@ -1,8 +1,8 @@
-# WEBFORM Online
+# PRISM
 
-**WEBFORM Online** is full-stack web application made by Foxconn Technology
+**PRISM** (Purchasing Request Invocation SysteM), previously called `WEBFORM Online`, is a full-stack web application made by Foxconn Technology
 Indonesia (formerly Sharp Semiconductor Indonesia) for validating, recording,
-and archiving usage of a given section's budget (purchasing request). It is
+and archiving the usage of a given section's budget (purchasing request). It is
 built on [Deno](https://github.com/denoland/deno) for the GNU/Linux environment.
 
 # Development
@@ -31,7 +31,7 @@ Additionally, you should configure `/server/.env` file before proceeding.
 
 1. Inside the `/client` workspace, run `deno task build`.
 2. Copy the contents of the `/client/dist` directory to the production
-   environment's `/var/www/webform` directory.
+   environment's `/var/www/prism` directory.
 3. Inside the `/server` workspace, run `deno task build`.
 4. Copy the compiled server executable into a location of your choice.
 5. Make a new folder called `/logs` in the same location where the server
@@ -44,10 +44,10 @@ Additionally, you should configure `/server/.env` file before proceeding.
    [systemd manual](https://www.freedesktop.org/software/systemd/man/systemd.service.html)
    for more information.
 9. Configure nginx to map the front-end (port 4173) to the url
-   `intranet.ssi-asiasharp.com/webform` and the back-end (port 8000) to the url
-   `intranet.ssi-asiasharp.com/webform-api`. Check out the `/nginx.conf` file
+   `intranet.ssi-asiasharp.com/prism` and the back-end (port 8000) to the url
+   `intranet.ssi-asiasharp.com/prism-api`. Check out the `/nginx.conf` file
    for an example of this.
-10. Opening `intranet.ssi-asiasharp.com/webform` in the browser should display
+10. Opening `intranet.ssi-asiasharp.com/prism` in the browser should display
     the homepage of the application without any errors.
 
 # Commit Guidelines

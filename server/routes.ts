@@ -86,7 +86,7 @@ import { runSimpleQuery } from "./helper/runSimpleQuery.ts";
 import { getRequestInformation } from "./helper/getRequestInformation.ts";
 import { newPurchasingRequest } from "./helper/newPurchasingRequest.ts";
 
-const logger = getLogger("webform-oak-server");
+const logger = getLogger("prism-server");
 
 export const healthCheck = (ctx: RouterContext<"/">) => {
   logger.info(

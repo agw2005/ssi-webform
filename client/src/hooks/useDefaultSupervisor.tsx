@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
-import { webformAPI } from "../helper/apis.ts";
+import { APIs } from "../helper/apis.ts";
 import type { SupervisorNames } from "@scope/server";
 
 const useDefaultSupervisor = (
   supervisorNRPs: string[],
 ) => {
-  const url = webformAPI.SupervisorNrp;
+  const url = APIs.SupervisorNrp;
 
   const [supervisors, setSupervisors] = useState<string[] | null>(null);
   const [isLoading, setIsLoading] = useState(false);

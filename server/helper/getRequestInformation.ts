@@ -6,7 +6,7 @@ import { getApproverPathInformation } from "../controllers/TraceD.ts";
 import { getMinimumFileInformation } from "../controllers/UploadFile.ts";
 import type ssms from "mssql";
 
-const logger = getLogger("webform-oak-server");
+const logger = getLogger("prism-server");
 
 export const getRequestInformation = async (
   traceId: number,

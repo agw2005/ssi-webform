@@ -2,7 +2,7 @@ import getCurrentPeriod from "./getCurrentPeriod.ts";
 
 const serverRoot = import.meta.env.VITE_SERVER_ROOT_ROUTE;
 
-export const webformAPI = {
+export const APIs = {
   Forex: `/${serverRoot}/forex`,
   ForexTemp: `/${serverRoot}/forextemp`,
   NewForex: `/${serverRoot}/admin/ratedollartemp`,

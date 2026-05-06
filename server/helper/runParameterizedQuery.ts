@@ -4,7 +4,7 @@ import ssms from "mssql";
 import type { RouterContext } from "@oak/oak/router";
 import type { MsSqlResponse } from "@scope/server";
 
-const logger = getLogger("webform-oak-server");
+const logger = getLogger("prism-server");
 
 export const runParameterizedQuery = async <T extends string, U>(
   ctx: RouterContext<T>,

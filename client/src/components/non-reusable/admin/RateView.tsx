@@ -2,7 +2,7 @@ import useForex, { type Forexes } from "../../../hooks/useForex.tsx";
 import formatNumberToString from "../../../helper/formatNumberToString.ts";
 import Button from "../../reusable/Button.tsx";
 import { useEffect, useState } from "react";
-import { webformAPI } from "../../../helper/apis.ts";
+import { APIs } from "../../../helper/apis.ts";
 import { appCurrencies } from "@scope/server";
 
 const RateView = () => {
@@ -55,7 +55,7 @@ const RateView = () => {
 
     for (const forex of newForexes) {
       const url = new URL(
-        webformAPI.NewForex,
+        APIs.NewForex,
         globalThis.location.origin,
       );
 
@@ -85,10 +85,10 @@ const RateView = () => {
               European Union Dollar Rates
             </th>
             <th className="text-xs lg:text-sm xl:text-base | whitespace-nowrap border p-2 bg-blue-800 text-white border-black">
-              Webform Database Dollar Rates
+              Prism Database Dollar Rates
             </th>
             <th className="text-xs lg:text-sm xl:text-base | whitespace-nowrap border p-2 bg-blue-800 text-white border-black">
-              Webform Database Dollar Rates (Temporary)
+              Prism Database Dollar Rates (Temporary)
             </th>
           </tr>
         </thead>

@@ -8,7 +8,7 @@ import { useState } from "react";
 import type { LoginPayload, LoginResponse } from "@scope/server";
 import { jwtRequestPayload } from "@scope/server";
 import { createGenericChangeHandler } from "../helper/genericInputHandler.ts";
-import { webformAPI } from "../helper/apis.ts";
+import { APIs } from "../helper/apis.ts";
 import handleLoginSSO from "../helper/sso/handleLogin.ts";
 
 const DEFAULT_FORM_CONTENT: LoginPayload = {
@@ -43,7 +43,7 @@ const Login = () => {
       setLoginIsLoading(true);
       try {
         const response = await fetch(
-          webformAPI.RequestToken,
+          APIs.RequestToken,
           jwtRequestPayload(loginInformation),
         );
 

@@ -17,7 +17,7 @@ import { jsDateToMySQLDatetime } from "./jsDateToMySQLDatetime.ts";
 import { postRequestApproverPath } from "../controllers/TraceD.ts";
 import { postRequestFiles } from "../controllers/UploadFile.ts";
 
-const logger = getLogger("webform-oak-server");
+const logger = getLogger("prism-server");
 
 export const newPurchasingRequest = async (
   transaction: ssms.Transaction,

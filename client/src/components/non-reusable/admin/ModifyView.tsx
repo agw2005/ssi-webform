@@ -21,7 +21,7 @@ import capitalize from "../../../helper/capitalize.ts";
 import { statusStyling } from "../../../helper/statusStyling.ts";
 import { formatDate } from "../../../helper/formatDate.ts";
 import TipBox from "../../reusable/TipBox.tsx";
-import { webformAPI } from "../../../helper/apis.ts";
+import { APIs } from "../../../helper/apis.ts";
 
 interface ModifyViewProps {
   toggleDialog: (
@@ -102,8 +102,8 @@ const ModifyView = ({ toggleDialog }: ModifyViewProps) => {
     requests,
     refetch: refetchRequest,
   } = usePurchasingRequests<FormRequest, TraceRequestsCount>(
-    webformAPI.Request,
-    webformAPI.RequestCount,
+    APIs.Request,
+    APIs.RequestCount,
     params.toString(),
   );
 
@@ -112,7 +112,7 @@ const ModifyView = ({ toggleDialog }: ModifyViewProps) => {
     isLoading: _isSupervisorLoading,
     isError: _supervisorError,
     refetch: refetchSupervisor,
-  } = useFetch<SupervisorNames>(webformAPI.SupervisorNames);
+  } = useFetch<SupervisorNames>(APIs.SupervisorNames);
 
   const totalPages = Math.max(
     1,
@@ -129,7 +129,7 @@ const ModifyView = ({ toggleDialog }: ModifyViewProps) => {
     const abortController = new AbortController();
     try {
       const response = await fetch(
-        webformAPI.DeleteRequest(traceId),
+        APIs.DeleteRequest(traceId),
         { method: "DELETE", signal: abortController.signal },
       );
       if (response.ok) {

@@ -3,7 +3,7 @@ import { fromFileUrl, join } from "@std/path";
 
 const ROOT = fromFileUrl(import.meta.resolve("../"));
 const envDest = Deno.env.get("BUILD_DEST");
-const serverExecutable = "webform-oak-server";
+const serverExecutable = "prism-server";
 
 const dest = envDest && await exists(envDest, { isDirectory: true })
   ? envDest

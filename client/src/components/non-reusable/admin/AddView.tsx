@@ -8,7 +8,7 @@ import TipBox from "../../reusable/TipBox.tsx";
 import Button from "../../reusable/Button.tsx";
 import LoadingFallback from "../../reusable/LoadingFallback.tsx";
 import ErrorFallback from "../../reusable/ErrorFallback.tsx";
-import { webformAPI } from "../../../helper/apis.ts";
+import { APIs } from "../../../helper/apis.ts";
 import { removeWhitespace } from "../../../helper/removeSpaces.ts";
 
 interface AddViewProps {
@@ -84,7 +84,7 @@ const AddView = ({ toggleDialog }: AddViewProps) => {
     setSubmissionIsError(null);
     try {
       const response = await fetch(
-        webformAPI.SubmitBudget,
+        APIs.SubmitBudget,
         putBudgets(budgetData),
       );
       if (response.ok) {
@@ -318,7 +318,7 @@ const AddView = ({ toggleDialog }: AddViewProps) => {
           <p>
             Use the following{" "}
             <a
-              href={webformAPI.Template}
+              href={APIs.Template}
               target="_blank"
               className="text-blue-700"
             >

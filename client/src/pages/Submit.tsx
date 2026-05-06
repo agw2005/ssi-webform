@@ -27,7 +27,7 @@ import useForex from "../hooks/useForex.tsx";
 import { useNavigate } from "react-router-dom";
 import Dialog, { toggleDialog } from "../components/reusable/Dialog.tsx";
 import Button from "../components/reusable/Button.tsx";
-import { webformAPI } from "../helper/apis.ts";
+import { APIs } from "../helper/apis.ts";
 import useDefaultSupervisor from "../hooks/useDefaultSupervisor.tsx";
 import { defaultSupervisorsNRP } from "../helper/defaultSupervisor.ts";
 
@@ -128,20 +128,20 @@ const Submit = () => {
     data: sectionNames,
     isLoading: _isSectionLoading,
     isError: isSectionError,
-  } = useFetch<SectionName>(webformAPI.SectionNames);
+  } = useFetch<SectionName>(APIs.SectionNames);
 
   const {
     data: fileResources,
     isLoading: _isFileResourcesLoading,
     isError: isFileResourcesError,
-  } = useFetch<FileResource>(webformAPI.FileResources);
+  } = useFetch<FileResource>(APIs.FileResources);
 
   const {
     data: departments,
     isLoading: _isDepartmentsLoading,
     isError: isDepartmentsError,
   } = useFetch<ValidDepartment>(
-    webformAPI.Departments(firstStepInputs.fileResource),
+    APIs.Departments(firstStepInputs.fileResource),
   );
 
   const {
@@ -149,7 +149,7 @@ const Submit = () => {
     isLoading: _isCostCentersLoading,
     isError: isCostCentersError,
   } = useFetch<ValidCostCenter>(
-    webformAPI.CostCenters(
+    APIs.CostCenters(
       firstStepInputs.fileResource,
       firstStepInputs.department === DEFAULT_VALUES.firstStep.department
         ? null
@@ -161,7 +161,7 @@ const Submit = () => {
     data: natures,
     isLoading: _isNaturesLoading,
     isError: isNaturesError,
-  } = useFetch<Nature>(webformAPI.Natures(
+  } = useFetch<Nature>(APIs.Natures(
     firstStepInputs.fileResource,
     firstStepInputs.department === DEFAULT_VALUES.firstStep.department
       ? null
@@ -173,7 +173,7 @@ const Submit = () => {
     data: userSectionMappings,
     isLoading: _isUserSectionMappingsLoading,
     isError: isUserSectionMappingsError,
-  } = useFetch<UserSection>(webformAPI.SectionUserMappings);
+  } = useFetch<UserSection>(APIs.SectionUserMappings);
 
   const {
     forexInformation,
@@ -276,7 +276,7 @@ const Submit = () => {
     setBalanceError(null);
     try {
       const balanceResponse = await fetch(
-        webformAPI.Balance(fileResource, deptId, costCenter, nature, period),
+        APIs.Balance(fileResource, deptId, costCenter, nature, period),
       );
       if (!balanceResponse.ok) {
         throw new Error(`HTTP error! status: ${balanceResponse.status}`);
@@ -359,7 +359,7 @@ const Submit = () => {
     try {
       console.log(payload);
       const submitResponse = await fetch(
-        webformAPI.SubmitRequest,
+        APIs.SubmitRequest,
         submitRequest(payload),
       );
       const submitResponseBody: SubmitResponse = await submitResponse.json();

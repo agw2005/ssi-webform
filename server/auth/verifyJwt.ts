@@ -4,7 +4,7 @@ import { verify } from "@zaubrik/djwt";
 import type { VerifyResponse } from "./type.d.ts";
 import { getLogger } from "@logtape/logtape";
 
-const logger = getLogger("webform-oak-server");
+const logger = getLogger("prism-server");
 
 export const verifyJwt = async (ctx: RouterContext<"/verify">) => {
   const route = "/jwt/verify";
