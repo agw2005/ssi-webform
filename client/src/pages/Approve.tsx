@@ -3,7 +3,7 @@ import LoadingFallback from "../components/reusable/LoadingFallback.tsx";
 import Primitive from "../components/reusable/Primitive.tsx";
 import useAuth from "../hooks/useAuth.tsx";
 import type { TraceApproveRequests, TraceRequestsCount } from "@scope/server";
-import { useReducer } from "react";
+import { useReducer, useRef, useState } from "react";
 import stringContainsRedLight from "../helper/stringContainsRedLight.ts";
 import formatNumberToString from "../helper/formatNumberToString.ts";
 import capitalize from "../helper/capitalize.ts";
@@ -18,6 +18,7 @@ import SelectionInput from "../components/reusable/inputs/SelectionInput.tsx";
 import { useDebounce } from "../hooks/useDebounce.tsx";
 import usePurchasingRequests from "../hooks/usePurchasingRequests.tsx";
 import { APIs } from "../helper/apis.ts";
+import Dialog, { toggleDialog } from "../components/reusable/Dialog.tsx";
 
 const COLUMNS = [
   "ID Trace",
@@ -29,6 +30,7 @@ const COLUMNS = [
   "Status",
   "Submit Date",
   "Remarks",
+  "File",
 ];
 
 const RESULTS = ["All Results", "Approved", "In Progress", "Rejected"];
@@ -87,6 +89,14 @@ const FilterReducer = (state: Filters, action: FilterAction) => {
 };
 
 const Approve = () => {
+  const uploadFileReference = useRef<HTMLDialogElement>(null);
+  const [idTraceUploadDest, setIdTraceUploadDest] = useState<number | null>(
+    null,
+  );
+  const [attachedFiles, setAttachedFiles] = useState<File[]>([]);
+  const [bigFileWarning, setBigFileWarning] = useState<boolean>(false);
+  const [uploadIsLoading, setUploadIsLoading] = useState<boolean>(false);
+
   const { authInfo, authIsLoading } = useAuth();
 
   const [filters, setFilters] = useReducer(FilterReducer, DEFAULT_FILTERS);
@@ -299,6 +309,15 @@ const Approve = () => {
                         <td className="text-xs lg:text-sm xl:text-base | whitespace-nowrap border min-w-16 text-center p-2">
                           {request.Remarks}
                         </td>
+                        <td
+                          className="text-xs lg:text-sm xl:text-base | bg-blue-300 hover:bg-blue-500 active:bg-blue-400 | whitespace-nowrap border text-center p-2 select-none"
+                          onClick={() => {
+                            setIdTraceUploadDest(request.IDTrace);
+                            toggleDialog(uploadFileReference);
+                          }}
+                        >
+                          +
+                        </td>
                       </tr>
                     );
                   })}
@@ -306,6 +325,105 @@ const Approve = () => {
             </table>
           )}
       </div>
+      <Dialog
+        toggle={() => {
+          toggleDialog(uploadFileReference);
+          setBigFileWarning(false);
+          setAttachedFiles([]);
+        }}
+        ref={uploadFileReference}
+      >
+        <div className="p-8 flex flex-col gap-2">
+          {!uploadIsLoading && (
+            <div className="flex items-start gap-4">
+              <div className="h-64 w-lg max-h-64 max-w-lg overflow-clip overflow-y-auto border rounded-xl p-2">
+                {attachedFiles.map((file, index) => {
+                  return (
+                    <p
+                      className="text-xs whitespace-nowrap overflow-hidden overflow-ellipsis select-none"
+                      key={index}
+                    >
+                      <span
+                        className="text-red-700 hover:text-red-500 active:text-red-600 | font-bold"
+                        onClick={() => {
+                          setAttachedFiles((prev) =>
+                            prev.filter((_, prevIndex) => prevIndex !== index)
+                          );
+                        }}
+                      >
+                        X
+                      </span>{" "}
+                      {file.name}
+                    </p>
+                  );
+                })}
+              </div>
+              <div className="flex flex-col gap-2">
+                <label
+                  htmlFor="supervisor-file-upload"
+                  className="bg-black hover:bg-black/70 active:bg-black/85 | text-white border px-4 py-2 rounded-2xl text-center"
+                >
+                  <input
+                    type="file"
+                    name="supervisor-file-upload"
+                    id="supervisor-file-upload"
+                    hidden
+                    onClick={() => setBigFileWarning(false)}
+                    onChange={(e) => {
+                      const MAX_SIZE_BYTES = 5 * 1024 * 1024; // 5 Mb
+                      const file = e.target.files && e.target.files[0];
+                      const invalid = file === null || file === undefined ||
+                        file.size > MAX_SIZE_BYTES;
+                      if (!invalid) setAttachedFiles((prev) => [...prev, file]);
+                      else setBigFileWarning(true);
+                      e.target.value = "";
+                    }}
+                  />
+                  Insert attachment
+                </label>
+                <div
+                  onClick={async () => {
+                    setUploadIsLoading(true);
+                    if (idTraceUploadDest === null) return;
+                    const filesFormData = new FormData();
+                    attachedFiles.forEach((file) =>
+                      filesFormData.append("files", file)
+                    );
+                    try {
+                      const _ = await fetch(
+                        APIs.UploadFile(idTraceUploadDest),
+                        {
+                          method: "POST",
+                          body: filesFormData,
+                        },
+                      );
+                    } catch (err) {
+                      const error: Error = new Error(
+                        `Transport Failure: Your request did not reached the server. Please contact the administrator of this problem.\n(${err}).`,
+                      );
+                      console.error(error);
+                    } finally {
+                      toggleDialog(uploadFileReference);
+                      setUploadIsLoading(false);
+                    }
+                  }}
+                >
+                  <Button
+                    id="supervisor-submit-file"
+                    variant="green"
+                    label={`Attach File to PR ${idTraceUploadDest}`}
+                  />
+                </div>
+                {bigFileWarning && (
+                  <p className="text-red-700">
+                    You cannot upload<br />files that exceed 5Mb
+                  </p>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      </Dialog>
     </Primitive>
   );
 };

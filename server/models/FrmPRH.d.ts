@@ -53,3 +53,6 @@ export interface ForexAPIResponse {
   date: string;
   rates: ForexRates;
 }
+
+export interface FileUploadInfo
+  extends Pick<FrmPRHTable, "Requestor" | "Subject"> {}

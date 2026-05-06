@@ -1,4 +1,5 @@
 import type {
+  FileUploadInfo,
   FrmPRHTable,
   PRNumberIncrement,
   RequestItemsAtBudgetView,
@@ -178,4 +179,24 @@ export const deleteRequestInformation = async (
   );
 
   return result.rowsAffected[0];
+};
+
+export const getFileUploadInfo = async (
+  transaction: ssms.Transaction,
+  noForm: FrmPRHTable["NoForm"],
+) => {
+  const request = transaction.request();
+
+  request.input("noForm", FrmPRHSSMSTypes.NoForm, noForm);
+
+  const result = await request.query<FileUploadInfo>(
+    `SELECT Requestor, Subject FROM frm_PR_H WHERE NoForm = @noForm;`,
+  );
+
+  const response: MsSqlResponse<FileUploadInfo> = {
+    rowsReturned: result.recordset,
+    rowsAffected: result.rowsAffected,
+  };
+
+  return response;
 };

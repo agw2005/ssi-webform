@@ -100,7 +100,8 @@ jwtRouter
 approverRouter
   .patch("/remarks", handlers.patchRemarks)
   .patch("/reject", handlers.patchRejectRequest)
-  .patch("/accept", handlers.patchAcceptRequest);
+  .patch("/accept", handlers.patchAcceptRequest)
+  .post("/attach", handlers.postUploadFile);
 
 adminRouter
   .get("/template", handlers.getUploadBudgetTemplate)

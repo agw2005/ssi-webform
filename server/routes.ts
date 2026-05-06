@@ -20,6 +20,7 @@ import {
 } from "./controllers/FrmPRD.ts";
 import {
   deleteRequestInformation,
+  getFileUploadInfo,
   getRequestItemForBudgetView,
   patchRemarksOfRequest,
 } from "./controllers/FrmPRH.ts";
@@ -85,6 +86,8 @@ import { runParameterizedQuery } from "./helper/runParameterizedQuery.ts";
 import { runSimpleQuery } from "./helper/runSimpleQuery.ts";
 import { getRequestInformation } from "./helper/getRequestInformation.ts";
 import { newPurchasingRequest } from "./helper/newPurchasingRequest.ts";
+import { postRequestFiles } from "./controllers/UploadFile.ts";
+import { jsDateToMySQLDatetime } from "./helper/jsDateToMySQLDatetime.ts";
 
 const logger = getLogger("prism-server");
 
@@ -2091,6 +2094,138 @@ export const patchRateDollar = async () => {
         `Failed rolling back transaction. {value}`,
         { rollbackErr },
       );
+    }
+  }
+};
+
+export const postUploadFile = async (
+  ctx: RouterContext<"/attach">,
+) => {
+  const route = "/approve/attach";
+  logger.info(
+    `User accessed route "${route}"`,
+  );
+
+  logger.trace(
+    `Started searching route parameters`,
+  );
+  const params = ctx.request.url.searchParams;
+  logger.trace(
+    `Finished searching route parameters`,
+  );
+
+  const IDTrace = Number(params.get("traceid"));
+
+  logger.debug(
+    `Value of IDTrace is ${IDTrace}`,
+  );
+
+  if (IDTrace === 0) {
+    throw Error("Unable to find that ID Trace.");
+  }
+
+  logger.trace(
+    `Started searching route form data`,
+  );
+  const formDataRequest: FormData = await ctx.request.body.formData();
+  logger.trace(
+    `Finished searching route form data`,
+  );
+
+  const files = formDataRequest.getAll("files") as File[];
+
+  const transaction = new ssms.Transaction(databasePool);
+
+  transaction.on("error", (err) => {
+    logger.error(
+      `Internal transaction error caught by listener = {value}`,
+      { err },
+    );
+  });
+
+  logger.info(
+    `Beginning transaction`,
+  );
+
+  try {
+    await transaction.begin();
+
+    logger.trace(
+      `Running function getRequestIds()`,
+    );
+    const {
+      formId: _formId,
+      noForm,
+      noPr: _noPr,
+      requestItems: _requestItems,
+    } = await getRequestIds(
+      transaction,
+      IDTrace,
+    );
+    logger.trace(
+      `Finished running function getRequestIds()`,
+    );
+    logger.debug(
+      `Value of noForm is ${noForm}`,
+    );
+
+    logger.trace(
+      `Running function getFileUploadInfo()`,
+    );
+    const {
+      rowsReturned: additionalUploadInfo,
+      rowsAffected,
+    } = await getFileUploadInfo(
+      transaction,
+      noForm,
+    );
+    logger.trace(
+      `Finished running function getFileUploadInfo()`,
+    );
+    logger.debug(`Requestor is ${additionalUploadInfo[0].Requestor}`);
+    logger.debug(`Subject is ${additionalUploadInfo[0].Subject}`);
+    logger.debug(`${rowsAffected[0]} rows affected`);
+
+    for (const file of files) {
+      logger.trace(
+        `Current file : ${file.name}`,
+      );
+      logger.trace(
+        `Running function postRequestFiles()`,
+      );
+      const { rowsAffected, newUploadId } = await postRequestFiles(
+        transaction,
+        noForm,
+        additionalUploadInfo[0].Subject,
+        additionalUploadInfo[0].Requestor,
+        file.name,
+        jsDateToMySQLDatetime(new Date()),
+      );
+      if (rowsAffected[0] === 0) {
+        throw Error("No rows were affected. This is an unexpected beviour.");
+      }
+      logger.trace(
+        `Finished running function postRequestFiles()`,
+      );
+      logger.debug(
+        `The Upload ID for file ${file.name} is ${newUploadId}`,
+      );
+    }
+
+    logger.info(
+      `Comitting transaction`,
+    );
+
+    await transaction.commit();
+
+    ctx.response.status = 201;
+  } catch (err) {
+    logger.error(`Transaction failed for route "${route}". {value}`, { err });
+    ctx.response.status = 500;
+    try {
+      await transaction.rollback();
+    } catch (rollbackErr) {
+      logger.error(`Failed rolling back transaction. {value}`, { rollbackErr });
     }
   }
 };

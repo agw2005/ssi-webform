@@ -32,6 +32,8 @@ export const APIs = {
   RequestAttachments: `/${serverRoot}/uploadfile`,
   ApproverPath: `/${serverRoot}/traced`,
   PatchRemarks: `/${serverRoot}/approve/remarks`,
+  UploadFile: (traceId: number) =>
+    `/${serverRoot}/approve/attach?traceid=${traceId}`,
   PostVerdict: (verdict: "accept" | "reject") =>
     `/${serverRoot}/approve/${verdict}`,
   Departments: (fileResource?: string) => {
