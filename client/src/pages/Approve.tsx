@@ -333,96 +333,104 @@ const Approve = () => {
         }}
         ref={uploadFileReference}
       >
-        <div className="p-8 flex flex-col gap-2">
-          {!uploadIsLoading && (
-            <div className="flex items-start gap-4">
-              <div className="h-64 w-lg max-h-64 max-w-lg overflow-clip overflow-y-auto border rounded-xl p-2">
-                {attachedFiles.map((file, index) => {
-                  return (
-                    <p
-                      className="text-xs whitespace-nowrap overflow-hidden overflow-ellipsis select-none"
-                      key={index}
-                    >
-                      <span
-                        className="text-red-700 hover:text-red-500 active:text-red-600 | font-bold"
-                        onClick={() => {
-                          setAttachedFiles((prev) =>
-                            prev.filter((_, prevIndex) => prevIndex !== index)
-                          );
-                        }}
+        {uploadIsLoading
+          ? (
+            <div className="pr-32">
+              <LoadingFallback />
+            </div>
+          )
+          : (
+            <div className="p-8 flex flex-col gap-2">
+              <div className="flex items-start gap-4">
+                <div className="h-64 w-lg max-h-64 max-w-lg overflow-clip overflow-y-auto border rounded-xl p-2">
+                  {attachedFiles.map((file, index) => {
+                    return (
+                      <p
+                        className="text-xs whitespace-nowrap overflow-hidden overflow-ellipsis select-none"
+                        key={index}
                       >
-                        X
-                      </span>{" "}
-                      {file.name}
-                    </p>
-                  );
-                })}
-              </div>
-              <div className="flex flex-col gap-2">
-                <label
-                  htmlFor="supervisor-file-upload"
-                  className="bg-black hover:bg-black/70 active:bg-black/85 | text-white border px-4 py-2 rounded-2xl text-center"
-                >
-                  <input
-                    type="file"
-                    name="supervisor-file-upload"
-                    id="supervisor-file-upload"
-                    hidden
-                    onClick={() => setBigFileWarning(false)}
-                    onChange={(e) => {
-                      const MAX_SIZE_BYTES = 5 * 1024 * 1024; // 5 Mb
-                      const file = e.target.files && e.target.files[0];
-                      const invalid = file === null || file === undefined ||
-                        file.size > MAX_SIZE_BYTES;
-                      if (!invalid) setAttachedFiles((prev) => [...prev, file]);
-                      else setBigFileWarning(true);
-                      e.target.value = "";
-                    }}
-                  />
-                  Insert attachment
-                </label>
-                <div
-                  onClick={async () => {
-                    setUploadIsLoading(true);
-                    if (idTraceUploadDest === null) return;
-                    const filesFormData = new FormData();
-                    attachedFiles.forEach((file) =>
-                      filesFormData.append("files", file)
+                        <span
+                          className="text-red-700 hover:text-red-500 active:text-red-600 | font-bold"
+                          onClick={() => {
+                            setAttachedFiles((prev) =>
+                              prev.filter((_, prevIndex) => prevIndex !== index)
+                            );
+                          }}
+                        >
+                          X
+                        </span>{" "}
+                        {file.name}
+                      </p>
                     );
-                    try {
-                      const _ = await fetch(
-                        APIs.UploadFile(idTraceUploadDest),
-                        {
-                          method: "POST",
-                          body: filesFormData,
-                        },
-                      );
-                    } catch (err) {
-                      const error: Error = new Error(
-                        `Transport Failure: Your request did not reached the server. Please contact the administrator of this problem.\n(${err}).`,
-                      );
-                      console.error(error);
-                    } finally {
-                      toggleDialog(uploadFileReference);
-                      setUploadIsLoading(false);
-                    }
-                  }}
-                >
-                  <Button
-                    id="supervisor-submit-file"
-                    variant="green"
-                    label={`Attach File to PR ${idTraceUploadDest}`}
-                  />
+                  })}
                 </div>
-                {bigFileWarning && (
-                  <p className="text-red-700">
-                    You cannot upload<br />files that exceed 5Mb
-                  </p>
-                )}
+                <div className="flex flex-col gap-2">
+                  <label
+                    htmlFor="supervisor-file-upload"
+                    className="bg-black hover:bg-black/70 active:bg-black/85 | text-white border px-4 py-2 rounded-2xl text-center"
+                  >
+                    <input
+                      type="file"
+                      name="supervisor-file-upload"
+                      id="supervisor-file-upload"
+                      hidden
+                      onClick={() => setBigFileWarning(false)}
+                      onChange={(e) => {
+                        const MAX_SIZE_BYTES = 5 * 1024 * 1024; // 5 Mb
+                        const file = e.target.files && e.target.files[0];
+                        const invalid = file === null || file === undefined ||
+                          file.size > MAX_SIZE_BYTES;
+                        if (!invalid) {
+                          setAttachedFiles((prev) => [...prev, file]);
+                        } else setBigFileWarning(true);
+                        e.target.value = "";
+                      }}
+                    />
+                    Insert attachment
+                  </label>
+                  <div
+                    onClick={async () => {
+                      setUploadIsLoading(true);
+                      if (idTraceUploadDest === null) return;
+                      const filesFormData = new FormData();
+                      attachedFiles.forEach((file) =>
+                        filesFormData.append("files", file)
+                      );
+                      try {
+                        const _ = await fetch(
+                          APIs.UploadFile(idTraceUploadDest),
+                          {
+                            method: "POST",
+                            body: filesFormData,
+                          },
+                        );
+                      } catch (err) {
+                        const error: Error = new Error(
+                          `Transport Failure: Your request did not reached the server. Please contact the administrator of this problem.\n(${err}).`,
+                        );
+                        console.error(error);
+                      } finally {
+                        toggleDialog(uploadFileReference);
+                        setUploadIsLoading(false);
+                        setAttachedFiles([]);
+                      }
+                    }}
+                  >
+                    <Button
+                      id="supervisor-submit-file"
+                      variant="green"
+                      label={`Attach File to PR ${idTraceUploadDest}`}
+                    />
+                  </div>
+                  {bigFileWarning && (
+                    <p className="text-red-700">
+                      You cannot upload<br />files that exceed 5Mb
+                    </p>
+                  )}
+                </div>
               </div>
             </div>
           )}
-        </div>
       </Dialog>
     </Primitive>
   );
