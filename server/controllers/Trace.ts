@@ -1,4 +1,5 @@
 import type {
+  EmailingInfo,
   PurchasingRequestIds,
   PurchasingRequestItemsInformation,
   TraceApproveRequests,
@@ -572,4 +573,32 @@ export const deleteRequestTrace = async (
   );
 
   return result.rowsAffected[0];
+};
+
+export const getEmailingInfo = async (
+  transaction: ssms.Transaction,
+  noForm: FrmPRHTable["NoForm"],
+) => {
+  const request = transaction.request();
+
+  request.input("noForm", TraceSSMSTypes.NoForm, noForm);
+
+  const result = await request.query<EmailingInfo>(`
+    SELECT
+      Trace.EmailReq AS RequestorEmail,
+      Trace.Requestor AS RequestorName,
+      Trace.Status AS CurrentStatus,
+      frm_PR_H.Subject AS RequestSubject
+    FROM Trace
+    INNER JOIN frm_PR_H
+      ON Trace.NoForm = frm_PR_H.NoForm
+    WHERE Trace.NoForm = @noForm;
+`);
+
+  const response: MsSqlResponse<EmailingInfo> = {
+    rowsReturned: result.recordset,
+    rowsAffected: result.rowsAffected,
+  };
+
+  return response;
 };

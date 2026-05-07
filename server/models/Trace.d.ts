@@ -82,3 +82,10 @@ export interface PurchasingRequestItemsInformation {
   FileResource: string;
   Department: string;
 }
+
+export interface EmailingInfo {
+  RequestorEmail: string;
+  RequestorName: string;
+  CurrentStatus: string;
+  RequestSubject: string;
+}

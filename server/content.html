@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{title}}</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: sans-serif;
+        background-color: #f4f4f4;
+      }
+      .email-container {
+        max-width: 600px;
+        margin: 0 auto;
+        background-color: white;
+      }
+      header {
+        background-color: #ff9538;
+        text-align: center;
+        padding: 20px;
+      }
+      h1 {
+        color: #73753c;
+        margin: 0;
+      }
+      h2,
+      h3 {
+        color: #d9653b;
+      }
+      .main-content {
+        padding: 0 20px 20px 20px;
+      }
+      .footer-table {
+        background-color: #4b4c44;
+        width: 100%;
+        color: white;
+        border-spacing: 0;
+      }
+      .info p {
+        padding: 4px 0;
+        margin: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="email-container">
+      <div style="background-color: #4b4c44; height: 20px"></div>
+      <header>
+        <h1>{{appName}}</h1>
+      </header>
+
+      <table
+        role="presentation"
+        border="0"
+        cellpadding="0"
+        cellspacing="0"
+        width="100%"
+      >
+        <tr>
+          <td class="main-content" style="padding: 20px">
+            <h2>Dear, {{requestorName}}</h2>
+            <p>
+              This is the update for the PR
+              <strong>(Purchasing Request)</strong> that you've submitted.
+            </p>
+            <h3>ID Trace: {{traceId}}</h3>
+            <div class="info">
+              <p><strong>Requestor</strong> : {{requestorName}}</p>
+              <p><strong> Subject </strong> : {{requestSubject}}</p>
+              <p>
+                <strong>Status</strong> : {{supervisorAction}} by -
+                {{supervisorName}}
+              </p>
+              <p><strong>Current Status</strong> : {{currentStatus}}</p>
+            </div>
+            <p>
+              You can follow this link to see your form
+              <a
+                href="https://intranet3.ssi-asiasharp.com/prism/request/{{traceId}}"
+                target="_blank"
+                style="color: #d9653b; text-decoration: underline"
+                >here</a
+              >.
+            </p>
+          </td>
+        </tr>
+      </table>
+
+      <table
+        class="footer-table"
+        role="presentation"
+        border="0"
+        cellpadding="20"
+        cellspacing="0"
+      >
+        <tr>
+          <td
+            align="left"
+            style="
+              width: 50%;
+              color: #72a6a6;
+              vertical-align: top;
+              font-size: 12px;
+            "
+          >
+            Do not reply this email.<br />If you have any information, please
+            call extension 337 MIS Section.
+          </td>
+          <td
+            align="right"
+            style="
+              width: 50%;
+              color: white;
+              vertical-align: top;
+              font-size: 12px;
+            "
+          >
+            {{appName}} Development Division<br />Management Information
+            System<br />
+            {{companyName}}
+          </td>
+        </tr>
+      </table>
+    </div>
+  </body>
+</html>

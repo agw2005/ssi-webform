@@ -88,6 +88,7 @@ import { getRequestInformation } from "./helper/getRequestInformation.ts";
 import { newPurchasingRequest } from "./helper/newPurchasingRequest.ts";
 import { postRequestFiles } from "./controllers/UploadFile.ts";
 import { jsDateToMySQLDatetime } from "./helper/jsDateToMySQLDatetime.ts";
+import verdictEmail from "./helper/verdictEmail.ts";
 
 const logger = getLogger("prism-server");
 
@@ -1135,6 +1136,8 @@ export const patchRejectRequest = async (
   logger.info(
     `User accessed route "${route}"`,
   );
+
+  const action = "Rejected";
   const request: patchApprovalVerdict = await ctx.request.body.json();
 
   logger.debug(
@@ -1151,14 +1154,14 @@ export const patchRejectRequest = async (
     await transaction.begin();
 
     logger.trace(
-      `Running function provisionFormNumber()`,
+      `Running function getRequestIds()`,
     );
     const { formId, noForm, noPr, requestItems } = await getRequestIds(
       transaction,
       request.traceId,
     );
     logger.trace(
-      `Finished running function provisionFormNumber()`,
+      `Finished running function getRequestIds()`,
     );
     logger.debug(
       `Value of formId is ${formId}`,
@@ -1179,7 +1182,7 @@ export const patchRejectRequest = async (
     );
     const traceDPatchRowsAffected = await patchTraceDVerdict(
       transaction,
-      "Rejected",
+      action,
       request.traceId,
       request.supervisorId,
       request.supervisorLevel,
@@ -1225,19 +1228,11 @@ export const patchRejectRequest = async (
       `Value of SumApproverLevel is ${SumApproverLevel}`,
     );
 
-    logger.trace(
-      `Started looping "requestItems"`,
-    );
-    // Return requested budget (all items)
-    await Promise.all(requestItems.map(async (item) => {
-      logger.debug(
-        `Current requestItems = {value}`,
-        { requestItems },
-      );
+    logger.trace(`Started looping "requestItems"`);
+    for (const item of requestItems) {
+      logger.debug(`Current requestItems = ${requestItems}`);
 
-      logger.trace(
-        `Running function patchRequestBudget()`,
-      );
+      logger.trace(`Running function patchRequestBudget()`);
       const { rowsAffected: budgetPatchRowsAffeceted, rowsReturned: _ } =
         await patchRequestBudget(
           transaction,
@@ -1248,16 +1243,10 @@ export const patchRejectRequest = async (
           item.FileResource,
           Number(item.Department),
         );
-      logger.trace(
-        `Finished running function patchRequestBudget()`,
-      );
-      logger.debug(
-        `${budgetPatchRowsAffeceted} rows affected`,
-      );
-    }));
-    logger.trace(
-      `Finished looping "requestItems"`,
-    );
+      logger.trace(`Finished running function patchRequestBudget()`);
+      logger.debug(`${budgetPatchRowsAffeceted} rows affected`);
+    }
+    logger.trace(`Finished looping "requestItems"`);
 
     logger.trace(
       `Running function patchTraceVerdict()`,
@@ -1278,36 +1267,37 @@ export const patchRejectRequest = async (
       `${tracePatchRowsAffected} rows affected`,
     );
 
-    await Promise.all(
-      request.rejectedItems.map(async (itemId) => {
-        logger.trace(
-          `Running function patchFrmPRDVerdict()`,
-        );
-        const frmPrDRowPatchAffected = await patchFrmPRDVerdict(
-          transaction,
-          String(request.supervisorId),
-          itemId,
-        );
-        logger.trace(
-          `Finished running function patchFrmPRDVerdict()`,
-        );
-        logger.debug(
-          `${frmPrDRowPatchAffected} rows affected`,
-        );
-      }),
-    );
+    logger.trace(`Started looping "rejectedItems"`);
+    for (const itemId of request.rejectedItems) {
+      logger.debug(`Current itemId = ${itemId}`);
 
-    logger.info(
-      `Comitting transaction`,
-    );
+      logger.trace(`Running function Running function patchFrmPRDVerdict()()`);
+      const frmPrDRowPatchAffected = await patchFrmPRDVerdict(
+        transaction,
+        String(request.supervisorId),
+        itemId,
+      );
+      logger.trace(`Finished running function patchFrmPRDVerdict()`);
+      logger.debug(`${frmPrDRowPatchAffected} rows affected`);
+    }
+    logger.trace(`Finished looping "rejectedItems"`);
+
+    await verdictEmail({
+      transaction: transaction,
+      supervisorNrp: request.supervisorNrp,
+      noForm: noForm,
+      traceId: String(request.traceId),
+      supervisorAction: action,
+    });
+
+    logger.info(`Comitting transaction`);
 
     await transaction.commit();
 
     ctx.response.status = 204;
   } catch (err) {
     logger.error(
-      `Transaction failed for route "${route}". {value}`,
-      { err },
+      `Transaction failed for route "${route}". ${err}`,
     );
     ctx.response.status = 500;
     try {
@@ -1329,6 +1319,7 @@ export const patchAcceptRequest = async (
     `User accessed route "${route}"`,
   );
 
+  const action = "Approved";
   const request: patchApprovalVerdict = await ctx.request.body.json();
 
   logger.debug(
@@ -1344,6 +1335,33 @@ export const patchAcceptRequest = async (
 
   try {
     await transaction.begin();
+
+    logger.trace(`Running function getRequestIds()`);
+    const {
+      formId: formId,
+      noForm,
+      noPr: noPr,
+      requestItems: requestItems,
+    } = await getRequestIds(
+      transaction,
+      request.traceId,
+    );
+    logger.trace(
+      `Finished running function getRequestIds()`,
+    );
+    logger.debug(
+      `Value of formId is ${formId}`,
+    );
+    logger.debug(
+      `Value of noForm is ${noForm}`,
+    );
+    logger.debug(
+      `Value of noPr is ${noPr}`,
+    );
+    logger.debug(
+      `Value of requestItems is {value}`,
+      { requestItems },
+    );
 
     logger.trace(
       `Running function getNextApprover()`,
@@ -1370,7 +1388,7 @@ export const patchAcceptRequest = async (
     );
     const traceDPatchRowsAffected = await patchTraceDVerdict(
       transaction,
-      "Approved",
+      action,
       request.traceId,
       request.supervisorId,
       request.supervisorLevel,
@@ -1453,6 +1471,14 @@ export const patchAcceptRequest = async (
     } else {
       ctx.response.status = 204;
     }
+
+    await verdictEmail({
+      transaction: transaction,
+      supervisorNrp: request.supervisorNrp,
+      noForm: noForm,
+      traceId: String(request.traceId),
+      supervisorAction: action,
+    });
 
     logger.info(
       `Comitting transaction`,
@@ -1732,7 +1758,7 @@ export const deleteRequest = async (ctx: RouterContext<"/:traceId">) => {
     logger.trace(
       `Started looping "requestItems"`,
     );
-    await Promise.all(requestItems.map(async (item) => {
+    for (const item of requestItems) {
       logger.debug(`Current requestItems : `);
       logger.debug(`Value of CostCenter is ${item.CostCenter}`);
       logger.debug(`Value of Department is ${item.Department}`);
@@ -1752,16 +1778,12 @@ export const deleteRequest = async (ctx: RouterContext<"/:traceId">) => {
           item.FileResource,
           Number(item.Department),
         );
-      logger.trace(
-        `Finished running function patchRequestBudget()`,
-      );
-      logger.debug(
-        `${budgetPatchRowsAffected[0]} rows affected`,
-      );
+      logger.trace(`Finished running function patchRequestBudget()`);
+      logger.debug(`${budgetPatchRowsAffected[0]} rows affected`);
       if (budgetPatchRowsAffected[0] === 0) {
         throw new Error(`No budget was modified. Aborting request.`);
       }
-    }));
+    }
     logger.trace(
       `Finished looping "requestItems"`,
     );
