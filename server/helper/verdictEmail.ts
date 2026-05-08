@@ -59,15 +59,25 @@ const verdictEmail = async (option: {
   logger.trace(
     `Running function sendEmail()`,
   );
-  sendEmail({
-    requestorEmail: requestorEmail,
-    requestorName: requestorName,
-    traceId: option.traceId,
-    requestSubject: requestSubject,
-    supervisorAction: option.supervisorAction,
-    supervisorName: supervisorName,
-    currentStatus: currentStatus,
-  });
+  try {
+    const result = await sendEmail({
+      requestorEmail: requestorEmail,
+      requestorName: requestorName,
+      traceId: option.traceId,
+      requestSubject: requestSubject,
+      supervisorAction: option.supervisorAction,
+      supervisorName: supervisorName,
+      currentStatus: currentStatus,
+    });
+
+    logger.debug(`Value of acceptedRecipients is ${result.acceptedRecipients}`);
+    logger.debug(`Value of envelope is ${result.envelope}`);
+    logger.debug(`Value of messageId is ${result.messageId}`);
+    logger.debug(`Value of rejectedRecipients is ${result.rejectedRecipients}`);
+    logger.debug(`Value of response is ${result.response}`);
+  } catch (err) {
+    logger.error(`Error when sending email : ${err}`);
+  }
   logger.trace(
     `Finished running function sendEmail()`,
   );

@@ -59,25 +59,17 @@ const sendEmail = async (options: SendEmailOptions) => {
     .replaceAll("{{appName}}", appName)
     .replaceAll("{{companyName}}", companyName);
 
-  try {
-    const result = await transporter.send({
-      from: `"${senderUser}" <${senderAddr}>`,
-      // to: options.receiverEmail,
-      to: `danialag2005@gmail.com`, // (Testing) Send email to `danialag2005@gmail.com` instead
-      bcc: ``, // (Testing) Send to supervisor for testing
-      subject: `PRISM: ${options.currentStatus} ${options.traceId}`,
-      text: content, // If no HTML content is provided, will fall back to plain text.
-      html: content,
-    });
+  const result = await transporter.send({
+    from: `"${senderUser}" <${senderAddr}>`,
+    // to: options.receiverEmail,
+    to: `danialag2005@gmail.com`, // (Testing) Send email to `danialag2005@gmail.com` instead
+    bcc: ``, // (Testing) Send to supervisor for testing
+    subject: `PRISM: ${options.currentStatus} ${options.traceId}`,
+    text: content, // If no HTML content is provided, will fall back to plain text.
+    html: content,
+  });
 
-    console.log(result.acceptedRecipients);
-    console.log(result.envelope);
-    console.log(result.messageId);
-    console.log(result.rejectedRecipients);
-    console.log(result.response);
-  } catch (err) {
-    console.error(err);
-  }
+  return result;
 };
 
 export default sendEmail;
