@@ -1,4 +1,4 @@
-import { copy, exists, move } from "@std/fs";
+import { copy, exists } from "@std/fs";
 import { fromFileUrl, join } from "@std/path";
 
 const ROOT = fromFileUrl(import.meta.resolve("../"));
@@ -9,12 +9,18 @@ const dest = envDest && await exists(envDest, { isDirectory: true })
   ? envDest
   : join(ROOT, "build");
 
+if (await exists(dest)) {
+  console.log(`🧹 ${dest} Already exist`);
+  console.log(`🧹 Cleaning existing build directory: ${dest}`);
+  await Deno.remove(dest, { recursive: true });
+}
+
 await Deno.mkdir(dest, { recursive: true });
 console.log(`📦 Bundling to: ${dest}`);
 
 const clientDist = join(ROOT, "client", "dist");
 if (await exists(clientDist)) {
-  await move(clientDist, dest, { overwrite: true });
+  await copy(clientDist, dest, { overwrite: true });
   console.log("✅ Client assets copied");
 }
 
@@ -23,9 +29,10 @@ await Deno.mkdir(serverBundleDir, { recursive: true });
 
 const serverExeLocation = join(ROOT, "server", serverName);
 if (await exists(serverExeLocation)) {
-  await move(
+  await copy(
     serverExeLocation,
     join(serverBundleDir, serverName),
+    { overwrite: true },
   );
   console.log(`✅ Server executable copied to ${serverName}`);
 }
