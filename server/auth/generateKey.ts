@@ -4,7 +4,7 @@ import { loggerDate } from "../helper/loggerDate.ts";
 
 const logger = getLogger("prism-server");
 
-const ENV_PATH = ".env";
+const ENV_PATH = "../.env";
 
 const generateJWTKey = async () => {
   const key = await crypto.subtle.generateKey(
