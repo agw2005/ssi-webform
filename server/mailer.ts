@@ -49,7 +49,9 @@ const sendEmail = async (options: SendEmailOptions) => {
     currentStatus: options.currentStatus,
   };
 
-  const rawContent = await Deno.readTextFile("./content.html");
+  const rawContent = await Deno.readTextFile(
+    `${Deno.cwd()}/public/content.html`,
+  );
   const content = Object.entries(contentConfig).reduce(
     (acc, [key, value]) => acc.replaceAll(`{{${key}}}`, value),
     rawContent,
