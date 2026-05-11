@@ -85,7 +85,14 @@ const verdictEmail = async (option: {
       supervisorAction: option.supervisorAction,
       supervisorName: supervisorName,
       currentStatus: currentStatus,
+      accessId: option.accessId,
     });
+    logger.trace(
+      `Finished running function sendEmail()`,
+      { accessId: option.accessId },
+    );
+
+    if (!result) throw Error("sendEmail() result is undefined");
 
     logger.debug(
       `Value of acceptedRecipients is ${result.acceptedRecipients}`,
@@ -109,10 +116,6 @@ const verdictEmail = async (option: {
       accessId: option.accessId,
     });
   }
-  logger.trace(
-    `Finished running function sendEmail()`,
-    { accessId: option.accessId },
-  );
 
   logger.info(`Finished sending email to requestor`, {
     accessId: option.accessId,

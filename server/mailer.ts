@@ -1,4 +1,7 @@
 import mailer from "@neabyte/deno-mailer";
+import { getLogger } from "@logtape/logtape";
+
+const logger = getLogger("prism-server");
 
 // Test with `deno run --env --allow-env --allow-read --allow-net mailer.ts`
 
@@ -10,6 +13,7 @@ interface SendEmailOptions {
   supervisorAction: string;
   supervisorName: string;
   currentStatus: string;
+  accessId: string;
 }
 
 interface EmailContent {
@@ -23,69 +27,114 @@ interface EmailContent {
 
 const senderUser = String(Deno.env.get("SENDER_EMAIL_USER"));
 const senderAddr = String(Deno.env.get("SENDER_EMAIL_ADDR"));
-const senderPass = String(Deno.env.get("SENDER_EMAIL_PASS"));
+const smtpAddr = String(Deno.env.get("SMTP_SERVER_ADDR"));
+const smtpUser = String(Deno.env.get("SMTP_SERVER_USER"));
+const smtpPass = String(Deno.env.get("SMTP_SERVER_PASS"));
+const smtpPort = Number(Deno.env.get("SMTP_SERVER_PORT"));
 const appName = "PRISM";
 const companyName = "PT. Foxconn Technology Indonesia";
 
-// SMTP configuration (Gmail)
-const transporter = mailer.transporter({
-  host: "smtp.gmail.com",
-  port: 587,
-  secure: false,
-  auth: {
-    type: "password",
-    user: senderAddr,
-    pass: senderPass,
-  },
-});
-
 const sendEmail = async (options: SendEmailOptions) => {
-  const contentConfig: EmailContent = {
-    requestorName: options.requestorName,
-    traceId: options.traceId,
-    requestSubject: options.requestSubject,
-    supervisorAction: options.supervisorAction,
-    supervisorName: options.supervisorName,
-    currentStatus: options.currentStatus,
-  };
-
-  const rawContent = await Deno.readTextFile(
-    `${Deno.cwd()}/public/content.html`,
-  );
-  const content = Object.entries(contentConfig).reduce(
-    (acc, [key, value]) => acc.replaceAll(`{{${key}}}`, value),
-    rawContent,
-  )
-    .replaceAll("{{appName}}", appName)
-    .replaceAll("{{companyName}}", companyName);
-
-  const result = await transporter.send({
-    from: `"${senderUser}" <${senderAddr}>`,
-    // to: options.receiverEmail,
-    to: `danialag2005@gmail.com`, // (Testing) Send email to `danialag2005@gmail.com` instead
-    bcc: ``, // (Testing) Send to supervisor for testing
-    subject: `PRISM: ${options.currentStatus} ${options.traceId}`,
-    text: content, // If no HTML content is provided, will fall back to plain text.
-    html: content,
+  logger.debug(`Value of senderUser is ${senderUser}`, {
+    accessId: options.accessId,
+  });
+  logger.debug(`Value of senderAddr is ${senderAddr}`, {
+    accessId: options.accessId,
+  });
+  logger.debug(`Value of smtpAddr is ${smtpAddr}`, {
+    accessId: options.accessId,
+  });
+  logger.debug(`Value of smtpUser is ${smtpUser}`, {
+    accessId: options.accessId,
+  });
+  logger.debug(`Value of smtpPass is ${smtpPass}`, {
+    accessId: options.accessId,
+  });
+  logger.debug(`Value of smtpPort is ${smtpPort}`, {
+    accessId: options.accessId,
+  });
+  logger.debug(`Value of appName is ${appName}`, {
+    accessId: options.accessId,
+  });
+  logger.debug(`Value of companyName is ${companyName}`, {
+    accessId: options.accessId,
   });
 
-  return result;
+  try {
+    const transporter = mailer.transporter({
+      host: smtpAddr,
+      port: smtpPort,
+      secure: false,
+      auth: (smtpPass && smtpUser)
+        ? {
+          type: "password",
+          user: smtpUser,
+          pass: smtpPass,
+        }
+        : undefined,
+    });
+
+    const contentConfig: EmailContent = {
+      requestorName: options.requestorName,
+      traceId: options.traceId,
+      requestSubject: options.requestSubject,
+      supervisorAction: options.supervisorAction,
+      supervisorName: options.supervisorName,
+      currentStatus: options.currentStatus,
+    };
+
+    logger.debug(`Value of requestorName is ${contentConfig.requestorName}`, {
+      accessId: options.accessId,
+    });
+    logger.debug(`Value of traceId is ${contentConfig.traceId}`, {
+      accessId: options.accessId,
+    });
+    logger.debug(`Value of requestSubject is ${contentConfig.requestSubject}`, {
+      accessId: options.accessId,
+    });
+    logger.debug(
+      `Value of supervisorAction is ${contentConfig.supervisorAction}`,
+      {
+        accessId: options.accessId,
+      },
+    );
+    logger.debug(`Value of supervisorName is ${contentConfig.supervisorName}`, {
+      accessId: options.accessId,
+    });
+    logger.debug(`Value of currentStatus is ${contentConfig.currentStatus}`, {
+      accessId: options.accessId,
+    });
+
+    const rawContent = await Deno.readTextFile(
+      `${Deno.cwd()}/public/content.html`,
+    );
+    const content = Object.entries(contentConfig).reduce(
+      (acc, [key, value]) => acc.replaceAll(`{{${key}}}`, value),
+      rawContent,
+    )
+      .replaceAll("{{appName}}", appName)
+      .replaceAll("{{companyName}}", companyName);
+
+    const result = await transporter.send({
+      from: `"${senderUser}" <${senderAddr}>`,
+      // to: options.receiverEmail,
+      to: `danialag2005@gmail.com`, // (Testing) Send email to `danialag2005@gmail.com` instead
+      bcc: ``, // (Testing) Send to supervisor for testing
+      subject: `PRISM: ${options.currentStatus} ${options.traceId}`,
+      text: content, // If no HTML content is provided, will fall back to plain text.
+      html: content,
+    });
+
+    logger.debug(`Value of currentStatus is ${contentConfig.currentStatus}`, {
+      accessId: options.accessId,
+    });
+
+    return result;
+  } catch (err) {
+    logger.error(`Error during mailing: ${err}`, {
+      accessId: options.accessId,
+    });
+  }
 };
 
 export default sendEmail;
-
-// const main = () => {
-//   const emailConfig: SendEmailOptions = {
-//     receiverEmail: "danialag2005@gmail.com",
-//     requestorName: "Yusup Al",
-//     traceId: "13185",
-//     requestSubject:
-//       "Installation new internet line for migration network from Sharp to Foxconn",
-//     supervisorAction: "Approved",
-//     supervisorName: "SUWARSIH",
-//     currentStatus: "Final Approved",
-//   };
-
-//   sendEmail(emailConfig);
-// };
-// main();
