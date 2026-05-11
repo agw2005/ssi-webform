@@ -6,26 +6,34 @@ import mailer from "@neabyte/deno-mailer";
 const main = async () => {
   const senderUser = String(Deno.env.get("SENDER_EMAIL_USER"));
   const senderAddr = String(Deno.env.get("SENDER_EMAIL_ADDR"));
-  const senderPass = String(Deno.env.get("SENDER_EMAIL_PASS"));
+  const smtpAddr = String(Deno.env.get("SMTP_SERVER_ADDR"));
+  const smtpUser = String(Deno.env.get("SMTP_SERVER_USER"));
+  const smtpPass = String(Deno.env.get("SMTP_SERVER_PASS"));
+  const smtpPort = Number(Deno.env.get("SMTP_SERVER_PORT"));
   const appName = "PRISM";
   const companyName = "PT. Foxconn Technology Indonesia";
 
   console.log(senderUser);
   console.log(senderAddr);
-  console.log(senderPass);
+  console.log(smtpAddr);
+  console.log(smtpUser);
+  console.log(smtpPass);
+  console.log(smtpPort);
   console.log(appName);
   console.log(companyName);
 
   try {
     const transporter = mailer.transporter({
-      host: "smtp.gmail.com",
-      port: 587,
+      host: smtpAddr,
+      port: smtpPort,
       secure: false,
-      auth: {
-        type: "password",
-        user: senderAddr,
-        pass: senderPass,
-      },
+      auth: (smtpPass && smtpUser)
+        ? {
+          type: "password",
+          user: smtpUser,
+          pass: smtpPass,
+        }
+        : undefined,
     });
 
     const rawContent = await Deno.readTextFile(
