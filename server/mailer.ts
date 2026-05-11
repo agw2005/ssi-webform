@@ -119,8 +119,8 @@ const sendEmail = async (options: SendEmailOptions) => {
       from: `"${senderUser}" <${senderAddr}>`,
       // to: options.receiverEmail,
       to: `danialag2005@gmail.com`, // (Testing) Send email to `danialag2005@gmail.com` instead
-      bcc: ``, // (Testing) Send to supervisor for testing
-      subject: `PRISM: ${options.currentStatus} ${options.traceId}`,
+      bcc: `danial.agw.2005@gmail.com`, // (Testing) Send to supervisor for testing
+      subject: `FTI - ${appName}: ${options.currentStatus} ${options.traceId}`,
       text: content, // If no HTML content is provided, will fall back to plain text.
       html: content,
     });
