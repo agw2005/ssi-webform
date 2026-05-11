@@ -22,6 +22,7 @@ const logger = getLogger("prism-server");
 export const newPurchasingRequest = async (
   transaction: ssms.Transaction,
   payload: SubmitPayload,
+  accessId: string,
 ) => {
   const indonesiaUtc = 7;
   const now = addHours(new Date(), indonesiaUtc);
@@ -30,10 +31,12 @@ export const newPurchasingRequest = async (
 
   logger.debug(
     `Value of submissionDate is ${submissionDate}`,
+    { accessId: accessId },
   );
 
   logger.trace(
     `Running function getCurrentRateDollar()`,
+    { accessId: accessId },
   );
   const { rowsReturned: rates, rowsAffected: ratesRowAffected } =
     await getCurrentRateDollar(
@@ -41,27 +44,34 @@ export const newPurchasingRequest = async (
     );
   logger.trace(
     `Finished running function getCurrentRateDollar()`,
+    { accessId: accessId },
   );
   logger.debug(
     `${ratesRowAffected[0]} rows affected`,
+    { accessId: accessId },
   );
 
   logger.debug(
     `Value of rates is ${rates}`,
+    { accessId: accessId },
   );
 
   logger.trace(
     `Running function provisionFormNumber()`,
+    { accessId: accessId },
   );
   const noForm = provisionFormNumber();
   logger.trace(
     `Finished running function provisionFormNumber()`,
+    { accessId: accessId },
   );
   logger.debug(
     `Value of noForm is ${noForm}`,
+    { accessId: accessId },
   );
   logger.trace(
     `Running function provisionPRNumber()`,
+    { accessId: accessId },
   );
   const noPR = await provisionPRNumber(
     transaction,
@@ -69,12 +79,15 @@ export const newPurchasingRequest = async (
   );
   logger.trace(
     `Finished running function provisionPRNumber()`,
+    { accessId: accessId },
   );
   logger.debug(
     `Value of noPR is ${noPR}`,
+    { accessId: accessId },
   );
   logger.trace(
     `Running function getSectionIdByName()`,
+    { accessId: accessId },
   );
   const requestorSectionId = await getSectionIdByName(
     transaction,
@@ -82,9 +95,11 @@ export const newPurchasingRequest = async (
   );
   logger.trace(
     `Finished running function getSectionIdByName()`,
+    { accessId: accessId },
   );
   logger.debug(
     `Value of requestorSectionId is ${requestorSectionId}`,
+    { accessId: accessId },
   );
 
   let requestAmount = 0;
@@ -92,11 +107,12 @@ export const newPurchasingRequest = async (
 
   logger.trace(
     `Started looping "payload.thirdStep.usages"`,
+    { accessId: accessId },
   );
   for (const usage of payload.thirdStep.usages) {
     logger.debug(
-      `Current usage = {value}`,
-      { usage },
+      `Current usage = ${usage}`,
+      { accessId: accessId },
     );
     const currencyRate = usage.currency === "JPY"
       ? rates.find((rate) => rate.Currency === "YEN")?.Valuation
@@ -104,11 +120,13 @@ export const newPurchasingRequest = async (
 
     logger.debug(
       `Value of currencyRate is ${currencyRate}`,
+      { accessId: accessId },
     );
 
     if (!currencyRate) {
       logger.error(
         `currencyRate does not exist!`,
+        { accessId: accessId },
       );
       throw new Error("Unable to fetch RateDollar values");
     }
@@ -117,24 +135,29 @@ export const newPurchasingRequest = async (
       `${usage.periode}-${usage.costCenter}-${payload.firstStep.fileResource}`;
     logger.debug(
       `Value of budgetId is ${budgetId}`,
+      { accessId: accessId },
     );
     const quantity = Number(usage.quantity);
     logger.debug(
       `Value of quantity is ${quantity}`,
+      { accessId: accessId },
     );
     const pricePerUnit = Number(usage.unitPrice);
     logger.debug(
       `Value of pricePerUnit is ${pricePerUnit}`,
+      { accessId: accessId },
     );
     const netPriceByCurrencyRate = (quantity * pricePerUnit) / currencyRate;
     logger.debug(
       `Value of netPriceByCurrencyRate is ${netPriceByCurrencyRate}`,
+      { accessId: accessId },
     );
 
     requestAmount += netPriceByCurrencyRate;
 
     logger.trace(
       `Running function postUsage()`,
+      { accessId: accessId },
     );
 
     // POST to table frm_PR_D (Identifier : NoPR)
@@ -157,16 +180,20 @@ export const newPurchasingRequest = async (
 
     logger.trace(
       `Finished running function postUsage()`,
+      { accessId: accessId },
     );
     logger.debug(
       `${usageRowsAffected[0]} rows affected`,
+      { accessId: accessId },
     );
     logger.debug(
       `Value of newUsageId is ${newUsageId}`,
+      { accessId: accessId },
     );
 
     logger.trace(
       `Running function patchRequestBudget()`,
+      { accessId: accessId },
     );
     // PATCH to table Budget
     const {
@@ -183,13 +210,16 @@ export const newPurchasingRequest = async (
     );
     logger.trace(
       `Finished running function patchRequestBudget()`,
+      { accessId: accessId },
     );
     logger.debug(
       `${patchReqBudgetRowsAffected[0]} rows affected`,
+      { accessId: accessId },
     );
 
     logger.trace(
       `Running function singleBalance()`,
+      { accessId: accessId },
     );
     const {
       rowsReturned: natureBalance,
@@ -204,15 +234,20 @@ export const newPurchasingRequest = async (
     );
     logger.trace(
       `Finished running function singleBalance()`,
+      { accessId: accessId },
     );
     logger.debug(
       `${natureBalanceRowsAffected[0]} rows affected`,
+      { accessId: accessId },
     );
-    logger.debug(`Value of natureBalance is ${natureBalance[0].Balance}`);
+    logger.debug(`Value of natureBalance is ${natureBalance[0].Balance}`, {
+      accessId: accessId,
+    });
 
     const currentNatureBalance = Number(natureBalance[0].Balance);
     logger.debug(
       `Value of currentNatureBalance is ${currentNatureBalance}`,
+      { accessId: accessId },
     );
 
     if (!isRedLight && currentNatureBalance < netPriceByCurrencyRate) {
@@ -221,10 +256,12 @@ export const newPurchasingRequest = async (
 
     logger.debug(
       `Value of isRedLight is ${isRedLight}`,
+      { accessId: accessId },
     );
   }
   logger.trace(
     `Finished looping "payload.thirdStep.usages"`,
+    { accessId: accessId },
   );
 
   const requestSubject = !isRedLight
@@ -232,15 +269,18 @@ export const newPurchasingRequest = async (
     : `[RL] ${payload.secondStep.subject}`;
   logger.debug(
     `Value of requestSubject is ${requestSubject}`,
+    { accessId: accessId },
   );
 
   const initialRemarks = !isRedLight ? "" : "[RL]";
   logger.debug(
     `Value of initialRemarks is ${initialRemarks}`,
+    { accessId: accessId },
   );
 
   logger.trace(
     `Running function postRequestInformation()`,
+    { accessId: accessId },
   );
   // POST to table frm_PR_H (Identifiers : NoForm & NoPR)
   const { rowsAffected: requestInfoRowAffected, newId: requestInfoId } =
@@ -259,12 +299,15 @@ export const newPurchasingRequest = async (
 
   logger.trace(
     `Finished running function homeRequestsCount()`,
+    { accessId: accessId },
   );
   logger.debug(
     `${requestInfoRowAffected[0]} rows affected`,
+    { accessId: accessId },
   );
   logger.debug(
     `Value of requestInfoId is ${requestInfoId}`,
+    { accessId: accessId },
   );
 
   const supervisorNames = [
@@ -277,10 +320,12 @@ export const newPurchasingRequest = async (
   ];
   logger.debug(
     `Value of supervisorNames is ${supervisorNames}`,
+    { accessId: accessId },
   );
 
   logger.trace(
     `Running function getUserIdByName()`,
+    { accessId: accessId },
   );
   const {
     rowsAffected: initialSupervisorIdRowsAffected,
@@ -291,16 +336,20 @@ export const newPurchasingRequest = async (
   );
   logger.trace(
     `Finished running function getUserIdByName()`,
+    { accessId: accessId },
   );
   logger.debug(
     `${initialSupervisorIdRowsAffected[0]} rows affected`,
+    { accessId: accessId },
   );
   logger.debug(
     `Value of initialSupervisorId is ${initialSupervisorId}`,
+    { accessId: accessId },
   );
 
   logger.trace(
     `Running function postRequestTrace()`,
+    { accessId: accessId },
   );
   // POST to table Trace (Identifiers : NoForm & IDTrace)
   const { rowsAffected: newTraceIdRowsAffected, newIDTrace: newTraceId } =
@@ -318,25 +367,31 @@ export const newPurchasingRequest = async (
     );
   logger.trace(
     `Finished running function postRequestTrace()`,
+    { accessId: accessId },
   );
   logger.debug(
     `${newTraceIdRowsAffected[0]} rows affected`,
+    { accessId: accessId },
   );
   logger.debug(
     `Value of newTraceId is ${newTraceId}`,
+    { accessId: accessId },
   );
 
   {
     logger.trace(
       `Started looping "supervisorNames"`,
+      { accessId: accessId },
     );
     let approverStep = 0;
     for (const supervisorName of supervisorNames) {
       logger.debug(
         `Value of supervisorName is ${supervisorName}`,
+        { accessId: accessId },
       );
       logger.trace(
         `Running function getUserIdByName()`,
+        { accessId: accessId },
       );
       const {
         rowsAffected: currentSupervisorRowsAffected,
@@ -347,16 +402,20 @@ export const newPurchasingRequest = async (
       );
       logger.trace(
         `Finished running function getUserIdByName()`,
+        { accessId: accessId },
       );
       logger.debug(
         `${currentSupervisorRowsAffected[0]} rows affected`,
+        { accessId: accessId },
       );
       logger.debug(
         `Value of supervisorId is ${supervisorId}`,
+        { accessId: accessId },
       );
 
       logger.trace(
         `Running function postRequestApproverPath()`,
+        { accessId: accessId },
       );
       // POST to table Trace_D (Identifier : IDTrace)
       const requestApproverPathRowsAffected = await postRequestApproverPath(
@@ -368,22 +427,25 @@ export const newPurchasingRequest = async (
       );
       logger.debug(
         `${requestApproverPathRowsAffected[0]} rows affected`,
+        { accessId: accessId },
       );
 
       approverStep += 1;
     }
     logger.trace(
       `Finished looping "supervisorNames"`,
+      { accessId: accessId },
     );
   }
 
   logger.trace(
     `Started looping "payload.fifthStep.files"`,
+    { accessId: accessId },
   );
   for (const file of payload.fifthStep.files) {
     logger.debug(
-      `Current file = {value}`,
-      { file },
+      `Current file = ${file.name}`,
+      { accessId: accessId },
     );
     logger.trace(
       `Running function postRequestFiles()`,
@@ -400,16 +462,20 @@ export const newPurchasingRequest = async (
       );
     logger.trace(
       `Finished running function getUserIdByName()`,
+      { accessId: accessId },
     );
     logger.debug(
       `${newUploadRowsAffected[0]} rows affected`,
+      { accessId: accessId },
     );
     logger.debug(
       `Value of newUploadId is ${newUploadId}`,
+      { accessId: accessId },
     );
   }
   logger.trace(
     `Finished looping "payload.fifthStep.files"`,
+    { accessId: accessId },
   );
 
   return { noForm, noPR, traceId: newTraceId };

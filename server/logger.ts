@@ -3,7 +3,10 @@ import { configure, getConsoleSink, type LogRecord } from "@logtape/logtape";
 import { loggerDate } from "./helper/loggerDate.ts";
 
 const logFormatter = (record: LogRecord): string => {
-  return `[${record.level}] ${loggerDate()}=> ${record.message}\n`;
+  const accessId = record.properties.accessId
+    ? `:${record.properties.accessId}`
+    : "";
+  return `[${record.level}${accessId}] ${loggerDate()}=> ${record.message}\n`;
 };
 
 export async function setupLogger() {

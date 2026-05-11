@@ -11,9 +11,11 @@ const logger = getLogger("prism-server");
 export const getRequestInformation = async (
   traceId: number,
   transaction: ssms.Transaction,
+  accessId: string,
 ): Promise<FinalApprovalPayload> => {
   logger.trace(
     `Running function getAllRequestItems()`,
+    { accessId: accessId },
   );
   const {
     rowsReturned: requestItems,
@@ -24,13 +26,16 @@ export const getRequestInformation = async (
   );
   logger.trace(
     `Finished running function getAllRequestItems()`,
+    { accessId: accessId },
   );
   logger.debug(
     `${requestItemsRowsAffected[0]} rows affected`,
+    { accessId: accessId },
   );
 
   logger.trace(
     `Running function specificRequest()`,
+    { accessId: accessId },
   );
   const {
     rowsReturned: requestOverview,
@@ -41,9 +46,11 @@ export const getRequestInformation = async (
   );
   logger.trace(
     `Finished running function specificRequest()`,
+    { accessId: accessId },
   );
   logger.debug(
     `${reqOverviewRowsAffected[0]} rows affected`,
+    { accessId: accessId },
   );
 
   const processedItems = requestItems.map((item) => ({
@@ -64,6 +71,7 @@ export const getRequestInformation = async (
 
   logger.trace(
     `Running function getApproverPathInformation()`,
+    { accessId: accessId },
   );
   const {
     rowsReturned: requestSupervisors,
@@ -74,13 +82,16 @@ export const getRequestInformation = async (
   );
   logger.trace(
     `Finished running function getApproverPathInformation()`,
+    { accessId: accessId },
   );
   logger.debug(
     `${requestSupervisorsRowsAffected[0]} rows affected`,
+    { accessId: accessId },
   );
 
   logger.trace(
     `Running function getMinimumFileInformation()`,
+    { accessId: accessId },
   );
   const {
     rowsReturned: requestFiles,
@@ -91,9 +102,11 @@ export const getRequestInformation = async (
   );
   logger.trace(
     `Finished running function getMinimumFileInformation()`,
+    { accessId: accessId },
   );
   logger.debug(
     `${requestFilesRowsAffected[0]} rows affected`,
+    { accessId: accessId },
   );
 
   const payload: FinalApprovalPayload = {
