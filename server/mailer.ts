@@ -66,7 +66,7 @@ const sendEmail = async (options: SendEmailOptions) => {
     const transporter = mailer.transporter({
       host: smtpAddr,
       port: smtpPort,
-      secure: true,
+      secure: false, // If you encounter an `SMTP connection failed: received corrupt message of type InvalidContentType` then consider changing this value
       auth: (smtpPass && smtpUser)
         ? {
           type: "password",
@@ -118,6 +118,10 @@ const sendEmail = async (options: SendEmailOptions) => {
       .replaceAll("{{appName}}", appName)
       .replaceAll("{{companyName}}", companyName);
 
+    logger.debug(`Value of content is ${content}`, {
+      accessId: options.accessId,
+    });
+
     const result = await transporter.send({
       from: `"${senderUser}" <${senderAddr}>`,
       // to: options.receiverEmail,
@@ -128,7 +132,25 @@ const sendEmail = async (options: SendEmailOptions) => {
       html: content,
     });
 
-    logger.debug(`Value of currentStatus is ${contentConfig.currentStatus}`, {
+    logger.debug(
+      `Value of result.acceptedRecipients is ${result.acceptedRecipients}`,
+      {
+        accessId: options.accessId,
+      },
+    );
+    logger.debug(`Value of result.envelope is ${result.envelope}`, {
+      accessId: options.accessId,
+    });
+    logger.debug(`Value of result.messageId is ${result.messageId}`, {
+      accessId: options.accessId,
+    });
+    logger.debug(
+      `Value of result.rejectedRecipients is ${result.rejectedRecipients}`,
+      {
+        accessId: options.accessId,
+      },
+    );
+    logger.debug(`Value of result.response is ${result.response}`, {
       accessId: options.accessId,
     });
 

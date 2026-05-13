@@ -1536,7 +1536,12 @@ export const patchAcceptRequest = async (
   const action = "Approved";
   const request: patchApprovalVerdict = await ctx.request.body.json();
 
-  logger.debug(`Value of request is ${request}`, { accessId: accessId });
+  logger.debug(
+    `Value of request.requestPageOrigin is ${request.requestPageOrigin}`,
+    {
+      accessId: accessId,
+    },
+  );
 
   const transaction = new ssms.Transaction(databasePool);
 
