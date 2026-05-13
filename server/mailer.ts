@@ -14,6 +14,7 @@ interface SendEmailOptions {
   supervisorName: string;
   currentStatus: string;
   accessId: string;
+  requestLink: string;
 }
 
 interface EmailContent {
@@ -23,6 +24,7 @@ interface EmailContent {
   supervisorAction: string;
   supervisorName: string;
   currentStatus: string;
+  requestLink: string;
 }
 
 const senderUser = String(Deno.env.get("SENDER_EMAIL_USER"));
@@ -64,7 +66,7 @@ const sendEmail = async (options: SendEmailOptions) => {
     const transporter = mailer.transporter({
       host: smtpAddr,
       port: smtpPort,
-      secure: false,
+      secure: true,
       auth: (smtpPass && smtpUser)
         ? {
           type: "password",
@@ -81,6 +83,7 @@ const sendEmail = async (options: SendEmailOptions) => {
       supervisorAction: options.supervisorAction,
       supervisorName: options.supervisorName,
       currentStatus: options.currentStatus,
+      requestLink: options.requestLink,
     };
 
     logger.debug(`Value of requestorName is ${contentConfig.requestorName}`, {

@@ -13,6 +13,7 @@ const verdictEmail = async (option: {
   traceId: string;
   supervisorAction: string;
   accessId: string;
+  requestLink: string;
 }) => {
   logger.info(`Sending email to requestor`, { accessId: option.accessId });
 
@@ -86,6 +87,7 @@ const verdictEmail = async (option: {
       supervisorName: supervisorName,
       currentStatus: currentStatus,
       accessId: option.accessId,
+      requestLink: option.requestLink,
     });
     logger.trace(
       `Finished running function sendEmail()`,

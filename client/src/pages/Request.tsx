@@ -239,6 +239,7 @@ const Request = () => {
                     supervisorLevel: getCurrentApproverLevel(
                       requestApproverPathData,
                     ),
+                    requestPageOrigin: globalThis.location.href,
                   };
                   await handleVerdict("accept", payload);
                 }}
@@ -610,6 +611,7 @@ const Request = () => {
                       supervisorLevel: getCurrentApproverLevel(
                         requestApproverPathData,
                       ),
+                      requestPageOrigin: globalThis.location.href,
                     };
                     await handleVerdict("reject", payload);
                     setRejectEmptyErr(false);

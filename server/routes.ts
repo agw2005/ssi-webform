@@ -1499,6 +1499,7 @@ export const patchRejectRequest = async (
       traceId: String(request.traceId),
       supervisorAction: action,
       accessId,
+      requestLink: request.requestPageOrigin,
     });
 
     logger.info(`Comitting transaction`, { accessId: accessId });
@@ -1710,6 +1711,7 @@ export const patchAcceptRequest = async (
       traceId: String(request.traceId),
       supervisorAction: action,
       accessId: accessId,
+      requestLink: request.requestPageOrigin,
     });
 
     logger.info(

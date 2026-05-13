@@ -122,6 +122,7 @@ export interface patchApprovalVerdict {
   supervisorNrp: string;
   supervisorId: number;
   supervisorLevel: number;
+  requestPageOrigin: string;
 }
 
 import type { BudgetTable } from "./models/Budget.d.ts";
