@@ -137,6 +137,10 @@ const Request = () => {
   const [selectedRejects, setSelectedRejects] = useState<number[]>([]);
   const [rejectEmptyErr, setRejectEmptyErr] = useState(false);
 
+  const [verdictIsLoading, setVerdictIsLoading] = useState(false);
+  const [verdictIsError, setVerdictIsError] = useState<Error | null>(null);
+  const verdictAbortController = useRef<AbortController | null>(null);
+
   const rejectReference = useRef<HTMLDialogElement>(null);
 
   const [currentOverview, setCurrentOverview] = useState<Overview>(
@@ -169,6 +173,11 @@ const Request = () => {
     verdict: "accept" | "reject",
     payload: patchApprovalVerdict,
   ) => {
+    if (verdictAbortController.current) verdictAbortController.current.abort();
+    const currentController = new AbortController();
+    verdictAbortController.current = currentController;
+    setVerdictIsLoading(true);
+    setVerdictIsError(null);
     try {
       const response = await fetch(
         APIs.PostVerdict(verdict),
@@ -178,6 +187,8 @@ const Request = () => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify(payload),
+          signal: currentController.signal,
+          cache: "no-cache",
         },
       );
       if (response.ok) {
@@ -192,7 +203,19 @@ const Request = () => {
       }
       navigate(`/approve`, { replace: true });
     } catch (err) {
+      if (err instanceof Error && err.name === "AbortError") {
+        console.warn("Fetch aborted: a newer request was made.");
+        return;
+      }
+      const error: Error = new Error(
+        `Encountered an error when fetching data from the database. Please ensure your connection is stable.\n(${err}).`,
+      );
+      setVerdictIsError(error);
       console.error(err);
+    } finally {
+      if (verdictAbortController.current === currentController) {
+        setVerdictIsLoading(false);
+      }
     }
   };
 
@@ -214,12 +237,14 @@ const Request = () => {
         isRequestFilesDataLoading,
         isRequestApproverPathDataLoading,
         authIsLoading,
+        verdictIsLoading,
       ]}
       isErr={[
         isRequestOverviewDataError,
         isRequestItemsDataError,
         isRequestFilesDataError,
         isRequestApproverPathDataError,
+        verdictIsError,
       ]}
       componentName="Request.tsx"
       pageTitle={`Request ${reactRouterParams.requestId}`}
