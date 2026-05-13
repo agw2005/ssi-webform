@@ -23,6 +23,7 @@ import { APIs } from "../helper/apis.ts";
 import type { FinalApprovalPayload } from "@scope/server";
 
 export interface Overview {
+  "ID Trace": string;
   "Form ID": string;
   "Form Number": string;
   "PR Number": string;
@@ -57,6 +58,7 @@ const APPROVE_BUTTON_STYLINGS =
   "bg-green-700/40 hover:bg-green-700/80 active:bg-green-700/60 select-none";
 
 const EMPTY_OVERVIEW: Overview = {
+  "ID Trace": "",
   "Form ID": "",
   "Form Number": "",
   "PR Number": "",
@@ -155,6 +157,7 @@ const Request = () => {
     setNewRemarks(fetchedRemarks);
 
     setCurrentOverview({
+      "ID Trace": reactRouterParams.requestId || "",
       "Form ID": requestOverviewData[0].FormID,
       "Form Number": requestOverviewData[0].NoForm,
       "PR Number": requestOverviewData[0].NoPR,
