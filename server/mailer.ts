@@ -33,6 +33,7 @@ const smtpAddr = String(Deno.env.get("SMTP_SERVER_ADDR"));
 const smtpUser = String(Deno.env.get("SMTP_SERVER_USER"));
 const smtpPass = String(Deno.env.get("SMTP_SERVER_PASS"));
 const smtpPort = Number(Deno.env.get("SMTP_SERVER_PORT"));
+const smtpRequireSecure = String(Deno.env.get("SMTP_SERVER_REQUIRE_SECURE"));
 const appName = "PRISM";
 const companyName = "PT. Foxconn Technology Indonesia";
 
@@ -66,7 +67,7 @@ const sendEmail = async (options: SendEmailOptions) => {
     const transporter = mailer.transporter({
       host: smtpAddr,
       port: smtpPort,
-      secure: false, // If you encounter an `SMTP connection failed: received corrupt message of type InvalidContentType` then consider changing this value
+      secure: smtpRequireSecure === "true" ? true : false, // If you encounter an `SMTP connection failed: received corrupt message of type InvalidContentType` then consider changing this value
       auth: (smtpPass && smtpUser)
         ? {
           type: "password",
