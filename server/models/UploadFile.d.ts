@@ -10,4 +10,9 @@ export interface UploadFileTable {
 export interface UploadFileMinimalInformation {
   Filename: string;
   DateUpload: string;
+  IDUpload: number;
+}
+
+export interface Filename {
+  Filename: string;
 }

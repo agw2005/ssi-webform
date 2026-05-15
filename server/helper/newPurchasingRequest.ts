@@ -16,6 +16,9 @@ import addHours from "./addHours.ts";
 import { jsDateToMySQLDatetime } from "./jsDateToMySQLDatetime.ts";
 import { postRequestApproverPath } from "../controllers/TraceD.ts";
 import { postRequestFiles } from "../controllers/UploadFile.ts";
+import { ensureDir } from "@std/fs";
+import { fromFileUrl, join } from "@std/path";
+import { extension } from "@std/media-types";
 
 const logger = getLogger("prism-server");
 
@@ -438,15 +441,41 @@ export const newPurchasingRequest = async (
     );
   }
 
+  const ROOT = fromFileUrl(import.meta.resolve("../"));
+  const attachmentPath = join(ROOT, "public/dump");
+  await ensureDir(attachmentPath);
+
   logger.trace(
     `Started looping "payload.fifthStep.files"`,
     { accessId: accessId },
   );
   for (const file of payload.fifthStep.files) {
+    const safeFileName = `${
+      file.name
+        .replace(/^["']|["']$/g, "")
+        .replace(/[/\\?%*:|<>]/g, "_")
+    }.${extension(file.type)}`;
+
     logger.debug(
-      `Current file = ${file.name}`,
-      { accessId: accessId },
+      `Current file = ${file.name}.${
+        extension(file.type)
+      } (Sanitized: ${safeFileName})`,
+      {
+        accessId,
+      },
     );
+
+    const destPath = join(attachmentPath, safeFileName);
+    const arrayBuffer = await file.arrayBuffer();
+    try {
+      await Deno.writeFile(destPath, new Uint8Array(arrayBuffer));
+      logger.debug(`File saved to "${destPath}"`, { accessId });
+    } catch (err) {
+      logger.error(`Failed to save file to "${destPath}": ${err}`, {
+        accessId,
+      });
+    }
+
     logger.trace(
       `Running function postRequestFiles()`,
     );
@@ -457,7 +486,7 @@ export const newPurchasingRequest = async (
         noForm,
         payload.secondStep.subject,
         payload.firstStep.name,
-        file.name,
+        safeFileName,
         submissionDate,
       );
     logger.trace(

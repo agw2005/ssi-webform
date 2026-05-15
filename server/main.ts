@@ -113,7 +113,8 @@ rootRouter
   .get("/", handlers.healthCheck)
   .post("/submit", handlers.submitRequest)
   .get("/forex", handlers.getForex)
-  .get("/forextemp", handlers.getForexTemp);
+  .get("/forextemp", handlers.getForexTemp)
+  .get("/attachment/:uploadId", handlers.getPRAttachment);
 
 rootRouter
   .use("/section", sectionRouter.routes(), sectionRouter.allowedMethods())
