@@ -22,6 +22,7 @@ import { statusStyling } from "../../../helper/statusStyling.ts";
 import { formatDate } from "../../../helper/formatDate.ts";
 import TipBox from "../../reusable/TipBox.tsx";
 import { APIs } from "../../../helper/apis.ts";
+import { submitTest } from "../../../helper/submitTest.ts";
 
 interface ModifyViewProps {
   toggleDialog: (
@@ -152,6 +153,14 @@ const ModifyView = ({ toggleDialog }: ModifyViewProps) => {
   return (
     <div className="flex flex-col gap-2">
       <div className="h-8 lg:h-9 xl:h-10 | flex items-center w-max gap-2 mt-4">
+        <div
+          onClick={() => {
+            submitTest();
+            refetchRequest();
+          }}
+        >
+          <Button id="add-test-pr" variant="black" label="Add Testing PR" />
+        </div>
         <DateRangeInput
           name="filter-date-range"
           id="filter-date-range"
