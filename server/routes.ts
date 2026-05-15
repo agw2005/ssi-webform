@@ -46,7 +46,6 @@ import {
 } from "./controllers/TraceD.ts";
 import {
   deleteRequestFiles,
-  getFilename,
   getMinimumFileInformation,
 } from "./controllers/UploadFile.ts";
 import {
@@ -90,7 +89,6 @@ import { newPurchasingRequest } from "./helper/newPurchasingRequest.ts";
 import { postRequestFiles } from "./controllers/UploadFile.ts";
 import { jsDateToMySQLDatetime } from "./helper/jsDateToMySQLDatetime.ts";
 import verdictEmail from "./helper/verdictEmail.ts";
-import { join } from "@std/path";
 
 const logger = getLogger("prism-server");
 
@@ -2628,60 +2626,5 @@ export const postUploadFile = async (
         accessId: accessId,
       });
     }
-  }
-};
-
-export const getPRAttachment = async (
-  ctx: RouterContext<"/attachment/:uploadId">,
-) => {
-  const accessId = crypto.randomUUID();
-
-  const route = "/attachment";
-
-  logger.info(
-    `User accessed route "${route}"`,
-    { accessId: accessId },
-  );
-
-  const uploadId = Number(ctx.params.uploadId);
-
-  logger.debug(
-    `Value of uploadId is ${uploadId}`,
-    { accessId: accessId },
-  );
-
-  try {
-    const filename = await getFilename(databasePool, uploadId);
-    logger.debug(
-      `Value of filename is ${filename}`,
-      { accessId: accessId },
-    );
-
-    logger.debug(
-      `Root of attachments is ${join(Deno.cwd(), "public", "dump")}`,
-      { accessId: accessId },
-    );
-    const options: ContextSendOptions = {
-      root: join(Deno.cwd(), "public", "dump"),
-      path: filename,
-    };
-
-    ctx.response.headers.set(
-      "Content-Disposition",
-      `attachment; filename="${filename}"`,
-    );
-
-    logger.trace(
-      `Sending attachment to client`,
-      { accessId: accessId },
-    );
-
-    await ctx.send(options);
-  } catch (err) {
-    logger.error(
-      `Download failed on route "${route}". ${err}`,
-      { accessId: accessId },
-    );
-    ctx.response.status = 500;
   }
 };

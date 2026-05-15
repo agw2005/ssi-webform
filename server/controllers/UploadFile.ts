@@ -1,5 +1,4 @@
 import type {
-  Filename,
   UploadFileMinimalInformation,
   UploadFileTable,
 } from "../models/UploadFile.d.ts";
@@ -27,7 +26,7 @@ export const getMinimumFileInformation = async (
   request.input("traceId", TraceSSMSTypes.IDTrace, traceId);
 
   const result = await request.query<UploadFileMinimalInformation>(
-    `SELECT Filename,DateUpload,IDUpload
+    `SELECT Filename,DateUpload
     FROM UploadFile
     INNER JOIN Trace
       ON Trace.NoForm = UploadFile.NoForm
@@ -82,19 +81,4 @@ export const deleteRequestFiles = async (
   );
 
   return result.rowsAffected[0];
-};
-
-export const getFilename = async (
-  dbPool: ssms.ConnectionPool,
-  uploadId: UploadFileTable["IDUpload"],
-): Promise<UploadFileTable["Filename"]> => {
-  const request = dbPool.request();
-
-  request.input("uploadId", UploadFileSSMSTypes.IDUpload, uploadId);
-
-  const result = await request.query<Filename>(
-    `SELECT Filename FROM UploadFile WHERE IDUpload = @uploadId;`,
-  );
-
-  return result.recordset[0].Filename;
 };

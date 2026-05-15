@@ -394,10 +394,7 @@ const Request = () => {
                                 new Date(attachment.DateUpload).toISOString()
                               }`}
                             >
-                              <a
-                                href={`${APIs.Attachment}/${attachment.IDUpload}`}
-                                target="_blank"
-                              >
+                              <a href="#" target="_blank">
                                 {attachment.Filename}
                               </a>
                             </div>

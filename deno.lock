@@ -16,7 +16,6 @@
     "jsr:@std/http@1": "1.0.22",
     "jsr:@std/internal@^1.0.12": "1.0.12",
     "jsr:@std/media-types@1": "1.1.0",
-    "jsr:@std/media-types@^1.1.0": "1.1.0",
     "jsr:@std/path@1": "1.1.4",
     "jsr:@std/path@^1.1.0": "1.1.4",
     "jsr:@std/path@^1.1.4": "1.1.4",
@@ -70,7 +69,7 @@
         "jsr:@std/crypto",
         "jsr:@std/encoding@1",
         "jsr:@std/http",
-        "jsr:@std/media-types@1"
+        "jsr:@std/media-types"
       ]
     },
     "@oak/oak@17.2.0": {
@@ -80,7 +79,7 @@
         "jsr:@std/assert",
         "jsr:@std/bytes",
         "jsr:@std/http",
-        "jsr:@std/media-types@1",
+        "jsr:@std/media-types",
         "jsr:@std/path@1",
         "npm:path-to-regexp"
       ]
@@ -2464,9 +2463,6 @@
           "jsr:@neabyte/deno-mailer@0.3",
           "jsr:@oak/oak@^17.2.0",
           "jsr:@std/encoding@^1.0.10",
-          "jsr:@std/fs@^1.0.23",
-          "jsr:@std/media-types@^1.1.0",
-          "jsr:@std/path@^1.1.4",
           "jsr:@zaubrik/djwt@^3.0.2",
           "npm:@types/mssql@^9.1.11",
           "npm:mssql@^12.2.1"
