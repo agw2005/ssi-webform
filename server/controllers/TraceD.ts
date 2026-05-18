@@ -7,6 +7,8 @@ import type {
 import type { MsSqlResponse } from "@scope/server";
 
 import ssms from "mssql";
+import type { UserMasterTable } from "../models/UserMaster.d.ts";
+import { UserMasterSSMSTypes } from "./UserMaster.ts";
 
 const { Int, VarChar, DateTime2 } = ssms;
 
@@ -79,14 +81,14 @@ export const patchTraceDVerdict = async (
   transaction: ssms.Transaction,
   verdict: "Rejected" | "Approved",
   traceId: TraceDTable["IDTrace"],
-  idUser: TraceDTable["IDUser"],
+  supervisorNrp: UserMasterTable["NRP"],
   currentApproverLevel: TraceDTable["ApproverLevel"],
 ) => {
   const request = transaction.request();
 
   request.input("verdict", TraceDSSMSTypes.Result, verdict);
   request.input("traceId", TraceDSSMSTypes.IDTrace, traceId);
-  request.input("idUser", TraceDSSMSTypes.IDUser, idUser);
+  request.input("supervisorNrp", UserMasterSSMSTypes.NRP, `%${supervisorNrp}%`);
   request.input(
     "currentApproverLevel",
     TraceDSSMSTypes.ApproverLevel,
@@ -98,10 +100,13 @@ export const patchTraceDVerdict = async (
       SET
         Trace_D.Result = @verdict,
         Trace_D.DateApprove = GETDATE()
+      FROM Trace_D
+      INNER JOIN UserMaster
+      ON Trace_D.IDUser = UserMaster.IDUser
       WHERE Trace_D.IDTrace = @traceId
       AND (@verdict = 'Rejected' OR Trace_D.ApproverLevel >= @currentApproverLevel)
       AND (@verdict = 'Approved' OR Trace_D.ApproverLevel = @currentApproverLevel)
-      AND Trace_D.IDUser = @idUser;`,
+      AND UserMaster.NRP LIKE @supervisorNrp;`,
   );
   return result.rowsAffected[0];
 };
@@ -109,7 +114,7 @@ export const patchTraceDVerdict = async (
 export const getNextApprover = async (
   transaction: ssms.Transaction,
   traceId: TraceDTable["IDTrace"],
-  idUser: TraceDTable["IDUser"],
+  supervisorNrp: UserMasterTable["NRP"],
   currentLevel: TraceDTable["ApproverLevel"],
 ): Promise<{
   nextUserId: number | null;
@@ -118,18 +123,20 @@ export const getNextApprover = async (
   const request = transaction.request();
 
   request.input("traceId", TraceDSSMSTypes.IDTrace, traceId);
-  request.input("idUser", TraceDSSMSTypes.IDUser, idUser);
+  request.input("supervisorNrp", UserMasterSSMSTypes.NRP, `%${supervisorNrp}%`);
   request.input("currentLevel", TraceDSSMSTypes.ApproverLevel, currentLevel);
 
   const results = await request.query<NextApproverPath[]>(`
     SELECT TOP 1 
-      IDUser AS NextIDUser, 
+      Trace_D.IDUser AS NextIDUser, 
       ApproverLevel AS NextApproverLevel
     FROM Trace_D
-      WHERE IDTrace = @traceId 
-      AND IDUser <> @idUser
-      AND DateApprove IS NULL
-      AND ApproverLevel > @currentLevel
+    INNER JOIN UserMaster
+      ON UserMaster.IDUser = Trace_D.IDUser
+    WHERE IDTrace = @traceId
+    AND UserMaster.NRP NOT LIKE @supervisorNrp
+    AND DateApprove IS NULL
+    AND ApproverLevel > @currentLevel
     ORDER BY ApproverLevel;`);
 
   const nextUserId = results.recordset[0]?.NextIDUser ?? null;

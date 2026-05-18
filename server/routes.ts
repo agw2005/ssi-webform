@@ -1359,6 +1359,10 @@ export const patchRejectRequest = async (
       `Value of requestItems is ${requestItems}`,
       { accessId: accessId },
     );
+    logger.debug(
+      `Value of supervisor NRP is ${request.supervisorNrp}`,
+      { accessId: accessId },
+    );
 
     logger.trace(
       `Running function patchTraceDVerdict()`,
@@ -1368,7 +1372,7 @@ export const patchRejectRequest = async (
       transaction,
       action,
       request.traceId,
-      request.supervisorId,
+      onlyNumerics(request.supervisorNrp),
       request.supervisorLevel,
     );
     logger.trace(
@@ -1387,7 +1391,7 @@ export const patchRejectRequest = async (
     const { nextUserId, nextApproverLevel } = await getNextApprover(
       transaction,
       request.traceId,
-      request.supervisorId,
+      onlyNumerics(request.supervisorNrp),
       request.supervisorLevel,
     );
     logger.trace(
@@ -1588,7 +1592,7 @@ export const patchAcceptRequest = async (
     const { nextUserId, nextApproverLevel } = await getNextApprover(
       transaction,
       request.traceId,
-      request.supervisorId,
+      onlyNumerics(request.supervisorNrp),
       request.supervisorLevel,
     );
     logger.trace(
@@ -1604,6 +1608,12 @@ export const patchAcceptRequest = async (
       `Value of nextApproverLevel is ${nextApproverLevel}`,
       { accessId: accessId },
     );
+    logger.debug(
+      `Value of supervisor NRP is ${request.supervisorNrp} (${
+        onlyNumerics(request.supervisorNrp)
+      })`,
+      { accessId: accessId },
+    );
 
     logger.trace(
       `Running function patchTraceDVerdict()`,
@@ -1613,7 +1623,7 @@ export const patchAcceptRequest = async (
       transaction,
       action,
       request.traceId,
-      request.supervisorId,
+      onlyNumerics(request.supervisorNrp),
       request.supervisorLevel,
     );
     logger.trace(
