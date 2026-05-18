@@ -98,7 +98,7 @@ const Request = () => {
 
   const {
     data: requestOverviewData,
-    isLoading: isRequestOverviewDataLoading,
+    isLoading: _isRequestOverviewDataLoading,
     isError: isRequestOverviewDataError,
     refetch: refetchOverview,
   } = useFetch<RequestOverview>(
@@ -232,10 +232,12 @@ const Request = () => {
     (approverData) => approverData.Result === "Rejected",
   );
 
+  const refetchDelay = 125;
+
   return (
     <Primitive
       isLoading={[
-        isRequestOverviewDataLoading,
+        // isRequestOverviewDataLoading,
         isRequestItemsDataLoading,
         isRequestFilesDataLoading,
         isRequestApproverPathDataLoading,
@@ -343,7 +345,9 @@ const Request = () => {
                               );
                             }
                             setCurrentRemarks(newRemarks);
-                            refetchOverview();
+                            setTimeout(() => {
+                              refetchOverview();
+                            }, refetchDelay);
                           } catch (err) {
                             console.error(err);
                           }
