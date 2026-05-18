@@ -89,6 +89,8 @@ const ModifyView = ({ toggleDialog }: ModifyViewProps) => {
   const [filters, setFilters] = useReducer(FilterReducer, DEFAULT_FILTERS);
   const debouncedSearch = useDebounce(filters.search, 750);
 
+  const refetchDelay = 125;
+
   const params = new URLSearchParams();
   if (debouncedSearch) params.set("search", debouncedSearch);
   if (filters.startingDate) params.set("startdate", filters.startingDate);
@@ -134,8 +136,10 @@ const ModifyView = ({ toggleDialog }: ModifyViewProps) => {
         { method: "DELETE", signal: abortController.signal },
       );
       if (response.ok) {
-        refetchRequest();
-        refetchSupervisor();
+        setTimeout(() => {
+          refetchRequest();
+          refetchSupervisor();
+        }, refetchDelay);
       }
     } catch (err) {
       if (err instanceof Error && err.name === "AbortError") return;
@@ -156,7 +160,9 @@ const ModifyView = ({ toggleDialog }: ModifyViewProps) => {
         <div
           onClick={() => {
             submitTest();
-            refetchRequest();
+            setTimeout(() => {
+              refetchRequest();
+            }, refetchDelay);
           }}
         >
           <Button id="add-test-pr" variant="black" label="Add Testing PR" />
