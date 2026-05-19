@@ -180,9 +180,11 @@ const AddView = ({ toggleDialog }: AddViewProps) => {
       const nature = removeWhitespace(String(
         mainSheet["!data"]?.[row]?.[NATURE_COLUMN_INDEX].v,
       ));
-      const fileResource = removeWhitespace(String(
-        mainSheet["!data"]?.[row]?.[FILE_RESOURCE_COLUMN_INDEX].v,
-      ));
+      const fileResource = removeWhitespace(
+        String(
+          mainSheet["!data"]?.[row]?.[FILE_RESOURCE_COLUMN_INDEX].v,
+        ).toUpperCase(),
+      );
       const costCenter = removeWhitespace(String(
         mainSheet["!data"]?.[row]?.[COST_CENTER_COLUMN_INDEX].v,
       ));
