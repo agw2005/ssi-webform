@@ -1769,11 +1769,6 @@ export const putBudgets = async (
     .request
     .body.json();
 
-  logger.debug(
-    `Value of request is ${request}`,
-    { accessId: accessId },
-  );
-
   if (request.length < 1) {
     ctx.response.status = 400;
     ctx.response.body = "Request body was empty";
@@ -1798,56 +1793,6 @@ export const putBudgets = async (
     for (const budgetData of summedRequest) {
       if (budgetData.Budget === null || budgetData.Balance === null) continue;
 
-      logger.debug(`Current budgetData is...`, { accessId: accessId });
-      logger.debug(`Balance : ${budgetData.Balance}`, { accessId: accessId });
-      logger.debug(`Budget : ${budgetData.Budget}`, { accessId: accessId });
-      logger.debug(`CostCenter : ${budgetData.CostCenter}`, {
-        accessId: accessId,
-      });
-      logger.debug(`FileResource : ${budgetData.FileResource}`, {
-        accessId: accessId,
-      });
-      logger.debug(`IDSection : ${budgetData.IDSection}`, {
-        accessId: accessId,
-      });
-      logger.debug(`Nature : ${budgetData.Nature}`, { accessId: accessId });
-      logger.debug(`Periode : ${budgetData.Periode}`, { accessId: accessId });
-
-      const preExistingBudget: BudgetTable = await getSpecificBudgetData(
-        transaction,
-        budgetData.CostCenter,
-        budgetData.Nature,
-        budgetData.Periode,
-        budgetData.IDSection,
-        budgetData.FileResource,
-      );
-      logger.debug(
-        `Pre-existing budget exist? : ${preExistingBudget ? "Yes" : "No"}`,
-        { accessId: accessId },
-      );
-      logger.debug(`Value of preExistingBudget is...`, { accessId: accessId });
-      logger.debug(`Balance : ${preExistingBudget.Balance}`, {
-        accessId: accessId,
-      });
-      logger.debug(`Budget : ${preExistingBudget.Budget}`, {
-        accessId: accessId,
-      });
-      logger.debug(`CostCenter : ${preExistingBudget.CostCenter}`, {
-        accessId: accessId,
-      });
-      logger.debug(`FileResource : ${preExistingBudget.FileResource}`, {
-        accessId: accessId,
-      });
-      logger.debug(`IDSection : ${preExistingBudget.IDSection}`, {
-        accessId: accessId,
-      });
-      logger.debug(`Nature : ${preExistingBudget.Nature}`, {
-        accessId: accessId,
-      });
-      logger.debug(`Periode : ${preExistingBudget.Periode}`, {
-        accessId: accessId,
-      });
-
       let payload: BudgetTable = {
         CostCenter: budgetData.CostCenter,
         Nature: budgetData.Nature,
@@ -1858,7 +1803,61 @@ export const putBudgets = async (
         FileResource: budgetData.FileResource,
       };
 
+      logger.debug(`Current budgetData is...`, { accessId: accessId });
+      logger.debug(`Balance : ${payload.Balance}`, { accessId: accessId });
+      logger.debug(`Budget : ${payload.Budget}`, { accessId: accessId });
+      logger.debug(`CostCenter : ${payload.CostCenter}`, {
+        accessId: accessId,
+      });
+      logger.debug(`FileResource : ${payload.FileResource}`, {
+        accessId: accessId,
+      });
+      logger.debug(`IDSection : ${payload.IDSection}`, {
+        accessId: accessId,
+      });
+      logger.debug(`Nature : ${payload.Nature}`, { accessId: accessId });
+      logger.debug(`Periode : ${payload.Periode}`, { accessId: accessId });
+
+      const preExistingBudget: BudgetTable = await getSpecificBudgetData(
+        transaction,
+        payload.CostCenter,
+        payload.Nature,
+        payload.Periode,
+        payload.IDSection,
+        payload.FileResource,
+      );
+
+      logger.debug(
+        `Pre-existing budget exist? : ${preExistingBudget ? "Yes" : "No"}`,
+        { accessId: accessId },
+      );
+
       if (preExistingBudget) {
+        logger.debug(`Value of preExistingBudget is...`, {
+          accessId: accessId,
+        });
+        logger.debug(`Balance : ${preExistingBudget.Balance}`, {
+          accessId: accessId,
+        });
+        logger.debug(`Budget : ${preExistingBudget.Budget}`, {
+          accessId: accessId,
+        });
+        logger.debug(`CostCenter : ${preExistingBudget.CostCenter}`, {
+          accessId: accessId,
+        });
+        logger.debug(`FileResource : ${preExistingBudget.FileResource}`, {
+          accessId: accessId,
+        });
+        logger.debug(`IDSection : ${preExistingBudget.IDSection}`, {
+          accessId: accessId,
+        });
+        logger.debug(`Nature : ${preExistingBudget.Nature}`, {
+          accessId: accessId,
+        });
+        logger.debug(`Periode : ${preExistingBudget.Periode}`, {
+          accessId: accessId,
+        });
+
         const newBudget = budgetData.Budget;
         logger.debug(
           `Value of newBudget is ${newBudget}`,

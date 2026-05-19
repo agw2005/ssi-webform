@@ -1,22 +1,23 @@
 import type { BudgetTable } from "@scope/server";
 
-export const aggregateNewBudget = (budgetInput: BudgetTable[]) => {
-  const reducedData: BudgetTable[] = Array.from(
-    budgetInput.reduce((accumulator, currentBudget) => {
-      const compositeKey =
-        `${currentBudget.CostCenter}|${currentBudget.FileResource}|${currentBudget.IDSection}|${currentBudget.Nature}|${currentBudget.Periode}`;
+export const aggregateNewBudget = (
+  budgetInput: BudgetTable[],
+): BudgetTable[] => {
+  const aggregatedMap = budgetInput.reduce((accumulator, current) => {
+    const { CostCenter, FileResource, IDSection, Nature, Periode } = current;
+    const compositeKey =
+      `${CostCenter}-${FileResource}-${IDSection}-${Nature}-${Periode}`;
+    const compositeKeyAlreadyExist = accumulator.get(compositeKey);
 
-      const existing = accumulator.get(compositeKey);
-      if (existing) {
-        existing.Budget += currentBudget.Budget;
-        existing.Balance += currentBudget.Balance;
-      } else {
-        accumulator.set(compositeKey, { ...currentBudget });
-      }
+    if (compositeKeyAlreadyExist) {
+      compositeKeyAlreadyExist.Budget += current.Budget;
+      compositeKeyAlreadyExist.Balance += current.Balance;
+    } else {
+      accumulator.set(compositeKey, { ...current });
+    }
 
-      return accumulator;
-    }, new Map<string, BudgetTable>()).values(),
-  );
+    return accumulator;
+  }, new Map<string, BudgetTable>());
 
-  return reducedData;
+  return [...aggregatedMap.values()];
 };
