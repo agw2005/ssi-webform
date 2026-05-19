@@ -89,6 +89,7 @@ import { newPurchasingRequest } from "./helper/newPurchasingRequest.ts";
 import { postRequestFiles } from "./controllers/UploadFile.ts";
 import { jsDateToMySQLDatetime } from "./helper/jsDateToMySQLDatetime.ts";
 import verdictEmail from "./helper/verdictEmail.ts";
+import { aggregateNewBudget } from "./helper/aggregateNewBudget.ts";
 
 const logger = getLogger("prism-server");
 
@@ -1764,10 +1765,7 @@ export const putBudgets = async (
     { accessId: accessId },
   );
 
-  const request: (Omit<BudgetTable, "Budget" | "Balance"> & {
-    Budget: number | null;
-    Balance: number | null;
-  })[] = await ctx
+  const request: BudgetTable[] = await ctx
     .request
     .body.json();
 
@@ -1784,6 +1782,8 @@ export const putBudgets = async (
 
   const transaction = new ssms.Transaction(databasePool);
 
+  const summedRequest = aggregateNewBudget(request);
+
   try {
     logger.info(
       `Beginning transaction`,
@@ -1792,18 +1792,28 @@ export const putBudgets = async (
     await transaction.begin();
 
     logger.trace(
-      `Started looping "request"`,
+      `Started looping "summedRequest"`,
       { accessId: accessId },
     );
-    for (const budgetData of request) {
+    for (const budgetData of summedRequest) {
       if (budgetData.Budget === null || budgetData.Balance === null) continue;
 
-      logger.debug(
-        `Current budgetData is ${budgetData}`,
-        { accessId: accessId },
-      );
+      logger.debug(`Current budgetData is...`, { accessId: accessId });
+      logger.debug(`Balance : ${budgetData.Balance}`, { accessId: accessId });
+      logger.debug(`Budget : ${budgetData.Budget}`, { accessId: accessId });
+      logger.debug(`CostCenter : ${budgetData.CostCenter}`, {
+        accessId: accessId,
+      });
+      logger.debug(`FileResource : ${budgetData.FileResource}`, {
+        accessId: accessId,
+      });
+      logger.debug(`IDSection : ${budgetData.IDSection}`, {
+        accessId: accessId,
+      });
+      logger.debug(`Nature : ${budgetData.Nature}`, { accessId: accessId });
+      logger.debug(`Periode : ${budgetData.Periode}`, { accessId: accessId });
 
-      const potentialDuplicate: BudgetTable = await getSpecificBudgetData(
+      const preExistingBudget: BudgetTable = await getSpecificBudgetData(
         transaction,
         budgetData.CostCenter,
         budgetData.Nature,
@@ -1812,9 +1822,31 @@ export const putBudgets = async (
         budgetData.FileResource,
       );
       logger.debug(
-        `Value of potentialDuplicate is ${potentialDuplicate}`,
+        `Pre-existing budget exist? : ${preExistingBudget ? "Yes" : "No"}`,
         { accessId: accessId },
       );
+      logger.debug(`Value of preExistingBudget is...`, { accessId: accessId });
+      logger.debug(`Balance : ${preExistingBudget.Balance}`, {
+        accessId: accessId,
+      });
+      logger.debug(`Budget : ${preExistingBudget.Budget}`, {
+        accessId: accessId,
+      });
+      logger.debug(`CostCenter : ${preExistingBudget.CostCenter}`, {
+        accessId: accessId,
+      });
+      logger.debug(`FileResource : ${preExistingBudget.FileResource}`, {
+        accessId: accessId,
+      });
+      logger.debug(`IDSection : ${preExistingBudget.IDSection}`, {
+        accessId: accessId,
+      });
+      logger.debug(`Nature : ${preExistingBudget.Nature}`, {
+        accessId: accessId,
+      });
+      logger.debug(`Periode : ${preExistingBudget.Periode}`, {
+        accessId: accessId,
+      });
 
       let payload: BudgetTable = {
         CostCenter: budgetData.CostCenter,
@@ -1825,18 +1857,14 @@ export const putBudgets = async (
         IDSection: budgetData.IDSection,
         FileResource: budgetData.FileResource,
       };
-      logger.debug(
-        `Value of payload is ${payload}`,
-        { accessId: accessId },
-      );
 
-      if (potentialDuplicate) {
+      if (preExistingBudget) {
         const newBudget = budgetData.Budget;
         logger.debug(
           `Value of newBudget is ${newBudget}`,
           { accessId: accessId },
         );
-        const oldBudget = Number(potentialDuplicate.Budget);
+        const oldBudget = Number(preExistingBudget.Budget);
         logger.debug(
           `Value of oldBudget is ${oldBudget}`,
           { accessId: accessId },
@@ -1850,12 +1878,22 @@ export const putBudgets = async (
         payload = {
           ...payload,
           Budget: budgetData.Budget,
-          Balance: Number(potentialDuplicate.Balance) + difference,
+          Balance: Number(preExistingBudget.Balance) + difference,
         };
-        logger.debug(
-          `Value of payload is ${payload}`,
-          { accessId: accessId },
-        );
+        logger.debug(`Value of payload is...`, { accessId: accessId });
+        logger.debug(`Balance : ${payload.Balance}`, { accessId: accessId });
+        logger.debug(`Budget : ${payload.Budget}`, { accessId: accessId });
+        logger.debug(`CostCenter : ${payload.CostCenter}`, {
+          accessId: accessId,
+        });
+        logger.debug(`FileResource : ${payload.FileResource}`, {
+          accessId: accessId,
+        });
+        logger.debug(`IDSection : ${payload.IDSection}`, {
+          accessId: accessId,
+        });
+        logger.debug(`Nature : ${payload.Nature}`, { accessId: accessId });
+        logger.debug(`Periode : ${payload.Periode}`, { accessId: accessId });
 
         logger.trace(
           `Running function patchSpecificBudgetNewBudget()`,
@@ -1888,7 +1926,7 @@ export const putBudgets = async (
       }
     }
     logger.trace(
-      `Finished looping "request"`,
+      `Finished looping "summedRequest"`,
       { accessId: accessId },
     );
 
