@@ -29,7 +29,8 @@ interface TypeTitle {
   bynature: string;
 }
 
-export const COMPANY_NAME = "PT Foxconn Technologies Indonesia";
+const companyLegalName = import.meta.env.COMPANY_LEGAL_NAME;
+
 export const MONTHS = [
   "JANUARY",
   "FEBRUARY",
@@ -178,7 +179,7 @@ const Report = () => {
               : (
                 <>
                   <img src={company_logo} alt="Sharp Logo" className="h-11" />
-                  <h3 className="text-sm font-medium">{COMPANY_NAME}</h3>
+                  <h3 className="text-sm font-medium">{companyLegalName}</h3>
                   {render.description(reportType)}
                 </>
               )}

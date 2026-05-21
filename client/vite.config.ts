@@ -15,6 +15,7 @@ export default defineConfig({
     tailwindcss(),
     deno(),
   ],
+  envPrefix: ["VITE_", "COMPANY_"],
   resolve: {
     alias: {
       "@scope/server": path.resolve(__dirname, "../server/mod.ts"),

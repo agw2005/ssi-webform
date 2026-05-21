@@ -2,7 +2,6 @@ import Description from "../components/non-reusable/report/Description.tsx";
 import Titles from "../components/non-reusable/report/Titles.tsx";
 import type { ReportResponse } from "@scope/server";
 import {
-  COMPANY_NAME,
   FH_MONTHS,
   FH_MONTHS_INDEX,
   LH_MONTHS,
@@ -23,6 +22,8 @@ import getCurrentPeriod from "../helper/getCurrentPeriod.ts";
 import extractYearFromFullPeriode from "../helper/extractYearFromFullPeriode.ts";
 import extractMonthFromFullPeriode from "../helper/extractMonthFromFullPeriode.ts";
 import capitalize from "../helper/capitalize.ts";
+
+const companyLegalName = import.meta.env.COMPANY_LEGAL_NAME;
 
 const useRender = (
   reportPeriod: string,
@@ -257,7 +258,7 @@ const useRender = (
 
             reportPdf.setFontSize(descriptionFontSize);
             reportPdf.text(
-              COMPANY_NAME,
+              companyLegalName,
               initialXAxis,
               initialYAxis.other,
               {
@@ -388,7 +389,7 @@ const useRender = (
             }
 
             reportPdf.setFontSize(descriptionFontSize);
-            reportPdf.text(COMPANY_NAME, initialXAxis, initialYAxis.other, {
+            reportPdf.text(companyLegalName, initialXAxis, initialYAxis.other, {
               align: "left",
             });
 
@@ -526,7 +527,7 @@ const useRender = (
             }
 
             reportPdf.setFontSize(descriptionFontSize);
-            reportPdf.text(COMPANY_NAME, initialXAxis, initialYAxis.other, {
+            reportPdf.text(companyLegalName, initialXAxis, initialYAxis.other, {
               align: "left",
             });
 
@@ -624,7 +625,7 @@ const useRender = (
             }
 
             reportPdf.setFontSize(descriptionFontSize);
-            reportPdf.text(COMPANY_NAME, initialXAxis, initialYAxis.other, {
+            reportPdf.text(companyLegalName, initialXAxis, initialYAxis.other, {
               align: "left",
             });
 

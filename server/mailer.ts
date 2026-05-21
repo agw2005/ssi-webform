@@ -1,5 +1,6 @@
 import mailer from "@neabyte/deno-mailer";
 import { getLogger } from "@logtape/logtape";
+import { initialism } from "./helper/initialism.ts";
 
 const logger = getLogger("prism-server");
 
@@ -34,8 +35,11 @@ const smtpUser = String(Deno.env.get("SMTP_SERVER_USER"));
 const smtpPass = String(Deno.env.get("SMTP_SERVER_PASS"));
 const smtpPort = Number(Deno.env.get("SMTP_SERVER_PORT"));
 const smtpRequireSecure = String(Deno.env.get("SMTP_SERVER_REQUIRE_SECURE"));
+const companyLegalName = String(Deno.env.get("COMPANY_LEGAL_NAME"));
+const companyTradeNameInitialized = initialism(
+  String(Deno.env.get("COMPANY_TRADE_NAME")),
+);
 const appName = "PRISM";
-const companyName = "PT. Foxconn Technology Indonesia";
 
 const sendEmail = async (options: SendEmailOptions) => {
   logger.debug(`Value of senderUser is ${senderUser}`, {
@@ -59,7 +63,7 @@ const sendEmail = async (options: SendEmailOptions) => {
   logger.debug(`Value of appName is ${appName}`, {
     accessId: options.accessId,
   });
-  logger.debug(`Value of companyName is ${companyName}`, {
+  logger.debug(`Value of companyName is ${companyLegalName}`, {
     accessId: options.accessId,
   });
 
@@ -117,7 +121,7 @@ const sendEmail = async (options: SendEmailOptions) => {
       rawContent,
     )
       .replaceAll("{{appName}}", appName)
-      .replaceAll("{{companyName}}", companyName);
+      .replaceAll("{{companyName}}", companyLegalName);
 
     logger.debug(`Value of content is ${content}`, {
       accessId: options.accessId,
@@ -128,7 +132,8 @@ const sendEmail = async (options: SendEmailOptions) => {
       // to: options.receiverEmail,
       to: `danialag2005@gmail.com`, // (Testing) Send email to `danialag2005@gmail.com` instead
       bcc: `danial.agw.2005@gmail.com`, // (Testing) Send to supervisor for testing
-      subject: `FTI - ${appName}: ID Trace ${options.traceId}`,
+      subject:
+        `${companyTradeNameInitialized} - ${appName}: ID Trace ${options.traceId}`,
       text: content, // If no HTML content is provided, will fall back to plain text.
       html: content,
     });
