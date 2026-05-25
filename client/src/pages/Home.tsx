@@ -164,7 +164,7 @@ const Home = () => {
       isLoading={[isSectionLoading, isSupervisorLoading]}
       isErr={[sectionError, supervisorError, requestIsError]}
       componentName="Home.tsx"
-      pageTitle="PR Online"
+      pageTitle="Prism"
     >
       <div className="flex gap-2 flex-wrap">
         <SelectionInput
