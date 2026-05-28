@@ -21,6 +21,7 @@ import { getCurrentApproverLevel } from "../helper/getCurrentApproverLevel.ts";
 import generateRequestPdf from "../helper/generateRequestPdf.ts";
 import { APIs } from "../helper/apis.ts";
 import type { FinalApprovalPayload } from "@scope/server";
+import { downloadAttachment } from "../helper/downloadAttachment.ts";
 
 export interface Overview {
   "ID Trace": string;
@@ -387,28 +388,29 @@ const Request = () => {
                 <div key={key} className={blackAndWhite}>
                   <div className="flex-2 px-4 py-2">{key}</div>
                   <div className="flex-13 px-4 py-2">
-                    {requestFilesData && requestFilesData.length === 0
-                      ? "-"
-                      : requestFilesData &&
-                        requestFilesData.map((attachment, index) => {
-                          return (
-                            <div
-                              key={index}
-                              title={`Date Uploaded: ${
-                                new Date(attachment.DateUpload).toISOString()
-                              }`}
+                    {!requestFilesData || requestFilesData.length === 0
+                      ? (
+                        "-"
+                      )
+                      : (
+                        requestFilesData.map((attachment, index) => (
+                          <div
+                            key={index}
+                            title={`Date Uploaded: ${
+                              new Date(attachment.DateUpload).toISOString()
+                            }`}
+                          >
+                            <button
+                              type="button"
+                              onClick={() =>
+                                downloadAttachment(attachment.Filename)}
+                              className="text-blue-900 hover:text-blue-800 active:text-blue-800/85 text-left select-none background-transparent border-none p-0 cursor-pointer"
                             >
-                              <a
-                                href={`${globalThis.location.origin}${
-                                  APIs.DownloadAttachment(attachment.Filename)
-                                }`}
-                                target="_blank"
-                              >
-                                {attachment.Filename}
-                              </a>
-                            </div>
-                          );
-                        })}
+                              {attachment.Filename}
+                            </button>
+                          </div>
+                        ))
+                      )}
                   </div>
                 </div>
               );
