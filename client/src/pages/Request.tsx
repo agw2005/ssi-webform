@@ -399,7 +399,7 @@ const Request = () => {
                               }`}
                             >
                               <a
-                                href={`${globalThis.location.origin}/${
+                                href={`${globalThis.location.origin}${
                                   APIs.DownloadAttachment(attachment.Filename)
                                 }`}
                                 target="_blank"
