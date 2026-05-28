@@ -90,6 +90,8 @@ import { postRequestFiles } from "./controllers/UploadFile.ts";
 import { jsDateToMySQLDatetime } from "./helper/jsDateToMySQLDatetime.ts";
 import verdictEmail from "./helper/verdictEmail.ts";
 import { aggregateNewBudget } from "./helper/aggregateNewBudget.ts";
+import { renameAttachment } from "./helper/renameAttachment.ts";
+import { saveAttachmentToServer } from "./helper/saveAttachmentToServer.ts";
 
 const logger = getLogger("prism-server");
 
@@ -2528,6 +2530,9 @@ export const postUploadFile = async (
     { accessId: accessId },
   );
 
+  const now = new Date();
+  const submissionDate = jsDateToMySQLDatetime(now);
+
   logger.trace(
     `Started searching route parameters`,
     { accessId: accessId },
@@ -2624,6 +2629,7 @@ export const postUploadFile = async (
     logger.debug(`${rowsAffected[0]} rows affected`, { accessId: accessId });
 
     for (const file of files) {
+      const newFileName = renameAttachment(file.name, now);
       logger.trace(
         `Current file : ${file.name}`,
         { accessId: accessId },
@@ -2637,8 +2643,8 @@ export const postUploadFile = async (
         noForm,
         additionalUploadInfo[0].Subject,
         additionalUploadInfo[0].Requestor,
-        file.name,
-        jsDateToMySQLDatetime(new Date()),
+        newFileName,
+        submissionDate,
       );
       if (rowsAffected[0] === 0) {
         throw Error("No rows were affected. This is an unexpected beviour.");
@@ -2648,8 +2654,15 @@ export const postUploadFile = async (
         { accessId: accessId },
       );
       logger.debug(
-        `The Upload ID for file ${file.name} is ${newUploadId}`,
+        `The Upload ID for file ${newFileName} is ${newUploadId}`,
         { accessId: accessId },
+      );
+      logger.trace(
+        `Running function saveAttachmentToServer()`,
+      );
+      await saveAttachmentToServer(file, accessId, newFileName);
+      logger.trace(
+        `Finished running function saveAttachmentToServer()`,
       );
     }
 

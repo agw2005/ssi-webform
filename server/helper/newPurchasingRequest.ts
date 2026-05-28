@@ -16,6 +16,8 @@ import addHours from "./addHours.ts";
 import { jsDateToMySQLDatetime } from "./jsDateToMySQLDatetime.ts";
 import { postRequestApproverPath } from "../controllers/TraceD.ts";
 import { postRequestFiles } from "../controllers/UploadFile.ts";
+import { renameAttachment } from "./renameAttachment.ts";
+import { saveAttachmentToServer } from "./saveAttachmentToServer.ts";
 
 const logger = getLogger("prism-server");
 
@@ -443,10 +445,9 @@ export const newPurchasingRequest = async (
     { accessId: accessId },
   );
   for (const file of payload.fifthStep.files) {
-    logger.debug(
-      `Current file = ${file.name}`,
-      { accessId: accessId },
-    );
+    const newFileName = renameAttachment(file.name, now);
+    logger.debug(`Current file = ${file.name}`, { accessId: accessId });
+    logger.debug(`New filename = ${newFileName}`, { accessId: accessId });
     logger.trace(
       `Running function postRequestFiles()`,
     );
@@ -457,11 +458,11 @@ export const newPurchasingRequest = async (
         noForm,
         payload.secondStep.subject,
         payload.firstStep.name,
-        file.name,
+        newFileName,
         submissionDate,
       );
     logger.trace(
-      `Finished running function getUserIdByName()`,
+      `Finished running function postRequestFiles()`,
       { accessId: accessId },
     );
     logger.debug(
@@ -471,6 +472,13 @@ export const newPurchasingRequest = async (
     logger.debug(
       `Value of newUploadId is ${newUploadId}`,
       { accessId: accessId },
+    );
+    logger.trace(
+      `Running function saveAttachmentToServer()`,
+    );
+    await saveAttachmentToServer(file, accessId, newFileName);
+    logger.trace(
+      `Finished running function saveAttachmentToServer()`,
     );
   }
   logger.trace(
