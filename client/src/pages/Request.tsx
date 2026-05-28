@@ -398,7 +398,12 @@ const Request = () => {
                                 new Date(attachment.DateUpload).toISOString()
                               }`}
                             >
-                              <a href="#" target="_blank">
+                              <a
+                                href={`${globalThis.location.origin}/${
+                                  APIs.DownloadAttachment(attachment.Filename)
+                                }`}
+                                target="_blank"
+                              >
                                 {attachment.Filename}
                               </a>
                             </div>

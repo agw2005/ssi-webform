@@ -3,6 +3,8 @@ import getCurrentPeriod from "./getCurrentPeriod.ts";
 const serverRoot = import.meta.env.VITE_SERVER_ROOT_ROUTE;
 
 export const APIs = {
+  DownloadAttachment: (filename: string) =>
+    `/${serverRoot}/attachment/${filename}`,
   Forex: `/${serverRoot}/forex`,
   ForexTemp: `/${serverRoot}/forextemp`,
   NewForex: `/${serverRoot}/admin/ratedollartemp`,
