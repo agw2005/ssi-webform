@@ -92,6 +92,7 @@ import verdictEmail from "./helper/verdictEmail.ts";
 import { aggregateNewBudget } from "./helper/aggregateNewBudget.ts";
 import { renameAttachment } from "./helper/renameAttachment.ts";
 import { saveAttachmentToServer } from "./helper/saveAttachmentToServer.ts";
+import { normalize } from "@std/path";
 
 const logger = getLogger("prism-server");
 
@@ -2685,6 +2686,73 @@ export const postUploadFile = async (
       logger.error(`Failed rolling back transaction. ${rollbackErr}`, {
         accessId: accessId,
       });
+    }
+  }
+};
+
+export const getAttachment = async (
+  ctx: RouterContext<"/attachment/:filename">,
+) => {
+  const accessId = crypto.randomUUID();
+
+  const route = "/attachment/:filename";
+
+  logger.info(
+    `User accessed route "${route}"`,
+    { accessId: accessId },
+  );
+
+  const filename = ctx.params.filename;
+
+  try {
+    if (!filename) {
+      const errMessage = `The url parameter is missing or invalid`;
+      logger.error(errMessage, { accessId });
+      ctx.response.status = 400;
+      ctx.response.body = errMessage;
+      return;
+    }
+
+    logger.debug(`Value of filename is ${filename}`, { accessId: accessId });
+    const attachmentsDir = Deno.env.get("ATTACHMENTS_DIR_ABSOLUTE");
+    if (!attachmentsDir) {
+      const errMessage =
+        `Empty file destination directory in the environment file`;
+      logger.error(errMessage, { accessId });
+      ctx.response.status = 500;
+      return;
+    }
+
+    const storageDir = normalize(attachmentsDir);
+
+    ctx.response.headers.set(
+      "Content-Disposition",
+      `attachment; filename="${filename}"`,
+    );
+
+    logger.trace(
+      `Sending file ${filename} to a client`,
+      { accessId: accessId },
+    );
+
+    const sendOption: ContextSendOptions = {
+      root: storageDir,
+      path: filename,
+    };
+
+    await ctx.send(sendOption);
+  } catch (err) {
+    logger.error(
+      `Download failed on route "${route} for file ${filename}". ${err}`,
+      { accessId: accessId },
+    );
+
+    if (err instanceof Error && err.name === "NotFoundError") {
+      ctx.response.status = 404;
+      ctx.response.body = "File not found";
+    } else {
+      ctx.response.status = 500;
+      ctx.response.body = "Internal Server Error";
     }
   }
 };
