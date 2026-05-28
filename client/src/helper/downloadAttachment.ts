@@ -7,20 +7,17 @@ export const downloadAttachment = async (filename: string) => {
   const fallbackUrl = String(import.meta.env.VITE_FALLBACK_ATTACHMENT_URL);
 
   try {
-    let response = await fetch(url);
+    const response = await fetch(url);
 
     if (!response.ok) {
-      console.warn(`Primary API failed. Falling back to old API.`);
+      console.warn(`Primary API failed. Falling back to old API via new tab.`);
 
       if (!fallbackUrl) {
         throw new Error("Primary API failed and fallback API does not exist.");
       }
 
-      response = await fetch(`${fallbackUrl}/${filename}`);
-
-      if (!response.ok) {
-        throw new Error(`Both primary and fallback APIs failed.`);
-      }
+      globalThis.open(`${fallbackUrl}/${filename}`, "_blank");
+      return;
     }
 
     const blob = await response.blob();
