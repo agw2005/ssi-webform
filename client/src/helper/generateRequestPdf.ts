@@ -37,70 +37,95 @@ const generateRequestPdf = (
     const element = cell.cell.raw as HTMLTableCellElement;
     return element.classList.contains("whitespace-nowrap");
   };
+
   requestPdf.setFontSize(8);
   requestPdf.setFont("times", "normal", "bold");
 
-  requestPdf.text(
-    "ID Trace",
-    initialXAxis.main,
-    initialYAxis.overview,
-    {
-      align: "left",
-    },
-  );
+  const maxContentWidth = a4PortraitSize.x - initialXAxis.overviewData -
+    initialXAxis.main;
+  let offset = 1;
 
-  requestPdf.text(
-    requestId || "",
-    initialXAxis.overviewData,
-    initialYAxis.overview,
-    {
-      align: "left",
-    },
-  );
-
-  requestPdf.line(
-    initialXAxis.main,
-    initialYAxis.overviewUnderline,
-    a4PortraitSize.x - initialXAxis.main,
-    initialYAxis.overviewUnderline,
-  );
-
-  let index = 1;
   for (const [key, value] of Object.entries(overviewWithAttachments)) {
-    requestPdf.text(
-      String(key),
-      initialXAxis.main,
-      initialYAxis.overview + space * index,
-      {
-        align: "left",
-      },
-    );
+    if (key === "Attachment") {
+      const attachments = value as string[];
 
-    requestPdf.text(
-      String(value),
-      initialXAxis.overviewData,
-      initialYAxis.overview + space * index,
-      {
-        align: "left",
-      },
-    );
+      requestPdf.text(
+        key,
+        initialXAxis.main,
+        initialYAxis.overview + space * offset,
+        {
+          align: "left",
+        },
+      );
 
-    requestPdf.line(
-      initialXAxis.main,
-      initialYAxis.overviewUnderline + space * index,
-      a4PortraitSize.x - initialXAxis.main,
-      initialYAxis.overviewUnderline + space * index,
-    );
+      for (const attachment of attachments) {
+        const wrappedAttachment = requestPdf.splitTextToSize(
+          attachment,
+          maxContentWidth,
+        );
+        requestPdf.text(
+          wrappedAttachment,
+          initialXAxis.overviewData,
+          initialYAxis.overview + space * offset,
+          {
+            align: "left",
+          },
+        );
+        offset += wrappedAttachment.length;
+      }
 
-    index++;
+      offset -= 1.5;
+
+      requestPdf.line(
+        initialXAxis.main,
+        initialYAxis.overviewUnderline + space * offset,
+        a4PortraitSize.x - initialXAxis.main,
+        initialYAxis.overviewUnderline + space * offset,
+      );
+    } else {
+      const stringValue = String(value);
+      const wrappedText = requestPdf.splitTextToSize(
+        stringValue,
+        maxContentWidth,
+      );
+
+      requestPdf.text(
+        key,
+        initialXAxis.main,
+        initialYAxis.overview + space * offset,
+        {
+          align: "left",
+        },
+      );
+
+      requestPdf.text(
+        wrappedText,
+        initialXAxis.overviewData,
+        initialYAxis.overview + space * offset,
+        {
+          align: "left",
+        },
+      );
+
+      offset += wrappedText.length - 1;
+
+      requestPdf.line(
+        initialXAxis.main,
+        initialYAxis.overviewUnderline + space * offset,
+        a4PortraitSize.x - initialXAxis.main,
+        initialYAxis.overviewUnderline + space * offset,
+      );
+    }
+
+    offset++;
   }
 
-  index += 1;
+  offset += 1;
 
   autoTable(requestPdf, {
     html: "#request-items",
     theme: "grid",
-    startY: initialYAxis.overview + space * index,
+    startY: initialYAxis.overview + space * offset,
     styles: {
       fontSize: 6,
       cellPadding: 1.5,
@@ -122,8 +147,7 @@ const generateRequestPdf = (
     },
   });
 
-  const lastTableFinalYAxis = requestPdf.lastAutoTable.finalY ||
-    0;
+  const lastTableFinalYAxis = requestPdf.lastAutoTable.finalY || 0;
 
   autoTable(requestPdf, {
     html: "#supervisor-path",
