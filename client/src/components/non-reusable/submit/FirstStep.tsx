@@ -11,6 +11,7 @@ import type {
   ValidDepartment,
 } from "@scope/server";
 
+const EMAIL_DOMAIN = import.meta.env.VITE_EMAIL_DOMAIN;
 const FORMS = ["PR", "Cash Advance", "Fixed Asset"];
 const STEP = 1;
 
@@ -108,7 +109,7 @@ const FirstStep = ({
       />
       <TextInputBetweenLabel
         leftLabel="Your E-Mail"
-        rightLabel="@ssi.sharp-world.com"
+        rightLabel={`@${EMAIL_DOMAIN}`}
         name="your-email"
         id="your-email"
         variant="red"

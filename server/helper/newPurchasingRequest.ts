@@ -29,7 +29,7 @@ export const newPurchasingRequest = async (
   const indonesiaUtc = 7;
   const now = addHours(new Date(), indonesiaUtc);
   const submissionDate = jsDateToMySQLDatetime(now);
-  const emailDomain = "ssi.sharp-world.com";
+  const companyEmailDomain = String(Deno.env.get("VITE_EMAIL_DOMAIN"));
 
   logger.debug(
     `Value of submissionDate is ${submissionDate}`,
@@ -362,7 +362,7 @@ export const newPurchasingRequest = async (
       String(requestorSectionId),
       payload.firstStep.nrp,
       payload.firstStep.ext,
-      `${payload.firstStep.email}@${emailDomain}`,
+      `${payload.firstStep.email}@${companyEmailDomain}`,
       submissionDate,
       initialSupervisorId,
       initialRemarks,

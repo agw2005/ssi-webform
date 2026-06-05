@@ -28,8 +28,10 @@ interface EmailContent {
   requestLink: string;
 }
 
-const senderUser = String(Deno.env.get("SENDER_EMAIL_USER"));
-const senderAddr = String(Deno.env.get("SENDER_EMAIL_ADDR"));
+const companyEmailDomain = String(Deno.env.get("VITE_EMAIL_DOMAIN"));
+const senderUsername = String(Deno.env.get("SENDER_EMAIL_USER"));
+const senderLocalPart = String(Deno.env.get("SENDER_EMAIL_LOCAL_PART"));
+const smtpTesterLocalPart = String(Deno.env.get("SMTP_TESTER_LOCAL_PART"));
 const smtpAddr = String(Deno.env.get("SMTP_SERVER_ADDR"));
 const smtpUser = String(Deno.env.get("SMTP_SERVER_USER"));
 const smtpPass = String(Deno.env.get("SMTP_SERVER_PASS"));
@@ -42,10 +44,10 @@ const companyTradeNameInitialized = initialism(
 const appName = "PRISM";
 
 const sendEmail = async (options: SendEmailOptions) => {
-  logger.debug(`Value of senderUser is ${senderUser}`, {
+  logger.debug(`Value of senderUser is ${senderUsername}`, {
     accessId: options.accessId,
   });
-  logger.debug(`Value of senderAddr is ${senderAddr}`, {
+  logger.debug(`Value of senderAddr is ${senderLocalPart}`, {
     accessId: options.accessId,
   });
   logger.debug(`Value of smtpAddr is ${smtpAddr}`, {
@@ -128,10 +130,10 @@ const sendEmail = async (options: SendEmailOptions) => {
     });
 
     const result = await transporter.send({
-      from: `"${senderUser}" <${senderAddr}>`,
-      // to: options.receiverEmail,
-      to: `danialag2005@gmail.com`, // (Testing) Send email to `danialag2005@gmail.com` instead
-      bcc: `danial.agw.2005@gmail.com`, // (Testing) Send to supervisor for testing
+      from: `"${senderUsername}" <${senderLocalPart}@${companyEmailDomain}>`,
+      to: smtpTesterLocalPart
+        ? `${smtpTesterLocalPart}@${companyEmailDomain}`
+        : options.requestorEmail, // (Testing) Send to supervisor if testing
       subject:
         `${companyTradeNameInitialized} - ${appName}: ID Trace ${options.traceId}`,
       text: content, // If no HTML content is provided, will fall back to plain text.

@@ -15,6 +15,8 @@ import step4Approver from "../assets/images/manual/step4-approver.png";
 import step5Approver from "../assets/images/manual/step5-approver.png";
 import step6Approver from "../assets/images/manual/step6-approver.png";
 
+const EMAIL_DOMAIN = import.meta.env.VITE_EMAIL_DOMAIN;
+
 const Manual = () => {
   return (
     <Primitive
@@ -63,8 +65,8 @@ const Manual = () => {
                 <span className="text-red-600">
                   The <strong>Your E-Mail</strong>{" "}
                   field will automatically append{" "}
-                  <strong>@ssi.sharp-world.com</strong>, so you only need to
-                  specify the email's username.
+                  <strong>@{EMAIL_DOMAIN}</strong>, so you only need to specify
+                  the email's username.
                 </span>
               </p>
               <img
